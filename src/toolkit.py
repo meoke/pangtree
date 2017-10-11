@@ -111,6 +111,11 @@ def create_next_sibling_dir(path, sibling_dir_prefix):
     new_dir_path.mkdir()
     return new_dir_path.resolve()
 
+def create_child_dir(parent_path, dir_name):
+    child_dir_path = Path(parent_path).joinpath(dir_name)
+    child_dir_path.mkdir()
+    return child_dir_path.resolve()
+
 
 def copy_file_to_dir(file_path, destination_dir):
     return shutil.copy(str(Path(file_path)), str(Path(destination_dir)))
@@ -123,3 +128,11 @@ def remove_dir(path):
         else:
             i.unlink()
     Path(path).rmdir()
+
+
+def save_text(text, path, file_name):
+    file_path = Path(path).joinpath(file_name)
+    file_path.touch()
+    with file_path.open('w') as output:
+        output.write(text)
+    return file_path.resolve()
