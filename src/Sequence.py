@@ -1,33 +1,25 @@
 class Sequence(object):
-    def __init__(self, ID, name, title, nodes_count = 0, first_node_ID = -1, active = True, nodes_IDs = set()):
+    def __init__(self, ID, name, title, first_node_ID = -1, active = True, nodes_IDs = None):
         self.ID = ID
         self.name = name
         self.title = title
-        self.nodes_count = nodes_count
         self.first_node_id = first_node_ID
         self.active = active
-        self.nodes_IDs = nodes_IDs
+        self.nodes_IDs = nodes_IDs if nodes_IDs else set()
 
     def __str__(self):
-        return """ID: {0},
-                name: {1},
-                title: {2},
-                nodes_count: {3},
-                first_node_id: {4},
-                active: {5},
-                nodes IDs: {6}""".format(self.ID,
-                                         self.name,
-                                         self.title,
-                                         self.nodes_count,
-                                         self.first_node_id,
-                                         self.active,
-                                         self.nodes_IDs)
+        return """ID: {0},\t name: {1},\t title: {2},\t first_node_id: {3},\t active: {4},\t nodes IDs: {5}""".format(
+            self.ID,
+            self.name,
+            self.title,
+            self.first_node_id,
+            self.active,
+            self.nodes_IDs)
 
     def __eq__(self, other):
         return     (self.ID == other.ID
                     and self.name == other.name
                     and self.title == other.title
-                    and self.nodes_count == other.nodes_count
                     and self.first_node_id == other.first_node_id
                     and self.active == other.active
                     and self.nodes_IDs == other.nodes_IDs)
@@ -36,15 +28,15 @@ class Sequence(object):
         self.nodes_IDs.add(node_ID)
 
 class Source(Sequence):
-    def __init__(self, ID, name, title, nodes_count = 0, first_node_ID = -1, active = True, nodes_IDs = set(), consensusID = -1, weight = -1):
-        Sequence.__init__(self, ID, name, nodes_count, first_node_ID, title, active, nodes_IDs)
+    def __init__(self, ID, name, title, first_node_ID = -1, active = True, nodes_IDs = set(), consensusID = -1, weight = -1):
+        Sequence.__init__(self, ID=ID, name=name, title=title, first_node_ID=first_node_ID, active=active, nodes_IDs=nodes_IDs)
         self.consensusID = consensusID
         self.weight = weight
 
     def __str__(self):
-        return Sequence.__str__(self) + """ consensusID: {0},
-                                            weight: {1}""".format(  self.consensusID,
-                                                                    self.weight)
+        return Sequence.__str__(self) + """\tconsensusID: {0},\tweight: {1}""".format(
+            self.consensusID,
+            self.weight)
 
     def __eq__(self, other):
         return Sequence.__eq__(self, other) and self.consensusID == other.consensusID \

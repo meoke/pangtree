@@ -8,8 +8,8 @@ from POAGraph import POAGraph
 from Sequence import Source
 from Node import Node
 
-def parse_to_poagraphs(file_name, merge_option, multialignment_name, output_dir):
-    maf_blocks = [*AlignIO.parse(str(file_name), "maf")]
+def parse_to_poagraphs(file_path, merge_option, multialignment_name, output_dir):
+    maf_blocks = [*AlignIO.parse(file_path, "maf")]
     block_to_merge_ranges = _prepare_merge_ranges(merge_option, len(maf_blocks))
 
     poagraphs  = []
@@ -71,9 +71,10 @@ def _process_blocks_for_poagraph(poagraph, blocks):
                  continue
 
             if nucl not in column_nodes:
-                 column_nodes[nucl] = Node(ID = nodes_count, base=nucleotides.decode(nucl), sources_count = 1)
+                 column_nodes[nucl] = Node(ID = nodes_count, base=nucleotides.decode(nucl))
                  nodes_count += 1
             node_id = column_nodes[nucl].ID
+            column_nodes[nucl].sources_count += 1
 
             if source_to_its_last_node_ID[row_ID] != -1:
                  column_nodes[nucl].in_nodes.update([source_to_its_last_node_ID[row_ID]])
@@ -112,7 +113,10 @@ def _get_all_blocks_width(blocks):
 def _update_source_sequence_info(source_ID, node_ID, sources):
     if sources[source_ID].first_node_id == -1:
         sources[source_ID].first_node_id = node_ID
-    sources[source_ID].add_node_ID(node_ID)
+    #sources[source_ID].add_node_ID(node_ID)
+
+    (sources[source_ID]).nodes_IDs.add(node_ID)
+    pass
 
 
 def _pretty_numpy_nucletides_matrix_printer(self, numpy_matrix):
