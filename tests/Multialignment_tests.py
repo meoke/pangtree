@@ -6,7 +6,7 @@ from context import toolkit
 
 class MultialignmentTests(unittest.TestCase):
     def setUp(self):
-        test_file_path = 'files/ebola_ncbi.maf'
+        test_file_path = 'files/ebola_100th_block/ebola_100th_block.maf'
         self.temp_dir = toolkit.create_next_sibling_dir(test_file_path, 'test')
         self.temp_test_file = toolkit.copy_file_to_dir(file_path = test_file_path,
                                  destination_dir = self.temp_dir)

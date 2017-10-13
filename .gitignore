@@ -100,6 +100,6 @@ ENV/
 # mypy
 .mypy_cache/
 
-tests/temp/*
+tests/files/*/converted*
 *.xml
 *.iml

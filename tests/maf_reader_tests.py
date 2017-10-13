@@ -11,7 +11,7 @@ from context import Node
 class MafReaderTests(unittest.TestCase):
 
     def setUp(self):
-        self.temp_dir = toolkit.create_next_sibling_dir('temp', 'maf_reader_testing')
+        self.temp_dir = toolkit.create_next_sibling_dir('files', 'maf_reader_testing')
 
     def tearDown(self):
         pass
