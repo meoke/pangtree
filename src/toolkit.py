@@ -136,3 +136,10 @@ def save_text(text, path, file_name):
     with file_path.open('w') as output:
         output.write(text)
     return file_path.resolve()
+
+
+def join_path(dir_path, name_to_join):
+    return str(Path(dir_path).joinpath(name_to_join))
+
+def change_file_extension(path, suffix):
+    return str(Path(path).with_suffix(suffix))

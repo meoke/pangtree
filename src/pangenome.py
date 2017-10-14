@@ -41,6 +41,14 @@ parser_converter.add_argument('-hbmin',
                               metavar='HBMIN',
                               required=False,
                               help='HBMIN value for POA heaviest bundling alogrithm, min 0, max 1')
+parser_converter.add_argument('-min_comp',
+                              metavar='MINCOMP',
+                              required=False,
+                              help='Minimum compatibility between source and consensus to match them')
+parser_converter.add_argument('-iter',
+                              action='store_true',
+                              required=False,
+                              help='Generate consensus iteratively')
 parser_converter.set_defaults(func=convert)
 
 args = parser.parse_args()

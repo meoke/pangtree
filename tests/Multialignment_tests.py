@@ -19,7 +19,18 @@ class MultialignmentTests(unittest.TestCase):
         test_file = self.temp_test_file
         m = Multialignment()
         m.build_multialignment_from_maf(test_file, "all")
-        self.assertTrue(True)
+        self.assertTrue(False, "Check multialignment building")
+
+    def test_consensus_generation(self):
+        test_file = self.temp_test_file
+        consensus_iterative = False
+        hbmin = 0.9
+        min_comp = 0.1
+
+        m = Multialignment()
+        m.build_multialignment_from_maf(test_file, "all")
+        m.generate_consensus(consensus_iterative, hbmin, min_comp)
+        self.assertTrue(False, "Check consensus generation")
 
 
 if __name__ == '__main__':

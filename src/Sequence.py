@@ -28,7 +28,7 @@ class Sequence(object):
         self.nodes_IDs.add(node_ID)
 
 class Source(Sequence):
-    def __init__(self, ID, name, title, first_node_ID = -1, active = True, nodes_IDs = set(), consensusID = -1, weight = -1):
+    def __init__(self, ID, name, title, first_node_ID = -1, active = True, nodes_IDs = None, consensusID = -1, weight = -1):
         Sequence.__init__(self, ID=ID, name=name, title=title, first_node_ID=first_node_ID, active=active, nodes_IDs=nodes_IDs)
         self.consensusID = consensusID
         self.weight = weight
