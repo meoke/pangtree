@@ -107,8 +107,14 @@ class POAGraph(object):
         return '\n'.join(po_lines)
 
 
-    def _calculate_compatibility_to_consensuses(self):
-        raise Exception("Not implemented")
+    def calculate_compatibility_to_consensuses(self):
+        def get_compatibility(source, consensus):
+            common_nodes_count = len(source.nodes_IDs & consensus.nodes_IDs)
+            source_nodes_count = len(source.nodes_IDs)
+            return round(common_nodes_count/source_nodes_count,4)
+
+        for consensus in self.consensuses:
+            consensus.compatibility_to_sources = [get_compatibility(source, consensus) for source in self.sources]
 
 
     def _calc_sources_weights(self):

@@ -50,7 +50,7 @@ class Multialignment(object):
 
         new_poagraph = po_reader.parse_to_poagraph(hb_file_name)
 
-        # new_poagraph.calc_consensuses_compatibility()
+        new_poagraph.calculate_compatibility_to_consensuses()
 
     def _save_consensuses(self, output_dir, poagraph_ID):
         pass
