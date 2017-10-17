@@ -2,7 +2,7 @@
 from subprocess import run
 import toolkit as t
 import maf_reader as maf_reader
-# from POReader import POReader
+import po_reader as po_reader
 # from POAGraphVisualizer import POAGraphVisualizer
 # from fasta_generators import generate_source_as_fasta_from_poagraph, generate_consensus_as_fasta_from_poagraph
 
@@ -48,9 +48,11 @@ class Multialignment(object):
         run(['../bin/poa', '-read_msa', file_name, '-hb', '-po', hb_file_name, '../bin/blosum80.mat', '-hbmin',
              str(hbmin)])
 
-#        new_poagraph = po_reader.parse_file_to_poagraph(hb_file_name)
+        new_poagraph = po_reader.parse_to_poagraph(hb_file_name)
 
-    def _save_consensuses(self, i, output_dir):
+        # new_poagraph.calc_consensuses_compatibility()
+
+    def _save_consensuses(self, output_dir, poagraph_ID):
         pass
 
 

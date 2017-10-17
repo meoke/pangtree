@@ -43,6 +43,10 @@ class POAGraph(object):
         self.sources.append(source)
 
 
+    def add_consensus(self, consensus):
+        self.consensuses.append(consensus)
+
+
     def generate_po(self):
         def generate_introductory_data():
             nodes_count = len([*filter(lambda node : node.sources_count > 0, self.nodes)])

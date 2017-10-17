@@ -1,6 +1,7 @@
 #import os
 from pathlib import Path
 import shutil
+
 # import itertools, collections
 #
 # def create_child_dir(currentDir, childDirName):
@@ -36,15 +37,7 @@ import shutil
 #     return(os.path.join(currentPath, os.pardir, 'bin', programName))
 #
 #
-# def consume(iterator, n):
-#     "Advance the iterator n-steps ahead. If n is none, consume entirely."
-#     # Use functions that consume iterators at C speed.
-#     if n is None:
-#         # feed the entire iterator into a zero-length deque
-#         collections.deque(iterator, maxlen=0)
-#     else:
-#         # advance to the empty slice starting at position n
-#         next(itertools.islice(iterator, n, n), None)
+
 #
 #
 

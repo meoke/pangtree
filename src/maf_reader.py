@@ -111,12 +111,7 @@ def _get_all_blocks_width(blocks):
 
 
 def _update_source_sequence_info(source_ID, node_ID, sources):
-    if sources[source_ID].first_node_id == -1:
-        sources[source_ID].first_node_id = node_ID
-    #sources[source_ID].add_node_ID(node_ID)
-
-    (sources[source_ID]).nodes_IDs.add(node_ID)
-    pass
+    sources[source_ID].add_node_ID(node_ID)
 
 
 def _pretty_numpy_nucletides_matrix_printer(self, numpy_matrix):
