@@ -13,9 +13,7 @@ import shutil
 #         return(dirPath)
 #
 #
-# def getRealPath(relativePath):
-#     return os.path.realpath(relativePath)
-#
+
 #
 # def mergeFiles(inputDirPath, outputPath):
 #     with open(outputPath, "w") as outfile:
@@ -35,13 +33,7 @@ import shutil
 #
 # def getBinPath(currentPath, programName):
 #     return(os.path.join(currentPath, os.pardir, 'bin', programName))
-#
-#
 
-#
-#
-
-#
 #
 # def get_file_path(dir_path, file_name):
 #     return os.path.join(dir_path, file_name)
@@ -134,5 +126,18 @@ def save_text(text, path, file_name):
 def join_path(dir_path, name_to_join):
     return str(Path(dir_path).joinpath(name_to_join))
 
+
 def change_file_extension(path, suffix):
     return str(Path(path).with_suffix(suffix))
+
+
+def get_real_path(relativePath):
+    return Path().cwd().joinpath(relativePath).resolve()
+
+
+def copy_dir(source, destination):
+    if Path(destination).exists():
+        remove_dir(destination)
+    # Path.mkdir(Path(destination))
+    shutil.copytree(source, destination)
+

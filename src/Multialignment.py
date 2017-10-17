@@ -3,7 +3,7 @@ from subprocess import run
 import toolkit as t
 import maf_reader as maf_reader
 import po_reader as po_reader
-# from POAGraphVisualizer import POAGraphVisualizer
+from POAGraphVisualizator import POAGraphVisualizator
 # from fasta_generators import generate_source_as_fasta_from_poagraph, generate_consensus_as_fasta_from_poagraph
 
 class Multialignment(object):
@@ -34,8 +34,9 @@ class Multialignment(object):
             if consensus_iterative:
                 self._run_iterative_consensus_generation(consensus_output_dir, i, hbmin, min_comp)
             else:
-                self._run_single_consensus_generation(consensus_output_dir, i, hbmin)
-            self._save_consensuses(consensus_output_dir, i)
+                new_poagraph = self._run_single_consensus_generation(consensus_output_dir, i, hbmin)
+                new_poagraph.path = p.path
+                self.poagraphs[i] = new_poagraph
 
 
     def _run_single_consensus_generation(self, consensus_output_dir, i, hbmin, consensus_name = "consensus"):
@@ -49,14 +50,16 @@ class Multialignment(object):
              str(hbmin)])
 
         new_poagraph = po_reader.parse_to_poagraph(hb_file_name)
-
         new_poagraph.calculate_compatibility_to_consensuses()
-
-    def _save_consensuses(self, output_dir, poagraph_ID):
-        pass
+        return new_poagraph
 
 
 
+    def generate_visualization(self, consensuses_comparison=False, graph_visualization=False):
+        for p in self.poagraphs:
+            vizualization_output_dir = t.create_child_dir(p.path, "visualization")
+            visualizator = POAGraphVisualizator(p, vizualization_output_dir)
+            visualizator.generate(consensuses_comparison, graph_visualization)
 
 class NoConsensusFound(Exception):
     pass

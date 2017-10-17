@@ -39,7 +39,7 @@ function get_density_graph(i){
                     .attr("transform", "translate(" + margin.left + ",0)")
                     .call(d3.axisLeft(y).ticks(null, "%"));
 
-    var myData = consensuses.data[i].sources_map.map(function(x){return x*100;});
+    var myData = consensuses.data[i].sources_compatibility.map(function(x){return x*100;});
 
     var data_length = myData.length,
         bins = d3.histogram().domain(x.domain()).thresholds(40)(myData),

@@ -21,3 +21,6 @@ def convert_maf_to_po(maf_file_name,
 
     if fasta_option:
         m.generate_fasta_files()
+
+    if consensus_option or visualize_option:
+        m.generate_visualization(consensus_option, visualize_option)
