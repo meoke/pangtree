@@ -4,7 +4,7 @@ class Sequence(object):
         self.name = name
         self.title = title
         self.active = active
-        self.nodes_IDs = nodes_IDs if nodes_IDs else set()
+        self.nodes_IDs = nodes_IDs if nodes_IDs else []
 
     def __str__(self):
         return """ID: {0},\t name: {1},\t title: {2}, \t active: {3},\t nodes IDs: {4}""".format(
@@ -22,7 +22,7 @@ class Sequence(object):
                     and self.nodes_IDs == other.nodes_IDs)
 
     def add_node_ID(self, node_ID):
-        self.nodes_IDs.add(node_ID)
+        self.nodes_IDs.append(node_ID)
 
 class Source(Sequence):
     def __init__(self, ID, name, title,active = True, nodes_IDs = None, consensusID = -1, weight = -1):

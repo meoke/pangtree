@@ -45,6 +45,8 @@ class POAGraph(object):
 
     def add_consensus(self, consensus):
         self.consensuses.append(consensus)
+        for node in self.nodes:
+            node.consensuses_count += 1
 
 
     def generate_po(self):
@@ -84,7 +86,7 @@ class POAGraph(object):
 
 
             def get_sources_info(node_ID):
-                return [i for i, source in enumerate(self.sources) if node_ID in source.nodes_IDs]
+                return [i for i, source in enumerate(self.sources) if node_ID in source.nodes_IDs and source.active]
 
             def get_node_info(i, node):
                 return "".join([node.base, ":",
@@ -109,7 +111,7 @@ class POAGraph(object):
 
     def calculate_compatibility_to_consensuses(self):
         def get_compatibility(source, consensus):
-            common_nodes_count = len(source.nodes_IDs & consensus.nodes_IDs)
+            common_nodes_count = len(set(source.nodes_IDs) & set(consensus.nodes_IDs))
             source_nodes_count = len(source.nodes_IDs)
             return round(common_nodes_count/source_nodes_count,4)
 
@@ -147,9 +149,42 @@ class POAGraph(object):
         raise Exception("Not implemented")
 
 
-    # def deactivate_different(self, sources_IDs_to_activate):
-    #     for source_ID, source in enumerate(self.sources):
-    #         if source_ID in sources_IDs_to_activate:
-    #             self.sources[source_ID].active = True
-    #         else:
-    #             self.sources[source_ID].active = False
+    def deactivate_different_then(self, sources_IDs_to_stay_activate):
+        deactivated_sources = 0
+        source_temp_ID_to_global_ID = {}
+        for source_global_ID, source in enumerate(self.sources):
+            if source.ID in sources_IDs_to_stay_activate:
+                self.sources[source_global_ID].active = True
+                self.sources[source_global_ID].ID = source_global_ID - deactivated_sources
+            else:
+                self.sources[source_global_ID].active = False
+                self.sources[source_global_ID].ID = -1
+                deactivated_sources += 1
+                for node_ID in source.nodes_IDs:
+                    self.nodes[node_ID].sources_count -= 1
+            source_temp_ID_to_global_ID[self.sources[source_global_ID].ID] = source_global_ID
+
+        deactivated_nodes = 0
+        node_temp_ID_to_global_ID = {}
+        for node_global_ID, node in enumerate(self.nodes):
+            if node.sources_count == 0:
+                self.nodes[node_global_ID].ID = -1
+                deactivated_nodes += 1
+            else:
+                self.nodes[node_global_ID].ID = node.ID - deactivated_nodes
+            node_temp_ID_to_global_ID[self.nodes[node_global_ID].ID] = node_global_ID
+        return (source_temp_ID_to_global_ID, node_temp_ID_to_global_ID)
+
+
+    def activate_sources_with_consensus_unassigned(self):
+        deactivated_sources = 0
+        for sourceID, source in enumerate(self.sources):
+            if source.consensusID == -1:
+                self.sources[sourceID].active = True
+                self.sources[sourceID].ID = sourceID - deactivated_sources
+            else:
+                self.sources[sourceID].active = False
+                self.sources[sourceID].ID = -1
+                deactivated_sources += 1
+
+
