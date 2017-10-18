@@ -5,7 +5,7 @@ from context import Multialignment
 
 
 class EndToEndTest(unittest.TestCase):
-    @unittest.skip("end to end")
+    #@unittest.skip("end to end")
     def test_run_full_path(self):
         start = time.clock()
         converter.convert_maf_to_po(maf_file_name = 'files/ebola_100th_block/ebola_100th_block.maf',
@@ -22,7 +22,7 @@ class EndToEndTest(unittest.TestCase):
         print("Running time: ", time.strftime('%H:%M:%S', time.gmtime(end-start)))
         self.assertTrue(True)
 
-    #@unittest.skip("end to end")
+    @unittest.skip("mycoplasma")
     def test_consensus_generation_from_po(self):
         start = time.clock()
         m = Multialignment('mycoplasma')
