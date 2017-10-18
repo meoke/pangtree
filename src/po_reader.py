@@ -91,11 +91,6 @@ def _read_nodes_from_po_lines(poagraph, po_lines, max_source_ID):
     update_nodes_with_aligned_nodes(aligned_nodes_sets)
 
 
-
-    # self._spread_aligned_nodes(nodes)
-    # return(nodes)
-
-
 def _spread_aligned_nodes(self, nodes):
     column_alignment_cycle = set()
     for n in nodes.values():

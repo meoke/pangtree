@@ -92,8 +92,6 @@ class POAGraph(object):
                                 "".join(['S' + str(self.sources[src_ID].ID) for src_ID in get_sources_info(i)]),
                                 get_aligned_nodes_info(node)])
 
-            #self._calc_nodes_IDs()
-
             return [get_node_info(i, node) for i, node in enumerate(self.nodes) if node.ID != -1]
 
 

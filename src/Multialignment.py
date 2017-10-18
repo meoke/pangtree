@@ -4,7 +4,6 @@ import toolkit as t
 import maf_reader as maf_reader
 import po_reader as po_reader
 from POAGraphVisualizator import POAGraphVisualizator
-# from fasta_generators import generate_source_as_fasta_from_poagraph, generate_consensus_as_fasta_from_poagraph
 
 class Multialignment(object):
     def __init__(self, data_type):

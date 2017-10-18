@@ -189,7 +189,6 @@ def get_ebola_group_name(ebola_code):
 def extract_ebola_code_part(original_ebola_src_name, index):
     return original_ebola_src_name.split('.')[index]
 
-#TODO lepsza nazwa, poprawić kod
 def get_ebola_code_for_group(ebola_group_name):
     for group_code, group_name in _ebola_groups_dictionary.items():
         if group_name == ebola_group_name:
