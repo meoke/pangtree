@@ -145,3 +145,11 @@ class POAGraph(object):
 
     def _calc_nodes_IDs(self):
         raise Exception("Not implemented")
+
+
+    # def deactivate_different(self, sources_IDs_to_activate):
+    #     for source_ID, source in enumerate(self.sources):
+    #         if source_ID in sources_IDs_to_activate:
+    #             self.sources[source_ID].active = True
+    #         else:
+    #             self.sources[source_ID].active = False
