@@ -65,12 +65,12 @@ class MafReaderTests(unittest.TestCase):
            weight=0)],
     [Consensus(ID=0, 
                name='CONSENS0', 
-               title='consensus produced by heaviest_bundle, containing 1 seqs', 
+               title='consensus produced by heaviest_bundle, containing 1 seqs',
                active=True, 
                nodes_IDs=set([0, 1, 3, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14, 16, 17])),
     Consensus(ID=1, 
               name='CONSENS1', 
-              title='consensus produced by heaviest_bundle, containing 1 seqs', 
+              title='consensus produced by heaviest_bundle, containing 1 seqs',
               active=True, 
               nodes_IDs=set([2, 3, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15]))],
          
@@ -148,7 +148,7 @@ class MafReaderTests(unittest.TestCase):
     def test_maf_to_poagraph(self, test_case_name, po_lines, expected_sources, expected_consensuses, expected_nodes):
         self.maf_path = toolkit.save_text("\n".join(po_lines), self.temp_dir, 'test.po')
 
-        poagraph = po_reader.parse_to_poagraph(str(self.maf_path))
+        poagraph = po_reader.parse_to_poagraph(str(self.maf_path), output_dir=self.temp_dir)
         expected_poagraph = POAGraph(name='test',
                                      title='test_0',
                                      version='NOVEMBER',

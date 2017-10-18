@@ -29,6 +29,19 @@ class Multialignment(object):
                                                        multialignment_name = self.name,
                                                        output_dir = self.output_dir)
 
+    def build_multialignment_from_po(self, po_file_name):
+        print("Buliding multialignment from " + po_file_name + "...")
+        def _get_mutlialignment_name(input_file_name):
+            return t.get_file_name_without_extension(input_file_name)
+
+        def _get_output_dir(input_file_name):
+            return t.create_next_sibling_dir(input_file_name, "converted")
+
+        self.name = _get_mutlialignment_name(po_file_name)
+        self.output_dir = _get_output_dir(po_file_name)
+        self.poagraphs = [po_reader.parse_to_poagraph(file_path = po_file_name,
+                                                        output_dir = self.output_dir)]
+
 
     def generate_consensus(self, consensus_iterative, hbmin, min_comp):
         for i, p in enumerate(self.poagraphs):
@@ -53,10 +66,12 @@ class Multialignment(object):
         run(['../bin/poa', '-read_msa', file_name, '-hb', '-po', hb_file_name, '../bin/blosum80.mat', '-hbmin',
              str(hbmin)])
 
-        new_poagraph = po_reader.parse_to_poagraph(hb_file_name)
+        new_poagraph = po_reader.parse_to_poagraph(hb_file_name, self.poagraphs[i].path)
         new_poagraph.calculate_compatibility_to_consensuses()
         return new_poagraph
 
+    def _run_iterative_consensus_generation(self, consensus_output_dir, i, hbmin, min_comp, consensus_name = "mycoplasma.po"):
+        pass
 
     def generate_visualization(self, consensuses_comparison=False, graph_visualization=False):
         print('Generate visualization...')

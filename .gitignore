@@ -102,5 +102,6 @@ ENV/
 
 tests/files/*/converted*
 examples/mycoplasma/*/*/consensus/*
+tests/files/mycoplasma_po/consensus
 *.xml
 *.iml

@@ -2,15 +2,16 @@ import re
 from POAGraph import POAGraph
 from Sequence import Consensus, Source
 from Node import Node
+import toolkit as t
 
-def parse_to_poagraph(file_path):
+def parse_to_poagraph(file_path, output_dir):
     print('\tBuliding poagraph from ' + file_path)
     with open(file_path) as po:
         po_lines = po.readlines()
         p = POAGraph(name = _read_value(po_lines[1]),
                      title = _read_value(po_lines[2]),
                      version = _read_value(po_lines[0]),
-                     path = file_path)
+                     path = output_dir)
         _read_sequence_info_from_po_lines(p, po_lines)
         _read_nodes_from_po_lines(p, po_lines, len(p.sources)-1)
     return (p)
