@@ -7,13 +7,15 @@ from POAGraphVisualizator import POAGraphVisualizator
 # from fasta_generators import generate_source_as_fasta_from_poagraph, generate_consensus_as_fasta_from_poagraph
 
 class Multialignment(object):
-    def __init__(self):
+    def __init__(self, data_type):
         self.name = None
         self.output_dir = None
         self.poagraphs = None
+        self.data_type=data_type
 
 
     def build_multialignment_from_maf(self, maf_file_name, merge_option):
+        print("Buliding multialignment from " + maf_file_name + "...")
         def _get_mutlialignment_name(input_file_name):
             return t.get_file_name_without_extension(input_file_name)
 
@@ -32,8 +34,10 @@ class Multialignment(object):
         for i, p in enumerate(self.poagraphs):
             consensus_output_dir = t.create_child_dir(p.path, "consensus")
             if consensus_iterative:
+                print('Generate consensuses (hbmin='+ str(hbmin) +', min_comp=' + str(min_comp) + ') iteratively...')
                 self._run_iterative_consensus_generation(consensus_output_dir, i, hbmin, min_comp)
             else:
+                print('Generate consensuses (hbmin='+ str(hbmin) +') in one iteration...')
                 new_poagraph = self._run_single_consensus_generation(consensus_output_dir, i, hbmin)
                 new_poagraph.path = p.path
                 self.poagraphs[i] = new_poagraph
@@ -54,11 +58,11 @@ class Multialignment(object):
         return new_poagraph
 
 
-
     def generate_visualization(self, consensuses_comparison=False, graph_visualization=False):
+        print('Generate visualization...')
         for p in self.poagraphs:
             vizualization_output_dir = t.create_child_dir(p.path, "visualization")
-            visualizator = POAGraphVisualizator(p, vizualization_output_dir)
+            visualizator = POAGraphVisualizator(p, vizualization_output_dir, self.data_type)
             visualizator.generate(consensuses_comparison, graph_visualization)
 
 class NoConsensusFound(Exception):

@@ -1,11 +1,3 @@
-# TODO może usunąć poniższe kodowanie tak, żeby został tylko słownik?
-# A = 1
-# C = 2
-# T = 3
-# G = 4
-# space = 0
-
-
 _nucleotide_dictionary = {'-': 0,
                             'A': 1, 'C': 2, 'T':3, 'G':4,
                             'P': 5, 'K': 6, 'M':7, 'I':8, 'L':9,

@@ -4,6 +4,7 @@ from Sequence import Consensus, Source
 from Node import Node
 
 def parse_to_poagraph(file_path):
+    print('\tBuliding poagraph from ' + file_path)
     with open(file_path) as po:
         po_lines = po.readlines()
         p = POAGraph(name = _read_value(po_lines[1]),

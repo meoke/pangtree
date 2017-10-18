@@ -13,8 +13,10 @@ class POAGraphVisualizator(object):
 
     def generate(self, consensuses_comparison=False, graph_visualization=False):
         if consensuses_comparison:
+            print("\tGenerating consensus comparison.")
             self.generate_consensus_comparison()
         elif graph_visualization:
+            print("\tGenerating graph visualization.")
             self.generate_graph_visualization()
         else:
             return

@@ -53,16 +53,21 @@ def _process_blocks_for_poagraph(poagraph, blocks):
     sequences = np.zeros(shape=(all_blocks_width, all_source_count), dtype=np.int8) # zeros because '-' == 0
 
     current_column_ID = 0
-    for block in blocks:
-        for line in block:
+    for i, block in enumerate(blocks):
+        print("\tProcessing " + str(i+1) + "/" + str(len(blocks)) + " block.")
+        for j, line in enumerate(block):
+            print("\r\t\tLine " + str(j+1) + '/' + str(len(block)), end='')
             sequence_source_ID = sources_name_to_ID[line.name]
             for nucl_ID, nucl_base in enumerate(line.seq):
                 sequences[current_column_ID + nucl_ID][sequence_source_ID] = nucleotides.code(nucl_base)
+
         current_column_ID += len(block._records[0])
+        print('')
 
     column_nodes = {}
     nodes_count = 0
     source_to_its_last_node_ID = {source_ID: -1 for source_ID, _ in enumerate(sources)}
+    all_nucles_count = sequences.shape[0]*sequences.shape[1]
     for column_ID in range(sequences.shape[0]):
         for row_ID in range(sequences.shape[1]):
 
@@ -86,8 +91,11 @@ def _process_blocks_for_poagraph(poagraph, blocks):
                 del other_nodes[key]
                 node.aligned_to.update([node.ID for node in other_nodes.values()])
                 poagraph.add_node(node)
-        column_nodes = {}
 
+            progress = round(100* (column_ID*sequences.shape[1]+row_ID+1) / all_nucles_count, 2)
+            print("\r\tMultialignment ready in " + str(progress) + '%', end='')
+        column_nodes = {}
+    print('')
     return(poagraph)
 
 

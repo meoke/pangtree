@@ -101,5 +101,6 @@ ENV/
 .mypy_cache/
 
 tests/files/*/converted*
+examples/mycoplasma/*/*/consensus/*
 *.xml
 *.iml

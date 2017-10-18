@@ -49,6 +49,10 @@ parser_converter.add_argument('-iter',
                               action='store_true',
                               required=False,
                               help='Generate consensus iteratively')
+parser_converter.add_argument('-data',
+                              metavar="DATATYPE",
+                              required=False,
+                              help='ebola or mycoplasma')
 parser_converter.set_defaults(func=convert)
 
 args = parser.parse_args()
