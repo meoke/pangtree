@@ -31,6 +31,7 @@ def create_next_sibling_dir(path, sibling_dir_prefix):
     new_dir_path.mkdir()
     return new_dir_path.resolve()
 
+
 def create_child_dir(parent_path, dir_name):
     child_dir_path = Path(parent_path).joinpath(dir_name)
     child_dir_path.mkdir()
