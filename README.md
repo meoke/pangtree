@@ -51,7 +51,7 @@ TBA
 ## Tests
 
 ### Dependencies
-* Unittest
+* [Unittest](https://docs.python.org/3/library/unittest.html)
 * [DDT](https://github.com/txels/ddt)
 
 ### Set up

@@ -1,4 +1,3 @@
-#import os
 from pathlib import Path
 import shutil
 
@@ -74,6 +73,5 @@ def get_real_path(relativePath):
 def copy_dir(source, destination):
     if Path(destination).exists():
         remove_dir(destination)
-    # Path.mkdir(Path(destination))
     shutil.copytree(source, destination)
 

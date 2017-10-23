@@ -1,4 +1,3 @@
-# import os
 from subprocess import run
 import toolkit as t
 import maf_reader as maf_reader

@@ -2,7 +2,6 @@ import re
 from POAGraph import POAGraph
 from Sequence import Consensus, Source
 from Node import Node
-import toolkit as t
 
 def parse_to_poagraph(file_path, output_dir):
     print('\tBuliding poagraph from ' + file_path)

@@ -1,6 +1,3 @@
-import shutil
-import os
-
 import toolkit as t
 from data_types import ebola as eb
 

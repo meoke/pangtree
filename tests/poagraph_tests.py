@@ -2,7 +2,6 @@ import unittest
 
 from context import POAGraph
 from context import Source, Consensus
-from context import Node
 
 
 class POAGraphTests(unittest.TestCase):
