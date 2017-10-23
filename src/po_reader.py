@@ -62,7 +62,7 @@ def _read_nodes_from_po_lines(poagraph, po_lines, max_source_ID):
     def assign_this_node_to_its_sequences(sequences_IDs, node_ID):
         for sequence_ID in sequences_IDs:
             if sequence_ID <= max_source_ID:
-                poagraph.sources[sequence_ID].nodes_IDs.add(node_ID)
+                poagraph.sources[sequence_ID].nodes_IDs.append(node_ID)
             else:
                 poagraph.consensuses[sequence_ID - max_source_ID - 1].add_node_ID(node_ID)
 

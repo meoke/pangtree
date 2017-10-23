@@ -10,7 +10,8 @@ class EndToEndTest(unittest.TestCase):
         start = time.clock()
         converter.convert_maf_to_po(maf_file_name = 'files/ebola_100th_block/ebola_100th_block.maf',
                                     #maf_file_name='files/entire_ebola/ebola_ncbi.maf',
-                                    #maf_file_name='files/mycoplasma_maf/alignment_clean.maf',
+                                    # maf_file_name='files/mycoplasma_maf/alignment_clean.maf',
+                                    # maf_file_name= 'files/simple/simple.maf',
                                     merge_blocks_option = "all",
                                     consensus_option=True,
                                     consensus_iterative = False,
@@ -22,7 +23,7 @@ class EndToEndTest(unittest.TestCase):
         print("Running time: ", time.strftime('%H:%M:%S', time.gmtime(end-start)))
         self.assertTrue(True)
 
-    @unittest.skip("mycoplasma")
+    @unittest.skip("consensus from mycoplasma po")
     def test_consensus_generation_from_po(self):
         start = time.clock()
         m = Multialignment('mycoplasma')
