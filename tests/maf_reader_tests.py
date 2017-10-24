@@ -38,17 +38,17 @@ class MafReaderTests(unittest.TestCase):
     ,'a score=2.0'
     ,'s source1 3 4 + 6 GGTC'
     ,'s source2 4 2 + 5 G-A-'],
-    [Source(ID=0, name='source1', title='source1', active=True, nodes_IDs=[0, 1, 3, 4, 5, 7], consensusID=-1, weight=-1),
-    Source(ID=1, name='source2', title='source2', active=True, nodes_IDs=[0, 1, 2, 3, 6], consensusID=-1, weight=-1)],
+    [Source(currentID=0, name='source1', title='source1', active=True, nodes_IDs=[0, 1, 3, 4, 5, 7], consensusID=-1, weight=-1),
+    Source(currentID=1, name='source2', title='source2', active=True, nodes_IDs=[0, 1, 2, 3, 6], consensusID=-1, weight=-1)],
 
-    [Node(ID=0, base='A', in_nodes=set(), aligned_to=set(), sources_count = 2, consensuses_count = 0),
-    Node(ID=1, base='C', in_nodes={0}, aligned_to=set(), sources_count = 2, consensuses_count = 0),
-    Node(ID=2, base='T', in_nodes={1}, aligned_to=set(), sources_count = 1, consensuses_count = 0),
-    Node(ID=3, base='G', in_nodes={1,2}, aligned_to=set(), sources_count = 2, consensuses_count = 0),
-    Node(ID=4, base='G', in_nodes={3}, aligned_to=set(), sources_count = 1, consensuses_count = 0),
-    Node(ID=5, base='T', in_nodes={4}, aligned_to={6}, sources_count = 1, consensuses_count = 0),
-    Node(ID=6, base='A', in_nodes={3}, aligned_to={5}, sources_count = 1, consensuses_count = 0),
-    Node(ID=7, base='C', in_nodes={5}, aligned_to=set(), sources_count = 1, consensuses_count = 0)
+    [Node(currentID=0, base='A', in_nodes=set(), aligned_to=set(), sources = set([0,1]), consensuses_count = 0),
+    Node(currentID=1, base='C', in_nodes={0}, aligned_to=set(), sources = set([0,1]), consensuses_count = 0),
+    Node(currentID=2, base='T', in_nodes={1}, aligned_to=set(), sources = set([1]), consensuses_count = 0),
+    Node(currentID=3, base='G', in_nodes={1,2}, aligned_to=set(), sources = set([0,1]), consensuses_count = 0),
+    Node(currentID=4, base='G', in_nodes={3}, aligned_to=set(), sources = set([0]), consensuses_count = 0),
+    Node(currentID=5, base='T', in_nodes={4}, aligned_to={6}, sources = set([0]), consensuses_count = 0),
+    Node(currentID=6, base='A', in_nodes={3}, aligned_to={5}, sources = set([1]), consensuses_count = 0),
+    Node(currentID=7, base='C', in_nodes={5}, aligned_to=set(), sources = set([0]), consensuses_count = 0)
     ]),
         ('empty',
      'all',
@@ -56,8 +56,8 @@ class MafReaderTests(unittest.TestCase):
          , 'a score=1.0'
          , 's source1 0 0 + 0 ---'
          , 's source2 0 0 + 0 ---'],
-     [Source(ID=0, name='source1', title='source1', active=True, nodes_IDs=[], consensusID=-1, weight=-1),
-      Source(ID=1, name='source2', title='source2', active=True, nodes_IDs=[], consensusID=-1, weight=-1)],
+     [Source(currentID=0, name='source1', title='source1', active=True, nodes_IDs=[], consensusID=-1, weight=-1),
+      Source(currentID=1, name='source2', title='source2', active=True, nodes_IDs=[], consensusID=-1, weight=-1)],
 
      []),
         ('single letter',
@@ -68,12 +68,12 @@ class MafReaderTests(unittest.TestCase):
              , 's source2 1 0 + 1 A'
              , 's source3 1 0 + 1 A'
              , 's source4 1 0 + 1 A'],
-         [Source(ID=0, name='source1', title='source1', active=True, nodes_IDs=[0], consensusID=-1, weight=-1),
-          Source(ID=1, name='source2', title='source2', active=True, nodes_IDs=[0], consensusID=-1, weight=-1),
-          Source(ID=2, name='source3', title='source3', active=True, nodes_IDs=[0], consensusID=-1, weight=-1),
-          Source(ID=3, name='source4', title='source4', active=True, nodes_IDs=[0], consensusID=-1, weight=-1)],
+         [Source(currentID=0, name='source1', title='source1', active=True, nodes_IDs=[0], consensusID=-1, weight=-1),
+          Source(currentID=1, name='source2', title='source2', active=True, nodes_IDs=[0], consensusID=-1, weight=-1),
+          Source(currentID=2, name='source3', title='source3', active=True, nodes_IDs=[0], consensusID=-1, weight=-1),
+          Source(currentID=3, name='source4', title='source4', active=True, nodes_IDs=[0], consensusID=-1, weight=-1)],
 
-         [Node(ID=0, base='A', in_nodes={}, aligned_to={}, sources_count=4, consensuses_count=0)]),
+         [Node(currentID=0, base='A', in_nodes={}, aligned_to={}, sources=set([0,1,2,3]), consensuses_count=0)]),
         ("not every block contains all sequences",
          "all",
          ["#maf version=1 scoring=roast.v3.3",
@@ -88,20 +88,20 @@ class MafReaderTests(unittest.TestCase):
           "a score=1",
           "s test.seq1 1 2 + 3 T-A-",
           "s test.seq2 1 3 + 4 GA-C"],
-         [Source(ID=0, name='test.seq0', title='test.seq0', active=True, nodes_IDs=[1, 2, 3], consensusID=-1, weight=-1),
-          Source(ID=1, name='test.seq1', title='test.seq1', active=True, nodes_IDs=[0, 4, 7], consensusID=-1, weight=-1),
-          Source(ID=2, name='test.seq2', title='test.seq2', active=True, nodes_IDs=[3, 5, 6, 8], consensusID=-1, weight=-1)
+         [Source(currentID=0, name='test.seq0', title='test.seq0', active=True, nodes_IDs=[1, 2, 3], consensusID=-1, weight=-1),
+          Source(currentID=1, name='test.seq1', title='test.seq1', active=True, nodes_IDs=[0, 4, 7], consensusID=-1, weight=-1),
+          Source(currentID=2, name='test.seq2', title='test.seq2', active=True, nodes_IDs=[3, 5, 6, 8], consensusID=-1, weight=-1)
           ],
 
-    [Node(ID=0, base='C', in_nodes={}, aligned_to={}, sources_count=1, consensuses_count=0),
-    Node(ID=1, base='T', in_nodes={}, aligned_to={}, sources_count=1, consensuses_count=0),
-    Node(ID=2, base='G', in_nodes={1},aligned_to={}, sources_count=1, consensuses_count=0),
-    Node(ID=3, base='T', in_nodes={2},aligned_to={}, sources_count=2, consensuses_count=0),
-    Node(ID=4, base='T', in_nodes={0},aligned_to={5},sources_count=1, consensuses_count=0),
-    Node(ID=5, base='G', in_nodes={3},aligned_to={4},sources_count=1, consensuses_count=0),
-    Node(ID=6, base='A', in_nodes={5},aligned_to={}, sources_count=1, consensuses_count=0),
-    Node(ID=7, base='A', in_nodes={4},aligned_to={}, sources_count=1, consensuses_count=0),
-    Node(ID=8, base='C', in_nodes={6},aligned_to={}, sources_count=1, consensuses_count=0)
+    [Node(currentID=0, base='C', in_nodes={}, aligned_to={}, sources=set([1]), consensuses_count=0),
+    Node(currentID=1, base='T', in_nodes={}, aligned_to={}, sources=set([0]), consensuses_count=0),
+    Node(currentID=2, base='G', in_nodes={1},aligned_to={}, sources=set([0]), consensuses_count=0),
+    Node(currentID=3, base='T', in_nodes={2},aligned_to={}, sources=set([0,2]), consensuses_count=0),
+    Node(currentID=4, base='T', in_nodes={0},aligned_to={5},sources=set([1]), consensuses_count=0),
+    Node(currentID=5, base='G', in_nodes={3},aligned_to={4},sources=set([2]), consensuses_count=0),
+    Node(currentID=6, base='A', in_nodes={5},aligned_to={}, sources=set([2]), consensuses_count=0),
+    Node(currentID=7, base='A', in_nodes={4},aligned_to={}, sources=set([1]), consensuses_count=0),
+    Node(currentID=8, base='C', in_nodes={6},aligned_to={}, sources=set([2]), consensuses_count=0)
           ]
          )
     )
