@@ -2,7 +2,6 @@ import re
 from POAGraph import POAGraph
 from Sequence import Consensus, Source
 from Node import Node
-import toolkit as t
 
 def parse_to_poagraph(file_path, output_dir):
     print('\tBuliding poagraph from ' + file_path)
@@ -89,11 +88,6 @@ def _read_nodes_from_po_lines(poagraph, po_lines, max_source_ID):
             update_aligned_nodes_sets(aligned_nodes_sets, i, aligned_to[0])
 
     update_nodes_with_aligned_nodes(aligned_nodes_sets)
-
-
-
-    # self._spread_aligned_nodes(nodes)
-    # return(nodes)
 
 
 def _spread_aligned_nodes(self, nodes):

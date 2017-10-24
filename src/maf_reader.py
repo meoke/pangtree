@@ -122,7 +122,7 @@ def _update_source_sequence_info(source_ID, node_ID, sources):
     sources[source_ID].add_node_ID(node_ID)
 
 
-def _pretty_numpy_nucletides_matrix_printer(self, numpy_matrix):
+def _pretty_numpy_nucletides_matrix_printer(numpy_matrix):
     for i in range(numpy_matrix.shape[1]):
         row = []
         for j in range(numpy_matrix.shape[0]):

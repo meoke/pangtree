@@ -1,72 +1,67 @@
-# pangenome
+# Multialignment processing tool for pangenomes
 
-## POA
-~/Repos/pangenome/bin/poa -read_msa $input -hb -po $output -hb ~/Repos/pangenome/bin/blosum80.mat -hbmin 0.06
+## Features
+* Conversion from MAF (Multiple Alignment Format) to PO (POAGraph representation file - check [See Lee, Grasso & Sharlow article](https://academic.oup.com/bioinformatics/article/18/3/452/236691/Multiple-sequence-alignment-using-partial-order) for details).
+* Conversion from MAF to FASTA.
+* Consensus generation from aligned sequences (MAF or PO input)
+* POA Graph visualization (MAF or PO input)
 
+## Dependencies
+* [BioPython](http://biopython.org/wiki/Download)
+
+## Running
+
+### Example
+python3 pangenome.py -f alignment.maf -c -iter -hbmin 0.9
+
+### Arguments description
+Currently, all features are provided by module *mln*. There are a few options for different features available
+
+usage: pangenome.py mln -h -f MAF_FILE [-m MERGE_BLOCKS] [-fasta] [-c]
+                        [-iter] [-hbmin HBMIN] [-min_comp MINCOMP] [-v] -data
+                        DATATYPE
+
+optional arguments:
+
+  -h, --help         show this help message and exit
+  
+  -f MAF_FILE        path to the MAF (Multiple Alignment Format) file.
+  
+  -m MERGE_BLOCKS    default behaviour is to merge all blocks, where possible; provide MERGE_BLOCKS if special way of merging the blocks is required; pass [idx1:idx2, idx3:idx4] to choose range of blocks to be merged; IDs begin from 1.
+  
+  -fasta             generate FASTA files
+  
+  -c                 generate consensus
+  
+  -iter              generate consensus iteratively
+  
+  -hbmin HBMIN       HBMIN value for POA heaviest bundling alogrithm, min 0,
+                     max 1
+                     
+  -min_comp MINCOMP  minimum compatibility between source and consensus to
+                     match them
+                     
+  -v                 generate visualization
+  
+  -data DATATYPE     ebola or mycoplasma
+ 
 ## Development
+TBA
 
-### Tests
-The framework Unittest is used here.
+## Tests
 
+### Dependencies
+* [Unittest](https://docs.python.org/3/library/unittest.html)
+* [DDT](https://github.com/txels/ddt)
+
+### Set up
 To setup unitests in PyCharm:
 Run -> Edit Configruations -> Add New Configruation ('+') -> 
 Target: Path
 Write path of the test file to run
 Setup Working Directory to .../pangenome/tests
 
+### Running
 To run unittests from command line:
 python3 -m unittest end_to_end_tests.py
 
-## Instalation
-
-#### BioPython
-[BioPython Download and Instalation](http://biopython.org/wiki/Download)
-
-#### DDT
-[Download and Instalation](https://github.com/txels/ddt)
-
-## Moduły programu:
-### Konwersja maf (Multiple Alignment Format) do pox
-
-#### Input
-maf file
-
-#### Output
-- master file - blocks desciption
-- pox files without consensus (if -c not specified) or pox files with consensus (if -c specified)
-- html file (if -v specified)
-
-The amount of pox files generated depends on -m option. It equals number of blocks produced by the converter which can be equal or less than the original. Some blocks can be merged by the converter. One can specify which blocks should be merged in the following way:
-Pass 'idx1:idx2,idx3,idx4:idx5' as -m argument to indicate range of blocks to merge or \'all\' to merge all blocks where possible. IDs begin from 1.
-
-#### Usage
-./pg.py -f [maf_file] -v
-python3 ./src/pg.py convert -f ./files/ebola.maf
-
-
-## poa software
-
-### Multialignment of fasta files 
-./poa -read_fasta [...]/POA_article_single_block.fna  -clustal [..]/POA_article_single_block2.aln blosum80.mat
-
-
-
-
-
-
-
-
-
-
-
-- wygenerować consensusy dla danego bloku przy użyciu programu poa, zaznaczyć je odpowiednim kolorem i powinno się pokreywac 
-z grupami sekwencji w tym uliniowieniu
-
-Aligning the unalignable: bacteriophage whole genome sequencing
- 
-- na ile dany consensus różni się od tej grupy, np. na ilu % pozycje się różnią
-
-
-Running Tests
-Required  packages: ddt:
-sudo apt-get install python3-ddt
