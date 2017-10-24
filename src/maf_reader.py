@@ -7,7 +7,6 @@ import nucleotides as nucleotides
 from POAGraph import POAGraph
 from Sequence import Source
 from Node import Node
-
 def parse_to_poagraphs(file_path, merge_option, multialignment_name, output_dir):
     maf_blocks = [*AlignIO.parse(file_path, "maf")]
     block_to_merge_ranges = _prepare_merge_ranges(merge_option, len(maf_blocks))
@@ -20,6 +19,10 @@ def parse_to_poagraphs(file_path, merge_option, multialignment_name, output_dir)
                             path = toolkit.create_child_dir(output_dir, multialignment_name + '_' + str(i)),
                             version = 'NOVEMBER')
         poagraph = _process_blocks_for_poagraph(poagraph, current_range_blocks)
+        # TODO temp solution
+        for source in poagraph.sources:
+            for node_ID in source.nodes_IDs:
+                poagraph.nodes[node_ID].sources.add(source.ID)
         poagraphs.append(poagraph)
     return poagraphs
 

@@ -13,6 +13,9 @@ def parse_to_poagraph(file_path, output_dir):
                      path = output_dir)
         _read_sequence_info_from_po_lines(p, po_lines)
         _read_nodes_from_po_lines(p, po_lines, len(p.sources)-1)
+        for source in p.sources:
+            for node_ID in source.nodes_IDs:
+                p.nodes[node_ID].sources.add(source.ID)
     return (p)
 
 def _read_value(line):

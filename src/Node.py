@@ -1,11 +1,12 @@
 class Node(object):
-    def __init__(self, ID, base, in_nodes=None, aligned_to=None, sources_count = 0, consensuses_count = 0):
+    def __init__(self, ID, base, in_nodes=None, aligned_to=None, sources_count=0, consensuses_count=0, sources=None):
         self.ID = ID
         self.base = base
         self.in_nodes = in_nodes if in_nodes else set()
         self.aligned_to = aligned_to if aligned_to else set()
         self.sources_count = sources_count
         self.consensuses_count = consensuses_count
+        self.sources = sources if sources else set()
 
     def __eq__(self, other):
         return (self.ID == other.ID
