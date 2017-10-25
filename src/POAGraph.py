@@ -82,16 +82,17 @@ class POAGraph(object):
                 else:
                     to_return =""
                 return to_return
-
-            def get_sources_info(node_ID):
-                return [self.sources[src_ID].currentID for src_ID in self.nodes[node_ID].sources]
+            #
+            # def get_sources_info(node_ID):
+            #     r = [self.sources[src_ID].currentID for src_ID in self.nodes[node_ID].sources if self.sources[src_ID].currentID is not -1]
+            #     return r
 
             def get_node_info(i, node, nodes_count):
                 print("\r\t\tNode " + str(i + 1) + '/' + str(nodes_count), end='')
                 l_to_return = ['L' + str(self.nodes[in_node_ID].currentID) for in_node_ID in node.in_nodes if in_node_ID in active_nodes_IDs]
                 to_return = "".join([node.base, ":",
                                 "".join(l_to_return),
-                                "".join(['S' + str(self.sources[src_ID].currentID) for src_ID in get_sources_info(i)]),
+                                "".join(['S' + str(self.sources[src_ID].currentID) for src_ID in node.sources if self.sources[src_ID].active]),
                                 get_aligned_nodes_info(node)])
 
                 return to_return
@@ -164,12 +165,15 @@ class POAGraph(object):
 
         deactivated_nodes = 0
         node_currentID_to_global_ID = {}
+        current_node_ID = 0
         for node_global_ID, node in enumerate(self.nodes):
             if len(node.sources) == 0:
                 self.nodes[node_global_ID].currentID = -1
                 deactivated_nodes += 1
             else:
-                self.nodes[node_global_ID].currentID = node.currentID - deactivated_nodes
+                #self.nodes[node_global_ID].currentID = node.currentID - deactivated_nodes
+                self.nodes[node_global_ID].currentID = current_node_ID
+                current_node_ID += 1
             node_currentID_to_global_ID[self.nodes[node_global_ID].currentID] = node_global_ID
         return (source_current_ID_to_global_ID, node_currentID_to_global_ID)
 
