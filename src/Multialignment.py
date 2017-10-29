@@ -112,7 +112,6 @@ class Multialignment(object):
                                                                                 min_comp=0,
                                                                                 consensuses=new_poagraph.consensuses)
             print("Deactivate not compatible")
-            # sources_ID_map, nodes_ID_map = new_poagraph.deactivate_different_then(maximally_consensus_compatible_sources_IDs)
             sources_ID_map, nodes_ID_map = poagraph.deactivate_different_then(maximally_consensus_compatible_sources_IDs)
 
 
@@ -175,7 +174,6 @@ class Multialignment(object):
         return [sourceID for sourceID, compatibility in enumerate(compatibilities) if
                 abs(max_compatibility-compatibility) <= mean_compatibility*min_comp and
                 is_best_compatibility_for_source(sourceID, compatibility)]
-                # max_compatibility-compatibility <= min_comp and sources[sourceID].active == True]
 
     def generate_visualization(self, consensuses_comparison=False, graph_visualization=False):
         print('Generate visualization...')

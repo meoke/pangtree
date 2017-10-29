@@ -82,10 +82,6 @@ class POAGraph(object):
                 else:
                     to_return =""
                 return to_return
-            #
-            # def get_sources_info(node_ID):
-            #     r = [self.sources[src_ID].currentID for src_ID in self.nodes[node_ID].sources if self.sources[src_ID].currentID is not -1]
-            #     return r
 
             def get_node_info(i, node, nodes_count):
                 print("\r\t\tNode " + str(i + 1) + '/' + str(nodes_count), end='')
@@ -171,7 +167,6 @@ class POAGraph(object):
                 self.nodes[node_global_ID].currentID = -1
                 deactivated_nodes += 1
             else:
-                #self.nodes[node_global_ID].currentID = node.currentID - deactivated_nodes
                 self.nodes[node_global_ID].currentID = current_node_ID
                 current_node_ID += 1
             node_currentID_to_global_ID[self.nodes[node_global_ID].currentID] = node_global_ID
