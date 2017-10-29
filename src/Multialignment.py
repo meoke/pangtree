@@ -56,20 +56,25 @@ class Multialignment(object):
 
 
     def _run_single_consensus_generation(self, consensus_output_dir, poagraph, hbmin, consensus_name = "consensus"):
+        print("PO generation")
         poagraph_as_po = poagraph.generate_po()
 
         file_name = t.join_path(consensus_output_dir, consensus_name)
         hb_file_name = t.change_file_extension(file_name,  '.hb')
         with open(file_name, 'w') as output_po_file:
             output_po_file.write(poagraph_as_po)
+        print("Run poa")
         run(['../bin/poa', '-read_msa', file_name, '-hb', '-po', hb_file_name, '../bin/blosum80.mat', '-hbmin',
              str(hbmin)])
 
+        print("Parse po to poagraph")
         new_poagraph = po_reader.parse_to_poagraph(hb_file_name, poagraph.path)
 
+        print("Check if consensus found")
         if all([src.consensusID == -1 for src in new_poagraph.sources]):
             raise NoConsensusFound()
 
+        print("Calculate compatibility")
         new_poagraph.calculate_compatibility_to_consensuses()
         return new_poagraph
 
@@ -79,19 +84,44 @@ class Multialignment(object):
 
         iteration_id = 0
         while not all_sequences_have_consensus_assigned(poagraph):
+            min_comp *= 2
             try:
-                new_poagraph = self._run_single_consensus_generation(consensus_output_dir, poagraph, hbmin, "consensus_" + str(iteration_id))
+                print("Iteration ", str(iteration_id))
+                new_poagraph = self._run_single_consensus_generation(consensus_output_dir=consensus_output_dir,
+                                                                     poagraph=poagraph,
+                                                                     hbmin=hbmin,
+                                                                     consensus_name="consensus_" + str(iteration_id))
             except NoConsensusFound:
                  print("NO MORE CONSENSUSES FOUND")
+                 max_compatibility = 0
+                 best_consensus = -1
+                 for i, source in enumerate(poagraph.sources):
+                     if source.consensusID == -1:
+                         for cons in poagraph.consensuses:
+                             if cons.compatibility_to_sources[i] > max_compatibility:
+                                 max_compatibility = cons.compatibility_to_sources[i]
+                                 best_consensus = cons.currentID
+                         poagraph.sources[i].consensusID = best_consensus
+                         max_compatibility = 0
+                         best_consensus = -1
                  break
 
-            maximally_consensus_compatible_sources_IDs = self._get_compatible(new_poagraph.sources,
-                                                                                new_poagraph.consensuses[0],
-                                                                                0)
-            sources_ID_map, nodes_ID_map = new_poagraph.deactivate_different_then(maximally_consensus_compatible_sources_IDs)
+            print("Get compatible for new consensus")
+            maximally_consensus_compatible_sources_IDs = self._get_compatible(sources=new_poagraph.sources,
+                                                                                consensus=new_poagraph.consensuses[0],
+                                                                                min_comp=0,
+                                                                                consensuses=new_poagraph.consensuses)
+            print("Deactivate not compatible")
+            sources_ID_map, nodes_ID_map = poagraph.deactivate_different_then(maximally_consensus_compatible_sources_IDs)
+
 
             try:
-                narrowed_poagraph = self._run_single_consensus_generation(consensus_output_dir, new_poagraph, "consensus_narrowed_" + str(iteration_id))
+                print("Generate consensus for narrowed graph")
+                narrowed_poagraph = self._run_single_consensus_generation(consensus_output_dir=consensus_output_dir,
+                                                                          # poagraph=new_poagraph,
+                                                                          poagraph=poagraph,
+                                                                          hbmin=hbmin,
+                                                                          consensus_name="consensus_narrowed_" + str(iteration_id))
             except NoConsensusFound:
                 print("NO CONSENSUS FOR NARROWED POAGRAPH FOUND")
                 break
@@ -100,31 +130,50 @@ class Multialignment(object):
             enhanced_consenssus_nodes_IDs = [nodes_ID_map[node_temp_ID] for node_temp_ID in enhanced_consensus.nodes_IDs]
 
             new_consensus_ID = len(poagraph.consensuses)
-            poagraph.add_consensus(Consensus(ID=new_consensus_ID,
-                                                 name=enhanced_consensus.name,
+            poagraph.add_consensus(Consensus(currentID=new_consensus_ID,
+                                                 name="CONSENS"+str(new_consensus_ID),
                                                  title=enhanced_consensus.title,
                                                  nodes_IDs=enhanced_consenssus_nodes_IDs))
+            print("Calculate new compatibility to consensuses")
             poagraph.calculate_compatibility_to_consensuses()
 
+            print("Get compatible to new consensuses")
             good_consensus_compatible_sources_IDs = self._get_compatible(poagraph.sources,
                                                                             poagraph.consensuses[new_consensus_ID],
-                                                                            min_comp)
+                                                                            min_comp,
+                                                                            poagraph.consensuses)
+            if not good_consensus_compatible_sources_IDs:
+                print("Nothing compatible!!!")
+                break
+
+            print("Assign consensus to compatible")
             for source_ID, source in enumerate(poagraph.sources):
                 if source_ID in good_consensus_compatible_sources_IDs:
                     poagraph.sources[source_ID].consensusID = new_consensus_ID
 
-
+            print("Activate sources with consensus unassigned")
             poagraph.activate_sources_with_consensus_unassigned()
             iteration_id += 1
 
 
         return poagraph
 
-    def _get_compatible(self, sources, consensus, min_comp):
+    def _get_compatible(self, sources, consensus, min_comp, consensuses):
+        def mean(numbers):
+            return float(sum(numbers)) / max(len(numbers), 1)
+
+        def is_best_compatibility_for_source(sourceID, current_compatibility):
+            for consensus in consensuses:
+                if consensus.compatibility_to_sources[sourceID] > current_compatibility:
+                    return False
+            return True
+
         compatibilities = consensus.compatibility_to_sources
         max_compatibility = max(compatibilities)
+        mean_compatibility = mean(compatibilities)
         return [sourceID for sourceID, compatibility in enumerate(compatibilities) if
-                max_compatibility-compatibility <= min_comp and sources[sourceID].active == True]
+                abs(max_compatibility-compatibility) <= mean_compatibility*min_comp and
+                is_best_compatibility_for_source(sourceID, compatibility)]
 
     def generate_visualization(self, consensuses_comparison=False, graph_visualization=False):
         print('Generate visualization...')

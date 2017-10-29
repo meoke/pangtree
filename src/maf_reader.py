@@ -76,10 +76,11 @@ def _process_blocks_for_poagraph(poagraph, blocks):
                  continue
 
             if nucl not in column_nodes:
-                 column_nodes[nucl] = Node(ID = nodes_count, base=nucleotides.decode(nucl))
+                 column_nodes[nucl] = Node(currentID = nodes_count, base=nucleotides.decode(nucl), sources=set([row_ID]))
                  nodes_count += 1
-            node_id = column_nodes[nucl].ID
-            column_nodes[nucl].sources_count += 1
+            else:
+                column_nodes[nucl].sources.add(row_ID)
+            node_id = column_nodes[nucl].currentID
 
             if source_to_its_last_node_ID[row_ID] != -1:
                  column_nodes[nucl].in_nodes.update([source_to_its_last_node_ID[row_ID]])
@@ -89,7 +90,7 @@ def _process_blocks_for_poagraph(poagraph, blocks):
             for key, node in column_nodes.items():
                 other_nodes = column_nodes.copy()
                 del other_nodes[key]
-                node.aligned_to.update([node.ID for node in other_nodes.values()])
+                node.aligned_to.update([node.currentID for node in other_nodes.values()])
                 poagraph.add_node(node)
 
             progress = round(100* (column_ID*sequences.shape[1]+row_ID+1) / all_nucles_count, 2)
@@ -105,16 +106,16 @@ def _extract_sources_info(blocks):
     for block in blocks:
         for line in block:
             if line.name not in sources_name_to_ID:
-                new_source = Source(ID = len(sources), name = line.name, title = line.name)
+                new_source = Source(currentID = len(sources), name = line.name, title = line.name)
                 sources.append(new_source)
-                sources_name_to_ID[new_source.name] = new_source.ID
+                sources_name_to_ID[new_source.name] = new_source.currentID
     return (sources, sources_name_to_ID)
 
 
 def _get_all_blocks_width(blocks):
     width = 0
     for block in blocks:
-        width += len(block._records[0].seq) #all records have the same length
+        width += len(block._records[0].seq) #all records have the same length beacuse they are aligned
     return width
 
 

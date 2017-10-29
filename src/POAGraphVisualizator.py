@@ -77,21 +77,21 @@ class POAGraphVisualizator(object):
     def _get_mean_sources_per_node(self):
         def mean(numbers):
             return float(sum(numbers)) / max(len(numbers), 1)
-        mean_sources_per_node = mean([node.sources_count for node in self.poagraph.nodes])
+        mean_sources_per_node = mean([len(node.sources) for node in self.poagraph.nodes])
         return round(mean_sources_per_node, 2)
 
     def _get_source_json(self, source):
         if self.data_type is 'ebola':
             source_name = eb.extract_ebola_code_part(source.name, 0)
-            source_alt_name = eb.extract_ebola_code_part(source.title, 1)
-            source_group_name = eb.get_ebola_group_name(source_alt_name)
+            source_alt_name = eb.get_official_ebola_name(eb.extract_ebola_code_part(source.title, 1))
+            source_group_name = eb.get_ebola_group_name(eb.extract_ebola_code_part(source.title, 1))
         else:
             source_name = source.name
             source_alt_name = '-'
             source_group_name = '-'
 
         return """{{ id: {0},\tname:'{1}',\ttitle: '{2}',\t group_name: '{3}',\tbundle_ID: {4},\tweight: {5},\tlength: {6}}}""".format(
-                                                    source.ID,
+                                                    source.currentID,
                                                     source_name,
                                                     source_alt_name,
                                                     source_group_name,
@@ -101,7 +101,7 @@ class POAGraphVisualizator(object):
 
     def _get_consensus_json(self, consensus):
         return """{{ id: {0},\tname:'{1}',\ttitle: '{2}',\tsources_compatibility: {3},\tlength: {4} }}""".format\
-                                                (consensus.ID,
+                                                (consensus.currentID,
                                                  consensus.name,
                                                  consensus.title,
                                                  consensus.compatibility_to_sources,

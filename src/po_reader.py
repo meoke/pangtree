@@ -13,7 +13,8 @@ def parse_to_poagraph(file_path, output_dir):
                      path = output_dir)
         _read_sequence_info_from_po_lines(p, po_lines)
         _read_nodes_from_po_lines(p, po_lines, len(p.sources)-1)
-    return (p)
+    return p
+
 
 def _read_value(line):
     return line.split('=')[1].strip()
@@ -30,14 +31,14 @@ def _read_sequence_info_from_po_lines(poagraph, po_lines):
 
         if 'CONSENS' in sequence_name:
             consensus_ID += 1
-            consensus = Consensus(ID=consensus_ID, name=sequence_name, title=sequence_name)
+            consensus = Consensus(currentID=consensus_ID, name=sequence_name, title=sequence_name)
             line = next(lines_iterator)
             consensus_info = _read_value(line).split(' ')
             consensus.title = " ".join(consensus_info[4:])
             poagraph.add_consensus(consensus)
         else:
             source_ID += 1
-            source = Source(ID=source_ID, name=sequence_name, title=sequence_name)
+            source = Source(currentID=source_ID, name=sequence_name, title=sequence_name)
             line = next(lines_iterator)
             source_info = _read_value(line).split(' ')
             source.weight = int(source_info[2])
@@ -72,13 +73,13 @@ def _read_nodes_from_po_lines(poagraph, po_lines, max_source_ID):
         base = line[0]
         in_nodes = set(_read_node_parameters(line, 'L'))
         sequences_IDs = _read_node_parameters(line, 'S')
-        sources_count = len([sequence_ID for sequence_ID in sequences_IDs if sequence_ID <= max_source_ID])
-        consensuses_count = len(sequences_IDs) - sources_count
+        sources = set([sequence_ID for sequence_ID in sequences_IDs if sequence_ID <= max_source_ID])
+        consensuses_count = len(sequences_IDs) - len(sources)
         poagraph.add_node(
-            Node(ID=i,
+            Node(currentID=i,
             base=base,
             in_nodes=in_nodes,
-            sources_count=sources_count,
+            sources = sources,
             consensuses_count=consensuses_count))
 
         assign_this_node_to_its_sequences(sequences_IDs, i)
@@ -89,8 +90,7 @@ def _read_nodes_from_po_lines(poagraph, po_lines, max_source_ID):
 
     update_nodes_with_aligned_nodes(aligned_nodes_sets)
 
-
-def _spread_aligned_nodes(self, nodes):
+def _spread_aligned_nodes(nodes):
     column_alignment_cycle = set()
     for n in nodes.values():
         if not n.alignedTo:

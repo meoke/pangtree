@@ -1,7 +1,8 @@
 from Multialignment import Multialignment
 
 
-def convert_maf_to_po(maf_file_name,
+def convert_maf_to_po(file_name,
+                      file_format,
                       merge_blocks_option,
                       visualize_option = False,
                       consensus_option = False,
@@ -12,7 +13,10 @@ def convert_maf_to_po(maf_file_name,
                       data_type='ebola'):
 
     m = Multialignment(data_type)
-    m.build_multialignment_from_maf(maf_file_name, merge_blocks_option)
+    if file_format == 'maf':
+        m.build_multialignment_from_maf(file_name, merge_blocks_option)
+    elif file_format == 'po':
+        m.build_multialignment_from_po(file_name)
 
     if consensus_option:
         m.generate_consensus(consensus_iterative, hbmin, min_comp)
