@@ -3,8 +3,14 @@
 ## Features
 * Conversion from MAF (Multiple Alignment Format) to PO (POAGraph representation file - check [See Lee, Grasso & Sharlow article](https://academic.oup.com/bioinformatics/article/18/3/452/236691/Multiple-sequence-alignment-using-partial-order) for details).
 * Conversion from MAF to FASTA.
-* Consensus generation from aligned sequences (MAF or PO input)
+* Consensus generation from aligned sequences (MAF or PO input) - in a single iteration
+* Consensus generation from aligned sequences (MAF or PO input) - iteratively
 * POA Graph visualization (MAF or PO input)
+* Handling Ebola sequences and group names as provided by [Ebola Portal](https://genome.ucsc.edu/ebolaPortal/)
+
+## Work in progress
+* Advanced iteartive consensus generation (tree-based)
+* Handling Mycoplasma sequences names
 
 ## Dependencies
 * [BioPython](http://biopython.org/wiki/Download)
@@ -12,7 +18,7 @@
 ## Running
 
 ### Example
-python3 pangenome.py -f alignment.maf -c -iter -hbmin 0.9
+python3 src/pangenome.py -f examples/entire_ebola/ebola_ncbi.maf -format maf -c -iter -hbmin 0.9 -data ebola
 
 ### Arguments description
 Currently, all features are provided by module *mln*. There are a few options for different features available
@@ -64,6 +70,6 @@ Write path of the test file to run
 Setup Working Directory to .../pangenome/tests
 
 ### Running
-To run unittests from command line:
+To run unittests (e.g. end_to_end_tests.py file) from command line:
 python3 -m unittest end_to_end_tests.py
 
