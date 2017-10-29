@@ -83,8 +83,8 @@ class POAGraphVisualizator(object):
     def _get_source_json(self, source):
         if self.data_type is 'ebola':
             source_name = eb.extract_ebola_code_part(source.name, 0)
-            source_alt_name = eb.extract_ebola_code_part(source.title, 1)
-            source_group_name = eb.get_ebola_group_name(source_alt_name)
+            source_alt_name = eb.get_official_ebola_name(eb.extract_ebola_code_part(source.title, 1))
+            source_group_name = eb.get_ebola_group_name(eb.extract_ebola_code_part(source.title, 1))
         else:
             source_name = source.name
             source_alt_name = '-'
