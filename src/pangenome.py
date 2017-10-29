@@ -5,6 +5,9 @@ import os
 from re import fullmatch
 
 def convert(args):
+    if args.format != 'maf' and args.format != 'po':
+        parser.error('FILE FORMAT must be \'maf\' or \'po\'')
+
     if args.m and not fullmatch('\[\d+\:\d+\]', str(args.m)):
         parser.error('Wrong formatting for MERGE_BLOCKS')
 
@@ -27,7 +30,15 @@ def convert(args):
         parser.error('METAVAR must be \'ebola\' or \'mycoplasma\'')
 
     file_abs_path = os.path.abspath(args.f)
-    converter.convert_maf_to_po(file_abs_path, args.v, args.m, args.c, args.hbmin, args.fasta)
+    converter.convert_maf_to_po(file_abs_path,
+                                args.format,
+                                args.m,
+                                args.v,
+                                args.c,
+                                args.hbmin,
+                                args.min_comp,
+                                args.fasta,
+                                args.data)
 
 
 parser = argparse.ArgumentParser(description='PAN-GENOME tools')
@@ -37,10 +48,15 @@ subparsers.required = True
 
 parser_converter = subparsers.add_parser('mln', help='Processing multialignment')
 parser_converter.add_argument('-f',
-                              metavar='MAF_FILE',
+                              metavar='FILE',
                               type=str,
                               required=True,
-                              help='path to the MAF (Multiple Alignment Format) file')
+                              help='path to the MAF (Multiple Alignment Format) file or PO (POAGraph) file')
+parser_converter.add_argument('-format',
+                              metavar='FILE FORMAT',
+                              type=str,
+                              required=True,
+                              help='maf or po')
 parser_converter.add_argument('-m',
                               metavar='MERGE_BLOCKS',
                               required=False,
@@ -56,15 +72,15 @@ parser_converter.add_argument('-c',
 parser_converter.add_argument('-iter',
                               action='store_true',
                               required=False,
-                              help='generate consensus iteratively')
+                              help='if c: generate consensus iteratively')
 parser_converter.add_argument('-hbmin',
                               metavar='HBMIN',
                               required=False,
-                              help='HBMIN value for POA heaviest bundling alogrithm, min 0, max 1')
+                              help='if c: HBMIN value for POA heaviest bundling alogrithm, min 0, max 1')
 parser_converter.add_argument('-min_comp',
                               metavar='MINCOMP',
                               required=False,
-                              help='minimum compatibility between source and consensus to match them')
+                              help='if c and iter: minimum compatibility between source and consensus to match them')
 parser_converter.add_argument('-v',
                               action='store_true',
                               required=False,

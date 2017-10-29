@@ -17,15 +17,17 @@ python3 pangenome.py -f alignment.maf -c -iter -hbmin 0.9
 ### Arguments description
 Currently, all features are provided by module *mln*. There are a few options for different features available
 
-usage: pangenome.py mln -h -f MAF_FILE [-m MERGE_BLOCKS] [-fasta] [-c]
-                        [-iter] [-hbmin HBMIN] [-min_comp MINCOMP] [-v] -data
-                        DATATYPE
+usage: pangenome.py mln [-h] -f FILE -format FILE FORMAT [-m MERGE_BLOCKS]
+                        [-fasta] [-c] [-iter] [-hbmin HBMIN]
+                        [-min_comp MINCOMP] [-v] -data DATATYPE
 
 optional arguments:
 
   -h, --help         show this help message and exit
   
-  -f MAF_FILE        path to the MAF (Multiple Alignment Format) file.
+  -f FILE            path to the MAF (Multiple Alignment Format) file or PO (POAGraph) file
+  
+  -format FILE FORMAT  maf or po
   
   -m MERGE_BLOCKS    default behaviour is to merge all blocks, where possible; provide MERGE_BLOCKS if special way of merging the blocks is required; pass [idx1:idx2, idx3:idx4] to choose range of blocks to be merged; IDs begin from 1.
   
@@ -33,12 +35,12 @@ optional arguments:
   
   -c                 generate consensus
   
-  -iter              generate consensus iteratively
+  -iter              if c: generate consensus iteratively
   
-  -hbmin HBMIN       HBMIN value for POA heaviest bundling alogrithm, min 0,
+  -hbmin HBMIN       if c: HBMIN value for POA heaviest bundling alogrithm, min 0,
                      max 1
                      
-  -min_comp MINCOMP  minimum compatibility between source and consensus to
+  -min_comp MINCOMP  if c and iter: minimum compatibility between source and consensus to
                      match them
                      
   -v                 generate visualization
