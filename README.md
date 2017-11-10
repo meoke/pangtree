@@ -33,15 +33,16 @@ optional arguments:
   
   -fasta             generate FASTA files
   
-  -c                 generate consensus
+  -c                 if consensus must be generated, decide what algorithm should be used (0 - single poa iteration, 1 - iteratively run poa, 2 - tree based algorithm)
   
-  -iter              if c: generate consensus iteratively
-  
-  -hbmin HBMIN       if c: HBMIN value for POA heaviest bundling alogrithm, min 0,
-                     max 1
+  -hbmin HBMIN       if c: HBMIN value for POA heaviest bundling alogrithm, float values from range [0,1]
                      
-  -min_comp MINCOMP  if c and iter: minimum compatibility between source and consensus to
-                     match them
+  -min_comp MINCOMP  if c0 or c1: minimum compatibility between source and consensus to
+                     match them 
+  
+  -r RANGE           if c2: range of compitibilities where the biggest change will be searched
+  
+  -t TRESHOLDS       if c2: series of tresholds to be used on tree levels
                      
   -v                 generate visualization
   

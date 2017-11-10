@@ -41,18 +41,20 @@ class Multialignment(object):
         self.poagraphs = [po_reader.parse_to_poagraph(file_path = po_file_name,
                                                         output_dir = self.output_dir)]
 
-
-    def generate_consensus(self, consensus_iterative, hbmin, min_comp):
+    def generate_consensus(self, option, hbmin, min_comp, comp_range, tresholds):
         for i, p in enumerate(self.poagraphs):
             consensus_output_dir = t.create_child_dir(p.path, "consensus")
-            if consensus_iterative:
-                print('Generate consensuses (hbmin='+ str(hbmin) +', min_comp=' + str(min_comp) + ') iteratively...')
-                self._run_iterative_consensus_generation(consensus_output_dir, p, hbmin, min_comp)
-            else:
-                print('Generate consensuses (hbmin='+ str(hbmin) +') in one iteration...')
+            if option is 0:
+                print('Generate consensuses (hbmin=', str(hbmin) + ') in one iteration...')
                 new_poagraph = self._run_single_consensus_generation(consensus_output_dir, p, hbmin)
                 new_poagraph.path = p.path
                 self.poagraphs[i] = new_poagraph
+            elif option is 1:
+                print('Generate consensuses (hbmin=', str(hbmin), ', min_comp=', str(min_comp), ') iteratively...')
+                self._run_iterative_consensus_generation(consensus_output_dir, p, hbmin, min_comp)
+            elif option is 2:
+                print('Generate tree based consensus (hbmin=', str(hbmin), ', min_comp=', str(min_comp), ', range=', comp_range, ', tresholds=', tresholds)
+                self._run_tree_consensus_generation(consensus_output_dir, p, hbmin, min_comp, comp_range, tresholds)
 
 
     def _run_single_consensus_generation(self, consensus_output_dir, poagraph, hbmin, consensus_name = "consensus"):
@@ -157,6 +159,9 @@ class Multialignment(object):
 
 
         return poagraph
+
+    def _run_tree_consensus_generation(consensus_output_dir, p, hbmin, min_comp, comp_range, tresholds):
+        print("Tree consensus...")
 
     def _get_compatible(self, sources, consensus, min_comp, consensuses):
         def mean(numbers):

@@ -6,9 +6,10 @@ def convert_maf_to_po(file_name,
                       merge_blocks_option,
                       visualize_option = False,
                       consensus_option = False,
-                        consensus_iterative = False,
                         hbmin = 0.9,
                         min_comp = 0.1,
+                        range='[0.9,1]',
+                        tresholds='[1,0.9,0.8,0.7]',
                       fasta_option = False,
                       data_type='ebola'):
 
@@ -19,7 +20,11 @@ def convert_maf_to_po(file_name,
         m.build_multialignment_from_po(file_name)
 
     if consensus_option:
-        m.generate_consensus(consensus_iterative, hbmin, min_comp)
+        m.generate_consensus(option=consensus_option,
+                             hbmin=hbmin,
+                             min_comp=min_comp,
+                             comp_range=range,
+                             tresholds=tresholds)
 
     if visualize_option:
         m.generate_visulization()

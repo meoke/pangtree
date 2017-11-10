@@ -11,8 +11,14 @@ def convert(args):
     if args.m and not fullmatch('\[\d+\:\d+\]', str(args.m)):
         parser.error('Wrong formatting for MERGE_BLOCKS')
 
-    if (args.iter or args.hbmin or args.min_comp) and not args.c:
+    if (args.iter or args.hbmin or args.min_comp or args.r or args.t) and not args.c:
         parser.error("Options -iter, -hbmin, -min-comp requires -c.")
+
+    if args.r and not fullmatch('\[\d+\,\d+\]', str(args.r)):
+        parser.error('Wrong formatting for RANGE')
+
+    if args.t and not fullmatch('\[\d+(\,\d+)?\]', str(args.r)):
+        parser.error('Wrong formatting for TRESHOLDS')
 
     try:
         if args.hbmin:
@@ -35,6 +41,8 @@ def convert(args):
                                 args.m,
                                 args.v,
                                 args.c,
+                                args.r,
+                                args.t,
                                 args.hbmin,
                                 args.min_comp,
                                 args.fasta,
@@ -66,13 +74,10 @@ parser_converter.add_argument('-fasta',
                               required=False,
                               help='generate FASTA files')
 parser_converter.add_argument('-c',
-                              action = 'store_true',
+                              metavar='CONSENSUS_OPTION',
                               required = False,
-                              help='generate consensus')
-parser_converter.add_argument('-iter',
-                              action='store_true',
-                              required=False,
-                              help='if c: generate consensus iteratively')
+                              type=int,
+                              help='consensus generation algorithm')
 parser_converter.add_argument('-hbmin',
                               metavar='HBMIN',
                               required=False,
@@ -81,6 +86,14 @@ parser_converter.add_argument('-min_comp',
                               metavar='MINCOMP',
                               required=False,
                               help='if c and iter: minimum compatibility between source and consensus to match them')
+parser_converter.add_argument('-r',
+                              type=str,
+                              required=False,
+                              help='range [v1,v2] of compatibilities where the biggest change will be searched, format (v1, v2 - floats): [v1,v2]')
+parser_converter.add_argument('-t',
+                              type=str,
+                              required=False,
+                              help='series of tresholds t1, t2, t3... to be used on tree levels, format (t1, t2... - floats): [t1, t2, t3,...]')
 parser_converter.add_argument('-v',
                               action='store_true',
                               required=False,
