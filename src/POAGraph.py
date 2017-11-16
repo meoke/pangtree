@@ -45,8 +45,15 @@ class POAGraph(object):
 
     def add_consensus(self, consensus):
         self.consensuses.append(consensus)
+        #TODO to chyba jest źle i niepotrzebne...
         for node in self.nodes:
             node.consensuses_count += 1
+
+    def remove_last_consensus(self):
+        self.consensuses.pop()
+        # TODO to chyba jest źle i niepotrzebne...
+        for node in self.nodes:
+            node.consensuses_count -= 1
 
     def generate_po(self):
         def generate_introductory_data(active_sources_IDs, active_nodes_IDs):
@@ -106,15 +113,126 @@ class POAGraph(object):
 
         return '\n'.join(po_lines)
 
+    def generate_partial_po(self, sourcesIDs_to_use):
+        def generate_introductory_data(nodes_IDs):
+            nodes_count = len(nodes_IDs)
+            sources_count = len(sourcesIDs_to_use)
 
-    def calculate_compatibility_to_consensuses(self):
+            return ['VERSION=' + self.version,
+                    'NAME=' + self.name,
+                    'TITLE=' + self.title,
+                    'LENGTH=' + str(nodes_count),
+                    'SOURCECOUNT=' + str(sources_count)]
+
+        def generate_source_sequences_data(new_to_original_nodes_IDs):
+            def get_source_info(source):
+                return '\n'.join(['SOURCENAME=' + source.name,
+                                  ' '.join(['SOURCEINFO=', str(len(source.nodes_IDs)),
+                                            str(min(new_to_original_nodes_IDs.keys())),
+                                            str(source.weight),
+                                            str(source.consensusID),
+                                            str(source.title)])
+                                  ])
+            self._calc_partial_sources_weights(sourcesIDs_to_use, new_to_original_nodes_IDs)
+            return [get_source_info(self.sources[src_ID]) for src_ID in sourcesIDs_to_use]
+
+        def generate_nodes_data(new_to_original_nodes_IDs, original_to_new_nodes_IDs):
+            def get_aligned_nodes_info(node):
+                sorted_aligned_nodes = sorted([original_to_new_nodes_IDs[self.nodes[aligned_node_ID].currentID]
+                                               for aligned_node_ID in node.aligned_to if self.nodes[aligned_node_ID].currentID in original_to_new_nodes_IDs.keys()])
+                if sorted_aligned_nodes:
+                    if original_to_new_nodes_IDs[node.currentID] > sorted_aligned_nodes[-1]:
+                        to_return = "A" + str(sorted_aligned_nodes[0])
+                        return to_return
+                    to_return = "A" + str(next(node_id for node_id in sorted_aligned_nodes if node_id > original_to_new_nodes_IDs[node.currentID]))
+                else:
+                    to_return =""
+                return to_return
+
+            def get_node_info(node, nodes_count, original_to_new_sources_IDs):
+                print("\r\t\tNode " + str(original_to_new_nodes_IDs[node.currentID] + 1) + '/' + str(nodes_count), end='')
+                l_to_return = ['L' + str(original_to_new_nodes_IDs[in_node_ID]) for in_node_ID in node.in_nodes if in_node_ID in original_to_new_nodes_IDs.keys()]
+                to_return = "".join([node.base, ":",
+                                "".join(l_to_return),
+                                "".join(['S' + str(original_to_new_sources_IDs[src_ID]) for src_ID in node.sources if src_ID in sourcesIDs_to_use]),
+                                get_aligned_nodes_info(node)])
+
+                return to_return
+
+            return [get_node_info(self.nodes[org_node_ID], len(original_to_new_nodes_IDs), original_to_new_sources_IDs) for org_node_ID, new_node_ID in sorted(original_to_new_nodes_IDs.items())]
+
+        new_to_original_nodes_IDs = {}
+        original_to_new_nodes_IDs = {}
+        new_nodes_count = 0
+        for i, node in enumerate(self.nodes):
+            if any([srcID in sourcesIDs_to_use for srcID in node.sources]):
+                new_to_original_nodes_IDs[new_nodes_count] = node.currentID
+                original_to_new_nodes_IDs[node.currentID] = new_nodes_count
+                new_nodes_count +=1
+
+        new_to_original_sources_IDs = {}
+        original_to_new_sources_IDs = {}
+        new_sources_count = 0
+        for i, source in enumerate(self.sources):
+            if source.currentID in sourcesIDs_to_use:
+                new_to_original_sources_IDs[new_sources_count] = source.currentID
+                original_to_new_sources_IDs[source.currentID] = new_sources_count
+                new_sources_count += 1
+
+        #by default no consensuses and any connected data is printed
+        po_lines = []
+
+        po_lines += (generate_introductory_data(new_to_original_nodes_IDs.keys()))
+        po_lines += (generate_source_sequences_data(new_to_original_nodes_IDs))
+        po_lines += (generate_nodes_data(new_to_original_nodes_IDs, original_to_new_nodes_IDs))
+
+        return ('\n'.join(po_lines), new_to_original_nodes_IDs)
+
+
+    def calculate_compatibility_to_consensuses(self, consensusID=None):
         def get_compatibility(source, consensus):
             common_nodes_count = len(set(source.nodes_IDs) & set(consensus.nodes_IDs))
             source_nodes_count = len(source.nodes_IDs)
             return round(common_nodes_count/source_nodes_count,4)
 
-        for consensus in self.consensuses:
+        if not consensusID:
+            consensuses_to_calculate = self.consensuses
+        else:
+            consensuses_to_calculate = [self.consensuses[consensusID]]
+
+        for consensus in consensuses_to_calculate:
             consensus.compatibility_to_sources = [get_compatibility(source, consensus) for source in self.sources]
+
+    def _calc_partial_sources_weights(self, sourcesIDs_to_use, new_to_original_nodes_IDs):
+        def mean(numbers):
+            return float(sum(numbers)) / max(len(numbers), 1)
+
+        def get_source_weight(source, nodes_sources_count):
+            if not source.currentID in sourcesIDs_to_use:
+                return -1
+            else:
+                return mean([nodes_sources_count[node_ID] for node_ID in source.nodes_IDs])
+
+        def normalize_weight(weight, max_weight, min_weight):
+            if weight == -1:
+                return -1
+            if max_weight - min_weight == 0:
+                return 1
+            return int(float(format(round((weight - min_weight) / (max_weight - min_weight), 2), '.2f')) * 100)
+
+
+        nodes_sources_count = {}
+        for new_nodeID, org_nodeID in new_to_original_nodes_IDs.items():
+            nodes_sources_count[org_nodeID] = len([srcID for srcID in self.nodes[org_nodeID].sources if srcID in sourcesIDs_to_use])
+
+        weights = [*map(lambda source: get_source_weight(source, nodes_sources_count), self.sources)]
+        max_weight = max(weights)
+        min_weight = min(set(weights) - set([-1]))
+
+        normalized_weights = [*map(lambda weight: normalize_weight(weight, max_weight, min_weight), weights)]
+
+        for i, source in enumerate(self.sources):
+            source.weight = normalized_weights[i]
 
     def _calc_sources_weights(self):
         def mean(numbers):

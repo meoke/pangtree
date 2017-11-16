@@ -8,17 +8,20 @@ class EndToEndTest(unittest.TestCase):
     #@unittest.skip("end to end")
     def test_run_full_path(self):
         start = time.clock()
-        converter.convert_maf_to_po(file_name = 'files/ebola_100th_block/ebola_100th_block.maf', #it's a short file, good for testing
+        converter.convert_maf_to_po(#file_name = 'files/ebola_100th_block/ebola_100th_block.maf', #it's a short file, good for testing
                                     #file_name='files/entire_ebola/ebola_ncbi.maf',
                                     # maf_file_name='files/mycoplasma_maf/alignment_clean.maf',
                                     # file_name= 'files/simple/simple.maf',
-                                    # file_name='files/entire_ebola_po/entire_ebola.po',
-                                    file_format='maf',
+                                     file_name='files/entire_ebola_po/entire_ebola.po',
+                                    file_format='po',
                                     merge_blocks_option = "all",
-                                    consensus_option=True,
-                                    consensus_iterative = True,
-                                    hbmin=0.7,
-                                    min_comp=0.01,
+                                    visualize_option=False,
+                                    consensus_option=2,
+                                        hbmin=0.7,
+                                        min_comp=0.01,
+                                        range='[97,100]',
+                                        tresholds='[0.99]',
+                                    fasta_option=False,
                                     data_type='ebola'
                                     )
         end = time.clock()

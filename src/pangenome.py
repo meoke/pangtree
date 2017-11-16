@@ -89,7 +89,7 @@ parser_converter.add_argument('-min_comp',
 parser_converter.add_argument('-r',
                               type=str,
                               required=False,
-                              help='range [v1,v2] of compatibilities where the biggest change will be searched, format (v1, v2 - floats): [v1,v2]')
+                              help='percentage range [v1,v2] of compatibilities where the biggest change will be searched, format (v1, v2 - floats): [v1,v2]')
 parser_converter.add_argument('-t',
                               type=str,
                               required=False,
