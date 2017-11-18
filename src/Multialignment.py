@@ -174,6 +174,11 @@ class Multialignment(object):
                         continue
             return True
 
+        def get_not_yet_classified_sources_IDs(current_treshold_poagraphRefs):
+            classified_sources = [srcID for poagraphRef in current_treshold_poagraphRefs for srcID in poagraphRef.sourcesIDs]
+            all_sources = [src.currentID for src in poagraph.sources]
+            return sorted(list(set(all_sources) - set(classified_sources)))
+
         iteration_id = -1
         poagraphRefs = [POAGraphRef([src.currentID for src in poagraph.sources])]
         current_treshold_poagraphRefs = []
@@ -195,12 +200,17 @@ class Multialignment(object):
                          print("NO MORE CONSENSUSES FOUND")
                          break
 
-                    cutoff_value = self._find_cutoff_value(consensus_from_all.compatibility_to_sources, comp_range)
+                    c_from_all_comp_to_srcs_IDs_to_classify = [comp for i, comp in
+                                                                                   enumerate(consensus_from_all.compatibility_to_sources)
+                                                                                   if i in sourcesIDs_to_classify]
+
+                    cutoff_value = self._find_cutoff_value(c_from_all_comp_to_srcs_IDs_to_classify, comp_range)
 
 
                     maximally_consensus_compatible_sources_IDs = [srcID for srcID, comp in
                                                                   enumerate(consensus_from_all.compatibility_to_sources) if
-                                                                  comp >= cutoff_value]
+                                                                  comp >= cutoff_value and
+                                                                  srcID in sourcesIDs_to_classify]
 
                     try:
                         top_consensus = self._get_top_consensus_for_poagraph_part(consensus_output_dir=consensus_output_dir,
@@ -217,7 +227,9 @@ class Multialignment(object):
                                                         current_comp_higher_then_earlier(comp, srcID, current_treshold_poagraphRefs)]
                     poagraphRef = POAGraphRef(consensus_compatible_sources_IDs, top_consensus)
                     current_treshold_poagraphRefs.append(poagraphRef)
-                    sourcesIDs_to_classify = list(set(sourcesIDs_to_classify)-set(consensus_compatible_sources_IDs))
+                    sourcesIDs_to_classify = get_not_yet_classified_sources_IDs(current_treshold_poagraphRefs)
+
+
                     if len(sourcesIDs_to_classify) <= 2:
                         break
             poagraphRefs = current_treshold_poagraphRefs
