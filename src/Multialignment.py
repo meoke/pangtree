@@ -6,6 +6,8 @@ from POAGraphVisualizator import POAGraphVisualizator
 from Sequence import Consensus
 from NoConsensusFound import *
 from POAGraphRef import POAGraphRef
+import os
+
 
 class Multialignment(object):
     def __init__(self, data_type='ebola'):
@@ -45,6 +47,7 @@ class Multialignment(object):
     def generate_consensus(self, option, hbmin, min_comp, comp_range, tresholds):
         for i, p in enumerate(self.poagraphs):
             consensus_output_dir = t.create_child_dir(p.path, "consensus")
+            visualization_output_dir = t.create_child_dir(p.path, "visualization")
             if option is 0:
                 print('Generate consensuses (hbmin=', str(hbmin) + ') in one iteration...')
                 new_poagraph = self._run_single_consensus_generation(consensus_output_dir, p, hbmin)
@@ -57,7 +60,7 @@ class Multialignment(object):
                 print('Generate tree based consensus (hbmin=', str(hbmin), ', min_comp=', str(min_comp), ', range=', comp_range, ', tresholds=', tresholds)
                 cutoff_search_range = self._convert_str_to_tuple(comp_range)
                 tresholds = self._convert_str_to_list(tresholds)
-                self._run_tree_consensus_generation(consensus_output_dir, p, hbmin, min_comp, cutoff_search_range, tresholds)
+                self._run_tree_consensus_generation(consensus_output_dir, visualization_output_dir, p, hbmin, min_comp, cutoff_search_range, tresholds)
 
     def _run_single_consensus_generation(self, consensus_output_dir, poagraph, hbmin, consensus_name = "consensus"):
         print("PO generation")
@@ -162,7 +165,7 @@ class Multialignment(object):
 
         return poagraph
 
-    def _run_tree_consensus_generation(self, consensus_output_dir, poagraph, hbmin, min_comp, comp_range, tresholds):
+    def _run_tree_consensus_generation(self, consensus_output_dir, visualization_output_dir, poagraph, hbmin, min_comp, comp_range, tresholds):
         def current_comp_higher_then_earlier(comp, srcID, other_poagraphRefs):
             for poagraphRef in other_poagraphRefs:
                 if poagraphRef.consensus.compatibility_to_sources[srcID] > comp:
@@ -179,32 +182,65 @@ class Multialignment(object):
             all_sources = [src.currentID for src in poagraph.sources]
             return sorted(list(set(all_sources) - set(classified_sources)))
 
-        iteration_id = -1
+        def enumerate_consensuses(poagraphRefs):
+            for i, poagraphRef in enumerate(poagraphRefs):
+                poagraphRef.consensus.currentID = i
+                poagraphRef.consensus.name = "CONSENS" + str(i)
+
+        def create_consensuses_file():
+            consensuses_file_path = t.join_path(visualization_output_dir, "consensuses_data.js")
+            with open(consensuses_file_path, 'w') as output:
+                output.write('var consensuses = {c: [')
+
+        def end_consensuses_file():
+            consensuses_file_path = t.join_path(visualization_output_dir, "consensuses_data.js")
+            with open(consensuses_file_path, 'rb+') as f:
+                f.seek(0, 2)
+                size = f.tell()
+                f.truncate(size - 1)
+            with open(consensuses_file_path, 'a') as output:
+                output.write(']};')
+
+        def save_consensuses(poagraphRefs, treshold):
+            consensuses_file_path = t.join_path(visualization_output_dir, "consensuses_data.js")
+            consensuses_json = "{treshold: " + str(treshold) + ", \ndata: ["
+            p = POAGraphVisualizator(None, None, None)
+            for poagraphRef in poagraphRefs:
+                consensus_json = p._get_consensus_json(poagraphRef.consensus)
+                consensuses_json += ",\n"
+                consensuses_json += consensus_json
+            consensuses_json += "]},"
+            with open(consensuses_file_path, 'a') as output:
+                output.write(consensuses_json)
+
+
         poagraphRefs = [POAGraphRef([src.currentID for src in poagraph.sources])]
         current_treshold_poagraphRefs = []
-        for treshold in tresholds:
+        create_consensuses_file()
+        for tr, treshold in enumerate(tresholds):
             print("NEW TRESHOLD " + str(treshold))
-            iteration_id += 1
-            for poagraphRef in poagraphRefs:
 
+            for pr, poagraphRef in enumerate(poagraphRefs):
+                iteration_id = -1
                 sourcesIDs_to_classify = poagraphRef.sourcesIDs
                 while sourcesIDs_to_classify:
+                    iteration_id += 1
 
                     try:
                         consensus_from_all = self._get_top_consensus_for_poagraph_part(consensus_output_dir=consensus_output_dir,
                                                               poagraph=poagraph,
                                                               sourcesIDs_to_be_used=sourcesIDs_to_classify,
                                                               hbmin=hbmin,
-                                                              consensus_name="all_consensus_" + str(iteration_id))
+                                                              consensus_name="all_consensus_" + str(tr) + '_' + str(pr) + '_' + str(iteration_id))
                     except NoConsensusFound:
                          print("NO MORE CONSENSUSES FOUND")
                          break
 
-                    c_from_all_comp_to_srcs_IDs_to_classify = [comp for i, comp in
+                    cons_from_all_comp_to_srcs_IDs_to_classify = [comp for srcID, comp in
                                                                                    enumerate(consensus_from_all.compatibility_to_sources)
-                                                                                   if i in sourcesIDs_to_classify]
+                                                                                   if srcID in sourcesIDs_to_classify]
 
-                    cutoff_value = self._find_cutoff_value(c_from_all_comp_to_srcs_IDs_to_classify, comp_range)
+                    cutoff_value = self._find_cutoff_value(cons_from_all_comp_to_srcs_IDs_to_classify, comp_range)
 
 
                     maximally_consensus_compatible_sources_IDs = [srcID for srcID, comp in
@@ -217,7 +253,7 @@ class Multialignment(object):
                                                                                   poagraph=poagraph,
                                                                                   sourcesIDs_to_be_used=maximally_consensus_compatible_sources_IDs,
                                                                                   hbmin=hbmin,
-                                                                                  consensus_name="top_consensus_" + str(iteration_id))
+                                                                                  consensus_name="top_consensus_" + str(tr) + '_' + str(pr) + '_' + str(iteration_id))
                     except NoConsensusFound:
                          print("NO TOP CONSENSUSES FOUND")
                          break
@@ -228,20 +264,21 @@ class Multialignment(object):
                     poagraphRef = POAGraphRef(consensus_compatible_sources_IDs, top_consensus)
                     current_treshold_poagraphRefs.append(poagraphRef)
                     sourcesIDs_to_classify = get_not_yet_classified_sources_IDs(current_treshold_poagraphRefs)
+                    with open('list.txt', 'a') as out:
+                        out.write(" ".join([str(i) for i in sourcesIDs_to_classify]))
+                        out.write('\n')
 
-
-                    if len(sourcesIDs_to_classify) <= 2:
-                        break
+            enumerate_consensuses(current_treshold_poagraphRefs)
+            save_consensuses(current_treshold_poagraphRefs, treshold)
             poagraphRefs = current_treshold_poagraphRefs
             current_treshold_poagraphRefs = []
 
         for i, poagraphRef in enumerate(poagraphRefs):
-            poagraphRef.consensus.ID = i
-            poagraphRef.consensus.name = "CONSENS" + str(i)
             poagraph.add_consensus(poagraphRef.consensus)
-            # consensusID = len(poagraph.consensuses)-1
             for srcID in poagraphRef.sourcesIDs:
                 poagraph.sources[srcID].consensusID = i
+
+        end_consensuses_file()
 
 
 
@@ -286,8 +323,12 @@ class Multialignment(object):
         compatibilities_to_be_searched = sorted(compatibilities)[min_idx: max_idx]
 
         max_diff = 0
-        if not compatibilities_to_be_searched:
-            return -1
+        if min_idx == max_idx == len(compatibilities):
+            return sorted(compatibilities)[min_idx-1]
+        elif min_idx == max_idx:
+            return sorted(compatibilities)[min_idx]
+        elif not compatibilities_to_be_searched:
+            raise ValueError("No compatibilites to be searched.")
         else:
             cutoff_value = compatibilities_to_be_searched[0]
 

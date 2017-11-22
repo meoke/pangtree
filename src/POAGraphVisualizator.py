@@ -49,6 +49,7 @@ class POAGraphVisualizator(object):
         with open(index_path, 'w') as output:
             output.write(index_content)
 
+
     def _get_sources_data_as_json(self):
         sources_json = []
         consensuses_json = []

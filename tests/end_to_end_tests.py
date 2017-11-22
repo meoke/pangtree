@@ -12,7 +12,29 @@ class EndToEndTest(unittest.TestCase):
                                     #file_name='files/entire_ebola/ebola_ncbi.maf',
                                     # maf_file_name='files/mycoplasma_maf/alignment_clean.maf',
                                     # file_name= 'files/simple/simple.maf',
-                                     file_name='files/entire_ebola_po/entire_ebola.po',
+                                    file_name='files/entire_ebola_po/entire_ebola.po',
+                                    file_format='po',
+                                    merge_blocks_option = "all",
+                                    visualize_option=False,
+                                    consensus_option=2,
+                                        hbmin=0.7,
+                                        min_comp=0.01,
+                                        range='[90,100]',
+                                        tresholds='[0.7, 0.8, 0.9, 0.99]',
+                                    fasta_option=False,
+                                    data_type='ebola'
+                                    )
+        end = time.clock()
+        print("Running time: ", time.strftime('%H:%M:%S', time.gmtime(end-start)))
+        self.assertTrue(True)
+
+    def test_run_full_path(self):
+        start = time.clock()
+        converter.convert_maf_to_po(#file_name = 'files/ebola_100th_block/ebola_100th_block.maf', #it's a short file, good for testing
+                                    #file_name='files/entire_ebola/ebola_ncbi.maf',
+                                    # maf_file_name='files/mycoplasma_maf/alignment_clean.maf',
+                                    # file_name= 'files/simple/simple.maf',
+                                    file_name='files/entire_ebola_po/entire_ebola.po',
                                     file_format='po',
                                     merge_blocks_option = "all",
                                     visualize_option=False,
@@ -20,7 +42,29 @@ class EndToEndTest(unittest.TestCase):
                                         hbmin=0.7,
                                         min_comp=0.01,
                                         range='[97,100]',
-                                        tresholds='[0.99]',
+                                        tresholds='[0.7, 0.8, 0.9, 0.99]',
+                                    fasta_option=False,
+                                    data_type='ebola'
+                                    )
+        end = time.clock()
+        print("Running time: ", time.strftime('%H:%M:%S', time.gmtime(end-start)))
+        self.assertTrue(True)
+
+    def test_run_full_path(self):
+        start = time.clock()
+        converter.convert_maf_to_po(#file_name = 'files/ebola_100th_block/ebola_100th_block.maf', #it's a short file, good for testing
+                                    #file_name='files/entire_ebola/ebola_ncbi.maf',
+                                    # maf_file_name='files/mycoplasma_maf/alignment_clean.maf',
+                                    # file_name= 'files/simple/simple.maf',
+                                    file_name='files/entire_ebola_po/entire_ebola.po',
+                                    file_format='po',
+                                    merge_blocks_option = "all",
+                                    visualize_option=False,
+                                    consensus_option=2,
+                                        hbmin=0.7,
+                                        min_comp=0.01,
+                                        range='[80,90]',
+                                        tresholds='[0.7, 0.8, 0.9, 0.99]',
                                     fasta_option=False,
                                     data_type='ebola'
                                     )
