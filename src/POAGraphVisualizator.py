@@ -40,9 +40,9 @@ class POAGraphVisualizator(object):
         with open(index_template_path) as template_file:
             index_content = template_file.read()
             if consensuses_comparison:
-                index_content = index_content.replace('sources_data.js', str(self.poagraph.name) + """_sources_data.js""")
+                index_content = index_content.replace('sources.js', str(self.poagraph.name) + """_sources_data.js""")
             elif graph_visualization:
-                index_content = index_content.replace('poagraph_data.js', str(self.poagraph.name) + """_poagraph_data.js""")
+                index_content = index_content.replace('poagraph.js', str(self.poagraph.name) + """_poagraph_data.js""")
 
 
         index_path = t.join_path(self.output_dir, 'index.html')
