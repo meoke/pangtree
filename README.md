@@ -12,14 +12,14 @@
 ## Running
 
 ### Example
-python3 pangenome.py -f alignment.maf -c -iter -hbmin 0.9
+python3 pangenome.py -f alignment.maf -c 3
 
 ### Arguments description
 Currently, all features are provided by module *mln*. There are a few options for different features available
 
 usage: pangenome.py mln [-h] -f FILE -format FILE FORMAT [-m MERGE_BLOCKS]
                         [-fasta] [-c] [-iter] [-hbmin HBMIN]
-                        [-min_comp MINCOMP] [-v] -data DATATYPE
+                        [-min_comp MINCOMP] [-draw] -data DATATYPE
 
 optional arguments:
 
@@ -33,9 +33,9 @@ optional arguments:
   
   -fasta             generate FASTA files
   
-  -c                 if consensus must be generated, decide what algorithm should be used (0 - single poa iteration, 1 - iteratively run poa, 2 - tree based algorithm)
+  -c                 if consensus must be generated, decide what algorithm should be used (1 - single poa iteration, 2 - iteratively run poa, 3 - tree based algorithm)
   
-  -hbmin HBMIN       if c: HBMIN value for POA heaviest bundling alogrithm, float values from range [0,1]
+  -hbmin HBMIN       if c=1: HBMIN value for POA heaviest bundling alogrithm, float values from range [0,1]
                      
   -min_comp MINCOMP  if c0 or c1: minimum compatibility between source and consensus to
                      match them 
@@ -44,7 +44,7 @@ optional arguments:
   
   -t TRESHOLDS       if c2: series of tresholds to be used on tree levels
                      
-  -v                 generate visualization
+  -draw              draw poagraph
   
   -data DATATYPE     ebola or mycoplasma
  

@@ -28,15 +28,18 @@ class Source(Sequence):
     def __init__(self, currentID, name, title, active = True, nodes_IDs = None, consensusID = -1, weight = -1):
         Sequence.__init__(self, currentID=currentID, name=name, title=title, active=active, nodes_IDs=nodes_IDs)
         self.consensusID = consensusID
+        self.consensuses = []
         self.weight = weight
 
     def __str__(self):
-        return Sequence.__str__(self) + """\tconsensusID: {0},\tweight: {1}""".format(
+        return Sequence.__str__(self) + """\tconsensusID: {0},\tconsensuses: {1},\tweight: {2}""".format(
             self.consensusID,
+            self.consensuses,
             self.weight)
 
     def __eq__(self, other):
         return Sequence.__eq__(self, other) and self.consensusID == other.consensusID \
+                                            and self.consensuses == other.consensuses \
                                             and self.weight == other.weight
 
 
@@ -45,6 +48,7 @@ class Consensus(Sequence):
     def __init__(self, currentID, name, title, active = True, nodes_IDs = None, compatibility_to_sources = None):
         Sequence.__init__(self, currentID=currentID, name=name, title=title, active=active, nodes_IDs=nodes_IDs)
         self.compatibility_to_sources = compatibility_to_sources if compatibility_to_sources else {}
+        self.level = -1
 
     def __str__(self):
         return Sequence.__str__(self) + """ compatibility_to_sources: {0}""".format(  self.compatibility_to_sources)

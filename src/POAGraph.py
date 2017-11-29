@@ -189,14 +189,14 @@ class POAGraph(object):
         return ('\n'.join(po_lines), new_to_original_nodes_IDs)
 
 
-    def calculate_compatibility_to_consensuses(self, consensusID=None):
+    def calculate_compatibility_to_consensuses(self, consensusID=None, level=-1):
         def get_compatibility(source, consensus):
             common_nodes_count = len(set(source.nodes_IDs) & set(consensus.nodes_IDs))
             source_nodes_count = len(source.nodes_IDs)
             return round(common_nodes_count/source_nodes_count,4)
 
         if not consensusID:
-            consensuses_to_calculate = self.consensuses
+            consensuses_to_calculate = [consensus for consensus in self.consensuses if consensus.level == level]
         else:
             consensuses_to_calculate = [self.consensuses[consensusID]]
 

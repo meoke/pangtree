@@ -11,8 +11,11 @@ def convert(args):
     if args.m and not fullmatch('\[\d+\:\d+\]', str(args.m)):
         parser.error('Wrong formatting for MERGE_BLOCKS')
 
-    if (args.iter or args.hbmin or args.min_comp or args.r or args.t) and not args.c:
-        parser.error("Options -iter, -hbmin, -min-comp requires -c.")
+    if args.hbmin and args.c != 1:
+        parser.error("Option -hbmin requires -c = 1.")
+
+    if (args.min_comp or args.r or args.t) and not args.c:
+        parser.error("Options -min-comp, -r and -t require -c.")
 
     if args.r and not fullmatch('\[\d+\,\d+\]', str(args.r)):
         parser.error('Wrong formatting for RANGE')
@@ -39,7 +42,7 @@ def convert(args):
     converter.convert_maf_to_po(file_abs_path,
                                 args.format,
                                 args.m,
-                                args.v,
+                                args.draw,
                                 args.c,
                                 args.r,
                                 args.t,
@@ -94,10 +97,10 @@ parser_converter.add_argument('-t',
                               type=str,
                               required=False,
                               help='series of tresholds t1, t2, t3... to be used on tree levels, format (t1, t2... - floats): [t1, t2, t3,...]')
-parser_converter.add_argument('-v',
+parser_converter.add_argument('-draw',
                               action='store_true',
                               required=False,
-                              help='generate visualization')
+                              help='draw poagraph')
 parser_converter.add_argument('-data',
                               metavar="DATATYPE",
                               required=True,

@@ -78,6 +78,9 @@ function add_poagraph_info(){
     running_time_p = document.getElementById('running_time');
     running_time_p.innerHTML += info.running_time;
 
+    sources_count_p = document.getElementById('sources_count');
+    sources_count_p.innerHTML += info.sources_count;
+
     nodes_count_p = document.getElementById('nodes_count');
     nodes_count_p.innerHTML += info.nodes_count;
 
@@ -89,11 +92,12 @@ function add_consensuses_options(){
     for(i=0; i<info.levels.length;i++)
     {
         let level_value = info.levels[i];
+        let level_index = i;
         var radioBtn_p = $('<p></p>')
 
         var radioBtn = $('<input type="radio" name="level" value="' + String(level_value) + '">');
         radioBtn.click( function(){
-            show_sources_info_table(level_value);
+            show_sources_info_table(level_index);
         });
         radioBtn.appendTo(radioBtn_p);
 
@@ -113,6 +117,59 @@ function show_consensuses_tree(){
     //alert('tree');
 }
 
-function show_sources_info_table(level_value){
-    var divId = document.getElementById("sources_info")
+function show_sources_info_table(level_index){
+    var sources_info_div = document.getElementById("sources_info");
+    sources_info_div.innerHTML = "";
+    var consensus_info_div = document.createElement('div')
+    consensus_info_div.setAttribute("class", "consensus_info")
+
+    var table = document.createElement('table');
+    table.className = "sortable";
+    var header  = table.createTHead();
+    var header_row = header.insertRow(0);
+    var head_id = header_row.insertCell(0);
+    var head_name = header_row.insertCell(1);
+    var head_title = header_row.insertCell(2);
+    var head_group = header_row.insertCell(3);
+    var head_bundle_id = header_row.insertCell(4);
+    var consensuses_count = consensuses.c[level_index].data.length;
+    head_id.innerHTML = "ID"
+    head_name.innerHTML = "Name"
+    head_title.innerHTML = "Title"
+    head_group.innerHTML = "Group"
+    head_bundle_id.innerHTML = "Bundle ID"
+
+    for(var i=0; i< consensuses_count; i++){
+    var cons_compatibility = header_row.insertCell(5+i);
+    cons_compatibility.innerHTML = consensuses.c[level_index].data[i].name;
+    }
+    body = document.createElement('tbody')
+
+
+
+    for(var j=0;j<sources.data.length;j++){
+        var row = body.insertRow(j);
+        var id = row.insertCell(0);
+        var name = row.insertCell(1);
+        var title = row.insertCell(2);
+        var group =row.insertCell(3)
+        var bundle_id = row.insertCell(4);
+        id.innerHTML = j;
+        name.innerHTML = sources.data[j]['name'];
+        title.innerHTML = sources.data[j]['title'];
+        group.innerHTML = (sources.data[j]['group'].length) ? sources.data[j]['group'] : 'not defined';
+        bundle_id.innerHTML = sources.data[j]['bundle_ID'][level_index];
+
+
+        for(var k=0;k<consensuses.c[level_index].data.length; k++){
+            var compatibility = row.insertCell(5+k);
+            c = consensuses.c[level_index].data[k]['sources_compatibility'][j]
+            compatibility.innerHTML = c;
+        }
+    }
+ table.appendChild(body)
+ table.createTFoot()
+    consensus_info_div.appendChild(table)
+    sources_info_div.appendChild(consensus_info_div);
+    sorttable.makeSortable(table);
 }

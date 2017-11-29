@@ -15,10 +15,10 @@ def parse_to_poagraphs(file_path, merge_option, multialignment_name, output_dir)
     poagraphs  = []
     for i, r in enumerate(block_to_merge_ranges):
         current_range_blocks = [*islice(maf_blocks, r.start, r.stop)]
-        poagraph = POAGraph(name = multialignment_name,
-                            title = multialignment_name + '_' + str(i),
-                            path = toolkit.create_child_dir(output_dir, multialignment_name + '_' + str(i)),
-                            version = 'NOVEMBER')
+        poagraph = POAGraph(name=multialignment_name,
+                            title=multialignment_name + '_' + str(i),
+                            path=toolkit.create_child_dir(output_dir, multialignment_name + '_' + str(i)),
+                            version='NOVEMBER')
         poagraph = _process_blocks_for_poagraph(poagraph, current_range_blocks)
         poagraphs.append(poagraph)
     return poagraphs
@@ -93,7 +93,7 @@ def _process_blocks_for_poagraph(poagraph, blocks):
                 node.aligned_to.update([node.currentID for node in other_nodes.values()])
                 poagraph.add_node(node)
 
-            progress = round(100* (column_ID*sequences.shape[1]+row_ID+1) / all_nucles_count, 2)
+            progress = round(100 * (column_ID*sequences.shape[1]+row_ID+1) / all_nucles_count, 2)
             print("\r\tMultialignment ready in " + str(progress) + '%', end='')
         column_nodes = {}
     print('')
@@ -115,7 +115,7 @@ def _extract_sources_info(blocks):
 def _get_all_blocks_width(blocks):
     width = 0
     for block in blocks:
-        width += len(block._records[0].seq) #all records have the same length beacuse they are aligned
+        width += len(block._records[0].seq)  # all records have the same length because they are aligned
     return width
 
 
