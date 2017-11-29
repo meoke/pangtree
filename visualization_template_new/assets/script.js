@@ -4,65 +4,8 @@ document.addEventListener("DOMContentLoaded", function() {
     add_poagraph_info();
     add_consensuses_options();
 //    draw_visualization();
-//    show_consensuses_tree();
+    show_consensuses_tree();
 //    show_sources_info_table();
-
-
-//    //poagraph_info
-//    var poagraph_info_div_id = document.getElementById("poagraph_info")
-//    poagraph_info_div_id.innerHTML += ('<p>' + 'Nodes count: ' + "\t\t" + poagraph.nodes_count + '<\p>' +
-//                                       '<p>' + 'Sources count:' + '\t\t' + poagraph.sources_count + '<\p>' +
-//                                       '<p>' + 'Consensuses count:' + '\t\t' + poagraph.consensuses_count + '<\p>' +
-//                                       '<p>' + 'Sequences per node (mean):' + '\t\t' + poagraph.mean_sources_per_node + '<\p>');
-//
-//    //consensuses info
-//  var divId = document.getElementById("sources_info")
-//  for(var i=0; i<consensuses.data.length; i++){
-//    consensus_color = consensuses_colors[consensuses.data[i]['id']%consensuses_colors.length];
-//    consensus_info_div = document.createElement('div')
-//    consensus_info_div.setAttribute("class", "consensus_info")
-//    consensus_info_div.innerHTML += ('<p style=\'color: ' + consensus_color +'\'>' + consensuses.data[i]['name'] + "</p>" +
-//                        '<p>' + 'Nodes count:' + '\t' + consensuses.data[i]['nodes_count'] + '</p>');
-//
-//    var table = document.createElement('table');
-//    table.className = "sortable";
-//    var row = table.insertRow(0);
-//    var head_id = row.insertCell(0);
-//    var head_name = row.insertCell(1);
-//    var head_title = row.insertCell(2);
-//    var head_group = row.insertCell(3);
-//    var head_bundle_id = row.insertCell(4);
-//    var head_compatibility = row.insertCell(5);
-//    head_id.innerHTML = "ID"
-//    head_name.innerHTML = "Name"
-//    head_title.innerHTML = "Title"
-//    head_group.innerHTML = "Group"
-//    head_bundle_id.innerHTML = "Bundle ID"
-//    head_compatibility.innerHTML = "Compatibility"
-//
-//    for(var j=0;j<consensuses.data[i]['sources_compatibility'].length;j++){
-//        var row = table.insertRow(j+1);
-//        var id = row.insertCell(0);
-//        var name = row.insertCell(1);
-//        var title = row.insertCell(2);
-//        var group =row.insertCell(3)
-//        var bundle_id = row.insertCell(4);
-//        var compatibility = row.insertCell(5);
-//        id.innerHTML = j
-//        name.innerHTML = sources.data[j]['name']
-//        title.innerHTML = sources.data[j]['title']
-//        group.innerHTML = sources.data[j]['group_name']
-//        bundle_id.innerHTML = sources.data[j]['bundle_ID']
-//        compatibility.innerHTML = consensuses.data[i]['sources_compatibility'][j]
-//    }
-//
-//    compatibility_chart = get_density_graph(i);
-//
-//    consensus_info_div.appendChild(table)
-//    consensus_info_div.appendChild(compatibility_chart)
-//
-//    divId.appendChild(consensus_info_div);
-//  }
 
 });
 
@@ -114,7 +57,9 @@ function draw_visualization(){
 }
 
 function show_consensuses_tree(){
-    //alert('tree');
+//    var example_tree = "(((EELA:0.150276,CONGERA:0.213019):0.230956,(EELB:0.263487,CONGERB:0.202633):0.246917):0.094785,((CAVEFISH:0.451027,(GOLDFISH:0.340495,ZEBRAFISH:0.390163):0.220565):0.067778,((((((NSAM:0.008113,NARG:0.014065):0.052991,SPUN:0.061003,(SMIC:0.027806,SDIA:0.015298,SXAN:0.046873):0.046977):0.009822,(NAUR:0.081298,(SSPI:0.023876,STIE:0.013652):0.058179):0.091775):0.073346,(MVIO:0.012271,MBER:0.039798):0.178835):0.147992,((BFNKILLIFISH:0.317455,(ONIL:0.029217,XCAU:0.084388):0.201166):0.055908,THORNYHEAD:0.252481):0.061905):0.157214,LAMPFISH:0.717196,((SCABBARDA:0.189684,SCABBARDB:0.362015):0.282263,((VIPERFISH:0.318217,BLACKDRAGON:0.109912):0.123642,LOOSEJAW:0.397100):0.287152):0.140663):0.206729):0.222485,(COELACANTH:0.558103,((CLAWEDFROG:0.441842,SALAMANDER:0.299607):0.135307,((CHAMELEON:0.771665,((PIGEON:0.150909,CHICKEN:0.172733):0.082163,ZEBRAFINCH:0.099172):0.272338):0.014055,((BOVINE:0.167569,DOLPHIN:0.157450):0.104783,ELEPHANT:0.166557):0.367205):0.050892):0.114731):0.295021)"
+    var tree = d3.layout.phylotree().svg(d3.select("#tree_display"));
+    tree(d3.layout.newick_parser(newick)).layout();
 }
 
 function show_sources_info_table(level_index){

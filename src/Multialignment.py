@@ -243,9 +243,6 @@ class Multialignment(object):
                     new_poagraphRef = POAGraphRef(consensus_compatible_sources_IDs, top_consensus)
                     current_treshold_poagraphRefs.append(new_poagraphRef)
                     sourcesIDs_to_classify = get_not_yet_classified_sources_IDs(poagraphRef, current_treshold_poagraphRefs)
-                    with open('list.txt', 'a') as out:
-                        out.write(" ".join([str(i) for i in sourcesIDs_to_classify]))
-                        out.write('\n')
 
             # enumerate_consensuses(current_treshold_poagraphRefs)
             for i, poagraphRef in enumerate(current_treshold_poagraphRefs):
