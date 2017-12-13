@@ -14,11 +14,11 @@ class EndToEndTest(unittest.TestCase):
                                     #file_name='files/entire_ebola_po/entire_ebola.po',
                                     file_format='maf',
                                     merge_blocks_option="all",
-                                    draw_poagraph_option=False,
+                                    draw_poagraph_option=True,
                                     consensus_option=3,
                                         min_comp=0.01,
                                         range='[90,100]',
-                                        tresholds='[0.7, 0.8, 0.9, 0.99]',
+                                        tresholds='[0.6, 0.7]',
                                     fasta_option=False,
                                     data_type='ebola'
                                     )

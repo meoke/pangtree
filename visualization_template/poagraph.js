@@ -7,7 +7,7 @@ var poagraph = {
         source: [0],
         weight: 0.33,
       },
-      position: { x: 10, y: 0 },
+      position: { x: 60, y: 15 },
       // classes: 'czerwony zielony'
     }, {
       data: {
@@ -16,7 +16,7 @@ var poagraph = {
         source: [1,2],
         weight: 0.66,
       },
-      position: { x: 10, y: 100 },
+      position: { x: 60, y: -15 },
     },{
       data: {
         id: 2,
@@ -24,7 +24,7 @@ var poagraph = {
         source: [0],
         weight: 0.33
       },
-      position: { x: 20, y: 0 },
+      position: { x: 120, y: 15 },
     },{
       data: {
         id: 3,
@@ -32,7 +32,7 @@ var poagraph = {
         source: [1,2],
         weight: 0.66
       },
-      position: { x: 20, y: 100 },
+      position: { x: 120, y: -15 },
     },
     {
       data: {
@@ -41,7 +41,7 @@ var poagraph = {
         source: [0,1,2],
         weight: 1
       },
-      position: { x: 30, y: 0 },
+      position: { x: 180, y: 0.5 },
     },{
       data: {
         id: 5,
@@ -49,7 +49,7 @@ var poagraph = {
         source: [0],
         weight: 0.33
       },
-      position: { x: 60, y: 100 },
+      position: { x: 240, y: 15 },
     },{
       data: {
         id: 6,
@@ -57,7 +57,7 @@ var poagraph = {
         source: [1],
         weight: 0.33
       },
-      position: { x: 60, y: 100 },
+      position: { x: 240, y: 0.5 },
     },{
       data: {
         id: 7,
@@ -65,7 +65,7 @@ var poagraph = {
         source: [2],
         weight: 0.33
       },
-      position: { x: 60, y: 100 },
+      position: { x: 240, y: -15 },
     },{
       data: {
         id: 8,
@@ -73,7 +73,7 @@ var poagraph = {
         source: [0, 1],
         weight: 0.66
       },
-      position: { x: 60, y: 100 },
+      position: { x: 300, y: 15 },
     },{
       data: {
         id: 9,
@@ -81,7 +81,7 @@ var poagraph = {
         source: [2],
         weight: 0.33
       },
-      position: { x: 60, y: 100 },
+      position: { x: 300, y: -15 },
     },{
       data: {
         id: 10,
@@ -89,7 +89,7 @@ var poagraph = {
         source: [0,1,2],
         weight: 1
       },
-      position: { x: 60, y: 100 },
+      position: { x: 360, y: 0 },
     },{
       data: {
         id: 11,
@@ -97,7 +97,7 @@ var poagraph = {
         source: [0,1,2],
         weight: 1
       },
-      position: { x: 60, y: 100 },
+      position: { x: 420, y: 0 },
     },{
       data: {
         id: 12,
@@ -105,7 +105,7 @@ var poagraph = {
         source: [0, 1, 2],
         weight: 1
       },
-      position: { x: 60, y: 100 },
+      position: { x: 480, y: 0 },
     }
   ],
   edges: [
@@ -117,7 +117,8 @@ var poagraph = {
         weight: 0.33,
         consensus: -1,
         level: -1
-      }
+      },
+      classes: 'edge'
     },{
       data: {
         id: 14,
@@ -126,7 +127,8 @@ var poagraph = {
         consensus: -1,
         weight: 0.66,
         level: -1
-      }
+      },
+      classes: 'edge'
     },{
       data: {
         id: 15,
@@ -135,7 +137,8 @@ var poagraph = {
         consensus: -1,
         weight: 0.33,
         level: -1
-      }
+      },
+      classes: 'edge'
     },{
       data: {
         id: 16,
@@ -144,7 +147,8 @@ var poagraph = {
         consensus: -1,
         weight: 0.66,
         level: -1
-      }
+      },
+      classes: 'edge'
     },{
       data: {
         id: 17,
@@ -153,7 +157,8 @@ var poagraph = {
         consensus: -1,
         weight: 0.33,
         level: -1
-      }
+      },
+      classes: 'edge'
     }, {
       data: {
         id: 18,
@@ -162,7 +167,8 @@ var poagraph = {
         consensus: -1,
         weight: 0.33,
         level: -1
-      }
+      },
+      classes: 'edge'
     }, {
       data: {
         id: 19,
@@ -171,7 +177,8 @@ var poagraph = {
         consensus: -1,
         weight: 0.33,
         level: -1
-      }
+      },
+      classes: 'edge'
     }, {
       data: {
         id: 20,
@@ -180,7 +187,8 @@ var poagraph = {
         consensus: -1,
         weight: 0.33,
         level: -1
-      }
+      },
+      classes: 'edge'
     }, {
       data: {
         id: 21,
@@ -189,7 +197,8 @@ var poagraph = {
         consensus: -1,
         weight: 0.33,
         level: -1
-      }
+      },
+      classes: 'edge'
     }, {
       data: {
         id: 22,
@@ -198,7 +207,8 @@ var poagraph = {
         consensus: -1,
         weight: 0.33,
         level: -1
-      }
+      },
+      classes: 'edge'
     }, {
       data: {
         id: 23,
@@ -207,7 +217,8 @@ var poagraph = {
         consensus: -1,
         weight: 0.66,
         level: -1
-      }
+      },
+      classes: 'edge'
     }, {
       data: {
         id: 24,
@@ -216,7 +227,8 @@ var poagraph = {
         consensus: -1,
         weight: 0.33,
         level: -1
-      }
+      },
+      classes: 'edge'
     }, {
       data: {
         id: 25,
@@ -225,7 +237,8 @@ var poagraph = {
         consensus: -1,
         weight: 1,
         level: -1
-      }
+      },
+      classes: 'edge'
     }, {
       data: {
         id: 26,
@@ -234,7 +247,8 @@ var poagraph = {
         consensus: -1,
         weight: 1,
         level: -1
-      }
+      },
+      classes: 'edge'
     },
 //    level 1
 //    consensus 0
@@ -246,7 +260,8 @@ var poagraph = {
         consensus: 0,
         weight: 0.33,
         level: 1
-      }
+      },
+      classes: 'edge consensus'
     },{
       data: {
         id: 28,
@@ -255,7 +270,8 @@ var poagraph = {
         consensus: 0,
         weight: 0.33,
         level: 1
-      }
+      },
+      classes: 'edge consensus'
     },{
       data: {
         id: 29,
@@ -264,7 +280,8 @@ var poagraph = {
         consensus: 0,
         weight: 0.33,
         level: 1
-      }
+      },
+      classes: 'edge consensus'
     },{
       data: {
         id: 30,
@@ -273,7 +290,8 @@ var poagraph = {
         consensus: 0,
         weight: 0.33,
         level: 1
-      }
+      },
+      classes: 'edge consensus'
     },{
       data: {
         id: 31,
@@ -282,7 +300,8 @@ var poagraph = {
         consensus: 0,
         weight: 0.33,
         level: 1
-      }
+      },
+      classes: 'edge consensus'
     },{
       data: {
         id: 32,
@@ -291,7 +310,8 @@ var poagraph = {
         consensus: 0,
         weight: 0.33,
         level: 1
-      }
+      },
+      classes: 'edge consensus'
     },{
       data: {
         id: 33,
@@ -300,7 +320,8 @@ var poagraph = {
         consensus: 0,
         weight: 0.33,
         level: 1
-      }
+      },
+      classes: 'edge consensus'
     },
 //    consensus 1
      {
@@ -311,7 +332,8 @@ var poagraph = {
         consensus: 1,
         weight: 0.33,
         level: 1
-      }
+      },
+      classes: 'edge consensus'
     },{
       data: {
         id: 35,
@@ -320,7 +342,8 @@ var poagraph = {
         consensus: 1,
         weight: 0.33,
         level: 1
-      }
+      },
+      classes: 'edge consensus'
     },{
       data: {
         id: 36,
@@ -329,7 +352,8 @@ var poagraph = {
         consensus: 1,
         weight: 0.33,
         level: 1
-      }
+      },
+      classes: 'edge consensus'
     },{
       data: {
         id: 37,
@@ -338,7 +362,8 @@ var poagraph = {
         consensus: 1,
         weight: 0.33,
         level: 1
-      }
+      },
+      classes: 'edge consensus'
     },{
       data: {
         id: 38,
@@ -347,7 +372,8 @@ var poagraph = {
         consensus: 1,
         weight: 0.33,
         level: 1
-      }
+      },
+      classes: 'edge consensus'
     },{
       data: {
         id: 39,
@@ -356,7 +382,8 @@ var poagraph = {
         consensus: 1,
         weight: 0.33,
         level: 1
-      }
+      },
+      classes: 'edge consensus'
     },{
       data: {
         id: 40,
@@ -365,7 +392,8 @@ var poagraph = {
         consensus: 1,
         weight: 0.33,
         level: 1
-      }
+      },
+      classes: 'edge consensus'
     },
 //    consensus 2
     {
@@ -376,7 +404,8 @@ var poagraph = {
         consensus: 2,
         weight: 0.33,
         level: 1
-      }
+      },
+      classes: 'edge consensus'
     },
     {
       data: {
@@ -386,7 +415,8 @@ var poagraph = {
         consensus: 2,
         weight: 0.33,
         level: 1
-      }
+      },
+      classes: 'edge consensus'
     },{
       data: {
         id: 43,
@@ -395,7 +425,8 @@ var poagraph = {
         consensus: 2,
         weight: 0.33,
         level: 1
-      }
+      },
+      classes: 'edge consensus'
     },{
       data: {
         id: 44,
@@ -404,7 +435,8 @@ var poagraph = {
         consensus: 2,
         weight: 0.33,
         level: 1
-      }
+      },
+      classes: 'edge consensus'
     },{
       data: {
         id: 45,
@@ -413,7 +445,8 @@ var poagraph = {
         consensus: 2,
         weight: 0.33,
         level: 1
-      }
+      },
+      classes: 'edge consensus'
     }
   ]
 };

@@ -3,8 +3,8 @@ consensuses_colors = ['#ff8000', '#602870', '#983352','yellow', 'purple', 'orang
 document.addEventListener("DOMContentLoaded", function() {
     add_poagraph_info();
     add_consensuses_options();
-//    draw_visualization();
-    show_consensuses_tree();
+    draw_visualization();
+    //show_consensuses_tree();
 //    show_sources_info_table();
 
 });
@@ -53,7 +53,65 @@ function add_consensuses_options(){
 }
 
 function draw_visualization(){
-    //alert('vis');
+    var cy = cytoscape({
+    container: document.getElementById('cy'),
+    elements: poagraph,
+    style: [
+      {
+        selector: 'node',
+        style: {
+          'label': 'data(nucleobase)',
+          'width': get_node_width,
+          'height': get_node_width,
+          'font-size': '4px',
+          'text-halign': 'center',
+          'text-valign': 'center',
+          'background-color' : 'white'
+        }
+      }, {
+        selector: 'edge',
+        style: {
+          'curve-style': 'haystack',
+          'label': 'data(title)',
+          'line-color': get_edge_label_color, //to differentiate consensuses
+          'width': get_edge_width, //to show popular edges
+      }
+    },{
+      selector: '.aligned',
+      style: {
+        'line-style': 'dotted',
+      }
+    },{
+      selector: '.consensus',
+      style: {
+        'curve-style': 'bezier',
+      }
+    }
+    ],
+    layout: {
+      name: 'preset'
+    }
+  });
+
+  function get_edge_label_color(ele) {
+
+    consensus_id = ele.data('consensus');
+    if(consensus_id === -1){
+      return 'white';
+    }
+    return consensuses_colors[consensus_id%consensuses_colors.length];
+  }
+
+  function get_edge_width(ele) {
+    edge_width = Math.abs(Math.log(ele.data('weight') * 20))
+    return edge_width.toString() + 'px';
+  }
+
+  function get_node_width(ele) {
+    node_width = Math.abs(Math.log(ele.data('weight') * 1000))
+    return node_width.toString() + 'px';
+  }
+
 }
 
 function show_consensuses_tree(){

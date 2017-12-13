@@ -11,7 +11,7 @@ def convert_maf_to_po(file_name,
                         min_comp = 0.1,
                         range='[0.9,1]',
                         tresholds='[1,0.9,0.8,0.7]',
-                      fasta_option = False,
+                      fasta_option=False,
                       data_type='ebola'):
     start = time.clock()
     m = Multialignment(data_type)

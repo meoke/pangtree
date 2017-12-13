@@ -1,5 +1,5 @@
 - drzewo
-- jeden plik
++ jeden plik
 - po kliknięciu na dany bąbel drzewa pokazać tabelkę zawierającą (njabliższe) rozgałęzienie jego sekwencji
 - automatyczny dobór treshold - pierwsza odległość, która przekracza średnią * MNOŻNIK (kolejny parametr, np. 1,1) odległość między compatibility dla danego consensusu
 	- dodatkowy parametr stopu (np. 0.999) - jeśli automatycznie dobrany treshold wyjdzie powyżej tej wartości, to już nie rodzielać tej grupy na drobniejsze
