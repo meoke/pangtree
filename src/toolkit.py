@@ -1,6 +1,7 @@
 from pathlib import Path
 import shutil
 
+
 def get_file_name_without_extension(file_path):
     return Path(file_path).stem
 
@@ -18,7 +19,7 @@ def create_next_sibling_dir(path, sibling_dir_prefix):
     existing_prefixed_dirs = sorted(list(parent_path.glob("*"+sibling_dir_prefix+"*")))
     if existing_prefixed_dirs:
         try:
-            last_dir_suffix = int((existing_prefixed_dirs[-1].stem).split("_")[-1])
+            last_dir_suffix = int(existing_prefixed_dirs[-1].stem.split("_")[-1])
         except:
             last_dir_suffix = -1
     else:
@@ -68,8 +69,8 @@ def change_file_extension(path, suffix):
     return str(Path(path).with_suffix(suffix))
 
 
-def get_real_path(relativePath):
-    return Path().cwd().joinpath(relativePath).resolve()
+def get_real_path(relative_path):
+    return Path().cwd().joinpath(relative_path).resolve()
 
 
 def copy_dir(source, destination):

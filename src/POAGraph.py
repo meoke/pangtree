@@ -188,7 +188,6 @@ class POAGraph(object):
 
         return ('\n'.join(po_lines), new_to_original_nodes_IDs)
 
-
     def calculate_compatibility_to_consensuses(self, consensusID=None, level=-1):
         def get_compatibility(source, consensus):
             common_nodes_count = len(set(source.nodes_IDs) & set(consensus.nodes_IDs))
@@ -289,7 +288,6 @@ class POAGraph(object):
                 current_node_ID += 1
             node_currentID_to_global_ID[self.nodes[node_global_ID].currentID] = node_global_ID
         return (source_current_ID_to_global_ID, node_currentID_to_global_ID)
-
 
     def activate_sources_with_consensus_unassigned(self):
         currentID=0

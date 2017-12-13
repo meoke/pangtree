@@ -14,17 +14,18 @@ class Multialignment(object):
         self.name = None
         self.output_dir = None
         self.poagraphs = None
-        self.data_type=data_type
+        self.data_type = data_type
 
     def build_multialignment_from_maf(self, maf_file_name, merge_option):
-        print("Buliding multialignment from " + maf_file_name + "...")
-        def _get_mutlialignment_name(input_file_name):
+        print("Building multialignment from " + maf_file_name + "...")
+
+        def _get_multialignment_name(input_file_name):
             return t.get_file_name_without_extension(input_file_name)
 
         def _get_output_dir(input_file_name):
             return t.create_next_sibling_dir(input_file_name, "converted")
 
-        self.name = _get_mutlialignment_name(maf_file_name)
+        self.name = _get_multialignment_name(maf_file_name)
         self.output_dir = _get_output_dir(maf_file_name)
         self.poagraphs = maf_reader.parse_to_poagraphs(file_path=maf_file_name,
                                                        merge_option=merge_option,
@@ -42,8 +43,7 @@ class Multialignment(object):
 
         self.name = _get_mutlialignment_name(po_file_name)
         self.output_dir = _get_output_dir(po_file_name)
-        self.poagraphs = [po_reader.parse_to_poagraph(file_path = po_file_name,
-                                                        output_dir = self.output_dir)]
+        self.poagraphs = [po_reader.parse_to_poagraph(file_path=po_file_name, output_dir=self.output_dir)]
 
     def generate_consensus(self, option, hbmin, min_comp, comp_range, tresholds):
         for i, p in enumerate(self.poagraphs):
@@ -64,25 +64,25 @@ class Multialignment(object):
                 self._run_tree_consensus_generation(consensus_output_dir, visualization_output_dir, p, hbmin, min_comp, cutoff_search_range, tresholds)
 
     def _run_single_consensus_generation(self, consensus_output_dir, poagraph, hbmin, consensus_name = "consensus"):
-        print("PO generation")
+        print('PO generation')
         poagraph_as_po = poagraph.generate_po()
 
         file_name = t.join_path(consensus_output_dir, consensus_name)
         hb_file_name = t.change_file_extension(file_name,  '.hb')
         with open(file_name, 'w') as output_po_file:
             output_po_file.write(poagraph_as_po)
-        print("Run poa")
+        print('Run poa')
         run(['../bin/poa', '-read_msa', file_name, '-hb', '-po', hb_file_name, '../bin/blosum80.mat', '-hbmin',
              str(hbmin)])
 
-        print("Parse po to poagraph")
+        print('Parse po to poagraph')
         new_poagraph = po_reader.parse_to_poagraph(hb_file_name, poagraph.path)
 
-        print("Check if consensus found")
+        print('Check if consensus found')
         if all([src.consensusID == -1 for src in new_poagraph.sources]):
             raise NoConsensusFound()
 
-        print("Calculate compatibility")
+        print('Calculate compatibility')
         for source in new_poagraph.sources:
             source.consensuses = [source.consensusID]
 

@@ -8,11 +8,12 @@ from POAGraph import POAGraph
 from Sequence import Source
 from Node import Node
 
+
 def parse_to_poagraphs(file_path, merge_option, multialignment_name, output_dir):
     maf_blocks = [*AlignIO.parse(file_path, "maf")]
     block_to_merge_ranges = _prepare_merge_ranges(merge_option, len(maf_blocks))
 
-    poagraphs  = []
+    poagraphs = []
     for i, r in enumerate(block_to_merge_ranges):
         current_range_blocks = [*islice(maf_blocks, r.start, r.stop)]
         poagraph = POAGraph(name=multialignment_name,
@@ -123,7 +124,7 @@ def _update_source_sequence_info(source_ID, node_ID, sources):
     sources[source_ID].add_node_ID(node_ID)
 
 
-def _pretty_numpy_nucletides_matrix_printer(numpy_matrix):
+def _pretty_numpy_nucleotides_matrix_printer(numpy_matrix):
     for i in range(numpy_matrix.shape[1]):
         row = []
         for j in range(numpy_matrix.shape[0]):
