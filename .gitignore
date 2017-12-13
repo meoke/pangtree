@@ -101,6 +101,7 @@ ENV/
 .mypy_cache/
 
 tests/files/*/converted*
+tests/files/*/test*
 examples/mycoplasma/*/*/consensus/*
 tests/files/mycoplasma_po/consensus
 tests/files/mycoplasma_po

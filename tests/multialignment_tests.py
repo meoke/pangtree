@@ -33,7 +33,7 @@ class MultialignmentTests(unittest.TestCase):
 
     def test_find_cutoff_value(self):
         compatibilities = [0.99, 0.998, 0.7, 0.1, 1, 0.82, 0.5, 0.67, 0.99, 0.23]
-        comp_range = (0.6, 0.9)
+        comp_range = (60, 90)
         expected_cutoff_value = 0.998
 
         m = Multialignment()
