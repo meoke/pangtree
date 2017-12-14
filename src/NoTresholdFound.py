@@ -1,0 +1,2 @@
+class NoTresholdFound(Exception):
+    pass

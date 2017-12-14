@@ -78,3 +78,6 @@ def copy_dir(source, destination):
         remove_dir(destination)
     shutil.copytree(source, destination)
 
+
+def mean(numbers):
+    return float(sum(numbers)) / max(len(numbers), 1)

@@ -10,6 +10,8 @@ def convert_maf_to_po(file_name,
                         hbmin=0.9,
                         min_comp=0.1,
                         range='[0.9,1]',
+                        multiplier=1,
+                        stop=0.99,
                         tresholds='[1,0.9,0.8,0.7]',
                       fasta_option=False,
                       data_type='ebola'):
@@ -25,7 +27,9 @@ def convert_maf_to_po(file_name,
                              hbmin=hbmin,
                              min_comp=min_comp,
                              comp_range=range,
-                             tresholds=tresholds)
+                             tresholds=tresholds,
+                             multiplier=multiplier,
+                             stop=stop)
     if fasta_option:
         m.generate_fasta_files()
 
@@ -33,7 +37,7 @@ def convert_maf_to_po(file_name,
     processing_time = time.strftime('%H:%M:%S', time.gmtime(end - start))
 
     if consensus_option or draw_poagraph_option:
-        m.generate_visualization(consensus_option, draw_poagraph_option, processing_time, tresholds, consensus_option)
+        m.generate_visualization(consensus_option, draw_poagraph_option, processing_time, m.tresholds, consensus_option)
 
 
 

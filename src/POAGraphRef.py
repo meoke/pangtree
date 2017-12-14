@@ -1,5 +1,5 @@
 class POAGraphRef(object):
-    def __init__(self, sourcesIDs = None, consensus = None):
+    def __init__(self, sourcesIDs=None, consensus=None):
         self.sourcesIDs = sourcesIDs if sourcesIDs else []
         self.consensus = consensus
 

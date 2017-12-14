@@ -14,8 +14,8 @@ def convert(args):
     if args.hbmin and args.c != 1:
         parser.error("Option -hbmin requires -c = 1.")
 
-    if (args.min_comp or args.r or args.t) and not args.c:
-        parser.error("Options -min-comp, -r and -t require -c.")
+    if (args.min_comp or args.r or args.t or args.multiplier or args.stop) and not args.c:
+        parser.error("Options -min-comp, -r, -t, -multiplier and -stop require -c.")
 
     if args.r and not fullmatch('\[\d+\,\d+\]', str(args.r)):
         parser.error('Wrong formatting for RANGE')
@@ -32,6 +32,10 @@ def convert(args):
             min_comp = float(args.min_comp)
             if min_comp < 0 or hbmin > 1:
                 parser.error('MIN_COMP must be in range [0,1].')
+        if args.stop:
+            stop = float(args.stop)
+            if stop < 0 or stop > 1:
+                parser.error('STOP must be a float in range [0,1].')
     except ValueError:
         parser.error('HBMIN and MIN_COMP must be a float in range [0,1].')
 
@@ -45,6 +49,8 @@ def convert(args):
                                 args.draw,
                                 args.c,
                                 args.r,
+                                args.multiplier,
+                                args.stop,
                                 args.t,
                                 args.hbmin,
                                 args.min_comp,
@@ -78,7 +84,7 @@ parser_converter.add_argument('-fasta',
                               help='generate FASTA files')
 parser_converter.add_argument('-c',
                               metavar='CONSENSUS_OPTION',
-                              required = False,
+                              required=False,
                               type=int,
                               help='consensus generation algorithm')
 parser_converter.add_argument('-hbmin',
@@ -93,6 +99,16 @@ parser_converter.add_argument('-r',
                               type=str,
                               required=False,
                               help='percentage range [v1,v2] of compatibilities where the biggest change will be searched, format (v1, v2 - floats): [v1,v2]')
+parser_converter.add_argument('-multiplier',
+                              metavar='MULTIPLIER',
+                              required=False,
+                              type=float,
+                              help='Used in the tree consensus generation algorithm to establish consensuses levels.')
+parser_converter.add_argument('-stop',
+                              metavar='STOP_BRANCHING',
+                              required=False,
+                              type=float,
+                              help='Used in the tree consensus generation algorithm to stop tree branching: [0, 1]')
 parser_converter.add_argument('-t',
                               type=str,
                               required=False,

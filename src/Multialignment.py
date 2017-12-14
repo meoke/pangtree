@@ -5,6 +5,7 @@ import po_reader as po_reader
 from POAGraphVisualizator import POAGraphVisualizator
 from Sequence import Consensus
 from NoConsensusFound import *
+from NoTresholdFound import *
 from POAGraphRef import POAGraphRef
 import os
 
@@ -15,6 +16,7 @@ class Multialignment(object):
         self.output_dir = None
         self.poagraphs = None
         self.data_type = data_type
+        self.tresholds = []
 
     def build_multialignment_from_maf(self, maf_file_name, merge_option):
         print("Building multialignment from " + maf_file_name + "...")
@@ -45,7 +47,7 @@ class Multialignment(object):
         self.output_dir = _get_output_dir(po_file_name)
         self.poagraphs = [po_reader.parse_to_poagraph(file_path=po_file_name, output_dir=self.output_dir)]
 
-    def generate_consensus(self, option, hbmin, min_comp, comp_range, tresholds):
+    def generate_consensus(self, option, hbmin, min_comp, comp_range, tresholds, multiplier, stop):
         for i, p in enumerate(self.poagraphs):
             consensus_output_dir = t.create_child_dir(p.path, "consensus")
             visualization_output_dir = t.create_child_dir(p.path, "visualization")
@@ -61,7 +63,7 @@ class Multialignment(object):
                 print('Generate tree based consensus (hbmin=', str(hbmin), ', min_comp=', str(min_comp), ', range=', comp_range, ', tresholds=', tresholds)
                 cutoff_search_range = self._convert_str_to_tuple(comp_range)
                 tresholds = self._convert_str_to_list(tresholds)
-                self._run_tree_consensus_generation(consensus_output_dir, visualization_output_dir, p, hbmin, min_comp, cutoff_search_range, tresholds)
+                self._run_tree_consensus_generation(consensus_output_dir, visualization_output_dir, p, hbmin, min_comp, cutoff_search_range, tresholds, multiplier, stop)
 
     def _run_single_consensus_generation(self, consensus_output_dir, poagraph, hbmin, consensus_name = "consensus"):
         print('PO generation')
@@ -171,7 +173,7 @@ class Multialignment(object):
 
         return poagraph
 
-    def _run_tree_consensus_generation(self, consensus_output_dir, visualization_output_dir, poagraph, hbmin, min_comp, comp_range, tresholds):
+    def _run_tree_consensus_generation(self, consensus_output_dir, visualization_output_dir, poagraph, hbmin, min_comp, comp_range, tresholds, multiplier, stop):
         def current_comp_higher_then_earlier(comp, srcID, other_poagraphRefs):
             for poagraphRef in other_poagraphRefs:
                 if poagraphRef.consensus.compatibility_to_sources[srcID] > comp:
@@ -188,16 +190,17 @@ class Multialignment(object):
             all_sources = [sourceID for sourceID in poagraphRef.sourcesIDs]
             return sorted(list(set(all_sources) - set(classified_sources)))
 
-        # def enumerate_consensuses(poagraphRefs):
-        #     for i, poagraphRef in enumerate(poagraphRefs):
-        #         poagraphRef.consensus.currentID = i
-        #         poagraphRef.consensus.name = "CONSENS" + str(i)
+        def not_all_sources_finished(finished_sources):
+            return sorted(finished_sources) != [srcID for srcID in poagraph.sources]
 
+        tresholds = None  # TODO usunąć, bo i tak tresholds mają wylecieć
         hbmin = 0.2
         poagraphRefs = [POAGraphRef([src.currentID for src in poagraph.sources])]
         current_treshold_poagraphRefs = []
-        for tr, treshold in enumerate(tresholds):
-            print("NEW TRESHOLD " + str(treshold))
+        finished_sources = []
+        #for tr, treshold in enumerate(tresholds):
+        while not_all_sources_finished(finished_sources):
+            print("TRESHOLD NUMBER " + str(len(self.tresholds)))
 
             for pr, poagraphRef in enumerate(poagraphRefs):
                 iteration_id = -1
@@ -210,7 +213,7 @@ class Multialignment(object):
                                                               poagraph=poagraph,
                                                               sourcesIDs_to_be_used=sourcesIDs_to_classify,
                                                               hbmin=hbmin,
-                                                              consensus_name="all_consensus_" + str(tr) + '_' + str(pr) + '_' + str(iteration_id))
+                                                              consensus_name="all_consensus_" + str(len(self.tresholds)) + '_' + str(pr) + '_' + str(iteration_id))
                     except NoConsensusFound:
                          print("NO MORE CONSENSUSES FOUND")
                          break
@@ -232,11 +235,17 @@ class Multialignment(object):
                                                                                   poagraph=poagraph,
                                                                                   sourcesIDs_to_be_used=maximally_consensus_compatible_sources_IDs,
                                                                                   hbmin=hbmin,
-                                                                                  consensus_name="top_consensus_" + str(tr) + '_' + str(pr) + '_' + str(iteration_id))
+                                                                                  consensus_name="top_consensus_" + str(len(self.tresholds)) + '_' + str(pr) + '_' + str(iteration_id))
                     except NoConsensusFound:
                          print("NO TOP CONSENSUSES FOUND")
-                         break
+                         finished_sources += sourcesIDs_to_classify
 
+                    treshold = 1-self._find_current_treshold(top_consensus.compatibility_to_sources, multiplier)
+                    if treshold > stop:
+                        print("Treshold exceeded stop value.")
+                        break
+
+                    self.tresholds.append(treshold)
                     consensus_compatible_sources_IDs = [srcID for srcID, comp in enumerate(top_consensus.compatibility_to_sources) if
                                                         comp >= treshold and
                                                         current_comp_higher_then_earlier(comp, srcID, current_treshold_poagraphRefs)]
@@ -250,7 +259,7 @@ class Multialignment(object):
                 consensusID = len(poagraph.consensuses)
                 consensus.currentID = consensusID
                 consensus.name = "CONSENS" + str(consensusID)
-                consensus.level = tr
+                consensus.level = len(self.tresholds)
                 poagraph.add_consensus(consensus)
                 for srcID in poagraphRef.sourcesIDs:
                     poagraph.sources[srcID].consensuses.append(consensusID)
@@ -261,6 +270,7 @@ class Multialignment(object):
         for i, poagraphRef in enumerate(poagraphRefs):
             for srcID in poagraphRef.sourcesIDs:
                 poagraph.sources[srcID].consensusID = i
+        return tresholds
 
     def _get_top_consensus_for_poagraph_part(self, consensus_output_dir, poagraph, sourcesIDs_to_be_used, hbmin, consensus_name="consensus"):
         print("PO generation for particular sources IDs")
@@ -335,12 +345,24 @@ class Multialignment(object):
                 abs(max_compatibility-compatibility) <= mean_compatibility*min_comp and
                 is_best_compatibility_for_source(sourceID, compatibility)]
 
+    def _find_current_treshold(self, compatibilities, multiplier):
+        p = [*map(lambda x: 1-x, compatibilities)]
+        mean_compatibility = t.mean(p)
+        level_boundary = mean_compatibility * multiplier
+        for c in sorted(p):
+            if c > level_boundary:
+                return c
+            else:
+                continue
+        raise NoTresholdFound()
+
     def generate_visualization(self, consensuses_comparison=False, graph_visualization=False, processing_time='', tresholds= '', consensus_algorithm=False):
         print('Generate visualization...')
         for p in self.poagraphs:
             vizualization_output_dir = t.create_child_dir(p.path, "visualization")
             visualizator = POAGraphVisualizator(p, vizualization_output_dir, self.data_type)
-            visualizator.generate(consensuses_comparison, graph_visualization, processing_time, self._convert_str_to_list(tresholds), consensus_algorithm)
+            # visualizator.generate(consensuses_comparison, graph_visualization, processing_time, self._convert_str_to_list(tresholds), consensus_algorithm)
+            visualizator.generate(consensuses_comparison, graph_visualization, processing_time, self.tresholds, consensus_algorithm)
 
 
 

@@ -18,6 +18,8 @@ class EndToEndTest(unittest.TestCase):
                                     consensus_option=3,
                                         min_comp=0.01,
                                         range='[90,100]',
+                                        multiplier=1,
+                                        stop=0.6,
                                         tresholds='[0.6, 0.7]',
                                     fasta_option=False,
                                     data_type='ebola'
