@@ -28,7 +28,7 @@ class Source(Sequence):
     def __init__(self, currentID, name, title, active = True, nodes_IDs = None, consensusID = -1, weight = -1):
         Sequence.__init__(self, currentID=currentID, name=name, title=title, active=active, nodes_IDs=nodes_IDs)
         self.consensusID = consensusID
-        self.consensuses = []
+        self.consensuses = {}
         self.weight = weight
 
     def __str__(self):
@@ -51,6 +51,7 @@ class Consensus(Sequence):
         self.level = -1
         self.sources_IDs = sources_IDs if sources_IDs else []
         self.parent_consensus = []
+        self.children = []
 
     def __str__(self):
         return Sequence.__str__(self) + """ compatibility_to_sources: {0}""".format(  self.compatibility_to_sources)

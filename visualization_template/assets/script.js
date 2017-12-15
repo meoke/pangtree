@@ -4,12 +4,24 @@ document.addEventListener("DOMContentLoaded", function() {
     add_poagraph_info();
     add_consensuses_options();
     draw_visualization();
-    //show_consensuses_tree();
-//    show_sources_info_table();
-
+    show_consensuses_tree();
+    //show_sources_info_table();
+    setup_slider();
 });
 
+function setup_slider(){
+    var slider = document.getElementById("slider");
+    var output = document.getElementById("slider_value");
+    output.innerHTML = slider.value;
+    slider.oninput = function() {
+        output.innerHTML = this.value;
+    }
 
+    var show_table_btn = document.getElementById("show_table_btn");
+    show_table_btn.onclick = function() {
+        show_sources_info_table(slider.value);
+    }
+}
 
 function add_poagraph_info(){
     name_p = document.getElementById('name');
@@ -32,24 +44,23 @@ function add_poagraph_info(){
 }
 
 function add_consensuses_options(){
-    for(i=0; i<info.levels.length;i++)
-    {
-        let level_value = info.levels[i];
-        let level_index = i;
-        var radioBtn_p = $('<p></p>')
-
-        var radioBtn = $('<input type="radio" name="level" value="' + String(level_value) + '">');
-        radioBtn.click( function(){
-            show_sources_info_table(level_index);
-        });
-        radioBtn.appendTo(radioBtn_p);
-
-        var radioBtn_label = $('<label>' + String(level_value) + '</label>')
-        radioBtn_label.appendTo(radioBtn_p);
-
-        radioBtn_p.appendTo('#consensuses_info');
-    }
-
+//    for(i=0; i<info.levels.length;i++)
+//    {
+//        let level_value = info.levels[i];
+//        let level_index = i;
+//        var radioBtn_p = $('<p></p>')
+//
+//        var radioBtn = $('<input type="radio" name="level" value="' + String(level_value) + '">');
+//        radioBtn.click( function(){
+//            show_sources_info_table(level_index);
+//        });
+//        radioBtn.appendTo(radioBtn_p);
+//
+//        var radioBtn_label = $('<label>' + String(level_value) + '</label>')
+//        radioBtn_label.appendTo(radioBtn_p);
+//
+//        radioBtn_p.appendTo('#consensuses_info');
+//    }
 }
 
 function draw_visualization(){
@@ -115,9 +126,152 @@ function draw_visualization(){
 }
 
 function show_consensuses_tree(){
-//    var example_tree = "(((EELA:0.150276,CONGERA:0.213019):0.230956,(EELB:0.263487,CONGERB:0.202633):0.246917):0.094785,((CAVEFISH:0.451027,(GOLDFISH:0.340495,ZEBRAFISH:0.390163):0.220565):0.067778,((((((NSAM:0.008113,NARG:0.014065):0.052991,SPUN:0.061003,(SMIC:0.027806,SDIA:0.015298,SXAN:0.046873):0.046977):0.009822,(NAUR:0.081298,(SSPI:0.023876,STIE:0.013652):0.058179):0.091775):0.073346,(MVIO:0.012271,MBER:0.039798):0.178835):0.147992,((BFNKILLIFISH:0.317455,(ONIL:0.029217,XCAU:0.084388):0.201166):0.055908,THORNYHEAD:0.252481):0.061905):0.157214,LAMPFISH:0.717196,((SCABBARDA:0.189684,SCABBARDB:0.362015):0.282263,((VIPERFISH:0.318217,BLACKDRAGON:0.109912):0.123642,LOOSEJAW:0.397100):0.287152):0.140663):0.206729):0.222485,(COELACANTH:0.558103,((CLAWEDFROG:0.441842,SALAMANDER:0.299607):0.135307,((CHAMELEON:0.771665,((PIGEON:0.150909,CHICKEN:0.172733):0.082163,ZEBRAFINCH:0.099172):0.272338):0.014055,((BOVINE:0.167569,DOLPHIN:0.157450):0.104783,ELEPHANT:0.166557):0.367205):0.050892):0.114731):0.295021)"
-    var tree = d3.layout.phylotree().svg(d3.select("#tree_display"));
-    tree(d3.layout.newick_parser(newick)).layout();
+
+
+    var margin = {top: 20, right: 120, bottom: 20, left: 120},
+	width = 1260 - margin.right - margin.left,
+	height = 700 - margin.top - margin.bottom;
+
+    var i = 0,
+        duration = 750,
+        root;
+
+    var tree = d3.layout.tree()
+        .size([height, width]);
+
+    var diagonal = d3.svg.diagonal()
+        .projection(function(d) { return [d.y, d.x]; });
+
+//    var tree_svg = document.getElementById("tree_display");
+    var svg = d3.select("#tree_display").attr("width", width + margin.right + margin.left)
+        .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    //root = treeData[0];
+    root = treeData[0];
+    root.x0 = height / 2;
+    root.y0 = 0;
+
+    update(root);
+
+    d3.select(self.frameElement).style("height", "500px");
+
+    function update(source) {
+
+      // Compute the new tree layout.
+      var nodes = tree.nodes(root).reverse(),
+          links = tree.links(nodes);
+
+      // Normalize for fixed-depth.
+      nodes.forEach(function(d) { d.y = d.depth * 180; });
+
+      // Update the nodes…
+      var node = svg.selectAll("g.node")
+          .data(nodes, function(d) { return d.id || (d.id = ++i); });
+
+      // Enter any new nodes at the parent's previous position.
+      var nodeEnter = node.enter().append("g")
+          .attr("class", "node")
+          .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
+          .on("click", click);
+
+      nodeEnter.append("circle")
+          .attr("r", 1e-6)
+          .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
+
+      nodeEnter.append("text")
+          .attr("x", function(d) { return d.children || d._children ? -13 : 13; })
+          .attr("dy", ".35em")
+          .attr("text-anchor", function(d) { return d.children || d._children ? "end" : "start"; })
+          .text(function(d) { return d.name; })
+          .style("fill-opacity", 1e-6);
+
+      // Transition nodes to their new position.
+      var nodeUpdate = node.transition()
+          .duration(duration)
+          .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; });
+
+      nodeUpdate.select("circle")
+          .attr("r", 10)
+          .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
+
+      nodeUpdate.select("text")
+          .style("fill-opacity", 1);
+
+      // Transition exiting nodes to the parent's new position.
+      var nodeExit = node.exit().transition()
+          .duration(duration)
+          .attr("transform", function(d) { return "translate(" + source.y + "," + source.x + ")"; })
+          .remove();
+
+      nodeExit.select("circle")
+          .attr("r", 1e-6);
+
+      nodeExit.select("text")
+          .style("fill-opacity", 1e-6);
+
+      // Update the links…
+      var link = svg.selectAll("path.link")
+          .data(links, function(d) { return d.target.id; });
+
+      // Enter any new links at the parent's previous position.
+      link.enter().insert("path", "g")
+          .attr("class", "link")
+          .attr("d", function(d) {
+            var o = {x: source.x0, y: source.y0};
+            return diagonal({source: o, target: o});
+          });
+
+      // Transition links to their new position.
+      link.transition()
+          .duration(duration)
+          .attr("d", diagonal);
+
+      // Transition exiting nodes to the parent's new position.
+      link.exit().transition()
+          .duration(duration)
+          .attr("d", function(d) {
+            var o = {x: source.x, y: source.y};
+            return diagonal({source: o, target: o});
+          })
+          .remove();
+
+      // Stash the old positions for transition.
+      nodes.forEach(function(d) {
+        d.x0 = d.x;
+        d.y0 = d.y;
+      });
+    }
+
+    function click(d) {
+      childrennames = []
+      if(d.children)
+      {
+        for(var i; i<d.children.length;i++)
+      {
+        childrennames.push(d.children[i].name)
+      }
+      show_node_info_table(childrennames)
+      } else
+      {
+      for(var i; i<d._children.length;i++)
+      {
+        childrennames.push(d._children[i].name)
+      }
+      show_node_info_table(childrennames)
+      }
+
+      if (d.children) {
+        d._children = d.children;
+        d.children = null;
+      } else {
+        d.children = d._children;
+        d._children = null;
+      }
+      update(d);
+
+    }
 }
 
 function show_sources_info_table(level_index){
@@ -135,16 +289,17 @@ function show_sources_info_table(level_index){
     var head_title = header_row.insertCell(2);
     var head_group = header_row.insertCell(3);
     var head_bundle_id = header_row.insertCell(4);
-    var consensuses_count = consensuses.c[level_index].data.length;
+    var cses = get_consensuses_for_table(level_index);
+    var consensuses_count = cses.length;
     head_id.innerHTML = "ID"
     head_name.innerHTML = "Name"
     head_title.innerHTML = "Title"
     head_group.innerHTML = "Group"
     head_bundle_id.innerHTML = "Bundle ID"
 
-    for(var i=0; i< consensuses_count; i++){
-    var cons_compatibility = header_row.insertCell(5+i);
-    cons_compatibility.innerHTML = consensuses.c[level_index].data[i].name;
+    for(var i=0; i< cses.length; i++){
+        var cons_compatibility = header_row.insertCell(5+i);
+        cons_compatibility.innerHTML = cses[i].name;
     }
     body = document.createElement('tbody')
 
@@ -161,18 +316,117 @@ function show_sources_info_table(level_index){
         name.innerHTML = sources.data[j]['name'];
         title.innerHTML = sources.data[j]['title'];
         group.innerHTML = (sources.data[j]['group'].length) ? sources.data[j]['group'] : 'not defined';
-        bundle_id.innerHTML = sources.data[j]['bundle_ID'][level_index];
+
+        var sorted_levels_keys = Object.keys(sources.data[j]['bundle_ID']).sort()
+        for(var k=0; k<sorted_levels_keys.length ; k++){
+            if(sorted_levels_keys[k] > level_index){
+                bundle_id.innerHTML = sources.data[j]['bundle_ID'][sorted_levels_keys[k]];
+                break;
+            }
+        }
 
 
-        for(var k=0;k<consensuses.c[level_index].data.length; k++){
+        for(var k=0;k<cses.length; k++){
             var compatibility = row.insertCell(5+k);
-            c = consensuses.c[level_index].data[k]['sources_compatibility'][j]
+            c = cses[k]['sources_compatibility'][j];
             compatibility.innerHTML = c;
         }
     }
- table.appendChild(body)
- table.createTFoot()
+    table.appendChild(body)
+    table.createTFoot()
     consensus_info_div.appendChild(table)
     sources_info_div.appendChild(consensus_info_div);
     sorttable.makeSortable(table);
+}
+
+function show_node_info_table(ids){
+    var sources_info_div = document.getElementById("node_info");
+    sources_info_div.innerHTML = ids;
+    console.log(ids);
+    var consensus_info_div = document.createElement('div')
+    consensus_info_div.setAttribute("class", "consensus_info")
+
+//    var table = document.createElement('table');
+//    table.className = "sortable";
+//    var header  = table.createTHead();
+//    var header_row = header.insertRow(0);
+//    var head_id = header_row.insertCell(0);
+//    var head_name = header_row.insertCell(1);
+//    var head_title = header_row.insertCell(2);
+//    var head_group = header_row.insertCell(3);
+//    var head_bundle_id = header_row.insertCell(4);
+//    var cses = get_consensuses_for_table(level_index);
+//    var consensuses_count = cses.length;
+//    head_id.innerHTML = "ID"
+//    head_name.innerHTML = "Name"
+//    head_title.innerHTML = "Title"
+//    head_group.innerHTML = "Group"
+//    head_bundle_id.innerHTML = "Bundle ID"
+//
+//    for(var i=0; i< cses.length; i++){
+//        var cons_compatibility = header_row.insertCell(5+i);
+//        cons_compatibility.innerHTML = cses[i].name;
+//    }
+//    body = document.createElement('tbody')
+//
+//
+//
+//    for(var j=0;j<sources.data.length;j++){
+//        var row = body.insertRow(j);
+//        var id = row.insertCell(0);
+//        var name = row.insertCell(1);
+//        var title = row.insertCell(2);
+//        var group =row.insertCell(3)
+//        var bundle_id = row.insertCell(4);
+//        id.innerHTML = j;
+//        name.innerHTML = sources.data[j]['name'];
+//        title.innerHTML = sources.data[j]['title'];
+//        group.innerHTML = (sources.data[j]['group'].length) ? sources.data[j]['group'] : 'not defined';
+//
+//        var sorted_levels_keys = Object.keys(sources.data[j]['bundle_ID']).sort()
+//        for(var k=0; k<sorted_levels_keys.length ; k++){
+//            if(sorted_levels_keys[k] > level_index){
+//                bundle_id.innerHTML = sources.data[j]['bundle_ID'][sorted_levels_keys[k]];
+//                break;
+//            }
+//        }
+//
+//
+//        for(var k=0;k<cses.length; k++){
+//            var compatibility = row.insertCell(5+k);
+//            c = cses[k]['sources_compatibility'][j];
+//            compatibility.innerHTML = c;
+//        }
+//    }
+//    table.appendChild(body)
+//    table.createTFoot()
+//    consensus_info_div.appendChild(table)
+    sources_info_div.appendChild(consensus_info_div);
+ //   sorttable.makeSortable(table);
+}
+
+function get_consensuses_for_table(level_index){
+    var consensuses_for_table = []
+    var closed = []
+    for(var i=0;i<consensuses.c.length; i++){
+        c = consensuses.c[i];
+        if(c.level > level_index)
+        {
+            var cc = 0;
+            for(cc=0; cc<closed.length; cc++)
+            {
+                if(closed[cc].id == c.parent)
+                {
+                    closed.push(c);
+                    break;
+                }
+            }
+            if(cc == closed.length)
+            {
+                consensuses_for_table.push(c);
+                closed.push(c);
+            }
+        }
+    }
+    return consensuses_for_table;
 }

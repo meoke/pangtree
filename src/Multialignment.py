@@ -263,6 +263,10 @@ class Multialignment(object):
 
                     top_consensus.compatibility_to_sources = [comp for i, comp in enumerate(top_consensus.compatibility_to_sources) if top_consensus.sources_IDs[i] in consensus_compatible_sources_IDs]
                     top_consensus.sources_IDs = consensus_compatible_sources_IDs
+
+                    #dołożenie żeby były wszystkie consensusy w tym poagrafie?
+                    ##
+
                     new_poagraphRef = POAGraphRef(consensus_compatible_sources_IDs, top_consensus)
                     current_treshold_poagraphRefs.append(new_poagraphRef)
                     sourcesIDs_to_classify = get_not_yet_classified_sources_IDs(poagraphRef, current_treshold_poagraphRefs)
@@ -280,7 +284,7 @@ class Multialignment(object):
                 poagraph.add_consensus(consensus)
                 poagraph.calculate_compatibility_to_consensuses(consensusID=len(poagraph.consensuses) - 1)
                 for srcID in poagraphRef.sourcesIDs:
-                    poagraph.sources[srcID].consensuses.append(consensusID)
+                    poagraph.sources[srcID].consensuses[consensus.level] = consensusID
             poagraphRefs = []
             for p in current_treshold_poagraphRefs:
                 if p.sourcesIDs[0] in finished_sources:

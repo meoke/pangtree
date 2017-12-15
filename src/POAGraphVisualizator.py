@@ -96,7 +96,7 @@ class POAGraphVisualizator(object):
 
     def _get_info_as_json(self, processing_time, tresholds, consensus_algorithm):
         return """var info = 
-                {{ name: '{0}', \nconsensus_algorithm: {1}, \nrunning_time:'{2}', \nsources_count: {3}, \nnodes_count: {4}, \nsequences_per_node: {5}, \nlevels: {6}}}; \nvar newick = '{7}';""".format \
+                {{ name: '{0}', \nconsensus_algorithm: {1}, \nrunning_time:'{2}', \nsources_count: {3}, \nnodes_count: {4}, \nsequences_per_node: {5}, \nlevels: {6}}}; \nvar treeData = {7};""".format \
                     (self.poagraph.name,
                      consensus_algorithm if consensus_algorithm else '',
                      processing_time,
@@ -104,7 +104,7 @@ class POAGraphVisualizator(object):
                      len(self.poagraph.nodes),
                      self._get_mean_sources_per_node(),
                      tresholds,
-                     self._get_consensuses_as_newick(tresholds)
+                     self._get_consensuses_as_tree(tresholds)
                      )
 
     def _get_mean_sources_per_node(self):
@@ -145,8 +145,57 @@ class POAGraphVisualizator(object):
                                                  consensus.parent_consensus,
                                                  consensus.level)
 
-    def _get_consensuses_as_newick(self, tresholds):
-        return "(((EELA:0.150276,CONGERA:0.213019):0.230956,(EELB:0.263487,CONGERB:0.202633):0.246917):0.094785,((CAVEFISH:0.451027,(GOLDFISH:0.340495,ZEBRAFISH:0.390163):0.220565):0.067778,((((((NSAM:0.008113,NARG:0.014065):0.052991,SPUN:0.061003,(SMIC:0.027806,SDIA:0.015298,SXAN:0.046873):0.046977):0.009822,(NAUR:0.081298,(SSPI:0.023876,STIE:0.013652):0.058179):0.091775):0.073346,(MVIO:0.012271,MBER:0.039798):0.178835):0.147992,((BFNKILLIFISH:0.317455,(ONIL:0.029217,XCAU:0.084388):0.201166):0.055908,THORNYHEAD:0.252481):0.061905):0.157214,LAMPFISH:0.717196,((SCABBARDA:0.189684,SCABBARDB:0.362015):0.282263,((VIPERFISH:0.318217,BLACKDRAGON:0.109912):0.123642,LOOSEJAW:0.397100):0.287152):0.140663):0.206729):0.222485,(COELACANTH:0.558103,((CLAWEDFROG:0.441842,SALAMANDER:0.299607):0.135307,((CHAMELEON:0.771665,((PIGEON:0.150909,CHICKEN:0.172733):0.082163,ZEBRAFINCH:0.099172):0.272338):0.014055,((BOVINE:0.167569,DOLPHIN:0.157450):0.104783,ELEPHANT:0.166557):0.367205):0.050892):0.114731):0.295021)"
+    def _get_consensuses_as_tree(self, tresholds):
+        def get_consensus_node(consensus):
+            if not consensus.children:
+                return """{{name: '{0}', \nparent: '{1}'}}""".format(consensus.name, consensus.parent_consensus)
+
+
+            children = []
+            for child in consensus.children:
+                children.append(get_consensus_node(child))
+
+            children = ",".join(children)
+            return """{{name: '{0}', \nparent:'{1}', \nchildren:[{2}]}}""".format(consensus.name, str(consensus.parent_consensus), children)
+
+        for c in self.poagraph.consensuses:
+            if c.parent_consensus != -1:
+                self.poagraph.consensuses[c.parent_consensus].children.append(c)
+
+        ccc = []
+        for c in self.poagraph.consensuses:
+            if c.parent_consensus == -1:
+                ccc.append(get_consensus_node(c))
+
+        ccc_json = ",".join(ccc)
+
+        return """[{{name: 'All sequences', \nparent: 'null', \nchildren: [{0}]}}]""".format(ccc_json)
+        # return """[
+        #           {
+        #             "name": "Top Level",
+        #             "parent": "null",
+        #             "children": [
+        #               {
+        #                 "name": "Level 2: A",
+        #                 "parent": "Top Level",
+        #                 "children": [
+        #                   {
+        #                     "name": "Son of A",
+        #                     "parent": "Level 2: A"
+        #                   },
+        #                   {
+        #                     "name": "Daughter of A",
+        #                     "parent": "Level 2: A"
+        #                   }
+        #                 ]
+        #               },
+        #               {
+        #                 "name": "Level 2: B",
+        #                 "parent": "Top Level"
+        #               }
+        #             ]
+        #           }
+        #         ]"""
 
     def _get_poagraph_data_as_json(self):
         poagraph_nodes_data = []
