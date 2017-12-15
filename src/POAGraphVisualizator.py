@@ -22,6 +22,10 @@ class POAGraphVisualizator(object):
         self.generate_common_files(consensuses_comparison, graph_visualization)
 
     def generate_consensus_comparison(self):
+        for c in self.poagraph.consensuses:
+            if c.parent_consensus != -1:
+                self.poagraph.consensuses[c.parent_consensus].children.append(c)
+
         sources_data_path = t.join_path(self.output_dir, str(self.poagraph.name)+'_sources_data.js')
         with open(sources_data_path, 'w') as sources_data_output:
             sources_data_output.write(self._get_sources_data_as_json())
@@ -68,6 +72,7 @@ class POAGraphVisualizator(object):
         return """  var sources = {{ data: [\n{0}]}};""".format(sources)
 
     def _get_consensuses_data_as_json(self):
+
         consensues_json = []
         for consensus in self.poagraph.consensuses:
             consensues_json.append(self._get_consensus_json(consensus))
@@ -135,7 +140,8 @@ class POAGraphVisualizator(object):
                                                     len(source.nodes_IDs))
 
     def _get_consensus_json(self, consensus):
-        return """{{ id: {0},\tname:'{1}',\ttitle: '{2}',\tsources_compatibility: {3},\tlength: {4},\tsources: {5},\tparent: {6},\tlevel:{7}}}""".format\
+        consensus_children = [c.currentID for c in consensus.children]
+        return """{{ id: {0},\tname:'{1}',\ttitle: '{2}',\tsources_compatibility: {3},\tlength: {4},\tsources: {5},\tparent: {6},\tlevel:{7}, \tchildren:{8}}}""".format\
                                                 (consensus.currentID,
                                                  consensus.name,
                                                  consensus.title,
@@ -143,7 +149,8 @@ class POAGraphVisualizator(object):
                                                  len(consensus.nodes_IDs),
                                                  consensus.sources_IDs,
                                                  consensus.parent_consensus,
-                                                 consensus.level)
+                                                 consensus.level,
+                                                 consensus_children)
 
     def _get_consensuses_as_tree(self, tresholds):
         def get_consensus_node(consensus):
@@ -158,9 +165,9 @@ class POAGraphVisualizator(object):
             children = ",".join(children)
             return """{{name: '{0}', \nparent:'{1}', \nchildren:[{2}]}}""".format(consensus.name, str(consensus.parent_consensus), children)
 
-        for c in self.poagraph.consensuses:
-            if c.parent_consensus != -1:
-                self.poagraph.consensuses[c.parent_consensus].children.append(c)
+        # for c in self.poagraph.consensuses:
+        #     if c.parent_consensus != -1:
+        #         self.poagraph.consensuses[c.parent_consensus].children.append(c)
 
         ccc = []
         for c in self.poagraph.consensuses:
