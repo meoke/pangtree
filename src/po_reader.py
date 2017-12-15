@@ -22,10 +22,10 @@ def read_single_consensus(file_path, consensusID=0):
     print('\tRead consensus ' + str(consensusID) + ' from ' + file_path)
     with open(file_path) as po:
         po_lines = po.readlines()
-        p = POAGraph(name = _read_value(po_lines[1]),
-                     title = _read_value(po_lines[2]),
-                     version = _read_value(po_lines[0]),
-                     path = '')
+        p = POAGraph(name=_read_value(po_lines[1]),
+                     title=_read_value(po_lines[2]),
+                     version=_read_value(po_lines[0]),
+                     path='')
         _read_sequence_info_from_po_lines(p, po_lines)
         _read_nodes_from_po_lines(p, po_lines, len(p.sources)-1)
     if not p.consensuses:

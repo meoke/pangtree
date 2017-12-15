@@ -188,7 +188,7 @@ class POAGraph(object):
 
         return ('\n'.join(po_lines), new_to_original_nodes_IDs)
 
-    def calculate_compatibility_to_consensuses(self, consensusID=None, level=-1):
+    def calculate_compatibility_to_consensuses(self, consensusID=None, sources_IDs = None, level=-1):
         def get_compatibility(source, consensus):
             common_nodes_count = len(set(source.nodes_IDs) & set(consensus.nodes_IDs))
             source_nodes_count = len(source.nodes_IDs)
@@ -199,8 +199,14 @@ class POAGraph(object):
         else:
             consensuses_to_calculate = [self.consensuses[consensusID]]
 
+        if not sources_IDs:
+            srcs = [source for source in self.sources]
+        else:
+            srcs = [src for src in self.sources if src.currentID in sources_IDs]
+
         for consensus in consensuses_to_calculate:
-            consensus.compatibility_to_sources = [get_compatibility(source, consensus) for source in self.sources]
+            # consensus.compatibility_to_sources = [get_compatibility(source, consensus) for source in self.sources]
+            consensus.compatibility_to_sources = [get_compatibility(source, consensus) for source in srcs]
 
     def _calc_partial_sources_weights(self, sourcesIDs_to_use, new_to_original_nodes_IDs):
         def mean(numbers):
