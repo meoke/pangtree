@@ -16,6 +16,7 @@ var treeData = [
           {
             "name": "Level 2: A",
             "parent": "Top Level",
+            "val": "wartosc",
             "children": [
               {
                 "name": "Son of A",

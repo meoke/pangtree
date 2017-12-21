@@ -153,9 +153,23 @@ class POAGraphVisualizator(object):
                                                  consensus_children)
 
     def _get_consensuses_as_tree(self, tresholds):
+        # def get_leaves(sources_ids, parent):
+        #     l =  """[""";
+        #     kk = []
+        #     for i in sources_ids:
+        #         kk.append("""{{val: 1, name: '{0}', \nparent: '{1}'}}""".format("_".join(["source", str(i)]), parent))
+        #     kk = ", ".join(kk)
+        #     l += kk
+        #     l+= """]"""
+        #     return l
+
         def get_consensus_node(consensus):
             if not consensus.children:
-                return """{{name: '{0}', \nparent: '{1}'}}""".format(consensus.name, consensus.parent_consensus)
+                return """{{name: '{0}', \nparent: '{1}', \nval: {2}, \nsources: {3}}}""".format(consensus.name,
+                                                                                                  consensus.parent_consensus,
+                                                                                                  consensus.level,
+                                                                                                  #get_leaves(consensus.sources_IDs, consensus.currentID)),
+                                                                                                  consensus.sources_IDs)
 
 
             children = []
@@ -163,7 +177,7 @@ class POAGraphVisualizator(object):
                 children.append(get_consensus_node(child))
 
             children = ",".join(children)
-            return """{{name: '{0}', \nparent:'{1}', \nchildren:[{2}]}}""".format(consensus.name, str(consensus.parent_consensus), children)
+            return """{{name: '{0}', \nparent:'{1}', \nval: {2}, \nchildren:[{3}]}}""".format(consensus.name, str(consensus.parent_consensus), consensus.level, children)
 
         # for c in self.poagraph.consensuses:
         #     if c.parent_consensus != -1:
@@ -176,7 +190,7 @@ class POAGraphVisualizator(object):
 
         ccc_json = ",".join(ccc)
 
-        return """[{{name: 'All sequences', \nparent: 'null', \nchildren: [{0}]}}]""".format(ccc_json)
+        return """[{{name: 'All sequences', \nparent: 'null', \nval: 0, \nchildren: [{0}]}}]""".format(ccc_json)
         # return """[
         #           {
         #             "name": "Top Level",

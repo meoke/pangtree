@@ -14,8 +14,8 @@ def convert(args):
     if args.hbmin and args.c != 1:
         parser.error("Option -hbmin requires -c = 1.")
 
-    if (args.min_comp or args.r or args.t or args.multiplier or args.stop) and not args.c:
-        parser.error("Options -min-comp, -r, -t, -multiplier and -stop require -c.")
+    if (args.min_comp or args.r or args.t or args.multiplier or args.stop or args.re_consensus) and not args.c:
+        parser.error("Options -min-comp, -r, -t, -multiplier, -stop and -re_consensus require -c.")
 
     if args.r and not fullmatch('\[\d+\,\d+\]', str(args.r)):
         parser.error('Wrong formatting for RANGE')
@@ -51,6 +51,7 @@ def convert(args):
                                 args.r,
                                 args.multiplier,
                                 args.stop,
+                                args.re_consensus,
                                 args.t,
                                 args.hbmin,
                                 args.min_comp,
@@ -109,6 +110,11 @@ parser_converter.add_argument('-stop',
                               required=False,
                               type=float,
                               help='Used in the tree consensus generation algorithm to stop tree branching: [0, 1]')
+parser_converter.add_argument('-re_consensus',
+                              metavar='RECONSIDER_CONSENSUS_ASSIGNMENT',
+                              action='store_true',
+                              required=False,
+                              help='Used in the tree consensus generation algorithm to reconsider consensus assignement after every iteration.')
 parser_converter.add_argument('-t',
                               type=str,
                               required=False,

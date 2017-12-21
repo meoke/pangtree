@@ -12,6 +12,7 @@ def convert_maf_to_po(file_name,
                         range='[0.9,1]',
                         multiplier=1,
                         stop=0.99,
+                        re_consensus = True,
                         tresholds='[1,0.9,0.8,0.7]',
                       fasta_option=False,
                       data_type='ebola'):
@@ -29,7 +30,8 @@ def convert_maf_to_po(file_name,
                              comp_range=range,
                              tresholds=tresholds,
                              multiplier=multiplier,
-                             stop=stop)
+                             stop=stop,
+                             re_consensus=re_consensus)
     if fasta_option:
         m.generate_fasta_files()
 

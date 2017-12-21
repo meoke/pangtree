@@ -19,8 +19,9 @@ class EndToEndTest(unittest.TestCase):
                                         min_comp=0.01,
                                         range='[90,100]',
                                         multiplier=1,
-                                        stop=0.8,
+                                        stop=0.99,
                                         tresholds='[0.6, 0.7]',
+                                        re_consensus = True,
                                     fasta_option=False,
                                     data_type='ebola'
                                     )
