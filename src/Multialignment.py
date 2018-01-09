@@ -7,7 +7,6 @@ from Sequence import Consensus
 from NoConsensusFound import *
 from NoTresholdFound import *
 from POAGraphRef import POAGraphRef
-import os
 
 
 class Multialignment(object):
