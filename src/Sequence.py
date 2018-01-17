@@ -55,17 +55,17 @@ class Source(Sequence):
 
 
 
-# class Consensus(Sequence):
-#     def __init__(self, currentID, name, title, active=True, nodes_IDs=None, compatibility_to_sources=None, sources_IDs=None):
-#         Sequence.__init__(self, currentID=currentID, name=name, title=title, active=active, nodes_IDs=nodes_IDs)
-#         self.compatibility_to_sources = compatibility_to_sources if compatibility_to_sources else {}
-#         self.level = -1
-#         self.sources_IDs = sources_IDs if sources_IDs else []
-#         self.parent_consensus = []
-#         self.children = []
-#
-#     def __str__(self):
-#         return Sequence.__str__(self) + """ compatibility_to_sources: {0}""".format(  self.compatibility_to_sources)
-#
-#     def __eq__(self, other):
-#         return Sequence.__eq__(self, other) and self.compatibility_to_sources == other.compatibility_to_sources
+class Consensus(Sequence):
+    def __init__(self, ID, name, title, nodes_IDs=np.array([]), compatibility_to_sources=np.array([]), sources_IDs=np.array([]), parent_consensus=None, children=None, max_nodes_count=0):
+        Sequence.__init__(self, ID=ID, name=name, title=title, nodes_IDs=nodes_IDs, max_nodes_count=max_nodes_count)
+        self.compatibility_to_sources = compatibility_to_sources if compatibility_to_sources.size else np.array([], dtype=int)
+        self.level = -1
+        self.sources_IDs = sources_IDs if sources_IDs.size else np.array([], dtype=int)
+        self.parent_consensus = parent_consensus
+        self.children = children if children else []
+
+    def __str__(self):
+        return Sequence.__str__(self) + """ compatibility_to_sources: {0}""".format(  self.compatibility_to_sources)
+
+    def __eq__(self, other):
+        return Sequence.__eq__(self, other) and np.array_equal(self.compatibility_to_sources, other.compatibility_to_sources)

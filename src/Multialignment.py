@@ -26,31 +26,26 @@ class Multialignment(object):
         """
         print("Building multialignment from " + maf_file_path + "...") #todo logging
 
-        def _get_multialignment_name(input_file_name):
-            return t.get_file_name_without_extension(input_file_name)
-
-        def _get_output_dir(input_file_name):
-            return t.create_next_sibling_dir(input_file_name, "converted")
-
-        self.name = _get_multialignment_name(maf_file_path)
-        self.output_dir = _get_output_dir(maf_file_path)
+        self.name = self._get_multialignment_name(maf_file_path)
+        self.output_dir = self._get_output_dir(maf_file_path)
         self.poagraphs = maf_reader.parse_to_poagraphs(file_path=maf_file_path,
                                                        merge_option=merge_option,
                                                        multialignment_name=self.name,
                                                        output_dir=self.output_dir)
 
-    # def build_multialignment_from_po(self, po_file_name):
-    #     print("Building multialignment from " + po_file_name + "...")
-    #
-    #     def _get_mutlialignment_name(input_file_name):
-    #         return t.get_file_name_without_extension(input_file_name)
-    #
-    #     def _get_output_dir(input_file_name):
-    #         return t.create_next_sibling_dir(input_file_name, "converted")
-    #
-    #     self.name = _get_mutlialignment_name(po_file_name)
-    #     self.output_dir = _get_output_dir(po_file_name)
-    #     self.poagraphs = [po_reader.parse_to_poagraph(file_path=po_file_name, output_dir=self.output_dir)]
+    def build_multialignment_from_po(self, po_file_name):
+        print("Building multialignment from " + po_file_name + "...") #todo logging
+
+        self.name = self._get_multialignment_name(po_file_name)
+        self.output_dir = self._get_output_dir(po_file_name)
+        self.poagraphs = [po_reader.parse_to_poagraph(file_path=po_file_name,
+                                                      output_dir=self.output_dir)]
+
+    def _get_multialignment_name(self, input_file_name):
+        return t.get_file_name_without_extension(input_file_name)
+
+    def _get_output_dir(self, input_file_name):
+        return t.create_next_sibling_dir(input_file_name, "converted")
     #
     # def generate_consensus(self, option, hbmin, min_comp, comp_range, tresholds, multiplier, stop, re_consensus):
     #     for i, p in enumerate(self.poagraphs):
