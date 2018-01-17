@@ -5,6 +5,7 @@ import os
 from re import fullmatch
 
 def convert(args):
+    # TODO moze te walidacje potrafi sam argparse zalatwic
     if args.format != 'maf' and args.format != 'po':
         parser.error('FILE FORMAT must be \'maf\' or \'po\'')
 
@@ -78,7 +79,7 @@ parser_converter.add_argument('-format',
 parser_converter.add_argument('-m',
                               metavar='MERGE_BLOCKS',
                               required=False,
-                              help='''default behaviour is to merge all blocks, where possible; \nprovide MERGE_BLOCKS if special way of merging the blocks is required; \npass [idx1:idx2, idx3:idx4] to choose range of blocks to be merged; \nIDs begin from 1.''')
+                              help='''default behaviour is to not merge at all the blocks; \nprovide MERGE_BLOCKS as "all" if you want to merge all block into one poagraf; if special way of merging the blocks is required \npass [idx1:idx2, idx3:idx4] to choose range of blocks to be merged; \nIDs begin from 1.''')
 parser_converter.add_argument('-fasta',
                               action='store_true',
                               required=False,
@@ -111,7 +112,6 @@ parser_converter.add_argument('-stop',
                               type=float,
                               help='Used in the tree consensus generation algorithm to stop tree branching: [0, 1]')
 parser_converter.add_argument('-re_consensus',
-                              metavar='RECONSIDER_CONSENSUS_ASSIGNMENT',
                               action='store_true',
                               required=False,
                               help='Used in the tree consensus generation algorithm to reconsider consensus assignement after every iteration.')

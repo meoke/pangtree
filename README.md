@@ -3,7 +3,7 @@
 ## Features
 * Conversion from MAF (Multiple Alignment Format) to PO (POAGraph representation file - check [See Lee, Grasso & Sharlow article](https://academic.oup.com/bioinformatics/article/18/3/452/236691/Multiple-sequence-alignment-using-partial-order) for details).
 * Conversion from MAF to FASTA.
-* Consensus generation from aligned sequences (MAF or PO input)
+* Consensus generation and visualization from aligned sequences (MAF or PO input)
 * POA Graph visualization (MAF or PO input)
 
 ## Dependencies
@@ -67,4 +67,11 @@ Setup Working Directory to .../pangenome/tests
 ### Running
 To run unittests from command line:
 python3 -m unittest end_to_end_tests.py
+
+### Examples
+
+#### Just read maf file to build internally POA graph with all maf blocks merged (by default)
+
+pangenome.py mln -f [FILE_NAME] -format maf
+
 

@@ -37,7 +37,7 @@ def convert_maf_to_po(file_name,
 
     end = time.clock()
     processing_time = time.strftime('%H:%M:%S', time.gmtime(end - start))
-
+    print(processing_time)
     if consensus_option or draw_poagraph_option:
         m.generate_visualization(consensus_option, draw_poagraph_option, processing_time, m.tresholds, consensus_option)
 

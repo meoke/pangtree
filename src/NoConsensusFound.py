@@ -1,2 +1,2 @@
-class NoConsensusFound(Exception):
-    pass
+# class NoConsensusFound(Exception):
+#     pass

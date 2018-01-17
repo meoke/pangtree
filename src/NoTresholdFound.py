@@ -1,2 +1,2 @@
-class NoTresholdFound(Exception):
-    pass
+# class NoTresholdFound(Exception):
+#     pass
