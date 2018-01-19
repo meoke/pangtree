@@ -31,11 +31,28 @@ def create_next_sibling_dir(path, sibling_dir_prefix):
     new_dir_path.mkdir()
     return new_dir_path.resolve()
 
+def get_next_child_file_name(path, child_file_prefix):
+    #parent_path = get_parentdir_name(path)
+    existing_prefixed_files = sorted(list(path.glob("*"+child_file_prefix+"*")))
+    if existing_prefixed_files:
+        try:
+            last_path_suffix = int(existing_prefixed_files[-1].stem.split("_")[-1])
+        except:
+            last_path_suffix = -1
+    else:
+        last_path_suffix = -1
+    new_file_suffix_value = last_path_suffix + 1
+    new_file_suffix = str(new_file_suffix_value) if new_file_suffix_value > 9 else '0' + str(new_file_suffix_value)
+    new_file_name = child_file_prefix.split('.')[0] + '_' + new_file_suffix + "." + child_file_prefix.split('.')[1]
+    new_file_path = path.joinpath(new_file_name)
+    return str(new_file_path)
 
 def create_child_dir(parent_path, dir_name):
     child_dir_path = Path(parent_path).joinpath(dir_name)
-    if child_dir_path.is_dir():
-        return child_dir_path.resolve()
+    if child_dir_path.exists():
+        return create_next_sibling_dir(child_dir_path, dir_name)
+    # if child_dir_path.is_dir():
+    #     return child_dir_path.resolve()
     child_dir_path.mkdir()
     return child_dir_path.resolve()
 

@@ -1,3 +1,7 @@
+import numpy as np
+import toolkit as t
+from POAGraphRef import POAGraphRef
+
 class POAGraph(object):
     def __init__(self, name, title, version, path, sources = None, consensuses = None, nodes = None):
         self.name = name
@@ -46,6 +50,202 @@ class POAGraph(object):
         # for i, node in enumerate(self.nodes):
         #     if i in source.nodes_IDs:
         #         self.nodes[i].sources.add(new_source_ID)
+
+    def save_as_po(self, output_dir, sources_IDs):
+        def write_introduction_data(output_po_file, active_nodes_count):
+            output_po_file.writelines('VERSION=' + self.version + '\n')
+            output_po_file.writelines('NAME=' + self.name + '\n')
+            output_po_file.writelines('TITLE=' + self.title + '\n')
+            output_po_file.writelines('LENGTH=' + str(active_nodes_count) + '\n')
+            output_po_file.writelines('SOURCECOUNT=' + str(len(sources_IDs)) + '\n')
+
+        def write_source_sequences(output_po_file, nodes):
+            def get_source_info(source):
+                return ['SOURCENAME=' + source.name,
+                        '\n',
+                        " ".join(['SOURCEINFO=', str(len(source.nodes_IDs)),
+                        str((nodes['temp_nodeID'][nodes['org_nodeID'] == source.nodes_IDs[0]])[0]),
+                        str(source.weight),
+                        str(-1),
+                        str(source.title)]),
+                        '\n']
+
+            self._calc_partial_sources_weights(sources_IDs, nodes)
+            for srcID in sources_IDs:
+                output_po_file.writelines(get_source_info(self.sources[srcID]))
+
+        def write_nodes(output_po_file, nodes, sources):
+            def get_node_info(node):
+                L_to_return = ['L' + str((nodes['temp_nodeID'][nodes['org_nodeID'] == in_nodeID])[0]) for in_nodeID in node.in_nodes
+                               if in_nodeID in nodes['org_nodeID'][nodes['active']==True]]
+                S_to_return = ['S' + str((sources['temp_srcID'][sources['org_srcID']== srcID])[0]) for srcID in sources_IDs
+                               if node.ID in self.sources[srcID].nodes_IDs]
+                if node.aligned_to:
+                    if node.aligned_to in nodes['org_nodeID'][nodes['active']==True]:
+                        A_to_return = "A" + str(nodes['temp_nodeID'][nodes['org_nodeID'] == node.aligned_to][0])
+                    else:
+                        A_to_return = ""
+                else:
+                    A_to_return = ""
+
+                return [node.base, ':',
+                        "".join(L_to_return),
+                        "".join(S_to_return),
+                        A_to_return,
+                        "\n"
+                        ]
+
+
+            for node in self.nodes:
+                if node.ID in np.where(nodes['active'] == True)[0]:
+                    output_po_file.writelines(get_node_info(node))
+
+        nodes = np.zeros(shape=(len(self.nodes)), dtype = [('org_nodeID', np.uint32),
+                                                           ('temp_nodeID', np.uint32),
+                                                           ('active', np.bool),
+                                                           ('sources_count', np.uint16)])
+        for i, src in enumerate(self.sources):
+            nodes['active'][src.nodes_IDs] = True
+            nodes['sources_count'][src.nodes_IDs] = nodes['sources_count'][src.nodes_IDs] + 1
+
+        active_nodes_count = len(nodes[nodes['active'] == True])
+        nodes['org_nodeID'][nodes['active'] == True] = np.where(nodes['active'] == True)[0]
+        nodes['temp_nodeID'][nodes['active'] == True] = range(len(nodes[nodes['active']==True]))
+
+
+
+        sources = np.zeros(shape=(len(self.sources)), dtype = [('org_srcID', np.uint32),
+                                                               ('temp_srcID', np.uint32),
+                                                               ('active', np.bool)])
+
+        sources['active'][sources_IDs] = True
+        sources['org_srcID'][sources['active'] == True] = np.where(sources['active'] == True)[0]
+        sources['temp_srcID'][sources['active'] == True] = range(len(sources[sources['active']==True]))
+
+        po_file_name = t.get_next_child_file_name(output_dir, self.name + str(".po"))
+        with open(po_file_name, 'w') as output_po_file:
+            write_introduction_data(output_po_file, active_nodes_count)
+            write_source_sequences(output_po_file, nodes)
+            write_nodes(output_po_file, nodes, sources)
+
+        return po_file_name, nodes
+    # output_po_file.write(poagraph_as_po)
+
+#     def generate_source_sequences_data(active_sources_IDs):
+#         def get_source_info(source):
+#             return '\n'.join(['SOURCENAME=' + source.name,
+#                               ' '.join(['SOURCEINFO=', str(len(source.nodes_IDs)),
+#                                         str(min(source.nodes_IDs)),
+#                                         str(source.weight),
+#                                         str(source.consensusID),
+#                                         str(source.title)])
+#                               ])
+#         self._calc_sources_weights()
+#         return [get_source_info(self.sources[src_ID]) for src_ID in active_sources_IDs]
+#
+#     def generate_nodes_data(active_nodes_IDs):
+#         def get_aligned_nodes_info(node):
+#             sorted_aligned_nodes = sorted([self.nodes[aligned_node_ID].currentID for aligned_node_ID in node.aligned_to if self.nodes[aligned_node_ID].currentID != -1])
+#             if sorted_aligned_nodes:
+#                 if node.currentID > sorted_aligned_nodes[-1]:
+#                     to_return = "A" + str(sorted_aligned_nodes[0])
+#                     return to_return
+#                 to_return = "A" + str(next(node_id for node_id in sorted_aligned_nodes if node_id > node.currentID))
+#             else:
+#                 to_return =""
+#             return to_return
+#
+#         def get_node_info(i, node, nodes_count):
+#             print("\r\t\tNode " + str(i + 1) + '/' + str(nodes_count), end='')
+#             l_to_return = ['L' + str(self.nodes[in_node_ID].currentID) for in_node_ID in node.in_nodes if in_node_ID in active_nodes_IDs]
+#             to_return = "".join([node.base, ":",
+#                             "".join(l_to_return),
+#                             "".join(['S' + str(self.sources[src_ID].currentID) for src_ID in node.sources if self.sources[src_ID].active]),
+#                             get_aligned_nodes_info(node)])
+#
+#             return to_return
+#
+#         return [get_node_info(i, node, len(self.nodes)) for i, node in enumerate(self.nodes) if node.currentID != -1]
+#
+#     active_sources_IDs = [i for i, src in enumerate(self.sources) if src.active]
+#     active_nodes_IDs = [i for i, node in enumerate(self.nodes) if node.currentID != -1]
+#     #by default no consensuses and any connected data is printed
+#     po_lines = []
+#
+#     po_lines += (generate_introductory_data(active_sources_IDs, active_nodes_IDs))
+#     po_lines += (generate_source_sequences_data(active_sources_IDs))
+#     po_lines += (generate_nodes_data(active_nodes_IDs))
+#
+#     return '\n'.join(po_lines)
+
+    def _calc_partial_sources_weights(self, sourcesIDs, nodes):
+        def get_source_weight(source):
+            if not source.ID in sourcesIDs:
+                return -1
+            else:
+                return np.mean(np.array([nodes['sources_count'][nodes['org_nodeID'] == node_ID][0] for node_ID in source.nodes_IDs]))
+
+        def normalize_weight(weight, max_weight, min_weight):
+            if weight == -1:
+                return -1
+            if max_weight - min_weight == 0:
+                return 1
+            return int(float(format(round((weight - min_weight) / (max_weight - min_weight), 2), '.2f')) * 100)
+
+        weights = [*map(lambda source: get_source_weight(source), self.sources)]
+        max_weight = max(weights)
+        min_weight = min(set(weights) - set([-1]))
+
+        normalized_weights = [*map(lambda weight: normalize_weight(weight, max_weight, min_weight), weights)]
+        for i, source in enumerate(self.sources):
+            source.weight = normalized_weights[i]
+
+        # def _calc_partial_sources_weights(self, sourcesIDs_to_use, new_to_original_nodes_IDs):
+        #     def mean(numbers):
+        #         return float(sum(numbers)) / max(len(numbers), 1)
+        #
+        #     def get_source_weight(source, nodes_sources_count):
+        #         if not source.currentID in sourcesIDs_to_use:
+        #             return -1
+        #         else:
+        #             return mean([nodes_sources_count[node_ID] for node_ID in source.nodes_IDs])
+        #
+        #     def normalize_weight(weight, max_weight, min_weight):
+        #         if weight == -1:
+        #             return -1
+        #         if max_weight - min_weight == 0:
+        #             return 1
+        #         return int(float(format(round((weight - min_weight) / (max_weight - min_weight), 2), '.2f')) * 100)
+        #
+        #
+        #     nodes_sources_count = {}
+        #     for new_nodeID, org_nodeID in new_to_original_nodes_IDs.items():
+        #         nodes_sources_count[org_nodeID] = len([srcID for srcID in self.nodes[org_nodeID].sources if srcID in sourcesIDs_to_use])
+        #
+        #     weights = [*map(lambda source: get_source_weight(source, nodes_sources_count), self.sources)]
+        #     max_weight = max(weights)
+        #     min_weight = min(set(weights) - set([-1]))
+        #
+        #     normalized_weights = [*map(lambda weight: normalize_weight(weight, max_weight, min_weight), weights)]
+        #
+        #     for i, source in enumerate(self.sources):
+        #         source.weight = normalized_weights[i]
+        #
+
+    # def run_tree_consensus_generation(self):
+    #     consensus_output_dir = t.create_child_dir(self.path, "tconsensus")
+    #     hbmin = 0.2
+    #
+    #     parent_tree_node = POAGraphRef(sources_IDs=np.array(range(len(self.sources))))
+    #     tree_nodes_to_process = [parent_tree_node]
+    #
+    #     finished_sources_IDs = np.empty(len(self.sources), dtype=np.int16)
+    #     finished_sources_IDs.fill(-1)
+    #     while -1 in finished_sources_IDs:
+    #         new_tree_nodes_to_process = []
+    #         for tree_node in tree_nodes_to_process:
+    #             new_tree_nodes_to_process = cons.process_tree_node(tree_node, consensus_output_dir, consensus_output_dir)
+
 
     # def add_consensus(self, consensus):
     #     self.consensuses.append(consensus)
@@ -212,36 +412,7 @@ class POAGraph(object):
     #         # consensus.compatibility_to_sources = [get_compatibility(source, consensus) for source in self.sources]
     #         consensus.compatibility_to_sources = [get_compatibility(source, consensus) for source in srcs]
     #
-    # def _calc_partial_sources_weights(self, sourcesIDs_to_use, new_to_original_nodes_IDs):
-    #     def mean(numbers):
-    #         return float(sum(numbers)) / max(len(numbers), 1)
-    #
-    #     def get_source_weight(source, nodes_sources_count):
-    #         if not source.currentID in sourcesIDs_to_use:
-    #             return -1
-    #         else:
-    #             return mean([nodes_sources_count[node_ID] for node_ID in source.nodes_IDs])
-    #
-    #     def normalize_weight(weight, max_weight, min_weight):
-    #         if weight == -1:
-    #             return -1
-    #         if max_weight - min_weight == 0:
-    #             return 1
-    #         return int(float(format(round((weight - min_weight) / (max_weight - min_weight), 2), '.2f')) * 100)
-    #
-    #
-    #     nodes_sources_count = {}
-    #     for new_nodeID, org_nodeID in new_to_original_nodes_IDs.items():
-    #         nodes_sources_count[org_nodeID] = len([srcID for srcID in self.nodes[org_nodeID].sources if srcID in sourcesIDs_to_use])
-    #
-    #     weights = [*map(lambda source: get_source_weight(source, nodes_sources_count), self.sources)]
-    #     max_weight = max(weights)
-    #     min_weight = min(set(weights) - set([-1]))
-    #
-    #     normalized_weights = [*map(lambda weight: normalize_weight(weight, max_weight, min_weight), weights)]
-    #
-    #     for i, source in enumerate(self.sources):
-    #         source.weight = normalized_weights[i]
+
     #
     # def _calc_sources_weights(self):
     #     def mean(numbers):
@@ -327,3 +498,4 @@ class POAGraph(object):
     #
     #
     #
+

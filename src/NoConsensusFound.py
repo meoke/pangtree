@@ -1,2 +1,0 @@
-# class NoConsensusFound(Exception):
-#     pass

@@ -4,9 +4,11 @@ import maf_reader as maf_reader
 import po_reader as po_reader
 #from POAGraphVisualizator import POAGraphVisualizator
 #from Sequence import Consensus
-from NoConsensusFound import *
-from NoTresholdFound import *
-#from POAGraphRef import POAGraphRef
+#from Errors NoConsensusFound import *
+#from NoTresholdFound import *
+from POAGraphRef import POAGraphRef
+import numpy as np
+import consensus as cons
 
 
 class Multialignment(object):
@@ -46,24 +48,42 @@ class Multialignment(object):
 
     def _get_output_dir(self, input_file_name):
         return t.create_next_sibling_dir(input_file_name, "converted")
-    #
-    # def generate_consensus(self, option, hbmin, min_comp, comp_range, tresholds, multiplier, stop, re_consensus):
-    #     for i, p in enumerate(self.poagraphs):
-    #         consensus_output_dir = t.create_child_dir(p.path, "consensus")
-    #         visualization_output_dir = t.create_child_dir(p.path, "visualization")
-    #         if option is 1:
-    #             print('Generate consensuses (hbmin=', str(hbmin) + ') in one iteration...')
-    #             new_poagraph = self._run_single_consensus_generation(consensus_output_dir, p, hbmin)
-    #             new_poagraph.path = p.path
-    #             self.poagraphs[i] = new_poagraph
-    #         elif option is 2:
-    #             print('Generate consensuses (hbmin=', str(hbmin), ', min_comp=', str(min_comp), ') iteratively...')
-    #             self._run_iterative_consensus_generation(consensus_output_dir, p, hbmin, min_comp)
-    #         elif option is 3:
-    #             print('Generate tree based consensus (hbmin=', str(hbmin), ', min_comp=', str(min_comp), ', range=', comp_range, ', tresholds=', tresholds)
-    #             cutoff_search_range = self._convert_str_to_tuple(comp_range)
-    #             tresholds = self._convert_str_to_list(tresholds)
-    #             self._run_tree_consensus_generation(consensus_output_dir, visualization_output_dir, p, hbmin, min_comp, cutoff_search_range, multiplier, stop, re_consensus)
+
+    def generate_consensus(self, option, hbmin, min_comp, comp_range, tresholds, multiplier, stop, re_consensus):
+        for i, p in enumerate(self.poagraphs):
+            #consensus_output_dir = t.create_child_dir(p.path, "consensus")
+            #visualization_output_dir = t.create_child_dir(p.path, "visualization")
+            if option is 1:
+                print('Generate consensuses (hbmin=', str(hbmin) + ') in one iteration...') # todo logging
+                # new_poagraph = self._run_single_consensus_generation(consensus_output_dir, p, hbmin)
+                # new_poagraph.path = p.path
+                # self.poagraphs[i] = new_poagraph
+            # elif option is 2:
+            #     print('Generate consensuses (hbmin=', str(hbmin), ', min_comp=', str(min_comp), ') iteratively...')
+            #     self._run_iterative_consensus_generation(consensus_output_dir, p, hbmin, min_comp)
+            elif option is 3:
+                #print('Generate tree based consensus (hbmin=', str(hbmin), ', min_comp=', str(min_comp), ', range=', comp_range, ', tresholds=', tresholds)
+                cutoff_search_range = self._convert_str_to_tuple(comp_range)
+                #tresholds = self._convert_str_to_list(tresholds)
+                #self._run_tree_consensus_generation(consensus_output_dir, visualization_output_dir, p, hbmin, min_comp, cutoff_search_range, multiplier, stop, re_consensus)
+                for poagraph in self.poagraphs:
+                    consensus_output_dir = t.create_child_dir(poagraph.path, "tconsensus")
+                    hbmin = 0.2
+
+                    parent_tree_node = POAGraphRef(sources_IDs=np.array(range(len(poagraph.sources))))
+                    tree_nodes_to_process = [parent_tree_node]
+
+                    finished_sources_IDs = np.empty(len(poagraph.sources), dtype=np.int16)
+                    finished_sources_IDs.fill(-1)
+                    while -1 in finished_sources_IDs:
+                        new_tree_nodes_to_process = []
+                        for tree_node in tree_nodes_to_process: #poagraphref, hbmin, comp_range, multiplier, output_dir):
+                            new_tree_nodes_to_process = cons.process_tree_node(poagraph,
+                                                                               tree_node,
+                                                                               hbmin,
+                                                                               cutoff_search_range,
+                                                                               multiplier,
+                                                                               consensus_output_dir)
     #
     # def _run_single_consensus_generation(self, consensus_output_dir, poagraph, hbmin, consensus_name = "consensus"):
     #     print('PO generation')
@@ -337,8 +357,8 @@ class Multialignment(object):
     #     last_consensus.sources_IDs = srcs
     #     return last_consensus
     #
-    # def _convert_str_to_tuple(self, comp_range):
-    #     return eval(comp_range[1:-1])
+    def _convert_str_to_tuple(self, comp_range):
+        return eval(comp_range[1:-1])
     #
     # def _convert_str_to_list(self, tresholds):
     #     return eval(tresholds)

@@ -3,7 +3,7 @@ import numpy as np
 from POAGraph import POAGraph
 from Sequence import Consensus, Source
 from Node import Node
-# from NoConsensusFound import *
+from Errors import NoConsensusFound
 
 
 def parse_to_poagraph(file_path, output_dir):
@@ -59,10 +59,12 @@ def _read_sequence_info(po_file_handler):
 
     return sources, consensuses
 
+
 def _read_node_parameters(node, code_letter):
     pattern = '{0}\d+'.format(code_letter)
     values_with_prefix_letters = re.findall(pattern, node)
     return [int(letter_value[1:]) for letter_value in values_with_prefix_letters]
+
 
 def fill_nodes_info(poagraph, po_file_handler):
     def assign_this_node_to_its_sequences(sequences_IDs, node_ID):
@@ -139,20 +141,21 @@ def fill_nodes_info(poagraph, po_file_handler):
 #
 #     update_nodes_with_aligned_nodes(aligned_nodes_sets)
 
-# def read_single_consensus(file_path, consensusID=0):
-#     print('\tRead consensus ' + str(consensusID) + ' from ' + file_path)
-#     with open(file_path) as po:
-#         po_lines = po.readlines()
-#         p = POAGraph(name=_read_value(po_lines[1]),
-#                      title=_read_value(po_lines[2]),
-#                      version=_read_value(po_lines[0]),
-#                      path='')
-#         _read_sequence_info_from_po_lines(p, po_lines)
-#         _read_nodes_from_po_lines(p, po_lines, len(p.sources)-1)
-#     if not p.consensuses:
-#         raise NoConsensusFound
-#     else:
-#         return p.consensuses[consensusID]
+def read_consensus(po_file_path, consensusID=0):
+    print('\tRead consensus ' + str(consensusID) + ' from ' + po_file_path)
+    poagraph = parse_to_poagraph(po_file_path, output_dir="")
+    # with open(file_path) as po:
+    #     po_lines = po.readlines()
+    #     p = POAGraph(name=_read_value(po_lines[1]),
+    #                  title=_read_value(po_lines[2]),
+    #                  version=_read_value(po_lines[0]),
+    #                  path='')
+    #     _read_sequence_info_from_po_lines(p, po_lines)
+    #     _read_nodes_from_po_lines(p, po_lines, len(p.sources)-1)
+    if not poagraph.consensuses:
+        raise NoConsensusFound
+    else:
+        return poagraph.consensuses[consensusID]
 #
 # def _spread_aligned_nodes(nodes):
 #     column_alignment_cycle = set()
