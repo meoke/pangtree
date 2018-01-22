@@ -3,7 +3,7 @@ import toolkit as t
 from POAGraphRef import POAGraphRef
 
 class POAGraph(object):
-    def __init__(self, name, title, version, path, sources = None, consensuses = None, nodes = None):
+    def __init__(self, name, title, version, path, sources = None, consensuses = None, nodes = None, ns=np.array([])):
         self.name = name
         self.title = title
         self.version = version
@@ -11,6 +11,7 @@ class POAGraph(object):
         self.sources = sources if sources else []
         self.consensuses = consensuses if consensuses else []
         self.nodes = nodes if nodes else []
+        self.ns = ns if ns.size else np.array([])
 
     def __eq__(self, other):
         return (self.name == other.name
@@ -19,23 +20,26 @@ class POAGraph(object):
                 #and self.path == other.path
                 and self.nodes == other.nodes
                 and self.sources == other.sources
-                and self.consensuses == other.consensuses)
+                and self.consensuses == other.consensuses
+                and np.array_equal(self.ns, other.ns))
 
     def __str__(self):
         return """  Name: {0}, Title: {1}, Version: {2}, Path: {3},
                     Sources:\n{4},
                     Consensuses:\n{5},
-                    Nodes:\n{6}""".format(self.name,
+                    Nodes:\n{6},
+                    NS:\n{7}""".format(self.name,
                                          self.title,
                                          self.version,
                                          self.path,
                                          "\n".join([str(source) for source in self.sources]),
                                          "\n".join([str(consensus) for consensus in self.consensuses]),
-                                         "\n".join([str(node) for node in self.nodes]))
+                                         "\n".join([str(node) for node in self.nodes]),
+                                         str(self.ns))
 
-    def clean(self):
-        for source in self.sources:
-            source.truncate_nodes_ids()
+    # def clean(self):
+    #     for source in self.sources:
+    #         source.truncate_nodes_ids()
 
     def add_node(self, node):
         self.nodes.append(node)

@@ -1,31 +1,27 @@
 import numpy as np
 
 class Node(object):
-    def __init__(self, ID, base, in_nodes=np.array([]), aligned_to=None, consensuses_count=0, sources=np.array([])):
+    def __init__(self, ID, base, in_nodes=np.array([]), aligned_to=None, consensuses_count=0):
         self.ID = ID
         self.base = base
         self.in_nodes = in_nodes if in_nodes.size else np.array([], dtype=int) #in_nodes #TODO czy to na pewno sie nie krzaczy
         self.aligned_to = aligned_to #TODO czy to na pewno sie nie krzaczy
         self.consensuses_count = consensuses_count #TODO czy to potrzebne? sprawdzic wydajnosc bez tego
-        #self.sources = sources if sources.size else np.array([])   #TODO czy to na pewno sie nie krzaczy
 
     def __eq__(self, other):
         return (self.ID == other.ID
                 and self.base == other.base
                 and np.array_equal(self.in_nodes, other.in_nodes)
                 and self.aligned_to == other.aligned_to
-                #and self.sources == other.sources
                 and self.consensuses_count == other.consensuses_count)
 
 
     def __str__(self):
-        return  """ID: {0},\t base: {1},\t in_nodes: {2},\t aligned_to: {3},\t sources: {4},\t consensuses_count: {5}""".format(
+        return  """ID: {0},\t base: {1},\t in_nodes: {2},\t aligned_to: {3},\t consensuses_count: {4}""".format(
             self.ID,
             self.base,
             self.in_nodes,
             self.aligned_to,
-            "TODO SOURCES usunac",
-            #self.sources,
             self.consensuses_count)
 
     def add_in_node(self, node_ID):

@@ -55,6 +55,9 @@ def _blocks_to_poagraph(poagraph, blocks):
 
     # prepare nucleotides matrix
     current_column_ID = 0
+
+
+
     for i, block in enumerate(blocks):
         print("\tProcessing " + str(i+1) + "/" + str(len(blocks)) + " block.")  # todo logging
         for j, line in enumerate(block):
@@ -65,6 +68,13 @@ def _blocks_to_poagraph(poagraph, blocks):
 
         current_column_ID += len(block._records[0])
         print('')
+
+    #get nodes count
+    nodes_count = 0
+    for column_ID in range(nucleotides_matrix.shape[0]):
+        nodes_count += len(set(nucleotides_matrix[column_ID][:]) - set([0]))
+
+    poagraph.ns = np.zeros(shape=(all_source_count, nodes_count), dtype=np.bool)
 
     column_nodes = {}
     nodes_count = 0
@@ -97,10 +107,12 @@ def _blocks_to_poagraph(poagraph, blocks):
             source_to_its_last_node_ID[row_ID] = node_id
             #_update_source_sequence_info(row_ID, node_id, sources)
             try:
-                poagraph.sources[row_ID].nodes_IDs[sources[row_ID].nodes_count] = node_id
-                poagraph.sources[row_ID].nodes_count += 1
+                poagraph.ns[row_ID, nodes_count-1] = True
+                # poagraph.sources[row_ID].nodes_IDs[sources[row_ID].nodes_count] = node_id
+                # poagraph.sources[row_ID].nodes_count += 1
             except:
                 pass
+                #raise ValueError("Wyjątek w maf readerze - kiedy to leci???")
 
             # todo bo teraz aligned nodes to nie set
             # for key, node in column_nodes.items():
@@ -120,7 +132,7 @@ def _blocks_to_poagraph(poagraph, blocks):
             poagraph.add_node(node)
 
         column_nodes = {}
-    poagraph.clean()
+    # poagraph.clean()
     print('') #todo logging
     return poagraph
 
@@ -131,12 +143,13 @@ def _get_sources(blocks, max_nodes_count):
     for block in blocks:
         for line in block:
             if line.name not in sources_name_to_ID:
-                new_source = Source(ID=len(sources), name=line.name, title=line.name, max_nodes_count=max_nodes_count)
+                new_source = Source(ID=len(sources), name=line.name, title=line.name)
                 sources.append(new_source)
                 sources_name_to_ID[new_source.name] = new_source.ID
     return sources, sources_name_to_ID
-#
-#
+
+
+
 def _get_all_blocks_width(blocks):
     return sum([len(block._records[0].seq) for block in blocks])# for lambda block : len(block._records[0].seq))
     # width = 0

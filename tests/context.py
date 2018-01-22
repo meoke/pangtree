@@ -6,7 +6,7 @@ import converter as converter
 from POAGraph import POAGraph
 from Node import Node
 from Sequence import Source
-from Sequence import Consensus
+# from Sequence import Consensus
 from Multialignment import Multialignment
 import toolkit as toolkit
 import maf_reader as maf_reader

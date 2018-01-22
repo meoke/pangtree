@@ -1,7 +1,7 @@
 import re
 import numpy as np
 from POAGraph import POAGraph
-from Sequence import Consensus, Source
+from Sequence import Source
 from Node import Node
 from Errors import NoConsensusFound
 
