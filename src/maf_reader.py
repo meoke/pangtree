@@ -46,7 +46,7 @@ def _parse_merge_option_to_ranges(merge_option, blocks_count):
 def _blocks_to_poagraph(poagraph, blocks):
     all_blocks_width = _get_all_blocks_width(blocks)
 
-    sources, sources_name_to_ID = _get_sources(blocks, all_blocks_width)
+    sources, sources_name_to_ID = _get_sources(blocks)
     for source in sources:
         poagraph.add_source(source)
 
@@ -55,8 +55,6 @@ def _blocks_to_poagraph(poagraph, blocks):
 
     # prepare nucleotides matrix
     current_column_ID = 0
-
-
 
     for i, block in enumerate(blocks):
         print("\tProcessing " + str(i+1) + "/" + str(len(blocks)) + " block.")  # todo logging
@@ -74,14 +72,16 @@ def _blocks_to_poagraph(poagraph, blocks):
     for column_ID in range(nucleotides_matrix.shape[0]):
         nodes_count += len(set(nucleotides_matrix[column_ID][:]) - set([0]))
 
+    #prepare matrix of connections between nodes and sources
     poagraph.ns = np.zeros(shape=(all_source_count, nodes_count), dtype=np.bool)
+
+    #prepare place for nodes
+    poagraph.nodes = [None] * nodes_count
 
     column_nodes = {}
     nodes_count = 0
     source_to_its_last_node_ID = {source_ID: -1 for source_ID, _ in enumerate(sources)}
-    all_nucles_count = nucleotides_matrix.shape[0]*nucleotides_matrix.shape[1]
-    print(nucleotides_matrix.shape[0])
-    print('')
+
     for column_ID in range(nucleotides_matrix.shape[0]):
         for row_ID in range(nucleotides_matrix.shape[1]):
 
@@ -90,36 +90,20 @@ def _blocks_to_poagraph(poagraph, blocks):
                  continue
 
             if nucl not in column_nodes:
-                column_nodes[nucl] = Node(ID=nodes_count, base=nucleotides.decode(nucl))  #todo usunac sources?
+                column_nodes[nucl] = Node(ID=nodes_count, base=nucleotides.decode(nucl))
                 nodes_count += 1
 
-            # todo gdyby usunac sources, to ponizsze mozna zastapic powyzszym
-            # if nucl not in column_nodes:
-            #      column_nodes[nucl] = Node(ID=nodes_count, base=nucleotides.decode(nucl), sources=set([row_ID]))  #todo usunac sources?
-            #      nodes_count += 1
-            # else:
-            #     column_nodes[nucl].sources.add(row_ID)
             node_id = column_nodes[nucl].ID
 
             if source_to_its_last_node_ID[row_ID] != -1:
                 column_nodes[nucl].add_in_node([source_to_its_last_node_ID[row_ID]])
-                #column_nodes[nucl].in_nodes.update([source_to_its_last_node_ID[row_ID]])
             source_to_its_last_node_ID[row_ID] = node_id
-            #_update_source_sequence_info(row_ID, node_id, sources)
-            try:
-                poagraph.ns[row_ID, nodes_count-1] = True
-                # poagraph.sources[row_ID].nodes_IDs[sources[row_ID].nodes_count] = node_id
-                # poagraph.sources[row_ID].nodes_count += 1
-            except:
-                pass
-                #raise ValueError("Wyjątek w maf readerze - kiedy to leci???")
 
-            # todo bo teraz aligned nodes to nie set
-            # for key, node in column_nodes.items():
-            #     other_nodes = column_nodes.copy()
-            #     del other_nodes[key]
-            #     node.aligned_to.update([node.currentID for node in other_nodes.values()])
-            #     poagraph.add_node(node)
+            try:
+                poagraph.ns[row_ID, node_id] = True
+            except:
+                # pass
+                raise ValueError("Wyjątek w maf readerze - kiedy to leci???")
 
             #progress = round(100 * (column_ID*nucleotides_matrix.shape[1]+row_ID+1) / all_nucles_count, 2) # todo logging
             #progress = column_ID #/ nucleotides_matrix.shape[0];
@@ -129,15 +113,14 @@ def _blocks_to_poagraph(poagraph, blocks):
         for i, node in enumerate(sorted_column_nodes):
             if not len(sorted_column_nodes) == 1:
                 node.aligned_to = sorted_column_nodes[(i+1) % len(column_nodes)].ID
-            poagraph.add_node(node)
+            poagraph.nodes[node.ID] = node
 
         column_nodes = {}
-    # poagraph.clean()
     print('') #todo logging
     return poagraph
 
 
-def _get_sources(blocks, max_nodes_count):
+def _get_sources(blocks):
     sources = []
     sources_name_to_ID = {}
     for block in blocks:
@@ -149,22 +132,57 @@ def _get_sources(blocks, max_nodes_count):
     return sources, sources_name_to_ID
 
 
-
 def _get_all_blocks_width(blocks):
-    return sum([len(block._records[0].seq) for block in blocks])# for lambda block : len(block._records[0].seq))
-    # width = 0
-    # for block in blocks:
-    #     width += len(block._records[0].seq)  # all records in one block have the same length because they are aligned
-    # return width
-#
-#
-# def _update_source_sequence_info(source_ID, node_ID, sources):
-#     sources[source_ID].add_node_ID(node_ID)
-#
-#
-# def _pretty_numpy_nucleotides_matrix_printer(numpy_matrix):
-#     for i in range(numpy_matrix.shape[1]):
-#         row = []
-#         for j in range(numpy_matrix.shape[0]):
-#             row.append(nucleotides.decode(numpy_matrix[j][i]))
-#         print("".join(row))
+    return sum([len(block._records[0].seq) for block in blocks])
+
+
+def _pretty_numpy_nucleotides_matrix_printer(numpy_matrix):
+    for i in range(numpy_matrix.shape[1]):
+        row = []
+        for j in range(numpy_matrix.shape[0]):
+            row.append(nucleotides.decode(numpy_matrix[j][i]))
+        print("".join(row))
+
+
+def get_blocks(file_path, multialignment_name, output_dir):
+    #todo to powinno być jakoś zmergowane z wczytywaniem multialignmentu do poagrafów
+    def find_next_block(src_name, next_start, maf_blocks):
+        for i, block in enumerate(maf_blocks):
+            for seqrec in block:
+                if seqrec.name == src_name:
+                    if seqrec.annotations["start"] == next_start:
+                        return i
+        return None
+
+    maf_blocks = [*AlignIO.parse(file_path, "maf")]
+    sources, sources_name_to_ID = _get_sources(maf_blocks)
+    blocks = [Block() for i in range(len(maf_blocks))]
+    for i, block in enumerate(maf_blocks):
+        for seqrec in block:
+            blocks[i].ID = i
+            start = seqrec.annotations["start"]
+            next_start = start + seqrec.annotations["size"]
+            if next_start == seqrec.annotations["srcSize"]:
+                blocks[i].srcID_to_next_blockID[sources_name_to_ID[seqrec.name]] = None
+                continue
+            next_block_ID = find_next_block(seqrec.name, next_start, maf_blocks)
+            blocks[i].srcID_to_next_blockID[sources_name_to_ID[seqrec.name]] = next_block_ID
+            blocks[i].srcID_to_strand[sources_name_to_ID[seqrec.name]] = seqrec.annotations["strand"]
+    return blocks
+
+
+
+class Block(object):
+    def __init__(self):
+        self.ID = -1
+        self.srcID_to_next_blockID = {}
+        self.srcID_to_strand = {}
+
+    def __str__(self):
+        return "ID: {0}\nsrcID_to_next_blockID: {1}\nsrcID_to_strand: {2}".format(self.ID, self.srcID_to_next_blockID, self.srcID_to_strand)
+# for seqrec in multiple_alignment:
+#     print("starts at %s on the %s strand of a sequence %s in length, and runs for %s bp" % \
+#           (seqrec.annotations["start"],
+#            seqrec.annotations["strand"],
+#            seqrec.annotations["srcSize"],
+#            seqrec.annotations["size"]))

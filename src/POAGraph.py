@@ -3,15 +3,16 @@ import toolkit as t
 from POAGraphRef import POAGraphRef
 
 class POAGraph(object):
-    def __init__(self, name, title, version, path, sources = None, consensuses = None, nodes = None, ns=np.array([])):
+    def __init__(self, name, title, version, path, sources = None, consensuses = None, nodes = None, ns=np.array([]), nc=np.array([])):
         self.name = name
         self.title = title
         self.version = version
-        self.path = path
+        self.path = path #todo czy potrzebne? A może zarządzane przez Multialignment?
         self.sources = sources if sources else []
         self.consensuses = consensuses if consensuses else []
         self.nodes = nodes if nodes else []
         self.ns = ns if ns.size else np.array([])
+        self.nc = nc if nc.size else np.array([])
 
     def __eq__(self, other):
         return (self.name == other.name
@@ -21,6 +22,7 @@ class POAGraph(object):
                 and self.nodes == other.nodes
                 and self.sources == other.sources
                 and self.consensuses == other.consensuses
+                and np.array_equal(self.ns, other.ns)
                 and np.array_equal(self.ns, other.ns))
 
     def __str__(self):
@@ -28,27 +30,29 @@ class POAGraph(object):
                     Sources:\n{4},
                     Consensuses:\n{5},
                     Nodes:\n{6},
-                    NS:\n{7}""".format(self.name,
+                    NS:\n{7},
+                    NC:\n{8}""".format(self.name,
                                          self.title,
                                          self.version,
                                          self.path,
                                          "\n".join([str(source) for source in self.sources]),
                                          "\n".join([str(consensus) for consensus in self.consensuses]),
                                          "\n".join([str(node) for node in self.nodes]),
-                                         str(self.ns))
+                                         str(self.ns),
+                                         str(self.nc))
 
     # def clean(self):
     #     for source in self.sources:
     #         source.truncate_nodes_ids()
 
-    def add_node(self, node):
-        self.nodes.append(node)
+    # def add_node(self, node):
+    #     self.nodes.append(node)
         # if node.currentID >= len(self.nodes):
         #     self.nodes.append(node)
         # else:
         #     self.nodes[node.currentID] = node
 
-    def add_source(self, source):
+    def add_source(self, source): #todo dołożyć jakąś walidację
         # new_source_ID = len(self.sources)
         self.sources.append(source)
         # for i, node in enumerate(self.nodes):

@@ -5,12 +5,6 @@ class Sequence(object):
         self.ID = ID
         self.name = name
         self.title = title
-        # if nodes_IDs.size:
-        #     self.nodes_IDs = nodes_IDs
-        #     self.nodes_count = nodes_IDs.size
-        # else:
-        #     self.nodes_IDs = np.zeros((max_nodes_count),dtype=np.uint32) #nodes_IDs #TODO czy to na pewno sie nie krzaczy
-        #     self.nodes_count = 0
 
     def __str__(self):
         return """ID: {0},\t name: {1},\t title: {2}""".format(
@@ -30,40 +24,32 @@ class Sequence(object):
 
 
 class Source(Sequence):
-    def __init__(self, ID, name, title, weight = -1):#nodes_IDs = np.array([]),  max_nodes_count=0):
-        Sequence.__init__(self, ID=ID, name=name, title=title)#, nodes_IDs=nodes_IDs, max_nodes_count=max_nodes_count)
-        #self.consensuses = {}
+    def __init__(self, ID, name, title, weight = -1, consensus_ID = -1):
+        Sequence.__init__(self, ID=ID, name=name, title=title)
         self.weight = weight
+        self.consensus_ID = consensus_ID
 
     def __str__(self):
-        return Sequence.__str__(self) + """\tweight: {0}""".format(
-            self.weight)
-        # todo jeśli nie używamy consensuses w source, to wystarczy powyższe
-        # return Sequence.__str__(self) + """\tconsensusID: {0},\tconsensuses: {1},\tweight: {2}""".format(
-        #     self.consensusID,
-        #     self.consensuses,
-        #     self.weight)
+        return Sequence.__str__(self) + """\tweight: {0},\tconsensus_ID: {1}""".format(
+            self.weight, self.consensus_ID)
 
     def __eq__(self, other):
-        return Sequence.__eq__(self, other) and self.weight == other.weight
-        # todo jeśli nie używamy consensuses w source, to wystarczy powyższe
-        # return Sequence.__eq__(self, other) and self.consensusID == other.consensusID \
-        #                                     and self.consensuses == other.consensuses \
-        #                                     and self.weight == other.weight
+        return Sequence.__eq__(self, other) and \
+            self.weight == other.weight and \
+            self.consensus_ID == other.consensus_ID
 
 
-#
-# class Consensus(Sequence):
-#     def __init__(self, ID, name, title, nodes_IDs=np.array([]), compatibility_to_sources=np.array([]), sources_IDs=np.array([]), parent_consensus=None, children=None, max_nodes_count=0):
-#         Sequence.__init__(self, ID=ID, name=name, title=title, nodes_IDs=nodes_IDs, max_nodes_count=max_nodes_count)
-#         self.compatibility_to_sources = compatibility_to_sources if compatibility_to_sources.size else np.array([], dtype=int)
-#         self.level = -1
-#         self.sources_IDs = sources_IDs if sources_IDs.size else np.array([], dtype=int)
-#         self.parent_consensus = parent_consensus
-#         self.children = children if children else []
-#
-#     def __str__(self):
-#         return Sequence.__str__(self) + """ compatibility_to_sources: {0}""".format(  self.compatibility_to_sources)
-#
-#     def __eq__(self, other):
-#         return Sequence.__eq__(self, other) and np.array_equal(self.compatibility_to_sources, other.compatibility_to_sources)
+class Consensus(Sequence):
+    def __init__(self, ID, name, title, compatibility_to_sources=np.array([]), sources_IDs=np.array([]), parent_consensus=None, children=None):
+        Sequence.__init__(self, ID=ID, name=name, title=title)
+        self.compatibility_to_sources = compatibility_to_sources if compatibility_to_sources.size else np.array([], dtype=int)
+        self.level = -1
+        self.sources_IDs = sources_IDs if sources_IDs.size else np.array([], dtype=int)
+        self.parent_consensus = parent_consensus
+        self.children = children if children else []
+
+    def __str__(self):
+        return Sequence.__str__(self) + """ compatibility_to_sources: {0}""".format(  self.compatibility_to_sources)
+
+    def __eq__(self, other):
+        return Sequence.__eq__(self, other) and np.array_equal(self.compatibility_to_sources, other.compatibility_to_sources)

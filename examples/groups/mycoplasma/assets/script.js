@@ -491,12 +491,13 @@ function show_blocks(){
         ],
         layout: {
           name: 'breadthfirst'
+          //name: 'grid'
         }
   });
   function get_label(ele) {
     srcIDs = ele.data('srcID')
     if(srcIDs.length > 5)
-        return ''
+        return '';'>5'
     return srcIDs;
     }
 

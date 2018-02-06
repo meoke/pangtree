@@ -1,7 +1,11 @@
 # Multialignment processing tool for pangenomes
 
 ## Features
-* Conversion from MAF (Multiple Alignment Format) to PO (POAGraph representation file - check [See Lee, Grasso & Sharlow article](https://academic.oup.com/bioinformatics/article/18/3/452/236691/Multiple-sequence-alignment-using-partial-order) for details).
+**Working**
+* Conversion from MAF (Multiple Alignment Format) to PO (POAGraph representation file - check [See Lee, Grasso & Sharlow article](https://academic.oup.com/bioinformatics/article/18/3/452/236691/Multiple-sequence-alignment-using-partial-order) for details). Mycoplasma ~18min, Ebola ~1m30s
+* Reading poa file to POAGraph structure.
+
+**Work in progress**
 * Conversion from MAF to FASTA.
 * Consensus generation and visualization from aligned sequences (MAF or PO input)
 * POA Graph visualization (MAF or PO input)
@@ -47,9 +51,11 @@ optional arguments:
   -draw              draw poagraph
   
   -data DATATYPE     ebola or mycoplasma
+  
+  - 
  
 ## Development
-TBA
+Documentation TBA
 
 ## Tests
 

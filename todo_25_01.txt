@@ -1,0 +1,50 @@
+- feedback vertex set
+
+1) usuwanie krawędzi do finalnego grafu
+- posortować krawędzie po wadze (liczbie sekwencji przechodzących przez daną krawędź)
+- od tych o najmniejsze wadze sprawdzać, czy jak ją usuniemy, to czy zniknie cykl -> jeśli tak, to usunąć
+
+
+2) dodawanie krawędzi do finalnego grafu
+- na odwrót: od tych o największe wadze sprawdzać czy ich dodanie uworzy cykl
+
+przetestować na mycoplasmie
+
+
+poa - jak się zachowa poa, gdy jest dziura w sekwencji
+
+czwartek 10.30
+
+- generowanie consensusu - drzewiaste (+ bug z mnożnikiem 1.3)
+
+generate_consensus
+czy to działa zgodnie z nowym pomysłem:
+- maf_reader - parse_to_poagraphs
+- po_reader - parse_to_poagraph
+
+- save_as_po
+- _calc_partial_sources_weights
+
+
+
+- puścić na mycoplasmie, ile trwa
+- generowanie consensusu - pojedyncze
+- generowanie drzewa 
+	- jak zrobić takie fajne drzewo jak ja chcę?
+		- https://www.tutorialspoint.com/d3js/d3js_quick_guide.htm
+	- z zamianą na ładne generowanie jsona?
+- algorytm dla bloków, o których mówił Norbert
+- testy dla POA, o których mówił Norbert
+- logowanie przebiegu do pliku
+- testy jednostkowe - co jest otestowane:
+    - OK wczytywanie mafa do poagrafu
+    - OK przygotowywanie bloków do zmergowania w zależności od wybranej opcji - ale to należałoby uaktualnić
+
+    - co możnaby otestować:
+        - _extract_node_parameters
+        - _extract_line_value
+
+
+- kurs javascript
+
+

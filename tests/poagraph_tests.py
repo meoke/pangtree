@@ -43,6 +43,7 @@ class POAGraphTests(unittest.TestCase):
         self.assertEqual(expected_compatibilities_consensus_0, p.consensuses[0].compatibility_to_sources)
         self.assertEqual(expected_compatibilities_consensus_1, p.consensuses[1].compatibility_to_sources)
 
+    @unittest.skip("removed feature")
     def test_sources_deactivation(self):
         p = POAGraph(name='', title='', version='', path='',
                      sources=[Source(currentID=0,
@@ -132,6 +133,7 @@ class POAGraphTests(unittest.TestCase):
         finally:
             _show_differences(p, expected_poagraph)
 
+    @unittest.skip("removed feature")
     def test_sources_deactivation(self):
         poagraph_with_unassigned_consensuses = POAGraph(name='', title='', version='', path='',
                                      sources=[Source(currentID=-1, #schould become active
@@ -252,6 +254,9 @@ class POAGraphTests(unittest.TestCase):
             self.assertEqual(poagraph_with_unassigned_consensuses, expected_poagraph)
         finally:
             _show_differences(poagraph_with_unassigned_consensuses, expected_poagraph)
+
+    def test_saving_as_po(self):
+
 
 def _show_differences(poagraph1, poagraph2):
     def compare_objects(obj1, obj2, object_name):

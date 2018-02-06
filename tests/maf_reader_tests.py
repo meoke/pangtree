@@ -7,6 +7,7 @@ from context import toolkit
 from context import POAGraph
 from context import Source
 from context import Node
+from context import Block
 
 @ddt
 class MafReaderTests(unittest.TestCase):
@@ -28,6 +29,7 @@ class MafReaderTests(unittest.TestCase):
 
         self.assertEqual(expected_output, actual_output)
 
+    #@unittest.skip("build from maf multialignment")
     @data(
         ('article',
           'all',
@@ -53,28 +55,18 @@ class MafReaderTests(unittest.TestCase):
           ],
          np.array([[True, True, False, True, True, True, False, True],
                   [True, True, True, True, False, False, True, False]])),
-    # todo wersja z sources
-    # [Node(ID=0,base='A', in_nodes=np.array([]),     aligned_to=None, sources = np.array([0,1]),  consensuses_count = 0),
-    # Node(ID=1, base='C', in_nodes=np.array([0]),    aligned_to=None, sources = np.array([0,1]),  consensuses_count = 0),
-    # Node(ID=2, base='T', in_nodes=np.array([1]),    aligned_to=None, sources = np.array([1]),    consensuses_count = 0),
-    # Node(ID=3, base='G', in_nodes=np.array([1,2]),  aligned_to=None, sources = np.array([0,1]),  consensuses_count = 0),
-    # Node(ID=4, base='G', in_nodes=np.array([3]),    aligned_to=None, sources = np.array([0]),    consensuses_count = 0),
-    # Node(ID=5, base='T', in_nodes=np.array([4]),    aligned_to=6,    sources = np.array([0]),    consensuses_count = 0),
-    # Node(ID=6, base='A', in_nodes=np.array([3]),    aligned_to=5,    sources = np.array([1]),    consensuses_count = 0),
-    # Node(ID=7, base='C', in_nodes=np.array([5]),    aligned_to=None, sources = np.array([0]),    consensuses_count = 0)
-    # ]),
         #TODO CHWILOWO WYRZUCONY TEST
-    #     ('empty',
-    #  'all',
-    #  ['#maf version=1 scoring=roast.v3.3'
-    #      , 'a score=1.0'
-    #      , 's source1 0 0 + 0 ---'
-    #      , 's source2 0 0 + 0 ---'],
-    #  [Source(ID=0, name='source1', title='source1', weight=-1),
-    #   Source(ID=1, name='source2', title='source2', weight=-1)],
-    #
-    #  [],
-    #      np.zeros(shape=(2,0), dtype=np.bool)),
+     #    ('empty',
+     # 'all',
+     # ['#maf version=1 scoring=roast.v3.3'
+     #     , 'a score=1.0'
+     #     , 's source1 0 0 + 0 ---'
+     #     , 's source2 0 0 + 0 ---'],
+     # [Source(ID=0, name='source1', title='source1', weight=-1),
+     #  Source(ID=1, name='source2', title='source2', weight=-1)],
+     #
+     # [],
+     # np.zeros(shape=(2,0), dtype=np.bool)),
         ('single letter',
          'all',
          ['#maf version=1 scoring=roast.v3.3'
@@ -88,10 +80,7 @@ class MafReaderTests(unittest.TestCase):
           Source(ID=2, name='source3', title='source3',  weight=-1),
           Source(ID=3, name='source4', title='source4',  weight=-1)],
          [Node(ID=0, base='A', in_nodes=np.array([]), aligned_to=None, consensuses_count=0)],
-         np.array([[True],[True],[True],[True]])
-         # todo wersja z sources
-         # [Node(ID=0, base='A', in_nodes=np.array([]), aligned_to=None, sources=np.array([0,1,2,3]), consensuses_count=0)]),
-         ),
+         np.array([[True],[True],[True],[True]])),
         ("not every block contains all sequences",
          "all",
          ["#maf version=1 scoring=roast.v3.3",
@@ -123,17 +112,6 @@ class MafReaderTests(unittest.TestCase):
          np.array([[False, True, True, True, False, False, False, False, False],
                   [True, False, False, False, True, False, False, True, False],
                   [False, False, False, True, False, True, True, False, True]])
-    #  todo wersja z sources
-    # [Node(ID=0, base='C', in_nodes=np.array([]), aligned_to=None,   sources=np.array([1]), consensuses_count=0),
-    # Node(ID=1, base='T', in_nodes=np.array([]), aligned_to=None,    sources=np.array([0]), consensuses_count=0),
-    # Node(ID=2, base='G', in_nodes=np.array([1]),aligned_to=None,    sources=np.array([0]), consensuses_count=0),
-    # Node(ID=3, base='T', in_nodes=np.array([2]),aligned_to=None,    sources=np.array([0,2]),consensuses_count=0),
-    # Node(ID=4, base='T', in_nodes=np.array([0]),aligned_to=5,       sources=np.array([1]), consensuses_count=0),
-    # Node(ID=5, base='G', in_nodes=np.array([3]),aligned_to=4,       sources=np.array([2]), consensuses_count=0),
-    # Node(ID=6, base='A', in_nodes=np.array([5]),aligned_to=None,    sources=np.array([2]), consensuses_count=0),
-    # Node(ID=7, base='A', in_nodes=np.array([4]),aligned_to=None,    sources=np.array([1]), consensuses_count=0),
-    # Node(ID=8, base='C', in_nodes=np.array([6]),aligned_to=None,    sources=np.array([2]), consensuses_count=0)
-    #       ]
          )
     )
     @unpack
@@ -156,6 +134,39 @@ class MafReaderTests(unittest.TestCase):
             _show_differences(expected_poagraph, poagraphs[0])
 
             raise err
+
+    @data(
+        ('article',
+         '',
+         ['#maf version=1 scoring=roast.v3.3'
+             , 'a score=1.0'
+             , 's source1 0 3 + 5 AAA'
+             , 's source2 0 3 + 6 BBB'
+             , ''
+             , 'a score=2.0'
+             , 's source1 3 2 + 5 AA-'
+             , 's source2 3 2 + 6 B-B'
+             , 's source3 0 3 + 5 CCC'
+             , ''
+             , 'a score=3.0'
+             , 's source3 3 2 + 5 CC'
+             , 's source2 5 1 + 6 B-'
+          ],
+         [{0:1, 1:1}, {0:None, 1:2, 2:2}, {1:None, 2:None}]
+         )
+    )
+    @unpack
+    def test_maf_to_blocks(self, test_case_name, merge_option, maf_lines, dictionary):
+        self.maf_path = toolkit.save_text("\n".join(maf_lines), self.temp_dir, 'test.maf')
+
+        blocks = maf_reader.get_blocks(str(self.maf_path), 'test',
+                                                  toolkit.get_parentdir_name(self.maf_path))
+        expected_dictionaries = dictionary
+
+
+        self.assertEqual(expected_dictionaries[0], blocks[0].srcID_to_next_blockID)
+        self.assertEqual(expected_dictionaries[1], blocks[1].srcID_to_next_blockID)
+        self.assertEqual(expected_dictionaries[2], blocks[2].srcID_to_next_blockID)
 
 if __name__ == '__main__':
     unittest.main()
@@ -180,4 +191,5 @@ def _show_differences(poagraph1, poagraph2):
     compare_sequences(poagraph1.sources, poagraph2.sources, "sources")
     compare_sequences(poagraph1.consensuses, poagraph2.consensuses, "consensuses")
     compare_numpy_arrays(poagraph1.ns, poagraph2.ns, "ns")
+    compare_numpy_arrays(poagraph1.nc, poagraph2.ns, "nc")
 

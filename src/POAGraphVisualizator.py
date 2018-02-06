@@ -44,24 +44,24 @@
 #         with open(info_path, 'w') as info_output:
 #             info_output.write(self._get_info_as_json(processing_time, tresholds, consensus_algorithm))
 #
-#     def generate_common_files(self, consensuses_comparison, graph_visualization):
-#         common_files_destination = t.join_path(self.output_dir, 'assets')
-#         common_files_source = t.join_path(self.webpage_dir, 'assets')
-#         t.copy_dir(common_files_source, common_files_destination)
-#
-#         index_template_path = t.join_path(self.webpage_dir, 'index.html')
-#         with open(index_template_path) as template_file:
-#             index_content = template_file.read()
-#             if consensuses_comparison:
-#                 index_content = index_content.replace('sources.js', str(self.poagraph.name) + """_sources_data.js""")
-#                 index_content = index_content.replace('consensuses.js', str(self.poagraph.name) + """_consensuses_data.js""")
-#             if graph_visualization:
-#                 index_content = index_content.replace('poagraph.js', str(self.poagraph.name) + """_poagraph_data.js""")
-#             index_content = index_content.replace('info.js', str(self.poagraph.name) + """_info.js""")
-#
-#         index_path = t.join_path(self.output_dir, 'index.html')
-#         with open(index_path, 'w') as output:
-#             output.write(index_content)
+    # def generate_common_files(self, consensuses_comparison, graph_visualization):
+    #     common_files_destination = t.join_path(self.output_dir, 'assets')
+    #     common_files_source = t.join_path(self.webpage_dir, 'assets')
+    #     t.copy_dir(common_files_source, common_files_destination)
+    #
+    #     index_template_path = t.join_path(self.webpage_dir, 'index.html')
+    #     with open(index_template_path) as template_file:
+    #         index_content = template_file.read()
+    #         if consensuses_comparison:
+    #             index_content = index_content.replace('sources.js', str(self.poagraph.name) + """_sources_data.js""")
+    #             index_content = index_content.replace('consensuses.js', str(self.poagraph.name) + """_consensuses_data.js""")
+    #         if graph_visualization:
+    #             index_content = index_content.replace('poagraph.js', str(self.poagraph.name) + """_poagraph_data.js""")
+    #         index_content = index_content.replace('info.js', str(self.poagraph.name) + """_info.js""")
+    #
+    #     index_path = t.join_path(self.output_dir, 'index.html')
+    #     with open(index_path, 'w') as output:
+    #         output.write(index_content)
 #
 #     def _get_sources_data_as_json(self):
 #         sources_json = []

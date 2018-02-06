@@ -9,7 +9,7 @@ import po_reader as po_reader
 from POAGraphRef import POAGraphRef
 import numpy as np
 import consensus as cons
-
+from Bio import AlignIO
 
 class Multialignment(object):
     def __init__(self, data_type='ebola'):
@@ -47,7 +47,7 @@ class Multialignment(object):
         return t.get_file_name_without_extension(input_file_name)
 
     def _get_output_dir(self, input_file_name):
-        return t.create_next_sibling_dir(input_file_name, "converted")
+        return t.create_next_sibling_dir(input_file_name, "result")
 
     def generate_consensus(self, option, hbmin, min_comp, comp_range, tresholds, multiplier, stop, re_consensus):
         for i, p in enumerate(self.poagraphs):
@@ -84,6 +84,131 @@ class Multialignment(object):
                                                                                cutoff_search_range,
                                                                                multiplier,
                                                                                consensus_output_dir)
+
+    def _convert_str_to_tuple(self, comp_range): #todo zmienić nazwę
+        return eval(comp_range[1:-1])
+
+    def generate_blocks_graph(self, maf_file_path):
+        #todo wykorzystać generowanie jsona
+        #todo mergowanie bloków, które przechodzą w siebie po całości
+        def get_nodes_list(blocks):
+            def pies(id):
+                return """{{
+                      data: {{
+                        id: {0}
+                      }}
+                    }}""".format(id)
+
+            nodes_map = {}
+            nodes_groups = [[]]
+            for block in blocks:
+                nextBlockids = set(block.srcID_to_next_blockID.values()) - set([None])
+                if len(nextBlockids) == 1:
+                    iloop= 0
+                    for i, group in enumerate(nodes_groups):
+                        iloop += 1
+                        if block.ID in group:
+                            nodes_groups[i].append(list(nextBlockids)[0])
+                    if iloop == len(nodes_groups):
+                        nodes_groups.append([block.ID, list(nextBlockids)[0]])
+                else:
+                    for r in nextBlockids:
+                        nodes_groups.append([r])
+            nodes_str_list = [pies(e) for e, group in enumerate(nodes_groups)]
+            new_nodes_groups = []
+            for g in nodes_groups:
+                if g == []:
+                    continue
+                else:
+                    new_nodes_groups.append(g)
+            return new_nodes_groups, ",".join(nodes_str_list)
+                # nodes_list.append("""{{
+                #
+                #                                       data: {{
+                #                                         id: {0}
+                #                                       }}
+                #                                     }}""".format(block.ID))
+                # nodes_list.append("""{{
+                #                       data: {{
+                #                         id: {0}
+                #                       }},
+                #                       position: {{ x: {1}, y: 0 }},
+                #                     }}""".format(block.ID, block.ID *60 + 60))
+            # return ",".join(nodes_list)
+
+        def get_edges_list(blocks, nodes_groups):
+            def get_node_id(old_node_id):
+                for i, group in enumerate(nodes_groups):
+                    if old_node_id in group:
+                        return i
+
+            def pies(i, src_dest, srcID):
+                return """{{
+                            data: {{
+                                id: {0},
+                                source: {1},
+                                target: {2},
+                                srcID: {3}
+                                }},
+                                classess: 'edge'
+                                }}""".format(i, get_node_id(src_dest[0]), get_node_id(src_dest[1]), srcID)
+
+            edges_list = {}
+            edge_ID = len(blocks)
+            for block in blocks:
+                for srcID, next_blockID in block.srcID_to_next_blockID.items():
+                    if next_blockID is None:
+                        continue
+                    if (block.ID, next_blockID) in edges_list.keys():
+                        edges_list[(block.ID, next_blockID)].append(srcID)
+                    else:
+                        edge_ID += 1
+                        edges_list[(block.ID, next_blockID)] = [srcID]
+
+
+            edges_str_list = [pies(i+ len(blocks), src_dest_srcID[0], src_dest_srcID[1]) for i, src_dest_srcID in enumerate(edges_list.items())]
+
+            return ",".join(edges_str_list)
+
+        def get_blocks_data_as_json(blocks):
+            nodes_groups, nodes_list = get_nodes_list(blocks)
+            edges_list = get_edges_list(blocks, nodes_groups)
+            return """var blocks = {{
+                                        nodes: [{0}],
+                                        edges: [{1}]}};""".format(nodes_list, edges_list)
+
+        print("generating blocks graph")
+        # prepare blocks
+        self.name = self._get_multialignment_name(maf_file_path)
+        self.output_dir = self._get_output_dir(maf_file_path)
+        blocks = maf_reader.get_blocks(maf_file_path, self.name, self.output_dir)
+
+
+        # prepare webpage template
+        webpage_dir = t.get_real_path('../visualization_template')
+
+        common_files_destination = t.join_path(self.output_dir, 'assets')
+        common_files_source = t.join_path(webpage_dir, 'assets')
+        t.copy_dir(common_files_source, common_files_destination)
+
+        index_template_path = t.join_path(webpage_dir, 'index.html')
+        with open(index_template_path) as template_file:
+            index_content = template_file.read()
+            index_content = index_content.replace('blocks.js', str(self.name) + """_blocks_data.js""")
+            index_content = index_content.replace('info.js', str(self.name) + """_info.js""")
+
+        index_path = t.join_path(self.output_dir, 'index.html')
+        with open(index_path, 'w') as output:
+            output.write(index_content)
+
+        # prepare blocks data as json
+        blocks_data_path = t.join_path(self.output_dir, str(self.name) + '_blocks_data.js')
+        with open(blocks_data_path, 'w') as blocks_data_output:
+            blocks_data_output.write(get_blocks_data_as_json(blocks))
+
+
+
+
     #
     # def _run_single_consensus_generation(self, consensus_output_dir, poagraph, hbmin, consensus_name = "consensus"):
     #     print('PO generation')
@@ -357,8 +482,7 @@ class Multialignment(object):
     #     last_consensus.sources_IDs = srcs
     #     return last_consensus
     #
-    def _convert_str_to_tuple(self, comp_range):
-        return eval(comp_range[1:-1])
+
     #
     # def _convert_str_to_list(self, tresholds):
     #     return eval(tresholds)
@@ -422,5 +546,6 @@ class Multialignment(object):
     #         # visualizator.generate(consensuses_comparison, graph_visualization, processing_time, self._convert_str_to_list(tresholds), consensus_algorithm)
     #         visualizator.generate(consensuses_comparison, graph_visualization, processing_time, self.tresholds, consensus_algorithm)
     #
+
 
 

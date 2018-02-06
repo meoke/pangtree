@@ -57,7 +57,8 @@ def convert(args):
                                 args.hbmin,
                                 args.min_comp,
                                 args.fasta,
-                                args.data)
+                                args.data,
+                                args.blocks)
 
 
 parser = argparse.ArgumentParser(description='PAN-GENOME tools')
@@ -127,6 +128,10 @@ parser_converter.add_argument('-data',
                               metavar="DATATYPE",
                               required=True,
                               help='ebola or mycoplasma')
+parser_converter.add_argument('-blocks',
+                              metavar="BLOCKS",
+                              required=False,
+                              help="Set if block analysis should be in ouput")
 parser_converter.set_defaults(func=convert)
 
 args = parser.parse_args()
