@@ -9,7 +9,7 @@ from context import Source, Consensus
 from context import Node
 
 @ddt
-class MafReaderTests(unittest.TestCase):
+class PoReaderTests(unittest.TestCase):
 
     def setUp(self):
         self.temp_dir = toolkit.create_next_sibling_dir('files', 'po_reader_testing')
@@ -144,7 +144,7 @@ class MafReaderTests(unittest.TestCase):
          np.array([True, False, False, False]))
     )
     @unpack
-    def test_maf_to_poagraph(self, test_case_name, po_lines, expected_sources, expected_consensuses, expected_nodes, ns, nc):
+    def test_po_to_poagraph(self, test_case_name, po_lines, expected_sources, expected_consensuses, expected_nodes, ns, nc):
         self.maf_path = toolkit.save_text("\n".join(po_lines), self.temp_dir, 'test.po')
 
         poagraph = po_reader.parse_to_poagraph(str(self.maf_path), output_dir=self.temp_dir)

@@ -186,27 +186,53 @@ class POAGraph(object):
 #
 #     return '\n'.join(po_lines)
 
-    def _calc_partial_sources_weights(self, sourcesIDs, nodes):
-        def get_source_weight(source):
-            if not source.ID in sourcesIDs:
-                return -1
-            else:
-                return np.mean(np.array([nodes['sources_count'][nodes['org_nodeID'] == node_ID][0] for node_ID in source.nodes_IDs]))
+    # def get_partial_sources_weights(self, sources_IDs, nodes):
+    #     def get_source_weight(source):
+    #         # if not source.ID in sources_IDs:
+    #         #     return -1
+    #         # else:
+    #         src_nodes_IDs = self.ns[source] == True
+    #         # return np.mean(np.array([nodes['sources_count'][nodes['org_nodeID'] == node_ID][0] for node_ID in source.nodes_IDs]))
+    #         return np.mean(np.array([nodes['sources_count'][nodes['orig_ID'] == node_ID][0] for node_ID in src_nodes_IDs]))
+    #
+    #     def normalize_weight(weight, max_weight, min_weight):
+    #         if weight == -1:
+    #             return -1
+    #         if max_weight - min_weight == 0:
+    #             return 1
+    #         return int(float(format(round((weight - min_weight) / (max_weight - min_weight), 2), '.2f')) * 100)
+    #
+    #     weights = [*map(lambda source: get_source_weight(source), sources_IDs)]
+    #     max_weight = max(weights)
+    #     min_weight = min(set(weights) - set([-1]))
+    #
+    #     normalized_weights = [*map(lambda weight: normalize_weight(weight, max_weight, min_weight), weights)]
+    #     return normalized_weights
+        # for i, source in enumerate(self.sources):
+        #     source.weight = normalized_weights[i]
 
-        def normalize_weight(weight, max_weight, min_weight):
-            if weight == -1:
-                return -1
-            if max_weight - min_weight == 0:
-                return 1
-            return int(float(format(round((weight - min_weight) / (max_weight - min_weight), 2), '.2f')) * 100)
-
-        weights = [*map(lambda source: get_source_weight(source), self.sources)]
-        max_weight = max(weights)
-        min_weight = min(set(weights) - set([-1]))
-
-        normalized_weights = [*map(lambda weight: normalize_weight(weight, max_weight, min_weight), weights)]
-        for i, source in enumerate(self.sources):
-            source.weight = normalized_weights[i]
+    # zakomentowane 6.02 20:20
+    # def _calc_partial_sources_weights(self, sourcesIDs, nodes):
+    #     def get_source_weight(source):
+    #         if not source.ID in sourcesIDs:
+    #             return -1
+    #         else:
+    #             return np.mean(np.array([nodes['sources_count'][nodes['org_nodeID'] == node_ID][0] for node_ID in source.nodes_IDs]))
+    #
+    #     def normalize_weight(weight, max_weight, min_weight):
+    #         if weight == -1:
+    #             return -1
+    #         if max_weight - min_weight == 0:
+    #             return 1
+    #         return int(float(format(round((weight - min_weight) / (max_weight - min_weight), 2), '.2f')) * 100)
+    #
+    #     weights = [*map(lambda source: get_source_weight(source), self.sources)]
+    #     max_weight = max(weights)
+    #     min_weight = min(set(weights) - set([-1]))
+    #
+    #     normalized_weights = [*map(lambda weight: normalize_weight(weight, max_weight, min_weight), weights)]
+    #     for i, source in enumerate(self.sources):
+    #         source.weight = normalized_weights[i]
 
         # def _calc_partial_sources_weights(self, sourcesIDs_to_use, new_to_original_nodes_IDs):
         #     def mean(numbers):

@@ -15,17 +15,22 @@ poa - jak się zachowa poa, gdy jest dziura w sekwencji
 
 czwartek 10.30
 
+to działa zgodnie z nowym pomysłem:
+- maf_reader - parse_to_poagraphs
+- po_reader - parse_to_poagraph
+- save_as_po
+    - source info ma złą liczbę nodow
+    - złe startowe nody
+    - złe wagi
+    - wszędzie się wpisują wszystkie sources
+    - uwzględnić w teście prawidłowe wagi
+    - dopisać w teście pomijanie niektórych sources
+    - _calc_partial_sources_weights
+
+todo:
 - generowanie consensusu - drzewiaste (+ bug z mnożnikiem 1.3)
 
 generate_consensus
-czy to działa zgodnie z nowym pomysłem:
-- maf_reader - parse_to_poagraphs
-- po_reader - parse_to_poagraph
-
-- save_as_po
-- _calc_partial_sources_weights
-
-
 
 - puścić na mycoplasmie, ile trwa
 - generowanie consensusu - pojedyncze
@@ -41,6 +46,7 @@ czy to działa zgodnie z nowym pomysłem:
     - OK przygotowywanie bloków do zmergowania w zależności od wybranej opcji - ale to należałoby uaktualnić
 
     - co możnaby otestować:
+        - KONIECZNIE get_partial_sources_weights
         - _extract_node_parameters
         - _extract_line_value
 
