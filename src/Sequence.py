@@ -43,10 +43,10 @@ class Consensus(Sequence):
     def __init__(self, ID, name, title, compatibility_to_sources=np.array([]), sources_IDs=np.array([]), parent_consensus=None, children=None):
         Sequence.__init__(self, ID=ID, name=name, title=title)
         self.compatibility_to_sources = compatibility_to_sources if compatibility_to_sources.size else np.array([], dtype=int)
-        self.level = -1
-        self.sources_IDs = sources_IDs if sources_IDs.size else np.array([], dtype=int)
-        self.parent_consensus = parent_consensus
-        self.children = children if children else []
+        # self.level = -1
+        # self.sources_IDs = sources_IDs if sources_IDs.size else np.array([], dtype=int)
+        # self.parent_consensus = parent_consensus
+        # self.children = children if children else []
 
     def __str__(self):
         return Sequence.__str__(self) + """ compatibility_to_sources: {0}""".format(  self.compatibility_to_sources)

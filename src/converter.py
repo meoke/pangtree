@@ -13,7 +13,7 @@ def convert_maf_to_po(file_name,
                       multiplier=1,
                       stop=0.99,
                       re_consensus = True,
-                      tresholds='[1,0.9,0.8,0.7]',
+                      #tresholds='[1,0.9,0.8,0.7]',
                       fasta_option=False,
                       data_type='ebola',
                       blocks_option=False):
@@ -28,8 +28,8 @@ def convert_maf_to_po(file_name,
         m.generate_consensus(option=consensus_option,
                              hbmin=hbmin,
                              min_comp=min_comp,
-                             comp_range=range,
-                             tresholds=tresholds,
+                             cutoff_search_range=_convert_str_to_tuple(range),
+                             #tresholds=tresholds,
                              multiplier=multiplier,
                              stop=stop,
                              re_consensus=re_consensus)
@@ -40,11 +40,13 @@ def convert_maf_to_po(file_name,
     processing_time = time.strftime('%H:%M:%S', time.gmtime(end - start))
     print(processing_time)
     if consensus_option or draw_poagraph_option:
-        m.generate_visualization(consensus_option, draw_poagraph_option, processing_time, m.tresholds, consensus_option)
+        m.generate_visualization(consensus_option, draw_poagraph_option, processing_time)
 
     if blocks_option:
         m.generate_blocks_graph(file_name)
 
+def _convert_str_to_tuple(comp_range): #todo zmienić nazwę
+    return eval(comp_range[1:-1])
 
 
 

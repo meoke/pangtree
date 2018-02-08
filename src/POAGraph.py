@@ -13,6 +13,7 @@ class POAGraph(object):
         self.nodes = nodes if nodes else []
         self.ns = ns if ns.size else np.array([])
         self.nc = nc if nc.size else np.array([])
+        self.poagraphrefs = []
 
     def __eq__(self, other):
         return (self.name == other.name
@@ -59,85 +60,125 @@ class POAGraph(object):
         #     if i in source.nodes_IDs:
         #         self.nodes[i].sources.add(new_source_ID)
 
-    def save_as_po(self, output_dir, sources_IDs):
-        def write_introduction_data(output_po_file, active_nodes_count):
-            output_po_file.writelines('VERSION=' + self.version + '\n')
-            output_po_file.writelines('NAME=' + self.name + '\n')
-            output_po_file.writelines('TITLE=' + self.title + '\n')
-            output_po_file.writelines('LENGTH=' + str(active_nodes_count) + '\n')
-            output_po_file.writelines('SOURCECOUNT=' + str(len(sources_IDs)) + '\n')
+    def add_consensus(self, consensus, consensus_nodes):
+        consensus.ID = len(self.consensuses)
+        consensus.compatibility_to_sources = np.array([self.calc_compatibility(consensus_nodes, src_ID) for src_ID in range(len(self.sources))])
+        self.consensuses.append(consensus)
+        if not self.nc.shape[0]:
+            self.nc = np.zeros(shape=(1,len(self.nodes)), dtype=np.bool)
+            self.nc[consensus.ID] = consensus_nodes
+        else:
+            self.nc = np.append(self.nc, [consensus_nodes], axis=0)
+        # np.reshape(self.nc, newshape=(consensus.ID +1, len(self.nodes)))
+        # self.nc[consensus.ID] = consensus_nodes
 
-        def write_source_sequences(output_po_file, nodes):
-            def get_source_info(source):
-                return ['SOURCENAME=' + source.name,
-                        '\n',
-                        " ".join(['SOURCEINFO=', str(len(source.nodes_IDs)),
-                        str((nodes['temp_nodeID'][nodes['org_nodeID'] == source.nodes_IDs[0]])[0]),
-                        str(source.weight),
-                        str(-1),
-                        str(source.title)]),
-                        '\n']
+    def calc_compatibility(self, consensus_nodes, source_ID):#:calc_compatibility(consensus, tree_node)
+        common_nodes_count = sum(self.ns[source_ID][:] & consensus_nodes)
+        source_nodes_count = sum(self.ns[source_ID][:])
+        return round(common_nodes_count / source_nodes_count, 4)
 
-            self._calc_partial_sources_weights(sources_IDs, nodes)
-            for srcID in sources_IDs:
-                output_po_file.writelines(get_source_info(self.sources[srcID]))
+        # def get_compatibility(source, consensus):
+        #     common_nodes_count = len(set(source.nodes_IDs) & set(consensus.nodes_IDs))
+        #     source_nodes_count = len(source.nodes_IDs)
+        #     return round(common_nodes_count / source_nodes_count, 4)
 
-        def write_nodes(output_po_file, nodes, sources):
-            def get_node_info(node):
-                L_to_return = ['L' + str((nodes['temp_nodeID'][nodes['org_nodeID'] == in_nodeID])[0]) for in_nodeID in node.in_nodes
-                               if in_nodeID in nodes['org_nodeID'][nodes['active']==True]]
-                S_to_return = ['S' + str((sources['temp_srcID'][sources['org_srcID']== srcID])[0]) for srcID in sources_IDs
-                               if node.ID in self.sources[srcID].nodes_IDs]
-                if node.aligned_to:
-                    if node.aligned_to in nodes['org_nodeID'][nodes['active']==True]:
-                        A_to_return = "A" + str(nodes['temp_nodeID'][nodes['org_nodeID'] == node.aligned_to][0])
-                    else:
-                        A_to_return = ""
-                else:
-                    A_to_return = ""
+        # if not consensusID:
+        #     consensuses_to_calculate = [consensus for consensus in self.consensuses if consensus.level == level]
+        # else:
+        #     consensuses_to_calculate = [self.consensuses[consensusID]]
 
-                return [node.base, ':',
-                        "".join(L_to_return),
-                        "".join(S_to_return),
-                        A_to_return,
-                        "\n"
-                        ]
+        # if not sources_IDs:
+        #     srcs = [source for source in self.sources]
+        # else:
+        #     srcs = [src for src in self.sources if src.currentID in sources_IDs]
+
+        # for consensus in consensuses_to_calculate:
+        #     # consensus.compatibility_to_sources = [get_compatibility(source, consensus) for source in self.sources]
+        #     consensus.compatibility_to_sources = [get_compatibility(source, consensus) for source in srcs]
 
 
-            for node in self.nodes:
-                if node.ID in np.where(nodes['active'] == True)[0]:
-                    output_po_file.writelines(get_node_info(node))
-
-        nodes = np.zeros(shape=(len(self.nodes)), dtype = [('org_nodeID', np.uint32),
-                                                           ('temp_nodeID', np.uint32),
-                                                           ('active', np.bool),
-                                                           ('sources_count', np.uint16)])
-        for i, src in enumerate(self.sources):
-            nodes['active'][src.nodes_IDs] = True
-            nodes['sources_count'][src.nodes_IDs] = nodes['sources_count'][src.nodes_IDs] + 1
-
-        active_nodes_count = len(nodes[nodes['active'] == True])
-        nodes['org_nodeID'][nodes['active'] == True] = np.where(nodes['active'] == True)[0]
-        nodes['temp_nodeID'][nodes['active'] == True] = range(len(nodes[nodes['active']==True]))
-
-
-
-        sources = np.zeros(shape=(len(self.sources)), dtype = [('org_srcID', np.uint32),
-                                                               ('temp_srcID', np.uint32),
-                                                               ('active', np.bool)])
-
-        sources['active'][sources_IDs] = True
-        sources['org_srcID'][sources['active'] == True] = np.where(sources['active'] == True)[0]
-        sources['temp_srcID'][sources['active'] == True] = range(len(sources[sources['active']==True]))
-
-        po_file_name = t.get_next_child_file_name(output_dir, self.name + str(".po"))
-        with open(po_file_name, 'w') as output_po_file:
-            write_introduction_data(output_po_file, active_nodes_count)
-            write_source_sequences(output_po_file, nodes)
-            write_nodes(output_po_file, nodes, sources)
-
-        return po_file_name, nodes
+    # teraz to robi po_writer
+    # def save_as_po(self, output_dir, sources_IDs):
+    #     def write_introduction_data(output_po_file, active_nodes_count):
+    #         output_po_file.writelines('VERSION=' + self.version + '\n')
+    #         output_po_file.writelines('NAME=' + self.name + '\n')
+    #         output_po_file.writelines('TITLE=' + self.title + '\n')
+    #         output_po_file.writelines('LENGTH=' + str(active_nodes_count) + '\n')
+    #         output_po_file.writelines('SOURCECOUNT=' + str(len(sources_IDs)) + '\n')
+    #
+    #     def write_source_sequences(output_po_file, nodes):
+    #         def get_source_info(source):
+    #             return ['SOURCENAME=' + source.name,
+    #                     '\n',
+    #                     " ".join(['SOURCEINFO=', str(len(source.nodes_IDs)),
+    #                     str((nodes['temp_nodeID'][nodes['org_nodeID'] == source.nodes_IDs[0]])[0]),
+    #                     str(source.weight),
+    #                     str(-1),
+    #                     str(source.title)]),
+    #                     '\n']
+    #
+    #         self._calc_partial_sources_weights(sources_IDs, nodes)
+    #         for srcID in sources_IDs:
+    #             output_po_file.writelines(get_source_info(self.sources[srcID]))
+    #
+    #     def write_nodes(output_po_file, nodes, sources):
+    #         def get_node_info(node):
+    #             L_to_return = ['L' + str((nodes['temp_nodeID'][nodes['org_nodeID'] == in_nodeID])[0]) for in_nodeID in node.in_nodes
+    #                            if in_nodeID in nodes['org_nodeID'][nodes['active']==True]]
+    #             S_to_return = ['S' + str((sources['temp_srcID'][sources['org_srcID']== srcID])[0]) for srcID in sources_IDs
+    #                            if node.ID in self.sources[srcID].nodes_IDs]
+    #             if node.aligned_to:
+    #                 if node.aligned_to in nodes['org_nodeID'][nodes['active']==True]:
+    #                     A_to_return = "A" + str(nodes['temp_nodeID'][nodes['org_nodeID'] == node.aligned_to][0])
+    #                 else:
+    #                     A_to_return = ""
+    #             else:
+    #                 A_to_return = ""
+    #
+    #             return [node.base, ':',
+    #                     "".join(L_to_return),
+    #                     "".join(S_to_return),
+    #                     A_to_return,
+    #                     "\n"
+    #                     ]
+    #
+    #
+    #         for node in self.nodes:
+    #             if node.ID in np.where(nodes['active'] == True)[0]:
+    #                 output_po_file.writelines(get_node_info(node))
+    #
+    #     nodes = np.zeros(shape=(len(self.nodes)), dtype = [('org_nodeID', np.uint32),
+    #                                                        ('temp_nodeID', np.uint32),
+    #                                                        ('active', np.bool),
+    #                                                        ('sources_count', np.uint16)])
+    #     for i, src in enumerate(self.sources):
+    #         nodes['active'][src.nodes_IDs] = True
+    #         nodes['sources_count'][src.nodes_IDs] = nodes['sources_count'][src.nodes_IDs] + 1
+    #
+    #     active_nodes_count = len(nodes[nodes['active'] == True])
+    #     nodes['org_nodeID'][nodes['active'] == True] = np.where(nodes['active'] == True)[0]
+    #     nodes['temp_nodeID'][nodes['active'] == True] = range(len(nodes[nodes['active']==True]))
+    #
+    #
+    #
+    #     sources = np.zeros(shape=(len(self.sources)), dtype = [('org_srcID', np.uint32),
+    #                                                            ('temp_srcID', np.uint32),
+    #                                                            ('active', np.bool)])
+    #
+    #     sources['active'][sources_IDs] = True
+    #     sources['org_srcID'][sources['active'] == True] = np.where(sources['active'] == True)[0]
+    #     sources['temp_srcID'][sources['active'] == True] = range(len(sources[sources['active']==True]))
+    #
+    #     po_file_name = t.get_next_child_file_name(output_dir, self.name + str(".po"))
+    #     with open(po_file_name, 'w') as output_po_file:
+    #         write_introduction_data(output_po_file, active_nodes_count)
+    #         write_source_sequences(output_po_file, nodes)
+    #         write_nodes(output_po_file, nodes, sources)
+    #
+    #     return po_file_name, nodes
     # output_po_file.write(poagraph_as_po)
+
+
 
 #     def generate_source_sequences_data(active_sources_IDs):
 #         def get_source_info(source):

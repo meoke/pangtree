@@ -73,18 +73,18 @@ def save_as_po(poagraph, sources_IDs):
         normalized_weights = [*map(lambda weight: normalize_weight(weight, max_weight, min_weight), weights)]
         return normalized_weights
 
-    nodes = np.zeros(shape=(len(poagraph.nodes)), dtype=[('orig_ID', np.uint32),
-                                                         ('temp_ID', np.uint32),
+    nodes = np.zeros(shape=(len(poagraph.nodes)), dtype=[('orig_ID', np.int32),
+                                                         ('temp_ID', np.int32),
                                                          ('active', np.bool),
                                                          ('sources_count', np.uint16)])
 
+    nodes['temp_ID'] = -1
     for i, src_ID in enumerate(sources_IDs):
         src_nodes_IDs = poagraph.ns[src_ID] == True
         nodes['active'][src_nodes_IDs] = True
         nodes['sources_count'][src_nodes_IDs] = nodes['sources_count'][src_nodes_IDs] + 1
 
     active_nodes_count = len(nodes[nodes['active'] == True])
-    # nodes['orig_ID'][nodes['active'] == True] = np.where(nodes['active'] == True)[0]
     nodes['orig_ID'][:] = range(len(poagraph.nodes))
     nodes['temp_ID'][nodes['active'] == True] = range(len(nodes[nodes['active'] == True]))
 
@@ -93,7 +93,7 @@ def save_as_po(poagraph, sources_IDs):
                                                              ('active', np.bool)])
 
     sources['active'][sources_IDs] = True
-    sources['orig_ID'][:] = range(len(poagraph.sources))# np.where(sources['active'] == True)[0]
+    sources['orig_ID'][:] = range(len(poagraph.sources))
     sources['temp_ID'][sources['active']] = range(len(sources_IDs))
 
     po_file_name = t.get_next_child_file_name(poagraph.path, poagraph.name + str(".po"))

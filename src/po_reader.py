@@ -191,7 +191,7 @@ def read_consensus(po_file_path, consensusID=0):#todo czy to jest gdzieś wykorz
     if not poagraph.consensuses:
         raise NoConsensusFound
     else:
-        return poagraph.consensuses[consensusID]
+        return poagraph.consensuses[consensusID], poagraph.nc[consensusID][:]
 #
 # def _spread_aligned_nodes(nodes):
 #     column_alignment_cycle = set()

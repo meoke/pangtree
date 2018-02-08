@@ -31,6 +31,7 @@ todo:
 - generowanie consensusu - drzewiaste (+ bug z mnożnikiem 1.3)
 
 generate_consensus
+_find_cutoff_for_max
 
 - puścić na mycoplasmie, ile trwa
 - generowanie consensusu - pojedyncze
@@ -49,6 +50,8 @@ generate_consensus
         - KONIECZNIE get_partial_sources_weights
         - _extract_node_parameters
         - _extract_line_value
+        - get_top_consensus
+        -  _find_cutoff_for_node i cutoff for max
 
 
 - kurs javascript
