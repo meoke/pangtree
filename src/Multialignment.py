@@ -2,14 +2,13 @@ from subprocess import run
 import toolkit as t
 import maf_reader as maf_reader
 import po_reader as po_reader
-#from POAGraphVisualizator import POAGraphVisualizator
-#from Sequence import Consensus
-#from Errors NoConsensusFound import *
-#from NoTresholdFound import *
+# from POAGraphVisualizator import POAGraphVisualizator
+# from Sequence import Consensus
+# from Errors NoConsensusFound import *
+# from NoTresholdFound import *
 from POAGraphRef import POAGraphRef
-import numpy as np
 import consensus as cons
-from Bio import AlignIO
+import numpy as np
 
 class Multialignment(object):
     def __init__(self, data_type='ebola'):
@@ -81,46 +80,60 @@ class Multialignment(object):
                 # cutoff_search_range = self._convert_str_to_tuple(comp_range)
                 #tresholds = self._convert_str_to_list(tresholds)
                 #self._run_tree_consensus_generation(consensus_output_dir, visualization_output_dir, p, hbmin, min_comp, cutoff_search_range, multiplier, stop, re_consensus)
-                for poagraph in self.poagraphs:
-                    consensus_output_dir = t.create_child_dir(poagraph.path, "tconsensus")
-                    hbmin = 0.2
 
-                    parent_tree_node = POAGraphRef(sources_IDs=np.array(range(len(poagraph.sources))))
-                    tree_nodes_to_process = [parent_tree_node]
+                parent_poagraphref_ID = p.create_parent_poagraphref()
+                poagraph_IDs_to_process = [parent_poagraphref_ID]
+                while poagraph_IDs_to_process:
+                    new_poagraph_IDs_to_process = []
+                    for tree_node_ID in poagraph_IDs_to_process:
+                        children_nodes_IDs = cons.process_tree_node(p,
+                                                                    tree_node_ID,
+                                                                    cutoff_search_range,
+                                                                    multiplier,
+                                                                    re_consensus,
+                                                                    stop)
+                        new_poagraph_IDs_to_process.extend(children_nodes_IDs)
+
+                        poagraph_IDs_to_process = new_poagraph_IDs_to_process
+
+                # poagraph.generate_tree_consensus(cutoff_search_range, multiplier, re_consensus, stop)
+                pass
+                    # consensus_output_dir = t.create_child_dir(poagraph.path, "tconsensus")
+
+                    # root_tree_node = POAGraphRef(sources_IDs=np.array(range(len(poagraph.sources))))
+                    # tree_nodes_to_process = [root_tree_node]
+
 
                     # finished_sources_IDs = np.empty(len(poagraph.sources), dtype=np.int16)
                     # finished_sources_IDs.fill(-1)
-                    parent_ID = -1
-                    tree_nodes_count = 1
-                    while True:
-                        new_tree_nodes_to_process = []
-                        for tree_node in tree_nodes_to_process: #poagraphref, hbmin, comp_range, multiplier, output_dir):
-                            tree_node_processing_result = cons.process_tree_node(poagraph, #todo co to zwraca - listę poagraphrefs?
-                                                                               tree_node,
-                                                                               hbmin,
-                                                                               cutoff_search_range,
-                                                                               multiplier,
-                                                                               consensus_output_dir,
-                                                                               re_consensus,
-                                                                               stop)
-                            tree_nodes_count = tree_nodes_count + len(tree_node_processing_result)
-                            tree_node.ID = len(poagraph.poagraphrefs)
-                            tree_node.parent_ID = parent_ID
-                            tree_node.children_IDs = [i for i in range(tree_node.ID + 1, tree_node.ID + 1 + len(tree_node_processing_result))]
-                            poagraph.poagraphrefs.append(tree_node)
-                            new_tree_nodes_to_process.extend(tree_node_processing_result)
-
-                        parent_ID = tree_node.ID
-
-                        tree_nodes_to_process = new_tree_nodes_to_process
-
-                        if not tree_nodes_to_process:
-                            break
-                        comps = [pref.min_compatibility  > stop for pref in tree_node_processing_result]
-                        if any(comps):
-                            nodes_to_remove = np.argmax(comps)
-                            #czy usuwac te wezly?
-                            break
+                    # parent_ID = -1
+                    # tree_nodes_count = 1
+                    # while True:
+                    #     new_tree_nodes_to_process = []
+                    #     for tree_node in tree_nodes_to_process: #poagraphref, hbmin, comp_range, multiplier, output_dir):
+                    #         cons.process_tree_node(poagraph, tree_node,
+                    #                                        cutoff_search_range,
+                    #                                        multiplier,
+                    #                                        re_consensus,
+                    #                                        stop)
+                    #         # tree_nodes_count = tree_nodes_count + len(children_nodes)
+                    #         # tree_node.ID = len(poagraph.poagraphrefs)
+                    #         # tree_node.parent_ID = parent_ID
+                    #         # tree_node.children_IDs = [i for i in range(tree_node.ID + 1, tree_node.ID + 1 + len(children_nodes))]
+                    #         # poagraph.poagraphrefs.append(tree_node)
+                    #         new_tree_nodes_to_process.extend(children_nodes)
+                    #
+                    #     parent_ID = tree_node.ID
+                    #
+                    #     tree_nodes_to_process = new_tree_nodes_to_process
+                    #
+                    #     if not tree_nodes_to_process:
+                    #         break
+                    #     comps = [pref.min_compatibility  > stop for pref in children_nodes]
+                    #     if any(comps):
+                    #         nodes_to_remove = np.argmax(comps)
+                    #         #czy usuwac te wezly?
+                    #         break
 
     def generate_visualization(self, consensus_option, draw_poagraph_option, processing_time):
         pass
@@ -129,55 +142,58 @@ class Multialignment(object):
         #todo wykorzystać generowanie jsona
         #todo mergowanie bloków, które przechodzą w siebie po całości
         def get_nodes_list(blocks):
-            def pies(id):
-                return """{{
-                      data: {{
-                        id: {0}
-                      }}
-                    }}""".format(id)
-
-            nodes_map = {}
-            nodes_groups = [[]]
+        #     def pies(id):
+        #         return """{{
+        #               data: {{
+        #                 id: {0}
+        #               }}
+        #             }}""".format(id)
+        #
+        #     nodes_map = {}
+        #     nodes_groups = [[]]
+        #     for block in blocks:
+        #         nextBlockids = set(block.srcID_to_next_blockID.values()) - set([None])
+        #         if len(nextBlockids) == 1:
+        #             iloop= 0
+        #             for i, group in enumerate(nodes_groups):
+        #                 iloop += 1
+        #                 if block.ID in group:
+        #                     nodes_groups[i].append(list(nextBlockids)[0])
+        #             if iloop == len(nodes_groups):
+        #                 nodes_groups.append([block.ID, list(nextBlockids)[0]])
+        #         else:
+        #             for r in nextBlockids:
+        #                 nodes_groups.append([r])
+        #     nodes_str_list = [pies(e) for e, group in enumerate(nodes_groups)]
+        #     new_nodes_groups = []
+        #     for g in nodes_groups:
+        #         if g == []:
+        #             continue
+        #         else:
+        #             new_nodes_groups.append(g)
+        #     return new_nodes_groups, ",".join(nodes_str_list)
+            nodes_list = []
             for block in blocks:
-                nextBlockids = set(block.srcID_to_next_blockID.values()) - set([None])
-                if len(nextBlockids) == 1:
-                    iloop= 0
-                    for i, group in enumerate(nodes_groups):
-                        iloop += 1
-                        if block.ID in group:
-                            nodes_groups[i].append(list(nextBlockids)[0])
-                    if iloop == len(nodes_groups):
-                        nodes_groups.append([block.ID, list(nextBlockids)[0]])
-                else:
-                    for r in nextBlockids:
-                        nodes_groups.append([r])
-            nodes_str_list = [pies(e) for e, group in enumerate(nodes_groups)]
-            new_nodes_groups = []
-            for g in nodes_groups:
-                if g == []:
-                    continue
-                else:
-                    new_nodes_groups.append(g)
-            return new_nodes_groups, ",".join(nodes_str_list)
-                # nodes_list.append("""{{
-                #
-                #                                       data: {{
-                #                                         id: {0}
-                #                                       }}
-                #                                     }}""".format(block.ID))
+                nodes_list.append("""{{
+        
+                                                      data: {{
+                                                        id: {0}
+                                                      }}
+                                                    }}""".format(block.ID))
                 # nodes_list.append("""{{
                 #                       data: {{
                 #                         id: {0}
                 #                       }},
                 #                       position: {{ x: {1}, y: 0 }},
                 #                     }}""".format(block.ID, block.ID *60 + 60))
-            # return ",".join(nodes_list)
+            return [], ",".join(nodes_list)
 
         def get_edges_list(blocks, nodes_groups):
             def get_node_id(old_node_id):
-                for i, group in enumerate(nodes_groups):
-                    if old_node_id in group:
-                        return i
+                return old_node_id
+                # for i, group in enumerate(nodes_groups):
+                #     if old_node_id in group:
+                #         return i
 
             def pies(i, src_dest, srcID):
                 return """{{

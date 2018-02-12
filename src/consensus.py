@@ -1,50 +1,81 @@
 from subprocess import run
 import numpy as np
-from Errors import NoConsensusFound, NoTresholdFound
+from Errors import NoConsensusFound, NoTresholdFound, StopExceeded
 from POAGraphRef import POAGraphRef
 import toolkit as t
 import po_reader as po_reader
 import po_writer as po_writer
 
-def process_tree_node(poagraph, poagraphref, hbmin, cutoff_search_range, multiplier, output_dir, re_consensus, stop):
-    children_nodes = []
-    sources_IDs_to_process = poagraphref.sources_IDs
-    #todo cos jest nie tak
-    while len(sources_IDs_to_process):
-        consensus, consensus_nodes = get_top_consensus(poagraph, sources_IDs_to_process, hbmin, output_dir)
-        compatibilities_to_tree_node_sources = [poagraph.calc_compatibility(consensus_nodes, src_ID) for src_ID in sources_IDs_to_process]
-        cutoff_for_max = _find_cutoff_for_max(compatibilities_to_tree_node_sources, cutoff_search_range)
-        max_compatible_sources_IDs = sources_IDs_to_process[np.where(compatibilities_to_tree_node_sources>=cutoff_for_max)]
-        max_consensus, max_consensus_nodes = get_top_consensus(poagraph, max_compatible_sources_IDs, hbmin, output_dir)
-        compatibilities_to_tree_node_sources = [poagraph.calc_compatibility(max_consensus_nodes, src_ID) for src_ID in sources_IDs_to_process]
 
-        cutoff_for_node = _find_cutoff_for_node(compatibilities_to_tree_node_sources, multiplier)
-        compatible_sources_IDs = get_compatible(poagraphref, compatibilities_to_tree_node_sources, cutoff_for_node,
+def process_tree_node(poagraph, tree_node_ID, cutoff_search_range, multiplier, re_consensus, stop):
+    def cancel_splitting(message):
+        raise StopExceeded(message)
+
+    hbmin = 0.2
+    tree_node_compatibility = poagraph.get_poagraphref_compatibility(tree_node_ID)
+    if tree_node_compatibility >= stop:
+        return []
+
+    tree_node_src_IDs = poagraph.get_poagraphref_sources_IDs(tree_node_ID)
+    current_srcs = tree_node_src_IDs
+    children_nodes_IDs = []
+    while len(current_srcs):
+        #1 find top consensus for all sources
+        c, c_nodes = get_top_consensus(poagraph, current_srcs, hbmin)
+
+        #2 get compatibility of the top consensus to all sources in currently processed sources
+        comp_to_current_srcs = [poagraph.get_comp(c_nodes, src_ID) for src_ID in current_srcs]
+
+        #3 get cutoff based on search range
+        max_cutoff = _find_max_cutoff(comp_to_current_srcs, cutoff_search_range)
+
+        #4 get sources maximally compatible to top consensus and find consensus for them
+        max_compatible_sources_IDs = current_srcs[np.where(comp_to_current_srcs>=max_cutoff)]
+        max_c, max_consensus_nodes = get_top_consensus(poagraph, max_compatible_sources_IDs, hbmin)
+
+        #5 get compatibility of max consensus to all current sources
+        comp_to_current_srcs = [poagraph.get_comp(max_consensus_nodes, src_ID) for src_ID in current_srcs]
+
+        #6 get cutoff based on compatibilties
+        cutoff_for_node = _find_cutoff_for_node(comp_to_current_srcs, multiplier)
+
+        #7 get sources compatible enough to the top consensus
+        compatible_sources_IDs = get_compatible(current_srcs, comp_to_current_srcs, cutoff_for_node,
                                                 re_consensus)
-        if cutoff_for_node > stop:
-            sources_IDs_to_process = np.setdiff1d(sources_IDs_to_process, compatible_sources_IDs)
-            continue
+
+        #8 check if splitting should be continued based on stop condition - moved to the top
+        # if cutoff_for_node > stop:
+        #     cancel_splitting("Stop was exceeded.")
+
+        # add the consensus
+        poagraph.add_consensus(max_c, max_consensus_nodes)
+
+        # decide how many sources will be added to the consensus
+        if children_nodes_IDs:
+            the_smallest_comp_up_to_now = poagraph.get_min_cutoff(children_nodes_IDs) #todo a może jednak max
+        else:
+            the_smallest_comp_up_to_now = 1
+
+        if the_smallest_comp_up_to_now < cutoff_for_node:
+            srcs_to_include = current_srcs
+            current_srcs = []
+            new_children_node_comp = min(comp_to_current_srcs)
+        else:
+            srcs_to_include = compatible_sources_IDs
+            current_srcs = np.setdiff1d(current_srcs, compatible_sources_IDs)
+            new_children_node_comp = cutoff_for_node
+
+        new_node = POAGraphRef(parent_ID=tree_node_ID,
+                               sources_IDs=srcs_to_include,
+                               consensus_ID=poagraph.consensuses[-1].ID,
+                               min_compatibility=new_children_node_comp)
+        new_node_ID = poagraph.add_poagraphref(new_node, tree_node_ID)
+        children_nodes_IDs.append(new_node_ID)
+
+    return children_nodes_IDs
 
 
-        poagraph.add_consensus(max_consensus, max_consensus_nodes)
-        #poagraph_ref = POAGraphRef(compatible_sources_IDs, poagraph.consensuses[-1].ID, min(compatibilities_to_tree_nodes_sources))
-
-        # current_min_probability = min(compatibilities_to_tree_node_sources)
-        the_smallest_compaibility_up_to_now = get_min_treshold(children_nodes) #children_nodes[-1].min_compatibility wwszystkie children nodes
-        if the_smallest_compaibility_up_to_now < cutoff_for_node:
-            poagraph_ref = POAGraphRef(sources_IDs_to_process, poagraph.consensuses[-1].ID, min(compatibilities_to_tree_node_sources))
-            children_nodes.append(poagraph_ref)
-            sources_IDs_to_process = []
-        else: #dzielimy dalej
-            poagraph_ref = POAGraphRef(compatible_sources_IDs, poagraph.consensuses[-1].ID, cutoff_for_node)
-            children_nodes.append(poagraph_ref)
-            sources_IDs_to_process = np.setdiff1d(sources_IDs_to_process, compatible_sources_IDs)
-            # tree_node.sources_IDs = np.array([src_ID for src_ID in tree_node.sources_IDs if src_ID not in compatible_sources_IDs])
-
-    return children_nodes
-
-
-def get_top_consensus(poagraph, sources_IDs, hbmin, output_dir):
+def get_top_consensus(poagraph, sources_IDs, hbmin):
     po_file_path, nodes_map = po_writer.save_as_po(poagraph, sources_IDs)
     hb_file_path = t.change_file_extension(po_file_path, '.hb')
     run(['../bin/poa', '-read_msa', po_file_path, '-hb', '-po', hb_file_path, '../bin/blosum80.mat', '-hbmin',
@@ -64,16 +95,8 @@ def get_top_consensus(poagraph, sources_IDs, hbmin, output_dir):
     return consensus0, consensus_actual_nodes
 
 
-def calc_compatibility(self, consensus, tree_node):
-    pass
-
-
-def get_min_treshold(children_nodes):
-    return min([p.min_compatibility for p in children_nodes]) if children_nodes else 1 #todo to trochę hack
-
-
-def get_compatible(poagraphref, compatibilities, cutoff_for_node, re_consensus):
-    return poagraphref.sources_IDs[np.where(compatibilities>=cutoff_for_node)]
+def get_compatible(poagraphref_srcs_IDs, compatibilities, cutoff_for_node, re_consensus):
+    return poagraphref_srcs_IDs[np.where(compatibilities>=cutoff_for_node)]
 
     # def _get_compatible(self, sources, consensus, min_comp, consensuses):
     #     def mean(numbers):
@@ -108,7 +131,7 @@ def _find_cutoff_for_node(compatibilities, multiplier):
     raise NoTresholdFound()
 
 
-def _find_cutoff_for_max(compatibilities, cutoff_search_range):
+def _find_max_cutoff(compatibilities, cutoff_search_range):
     #todo przeanalizować dokładniej
     min_search_idx = round((len(compatibilities)-1) * cutoff_search_range[0]/100)
     max_search_idx = round((len(compatibilities)-1) * cutoff_search_range[1]/100)

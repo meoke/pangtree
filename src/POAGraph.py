@@ -1,6 +1,7 @@
 import numpy as np
 import toolkit as t
 from POAGraphRef import POAGraphRef
+# import consensus as cons
 
 class POAGraph(object):
     def __init__(self, name, title, version, path, sources = None, consensuses = None, nodes = None, ns=np.array([]), nc=np.array([])):
@@ -13,7 +14,7 @@ class POAGraph(object):
         self.nodes = nodes if nodes else []
         self.ns = ns if ns.size else np.array([])
         self.nc = nc if nc.size else np.array([])
-        self.poagraphrefs = []
+        self._poagraphrefs = []
 
     def __eq__(self, other):
         return (self.name == other.name
@@ -60,9 +61,15 @@ class POAGraph(object):
         #     if i in source.nodes_IDs:
         #         self.nodes[i].sources.add(new_source_ID)
 
+    def add_poagraphref(self, poagrahref, poagraph_parentID):
+        poagrahref.ID = len(self._poagraphrefs)
+        self._poagraphrefs.append(poagrahref)
+        self._poagraphrefs[poagraph_parentID].children_IDs.append(poagrahref.ID)
+        return poagrahref.ID
+
     def add_consensus(self, consensus, consensus_nodes):
         consensus.ID = len(self.consensuses)
-        consensus.compatibility_to_sources = np.array([self.calc_compatibility(consensus_nodes, src_ID) for src_ID in range(len(self.sources))])
+        consensus.compatibility_to_sources = np.array([self.get_comp(consensus_nodes, src_ID) for src_ID in range(len(self.sources))])
         self.consensuses.append(consensus)
         if not self.nc.shape[0]:
             self.nc = np.zeros(shape=(1,len(self.nodes)), dtype=np.bool)
@@ -72,7 +79,11 @@ class POAGraph(object):
         # np.reshape(self.nc, newshape=(consensus.ID +1, len(self.nodes)))
         # self.nc[consensus.ID] = consensus_nodes
 
-    def calc_compatibility(self, consensus_nodes, source_ID):#:calc_compatibility(consensus, tree_node)
+    def get_min_cutoff(self, poagraphrefs_IDs):
+        poagrahrefs_to_check = [p for p in self._poagraphrefs if p.ID in poagraphrefs_IDs]
+        return min([p.min_compatibility for p in poagrahrefs_to_check])
+
+    def get_comp(self, consensus_nodes, source_ID):#:calc_compatibility(consensus, tree_node)
         common_nodes_count = sum(self.ns[source_ID][:] & consensus_nodes)
         source_nodes_count = sum(self.ns[source_ID][:])
         return round(common_nodes_count / source_nodes_count, 4)
@@ -178,8 +189,17 @@ class POAGraph(object):
     #     return po_file_name, nodes
     # output_po_file.write(poagraph_as_po)
 
+    def get_poagraphref_sources_IDs(self, tree_node_ID):
+        return self._poagraphrefs[tree_node_ID].sources_IDs
 
+    def create_parent_poagraphref(self):
+        root_tree_node = POAGraphRef(parent_ID=-1,sources_IDs=np.array(range(len(self.sources))))
+        root_tree_node.ID = 0
+        self._poagraphrefs.append(root_tree_node)
+        return root_tree_node.ID
 
+    def get_poagraphref_compatibility(self, tree_node_ID):
+        return self._poagraphrefs[tree_node_ID].min_compatibility
 #     def generate_source_sequences_data(active_sources_IDs):
 #         def get_source_info(source):
 #             return '\n'.join(['SOURCENAME=' + source.name,

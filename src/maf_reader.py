@@ -7,7 +7,7 @@ import nucleotides as nucleotides
 from POAGraph import POAGraph
 from Sequence import Source
 from Node import Node
-
+from copy import deepcopy
 
 def parse_to_poagraphs(file_path, merge_option, multialignment_name, output_dir):
     maf_blocks = [*AlignIO.parse(file_path, "maf")]
@@ -154,6 +154,74 @@ def get_blocks(file_path, multialignment_name, output_dir):
                         return i
         return None
 
+    def remove_loops1(blocks):
+        for src_ID, next_block_ID in blocks[3].srcID_to_next_blockID.items():
+            if next_block_ID == 6:
+                blocks[3].srcID_to_next_blockID[src_ID] = None
+        return blocks
+
+    def remove_loops2(blocks):
+        # for src_ID, next_block_ID in blocks[2].srcID_to_next_blockID.items():
+        #     if next_block_ID == 0:
+        #         blocks[2].srcID_to_next_blockID[src_ID] = None
+        # return blocks
+        def add_to_new_blocks(new_blocks, edge):
+            for b in blocks:
+                if b.ID == edge[0] and edge[1] in b.srcID_to_next_blockID.values():
+                    new_blocks[b.ID].next_blockID_to_weight[edge[1]] = blocks[b.ID].next_blockID_to_weight[edge[1]]
+            return new_blocks
+
+
+        def makes_cycle(new_blocks, edge):
+            current_edges = []
+            for block in new_blocks:
+                for next, weight in block.next_blockID_to_weight.items():
+                    if next is not None:
+                        current_edges.append((block.ID, next))
+            paths = []
+            edges_to_check = [edge]
+            while True:
+                # previous_edges = [current_edge for current_edge in current_edges if current_edge[1] == edge[0]]
+                # previous_edges = [current_edge for current_edge in current_edges if current_edge[1] == edge[0]]
+                previous_edges = []
+                for edge_to_check in edges_to_check:
+                    pes = [current_edge for current_edge in current_edges if current_edge[1] == edge_to_check[0]]
+                    if pes:
+                        previous_edges.append(pes[0])
+                if not previous_edges:
+                    break
+                else:
+                    pe_added = False
+                    for pe in previous_edges:
+                        for i, p in enumerate(paths):
+                            if p[-1] == edge:
+                                paths[i].append(pe)
+                                pe_added = True
+                        if not pe_added:
+                            paths.append([edge, pe])
+
+                edges_to_check = previous_edges
+
+            for path in paths:
+                if (path[-1])[0] == edge[1]:
+                    return True
+
+            return False
+
+        edges = {}
+        for block in blocks:
+            for next, weight in block.next_blockID_to_weight.items():
+                if next is not None:
+                    edges[(block.ID, next)] = weight
+        sorted_edges = sorted(edges, key=edges.__getitem__)
+        new_blocks = deepcopy(blocks)
+        for nb in new_blocks:
+            nb.next_blockID_to_weight = {}
+
+        for edge in sorted_edges:
+            if not makes_cycle(new_blocks, edge):
+                new_blocks = add_to_new_blocks(new_blocks, edge)
+
     maf_blocks = [*AlignIO.parse(file_path, "maf")]
     sources, sources_name_to_ID = _get_sources(maf_blocks)
     blocks = [Block() for i in range(len(maf_blocks))]
@@ -167,7 +235,15 @@ def get_blocks(file_path, multialignment_name, output_dir):
                 continue
             next_block_ID = find_next_block(seqrec.name, next_start, maf_blocks)
             blocks[i].srcID_to_next_blockID[sources_name_to_ID[seqrec.name]] = next_block_ID
+
+
             blocks[i].srcID_to_strand[sources_name_to_ID[seqrec.name]] = seqrec.annotations["strand"]
+        for src_ID, next_block_ID in blocks[i].srcID_to_next_blockID.items():
+            if not next_block_ID in blocks[i].next_blockID_to_weight:
+                blocks[i].next_blockID_to_weight[next_block_ID] = 1
+            else:
+                blocks[i].next_blockID_to_weight[next_block_ID] = blocks[i].next_blockID_to_weight[next_block_ID] + 1
+    # blocks = remove_loops1(blocks)
     return blocks
 
 
@@ -177,6 +253,7 @@ class Block(object):
         self.ID = -1
         self.srcID_to_next_blockID = {}
         self.srcID_to_strand = {}
+        self.next_blockID_to_weight = {}
 
     def __str__(self):
         return "ID: {0}\nsrcID_to_next_blockID: {1}\nsrcID_to_strand: {2}".format(self.ID, self.srcID_to_next_blockID, self.srcID_to_strand)

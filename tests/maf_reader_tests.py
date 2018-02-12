@@ -156,6 +156,7 @@ class MafReaderTests(unittest.TestCase):
          )
     )
     @unpack
+    @unittest.skip("To implement - Blocks processing")
     def test_maf_to_blocks(self, test_case_name, merge_option, maf_lines, dictionary):
         self.maf_path = toolkit.save_text("\n".join(maf_lines), self.temp_dir, 'test.maf')
 

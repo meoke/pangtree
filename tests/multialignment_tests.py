@@ -2,6 +2,7 @@ import unittest
 
 from context import Multialignment
 from context import toolkit
+from context import cons
 
 
 class MultialignmentTests(unittest.TestCase):
@@ -36,8 +37,7 @@ class MultialignmentTests(unittest.TestCase):
         comp_range = (60, 90)
         expected_cutoff_value = 0.998
 
-        m = Multialignment()
-        actual_cutoff_value = m._find_cutoff_value(compatibilities, comp_range)
+        actual_cutoff_value = cons._find_max_cutoff(compatibilities, comp_range)
 
         self.assertEqual(expected_cutoff_value, actual_cutoff_value)
 

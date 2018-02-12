@@ -20,7 +20,7 @@ class EndToEndTest(unittest.TestCase):
                                         #min_comp=0.01,
                                         range='[90,100]',
                                         multiplier=1,
-                                        stop=0.99,
+                                        stop=1,
                                         #tresholds='[0.6, 0.7]',
                                         re_consensus = True,
                                     fasta_option=False,

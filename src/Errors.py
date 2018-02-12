@@ -3,3 +3,6 @@ class NoConsensusFound(Exception):
 
 class NoTresholdFound(Exception):
     pass
+
+class StopExceeded(Exception):
+    pass
