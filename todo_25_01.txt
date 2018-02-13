@@ -53,11 +53,19 @@ _find_max_cutoff
 
 
 poniedziałek
-- generowanie consensusów
-- wynik consensusowy dla eboli
++ generowanie consensusów
++ wynik consensusowy dla eboli małej
 - wynik consensusowy dla ograniczonej mycoplasmy
 
 wtorek
++ sprawdzić czy nic się nie psuje podczas puszczenia dla całej eboli i ew. naprawić
++ wynik consensusowy dla eboli
+- generowanie jsona z obiektów python
+- przywrócić generowanie tabelek
+- przywrócić generowanie drzewka w takiej postaci jakiej jest
+- wynik consensusowy dla eboli
+- wynik consensusowy dla ograniczonej mycoplasmy
+
 - algorytm do dzielenia bloków
 - test zachowania się poa
 - elastyczność, jeśli chodzi o uruchamianie consensusuów na blokach bądź całości

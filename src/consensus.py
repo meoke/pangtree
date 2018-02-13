@@ -13,10 +13,10 @@ def process_tree_node(poagraph, tree_node_ID, cutoff_search_range, multiplier, r
 
     hbmin = 0.2
     tree_node_compatibility = poagraph.get_poagraphref_compatibility(tree_node_ID)
-    if tree_node_compatibility >= stop:
+    tree_node_src_IDs = poagraph.get_poagraphref_sources_IDs(tree_node_ID)
+    if tree_node_compatibility >= stop or len(tree_node_src_IDs) == 1:
         return []
 
-    tree_node_src_IDs = poagraph.get_poagraphref_sources_IDs(tree_node_ID)
     current_srcs = tree_node_src_IDs
     children_nodes_IDs = []
     while len(current_srcs):

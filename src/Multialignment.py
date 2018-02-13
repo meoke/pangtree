@@ -9,6 +9,7 @@ import po_reader as po_reader
 from POAGraphRef import POAGraphRef
 import consensus as cons
 import numpy as np
+import POAGraphViz as viz
 
 class Multialignment(object):
     def __init__(self, data_type='ebola'):
@@ -136,7 +137,21 @@ class Multialignment(object):
                     #         break
 
     def generate_visualization(self, consensus_option, draw_poagraph_option, processing_time):
-        pass
+        vizualization_output_dir = t.create_child_dir(self.output_dir, "visualization")
+        viz.generate_visualization(self,
+                                   vizualization_output_dir,
+                                   consensus_option,
+                                   draw_poagraph_option,
+                                   processing_time)
+
+
+        # def generate_visualization(self, consensuses_comparison=False, graph_visualization=False, processing_time='', tresholds= '', consensus_algorithm=False):
+        #     print('Generate visualization...')
+        #     for p in self.poagraphs:
+        #         vizualization_output_dir = t.create_child_dir(p.path, "visualization")
+        #         visualizator = POAGraphVisualizator(p, vizualization_output_dir, self.data_type)
+        #         # visualizator.generate(consensuses_comparison, graph_visualization, processing_time, self._convert_str_to_list(tresholds), consensus_algorithm)
+        #         visualizator.generate(consensuses_comparison, graph_visualization, processing_time, self.tresholds, consensus_algorithm)
 
     def generate_blocks_graph(self, maf_file_path):
         #todo wykorzystać generowanie jsona
@@ -591,13 +606,7 @@ class Multialignment(object):
     #             return sorted_compatibilities[i+1]
     #     raise NoTresholdFound()
     #
-    # def generate_visualization(self, consensuses_comparison=False, graph_visualization=False, processing_time='', tresholds= '', consensus_algorithm=False):
-    #     print('Generate visualization...')
-    #     for p in self.poagraphs:
-    #         vizualization_output_dir = t.create_child_dir(p.path, "visualization")
-    #         visualizator = POAGraphVisualizator(p, vizualization_output_dir, self.data_type)
-    #         # visualizator.generate(consensuses_comparison, graph_visualization, processing_time, self._convert_str_to_list(tresholds), consensus_algorithm)
-    #         visualizator.generate(consensuses_comparison, graph_visualization, processing_time, self.tresholds, consensus_algorithm)
+
     #
 
 
