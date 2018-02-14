@@ -34,6 +34,8 @@ class Multialignment(object):
                                                        merge_option=merge_option,
                                                        multialignment_name=self.name,
                                                        output_dir=self.output_dir)
+        for p in self.poagraphs:
+            p.data_type = self.data_type
 
     def build_multialignment_from_po(self, po_file_name):
         """Build multialignment structrure with one poagraph from po file.

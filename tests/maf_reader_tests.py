@@ -41,8 +41,8 @@ class MafReaderTests(unittest.TestCase):
     ,'a score=2.0'
     ,'s source1 3 4 + 6 GGTC'
     ,'s source2 4 2 + 5 G-A-'],
-    [Source(ID=0, name='source1', title='source1', weight=-1),
-    Source(ID=1, name='source2', title='source2', weight=-1)],
+    [Source(ID=0, name='source1', title='source1', weight=0),
+    Source(ID=1, name='source2', title='source2', weight=100)],
 
          [Node(ID=0, base='A', in_nodes=np.array([]), aligned_to=None, consensuses_count=0),
           Node(ID=1, base='C', in_nodes=np.array([0]), aligned_to=None, consensuses_count=0),
@@ -75,10 +75,10 @@ class MafReaderTests(unittest.TestCase):
              , 's source2 1 0 + 1 A'
              , 's source3 1 0 + 1 A'
              , 's source4 1 0 + 1 A'],
-         [Source(ID=0, name='source1', title='source1',  weight=-1),
-          Source(ID=1, name='source2', title='source2',  weight=-1),
-          Source(ID=2, name='source3', title='source3',  weight=-1),
-          Source(ID=3, name='source4', title='source4',  weight=-1)],
+         [Source(ID=0, name='source1', title='source1',  weight=100),
+          Source(ID=1, name='source2', title='source2',  weight=100),
+          Source(ID=2, name='source3', title='source3',  weight=100),
+          Source(ID=3, name='source4', title='source4',  weight=100)],
          [Node(ID=0, base='A', in_nodes=np.array([]), aligned_to=None, consensuses_count=0)],
          np.array([[True],[True],[True],[True]])),
         ("not every block contains all sequences",
@@ -95,9 +95,9 @@ class MafReaderTests(unittest.TestCase):
           "a score=1",
           "s test.seq1 1 2 + 3 T-A-",
           "s test.seq2 1 3 + 4 GA-C"],
-         [Source(ID=0, name='test.seq0', title='test.seq0',  weight=-1),
-          Source(ID=1, name='test.seq1', title='test.seq1', weight=-1),
-          Source(ID=2, name='test.seq2', title='test.seq2',  weight=-1)
+         [Source(ID=0, name='test.seq0', title='test.seq0',  weight=100),
+          Source(ID=1, name='test.seq1', title='test.seq1', weight=0),
+          Source(ID=2, name='test.seq2', title='test.seq2',  weight=75)
           ],
          [Node(ID=0, base='C', in_nodes=np.array([]), aligned_to=None, consensuses_count=0),
           Node(ID=1, base='T', in_nodes=np.array([]), aligned_to=None, consensuses_count=0),

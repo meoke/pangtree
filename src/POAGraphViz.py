@@ -1,5 +1,8 @@
 import json
+import numpy as np
 import toolkit as t
+from data_types import ebola as eb
+from Sequence import Source
 
 WEBPAGE_DIR = t.get_real_path('../visualization_template')
 
@@ -43,6 +46,42 @@ class JSONSource:
         self.first_node_ID = first_node_ID
         self.length = length
 
+class SourceEncoder(json.JSONEncoder):
+    poagraph = None
+
+    def get_names_and_group(self, source):
+        if self.poagraph.data_type is 'ebola':
+            source_name = eb.extract_ebola_code_part(source.name, 0)
+            source_alt_name = eb.get_official_ebola_name(eb.extract_ebola_code_part(source.title, 1))
+            source_group_name = eb.get_ebola_group_name(eb.extract_ebola_code_part(source.title, 1))
+        else:
+            source_name = source.name
+            source_alt_name = '-'
+            source_group_name = '-'
+        return source_name, source_alt_name, source_group_name
+
+    def get_first_node_ID(self, source_ID):
+        return int(np.nonzero(self.poagraph.ns[source_ID])[0][0])
+
+    def get_length(self, source_ID):
+        return int(np.sum(self.poagraph.ns[source_ID]))
+
+    def default(self, obj):
+        if isinstance(obj, Source):
+            name, alt_name, group_name = self.get_names_and_group(obj)
+            bundles = -1  # todo bundles
+            weight = obj.weight
+            first_node_ID = self.get_first_node_ID(obj.ID)
+            length = self.get_length(obj.ID)
+            return {"ID": obj.ID,
+                    "name": name,
+                    "title": alt_name,
+                    "group": group_name,
+                    "bundle_ID": bundles,
+                    "weight": weight,
+                    "first_node_ID": first_node_ID,
+                    "length": length }
+        return json.JSONEncoder.default(self, obj)
 
 def _create_common_files(multialignment, output_dir, processing_time):
     # todo skąd się bierze dodatkowy folder o nazwie multialignmentu?
@@ -74,10 +113,47 @@ def _create_common_files(multialignment, output_dir, processing_time):
     #     with open(index_path, 'w') as output:
     #         output.write(index_content)
 
+def _get_poagraph_output_dir(p, output_dir):
+    return t.create_next_sibling_dir(output_dir, p.name)
 
 def _create_poagraph_sources_files(p, output_dir):
-    # zawsze - lista sources
-    pass
+    def get_names_and_group(source):
+        if data_type is 'ebola':
+            source_name = eb.extract_ebola_code_part(source.name, 0)
+            source_alt_name = eb.get_official_ebola_name(eb.extract_ebola_code_part(source.title, 1))
+            source_group_name = eb.get_ebola_group_name(eb.extract_ebola_code_part(source.title, 1))
+        else:
+            source_name = source.name
+            source_alt_name = '-'
+            source_group_name = '-'
+        return source_name, source_alt_name, source_group_name
+
+    def get_first_node_ID(source_ID):
+        return np.nonzero(p.ns[source_ID])[0]
+
+    def get_length(source_ID):
+        return np.sum(p.ns[source_ID])
+
+    # JSONSources = []
+    # for src in p.sources:
+    #     name, alt_name, group_name = get_names_and_group(src)
+    #     bundles = -1 #todo bundles
+    #     weight = src.weight
+    #     first_node_ID = get_first_node_ID(src.ID)
+    #     length = get_length(src.ID)
+    #     JSONSources.append(JSONSource(src.ID,
+    #                                   name,
+    #                                   alt_name,
+    #                                   group_name,
+    #                                   bundles,
+    #                                   weight,
+    #                                   first_node_ID,
+    #                                   length))
+    sources_filename = t.join_path(output_dir, "sources.js")
+    SourceEncoder.poagraph = p
+    l = p.sources
+    with open(sources_filename, 'w') as out:
+        json.dump(l, fp=out, cls=SourceEncoder)
 
 
 def _create_poagraph_consensus_files(poagraph, output_dir):
@@ -94,11 +170,12 @@ def generate_visualization(multialignment, output_dir, consensus_option, draw_po
     _create_common_files(multialignment, output_dir, processing_time)
 
     for p in multialignment.poagraphs:
-        _create_poagraph_sources_files(p, output_dir)
+        poagraph_output_dir = _get_poagraph_output_dir(p, output_dir)
+        _create_poagraph_sources_files(p, poagraph_output_dir)
 
         if consensus_option:
-            _create_poagraph_consensus_files(p, output_dir)
+            _create_poagraph_consensus_files(p, poagraph_output_dir)
 
         if draw_poagraph_option:
-            _create_poagraph_graph_files(p, output_dir)
+            _create_poagraph_graph_files(p, poagraph_output_dir)
 

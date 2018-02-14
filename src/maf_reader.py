@@ -21,6 +21,7 @@ def parse_to_poagraphs(file_path, merge_option, multialignment_name, output_dir)
                             path=toolkit.create_child_dir(output_dir, multialignment_name + '_' + str(i)),
                             version='NOVEMBER')
         poagraph = _blocks_to_poagraph(poagraph, current_range_blocks)
+        poagraph.set_sources_weights()
         poagraphs.append(poagraph)
     return poagraphs
 

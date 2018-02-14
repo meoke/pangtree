@@ -4,11 +4,12 @@ from POAGraphRef import POAGraphRef
 # import consensus as cons
 
 class POAGraph(object):
-    def __init__(self, name, title, version, path, sources = None, consensuses = None, nodes = None, ns=np.array([]), nc=np.array([])):
+    def __init__(self, name, title, version, path, data_type=-1, sources=None, consensuses=None, nodes=None, ns=np.array([]), nc=np.array([])):
         self.name = name
         self.title = title
         self.version = version
         self.path = path #todo czy potrzebne? A może zarządzane przez Multialignment?
+        self.data_type = data_type
         self.sources = sources if sources else []
         self.consensuses = consensuses if consensuses else []
         self.nodes = nodes if nodes else []
@@ -200,6 +201,27 @@ class POAGraph(object):
 
     def get_poagraphref_compatibility(self, tree_node_ID):
         return self._poagraphrefs[tree_node_ID].min_compatibility
+
+    def set_sources_weights(self):
+        def get_source_weight(source_ID):
+            source_nodes = np.nonzero(self.ns[source_ID])[0]
+            nodes_sizes = [np.sum(self.ns[:, node_ID]) for node_ID in source_nodes]
+            return np.mean(nodes_sizes)
+
+        def normalize_weight(weight, max_weight, min_weight):
+            # if weight == -1:
+            #     return -1
+            if max_weight - min_weight == 0:
+                return 100
+            return int(float(format(round((weight - min_weight) / (max_weight - min_weight), 2), '.2f')) * 100)
+
+        weights = [*map(lambda source: get_source_weight(source), range(len(self.sources)))]
+        max_weight = max(weights)
+        min_weight = min(set(weights) - set([-1]))
+
+        for i, src in enumerate(self.sources):
+            src.weight = normalize_weight(weights[i], max_weight, min_weight)
+
 #     def generate_source_sequences_data(active_sources_IDs):
 #         def get_source_info(source):
 #             return '\n'.join(['SOURCENAME=' + source.name,

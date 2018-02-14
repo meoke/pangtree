@@ -55,6 +55,7 @@ def save_as_po(poagraph, sources_IDs):
                 output_po_file.writelines(get_node_info(node, active_nodes_IDs))
 
     def get_partial_sources_weights(sources_IDs, nodes):
+        #todo prawdopodobnie przesunąć do poagraph - bo jest też wykorzystywane gdzie indziej
         def get_source_weight(source):
             src_nodes_IDs = np.argwhere(poagraph.ns[source] == True)
             return np.mean(np.array([nodes['sources_count'][nodes['orig_ID'] == node_ID][0] for node_ID in src_nodes_IDs]))
