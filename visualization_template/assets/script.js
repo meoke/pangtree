@@ -1,4 +1,6 @@
 consensuses_colors = ['#ff8000', '#602870', '#983352','yellow', 'purple', 'orange', 'brown']
+var jqxhr = $.getJSON( "ebola_100th_block_01/sources.json", function() {});
+console.log(jqxhr)
 
 document.addEventListener("DOMContentLoaded", function() {
     //add_poagraph_info();
