@@ -9,6 +9,11 @@
 * Conversion from MAF to FASTA.
 * Consensus generation and visualization from aligned sequences (MAF or PO input)
 * POA Graph visualization (MAF or PO input)
+* Handling Ebola sequences and group names as provided by [Ebola Portal](https://genome.ucsc.edu/ebolaPortal/)
+
+## Work in progress
+* Advanced iteartive consensus generation (tree-based)
+* Handling Mycoplasma sequences names
 
 ## Dependencies
 * [BioPython](http://biopython.org/wiki/Download)
@@ -71,7 +76,7 @@ Write path of the test file to run
 Setup Working Directory to .../pangenome/tests
 
 ### Running
-To run unittests from command line:
+To run unittests (e.g. end_to_end_tests.py file) from command line:
 python3 -m unittest end_to_end_tests.py
 
 ### Examples
