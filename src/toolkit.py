@@ -1,6 +1,7 @@
 from pathlib import Path
 import shutil
 
+
 def get_file_name_without_extension(file_path):
     return Path(file_path).stem
 
@@ -18,7 +19,7 @@ def create_next_sibling_dir(path, sibling_dir_prefix):
     existing_prefixed_dirs = sorted(list(parent_path.glob("*"+sibling_dir_prefix+"*")))
     if existing_prefixed_dirs:
         try:
-            last_dir_suffix = int((existing_prefixed_dirs[-1].stem).split("_")[-1])
+            last_dir_suffix = int(existing_prefixed_dirs[-1].stem.split("_")[-1])
         except:
             last_dir_suffix = -1
     else:
@@ -30,9 +31,25 @@ def create_next_sibling_dir(path, sibling_dir_prefix):
     new_dir_path.mkdir()
     return new_dir_path.resolve()
 
+def get_next_child_file_name(path, child_file_prefix):
+    existing_prefixed_files = sorted(list(path.glob("*"+child_file_prefix+"*")))
+    if existing_prefixed_files:
+        try:
+            last_path_suffix = int(existing_prefixed_files[-1].stem.split("_")[-1])
+        except:
+            last_path_suffix = -1
+    else:
+        last_path_suffix = -1
+    new_file_suffix_value = last_path_suffix + 1
+    new_file_suffix = str(new_file_suffix_value) if new_file_suffix_value > 9 else '0' + str(new_file_suffix_value)
+    new_file_name = child_file_prefix.split('.')[0] + '_' + new_file_suffix + "." + child_file_prefix.split('.')[1]
+    new_file_path = path.joinpath(new_file_name)
+    return str(new_file_path)
 
 def create_child_dir(parent_path, dir_name):
     child_dir_path = Path(parent_path).joinpath(dir_name)
+    if child_dir_path.exists():
+        return create_next_sibling_dir(child_dir_path, dir_name)
     child_dir_path.mkdir()
     return child_dir_path.resolve()
 
@@ -66,8 +83,8 @@ def change_file_extension(path, suffix):
     return str(Path(path).with_suffix(suffix))
 
 
-def get_real_path(relativePath):
-    return Path().cwd().joinpath(relativePath).resolve()
+def get_real_path(relative_path):
+    return Path().cwd().joinpath(relative_path).resolve()
 
 
 def copy_dir(source, destination):
@@ -75,3 +92,6 @@ def copy_dir(source, destination):
         remove_dir(destination)
     shutil.copytree(source, destination)
 
+
+def mean(numbers):
+    return float(sum(numbers)) / max(len(numbers), 1)

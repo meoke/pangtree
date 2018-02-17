@@ -1,10 +1,13 @@
 # Multialignment processing tool for pangenomes
 
 ## Features
-* Conversion from MAF (Multiple Alignment Format) to PO (POAGraph representation file - check [See Lee, Grasso & Sharlow article](https://academic.oup.com/bioinformatics/article/18/3/452/236691/Multiple-sequence-alignment-using-partial-order) for details).
+**Working**
+* Conversion from MAF (Multiple Alignment Format) to PO (POAGraph representation file - check [See Lee, Grasso & Sharlow article](https://academic.oup.com/bioinformatics/article/18/3/452/236691/Multiple-sequence-alignment-using-partial-order) for details). Mycoplasma ~18min, Ebola ~1m30s
+* Reading poa file to POAGraph structure.
+
+**Work in progress**
 * Conversion from MAF to FASTA.
-* Consensus generation from aligned sequences (MAF or PO input) - in a single iteration
-* Consensus generation from aligned sequences (MAF or PO input) - iteratively
+* Consensus generation and visualization from aligned sequences (MAF or PO input)
 * POA Graph visualization (MAF or PO input)
 * Handling Ebola sequences and group names as provided by [Ebola Portal](https://genome.ucsc.edu/ebolaPortal/)
 
@@ -18,14 +21,14 @@
 ## Running
 
 ### Example
-python3 src/pangenome.py -f examples/entire_ebola/ebola_ncbi.maf -format maf -c -iter -hbmin 0.9 -data ebola
+python3 pangenome.py -f alignment.maf -c 3
 
 ### Arguments description
 Currently, all features are provided by module *mln*. There are a few options for different features available
 
 usage: pangenome.py mln [-h] -f FILE -format FILE FORMAT [-m MERGE_BLOCKS]
                         [-fasta] [-c] [-iter] [-hbmin HBMIN]
-                        [-min_comp MINCOMP] [-v] -data DATATYPE
+                        [-min_comp MINCOMP] [-draw] -data DATATYPE
 
 optional arguments:
 
@@ -39,22 +42,25 @@ optional arguments:
   
   -fasta             generate FASTA files
   
-  -c                 generate consensus
+  -c                 if consensus must be generated, decide what algorithm should be used (1 - single poa iteration, 2 - iteratively run poa, 3 - tree based algorithm)
   
-  -iter              if c: generate consensus iteratively
+  -hbmin HBMIN       if c=1: HBMIN value for POA heaviest bundling alogrithm, float values from range [0,1]
+                     
+  -min_comp MINCOMP  if c0 or c1: minimum compatibility between source and consensus to
+                     match them 
   
-  -hbmin HBMIN       if c: HBMIN value for POA heaviest bundling alogrithm, min 0,
-                     max 1
+  -r RANGE           if c2: percentage range of compitibilities where the biggest change will be searched
+  
+  -t TRESHOLDS       if c2: series of tresholds to be used on tree levels
                      
-  -min_comp MINCOMP  if c and iter: minimum compatibility between source and consensus to
-                     match them
-                     
-  -v                 generate visualization
+  -draw              draw poagraph
   
   -data DATATYPE     ebola or mycoplasma
+  
+  - 
  
 ## Development
-TBA
+Documentation TBA
 
 ## Tests
 
@@ -72,4 +78,11 @@ Setup Working Directory to .../pangenome/tests
 ### Running
 To run unittests (e.g. end_to_end_tests.py file) from command line:
 python3 -m unittest end_to_end_tests.py
+
+### Examples
+
+#### Just read maf file to build internally POA graph with all maf blocks merged (by default)
+
+pangenome.py mln -f [FILE_NAME] -format maf
+
 
