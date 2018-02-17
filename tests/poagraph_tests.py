@@ -6,6 +6,7 @@ from context import Node
 
 
 class POAGraphTests(unittest.TestCase):
+    @unittest.skip('Liczenie compatibility w consensus')
     def test_calculating_compatibility(self):
         p = POAGraph(name='',
                      title='',
@@ -14,16 +15,14 @@ class POAGraphTests(unittest.TestCase):
                      sources = [Source(currentID=0,
                                         name='source1',
                                         title='source1',
-                                        active=True,
                                         nodes_IDs=set([2, 3, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15]),
-                                        consensusID=1,
+                                        consensus_ID=1,
                                         weight=0),
                                 Source(currentID=1,
                                         name='source2',
                                         title='source2',
-                                        active=True,
                                         nodes_IDs=set([0, 1, 3, 4, 6, 7, 8, 12, 13, 14, 16, 17]),
-                                        consensusID=0,
+                                        consensus_ID=0,
                                         weight=0)],
                      consensuses =  [Consensus(currentID=0,
                                                 name='CONSENS0',
@@ -33,7 +32,6 @@ class POAGraphTests(unittest.TestCase):
                                      Consensus(currentID=1,
                                                 name='CONSENS1',
                                                 title='consensus produced by heaviest_bundle, containing 1 seqs',
-                                                active=True,
                                                 nodes_IDs=set([2, 3, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15]))],
                      nodes = [])
         expected_compatibilities_consensus_0 = [0.8462, 0.9167]
@@ -43,35 +41,32 @@ class POAGraphTests(unittest.TestCase):
         self.assertEqual(expected_compatibilities_consensus_0, p.consensuses[0].compatibility_to_sources)
         self.assertEqual(expected_compatibilities_consensus_1, p.consensuses[1].compatibility_to_sources)
 
+    @unittest.skip("removed feature")
     def test_sources_deactivation(self):
         p = POAGraph(name='', title='', version='', path='',
                      sources=[Source(currentID=0,
                                      name='source1',
                                      title='source1',
-                                     active=True,
                                      nodes_IDs=set([0,4,5,7,9]),
-                                     consensusID=-1,
+                                     consensus_ID=-1,
                                      weight=0),
                               Source(currentID=1,
                                      name='source2',
                                      title='source2',
-                                     active=True,
                                      nodes_IDs=set([0,2,4,6]),
-                                     consensusID=-1,
+                                     consensus_ID=-1,
                                      weight=0),
                               Source(currentID=2,
                                      name='source3',
                                      title='source3',
-                                     active=True,
                                      nodes_IDs=set([1,3,4,6,8]),
-                                     consensusID=-1,
+                                     consensus_ID=-1,
                                      weight=0),
                               Source(currentID=-1,
                                      name='source4',
                                      title='source4',
-                                     active=False,
                                      nodes_IDs=set([1,2,4,6,7,9]),
-                                     consensusID=-1,
+                                     consensus_ID=-1,
                                      weight=0)
                               ],
                      consensuses=[],
@@ -90,30 +85,26 @@ class POAGraphTests(unittest.TestCase):
                      sources=[Source(currentID=-1,
                                      name='source1',
                                      title='source1',
-                                     active=False,
                                      nodes_IDs=set([0,4,5,7,9]),
-                                     consensusID=-1,
+                                     consensus_ID=-1,
                                      weight=0),
                               Source(currentID=0,
                                      name='source2',
                                      title='source2',
-                                     active=True,
                                      nodes_IDs=set([0,2,4,6]),
-                                     consensusID=-1,
+                                     consensus_ID=-1,
                                      weight=0),
                               Source(currentID=1,
                                      name='source3',
                                      title='source3',
-                                     active=True,
                                      nodes_IDs=set([1,3,4,6,8]),
-                                     consensusID=-1,
+                                     consensus_ID=-1,
                                      weight=0),
                               Source(currentID=-1,
                                      name='source4',
                                      title='source4',
-                                     active=False,
                                      nodes_IDs=set([1,2,4,6,7,9]),
-                                     consensusID=-1,
+                                     consensus_ID=-1,
                                      weight=0)
                               ],
                      consensuses=[],
@@ -132,35 +123,32 @@ class POAGraphTests(unittest.TestCase):
         finally:
             _show_differences(p, expected_poagraph)
 
+    @unittest.skip("removed feature")
     def test_sources_deactivation(self):
         poagraph_with_unassigned_consensuses = POAGraph(name='', title='', version='', path='',
                                      sources=[Source(currentID=-1, #schould become active
                                                      name='source1',
                                                      title='source1',
-                                                     active=False,
                                                      nodes_IDs=set([0, 4, 5, 7, 9]),
-                                                     consensusID=-1,
+                                                     consensus_ID=-1,
                                                      weight=0),
                                               Source(currentID=0, #schould become active
                                                      name='source2',
                                                      title='source2',
-                                                     active=True,
                                                      nodes_IDs=set([0, 2, 4, 6]),
-                                                     consensusID=-1,
+                                                     consensus_ID=-1,
                                                      weight=0),
                                               Source(currentID=1, #should become unactive
                                                      name='source3',
                                                      title='source3',
-                                                     active=True,
                                                      nodes_IDs=set([1, 3, 4, 6, 8]),
-                                                     consensusID=1,
+                                                     consensus_ID=1,
                                                      weight=0),
                                               Source(currentID=-1, #schould become active
                                                      name='source4',
                                                      title='source4',
-                                                     active=False,
                                                      nodes_IDs=set([1, 2, 4, 6, 7, 9]),
-                                                     consensusID=-1,
+                                                     consensus_ID=-1,
                                                      weight=0)
                                               ],
                                      consensuses=[],
@@ -201,30 +189,26 @@ class POAGraphTests(unittest.TestCase):
                                      sources=[Source(currentID=0,
                                                      name='source1',
                                                      title='source1',
-                                                     active=True,
                                                      nodes_IDs=set([0, 4, 5, 7, 9]),
-                                                     consensusID=-1,
+                                                     consensus_ID=-1,
                                                      weight=0),
                                               Source(currentID=1,
                                                      name='source2',
                                                      title='source2',
-                                                     active=True,
                                                      nodes_IDs=set([0, 2, 4, 6]),
-                                                     consensusID=-1,
+                                                     consensus_ID=-1,
                                                      weight=0),
                                               Source(currentID=-1,
                                                      name='source3',
                                                      title='source3',
-                                                     active=False,
                                                      nodes_IDs=set([1, 3, 4, 6, 8]),
-                                                     consensusID=1,
+                                                     consensus_ID=1,
                                                      weight=0),
                                               Source(currentID=2,
                                                      name='source4',
                                                      title='source4',
-                                                     active=True,
                                                      nodes_IDs=set([1, 2, 4, 6, 7, 9]),
-                                                     consensusID=-1,
+                                                     consensus_ID=-1,
                                                      weight=0)
                                               ],
                                               consensuses=[],
@@ -252,6 +236,10 @@ class POAGraphTests(unittest.TestCase):
             self.assertEqual(poagraph_with_unassigned_consensuses, expected_poagraph)
         finally:
             _show_differences(poagraph_with_unassigned_consensuses, expected_poagraph)
+
+    def test_saving_as_po(self):
+        pass
+
 
 def _show_differences(poagraph1, poagraph2):
     def compare_objects(obj1, obj2, object_name):

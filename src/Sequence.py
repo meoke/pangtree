@@ -1,53 +1,47 @@
+import numpy as np
+
+
 class Sequence(object):
-    def __init__(self, currentID, name, title, active = True, nodes_IDs = None):
-        self.currentID = currentID
+    def __init__(self, ID, name, title):
+        self.ID = ID
         self.name = name
         self.title = title
-        self.active = active
-        self.nodes_IDs = nodes_IDs if nodes_IDs else []
 
     def __str__(self):
-        return """ID: {0},\t name: {1},\t title: {2}, \t active: {3},\t nodes IDs: {4}""".format(
-            self.currentID,
-            self.name,
-            self.title,
-            self.active,
-            self.nodes_IDs)
+        return """ID: {0},\t name: {1},\t title: {2}""".format(
+                self.ID,
+                self.name,
+                self.title)
 
     def __eq__(self, other):
-        return     (self.currentID == other.currentID
-                    and self.name == other.name
-                    and self.title == other.title
-                    and self.active == other.active
-                    and self.nodes_IDs == other.nodes_IDs)
+        return (self.ID == other.ID
+                and self.name == other.name
+                and self.title == other.title)
 
-    def add_node_ID(self, node_globalID):
-        self.nodes_IDs.append(node_globalID)
 
 class Source(Sequence):
-    def __init__(self, currentID, name, title, active = True, nodes_IDs = None, consensusID = -1, weight = -1):
-        Sequence.__init__(self, currentID=currentID, name=name, title=title, active=active, nodes_IDs=nodes_IDs)
-        self.consensusID = consensusID
+    def __init__(self, ID, name, title, weight = -1, consensus_ID = -1):
+        Sequence.__init__(self, ID=ID, name=name, title=title)
         self.weight = weight
+        self.consensus_ID = consensus_ID
 
     def __str__(self):
-        return Sequence.__str__(self) + """\tconsensusID: {0},\tweight: {1}""".format(
-            self.consensusID,
-            self.weight)
+        return Sequence.__str__(self) + """\tweight: {0},\tconsensus_ID: {1}""".format(
+            self.weight, self.consensus_ID)
 
     def __eq__(self, other):
-        return Sequence.__eq__(self, other) and self.consensusID == other.consensusID \
-                                            and self.weight == other.weight
-
+        return Sequence.__eq__(self, other) and \
+            self.weight == other.weight and \
+            self.consensus_ID == other.consensus_ID
 
 
 class Consensus(Sequence):
-    def __init__(self, currentID, name, title, active = True, nodes_IDs = None, compatibility_to_sources = None):
-        Sequence.__init__(self, currentID=currentID, name=name, title=title, active=active, nodes_IDs=nodes_IDs)
-        self.compatibility_to_sources = compatibility_to_sources if compatibility_to_sources else {}
+    def __init__(self, ID, name, title, compatibility_to_sources=np.array([])):
+        Sequence.__init__(self, ID=ID, name=name, title=title)
+        self.compatibility_to_sources = compatibility_to_sources if compatibility_to_sources.size else np.array([], dtype=int)
 
     def __str__(self):
         return Sequence.__str__(self) + """ compatibility_to_sources: {0}""".format(  self.compatibility_to_sources)
 
     def __eq__(self, other):
-        return Sequence.__eq__(self, other) and self.compatibility_to_sources == other.compatibility_to_sources
+        return Sequence.__eq__(self, other) and np.array_equal(self.compatibility_to_sources, other.compatibility_to_sources)
