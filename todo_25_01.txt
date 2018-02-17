@@ -6,75 +6,26 @@ poniedziałek/wtorek
 - przetestować na mycoplasmie
 
 
-to działa zgodnie z nowym pomysłem:
-- maf_reader - parse_to_poagraphs
-- po_reader - parse_to_poagraph
-- save_as_po
-    - source info ma złą liczbę nodow
-    - złe startowe nody
-    - złe wagi
-    - wszędzie się wpisują wszystkie sources
-    - uwzględnić w teście prawidłowe wagi
-    - dopisać w teście pomijanie niektórych sources
-    - _calc_partial_sources_weights
-
 todo:
-- generowanie consensusu - drzewiaste (+ bug z mnożnikiem 1.3)
+- oczyszczenie niepotrzebnych komentarzy i pomergowanie
 
-generate_consensus
-_find_max_cutoff
-- spisać test dla mojego przykładu
-- puścić na mycoplasmie, ile trwa
+1) LOGIKA OGARNIANIA BLOKÓW I TWORZENIA BEZCYKLOWEGO GRAFU
+- algorytm do usuwania cykli z użyciem networkx
+- testy z dziurą na POA
+- poprawne tworzenie poagraphów (analiza kartkowa)
+
+2) WYŚWIETLANIE WYNIKÓW
+- tabelki
+- graf bloków
+- drzewo consensusów - https://www.tutorialspoint.com/d3js/d3js_quick_guide.htm
+- graf poagrafu/poagrafów
+
+3) WYDAJNOŚĆ
+- wydajność (Norbert): sparse matrix, bit array
+
+4) WYNIKI - EBOLA, MYCOPLASMA, MYCOPLASMA 2
+- generowanie consensusu - drzewiaste - bug z mnożnikiem 1.3
 - generowanie consensusu - pojedyncze
-- generowanie drzewa 
-	- jak zrobić takie fajne drzewo jak ja chcę?
-		- https://www.tutorialspoint.com/d3js/d3js_quick_guide.htm
-	- z zamianą na ładne generowanie jsona?
-- algorytm dla bloków, o których mówił Norbert
-- testy dla POA, o których mówił Norbert
-- logowanie przebiegu do pliku
-- testy jednostkowe - co jest otestowane:
-    - OK wczytywanie mafa do poagrafu
-    - OK przygotowywanie bloków do zmergowania w zależności od wybranej opcji - ale to należałoby uaktualnić
-
-    - co możnaby otestować:
-        - KONIECZNIE get_partial_sources_weights
-        - _extract_node_parameters
-        - _extract_line_value
-        - get_top_consensus
-        -  _find_cutoff_for_node i cutoff for max
-
-
-        - SPARSE_MATRIX - numpy - do przeszukiwania
-        - bit_array -
-
-
-- kurs javascript
-
-
-poniedziałek
-+ generowanie consensusów
-+ wynik consensusowy dla eboli małej
-- wynik consensusowy dla ograniczonej mycoplasmy
-
-wtorek
-+ sprawdzić czy nic się nie psuje podczas puszczenia dla całej eboli i ew. naprawić
-+ wynik consensusowy dla eboli
-- generowanie jsona z obiektów python
-- przywrócić generowanie tabelek
-- przywrócić generowanie drzewka w takiej postaci jakiej jest
-- wynik consensusowy dla eboli
-- wynik consensusowy dla ograniczonej mycoplasmy
-
-- algorytm do dzielenia bloków
-- test zachowania się poa
-- elastyczność, jeśli chodzi o uruchamianie consensusuów na blokach bądź całości
-
-środa
--  testy na nowej mycoplasmie
-
-czwartek
--
-
-piątek
--
+- logowanie
+- wynik consensuswoy dla ograniczonej mycoplasmy (jak rozwiążę problem z wydajnością i porządek w blokach)
+- analiza nowej mycoplasmy (usunięcie nukleotydów i sprawdzenie excelowe przepływu bloków), jeśli moje rozwiązanie podoła - uruchomić

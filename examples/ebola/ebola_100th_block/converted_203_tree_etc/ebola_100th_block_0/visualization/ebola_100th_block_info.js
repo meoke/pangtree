@@ -1,5 +1,5 @@
-var info = 
-                { name: 'ebola_100th_block', 
+var info = {
+name: 'ebola_100th_block',
 consensus_algorithm: 3, 
 running_time:'00:00:02', 
 sources_count: 158, 

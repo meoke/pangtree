@@ -4,8 +4,8 @@ class Node(object):
     def __init__(self, ID, base, in_nodes=np.array([]), aligned_to=None, consensuses_count=0):
         self.ID = ID
         self.base = base
-        self.in_nodes = in_nodes if in_nodes.size else np.array([], dtype=int) #in_nodes #TODO czy to na pewno sie nie krzaczy
-        self.aligned_to = aligned_to #TODO czy to na pewno sie nie krzaczy
+        self.in_nodes = in_nodes if in_nodes.size else np.array([], dtype=int)
+        self.aligned_to = aligned_to
         self.consensuses_count = consensuses_count #TODO czy to potrzebne? sprawdzic wydajnosc bez tego
 
     def __eq__(self, other):

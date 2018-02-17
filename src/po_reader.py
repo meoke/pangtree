@@ -84,146 +84,17 @@ def _read_nodes_info(po_file_handler, nodes_count, sources_count, consensuses_co
 
     return nodes, ns, nc
 
+
 def _extract_node_parameters(node, code_letter):
     pattern = '{0}\d+'.format(code_letter)
     values_with_prefix_letters = re.findall(pattern, node)
     return [int(letter_value[1:]) for letter_value in values_with_prefix_letters]
 
 
-# def fill_nodes_info(po_file_handler, poagraph, po_file_handler):
-#     def assign_this_node_to_its_sequences(sequences_IDs, node_ID):
-#         npsequeunces_IDs = np.array(sequences_IDs)
-#         poagraph_sources_count = len(poagraph.sources)
-#         srcs_ID = npsequeunces_IDs[npsequeunces_IDs < poagraph_sources_count]
-#         poagraph.ns[srcs_ID, node_ID] = True
-#
-#         cons_ID = np.array([x - poagraph_sources_count for x in npsequeunces_IDs[npsequeunces_IDs>=poagraph_sources_count]])
-#         if cons_ID.size:
-#             poagraph.nc[cons_ID, node_ID] = True
-        # for sequence_ID in sequences_IDs:
-        #     if sequence_ID < poagraph_sources_count:
-        #         source_nodes_count = poagraph.sources[sequence_ID].nodes_count
-        #         poagraph.sources[sequence_ID].nodes_IDs[source_nodes_count] = node_ID
-        #         poagraph.sources[sequence_ID].nodes_count += 1
-        #     else:
-        #         consensus_ID = sequence_ID - poagraph_sources_count
-        #         consensus_nodes_count = poagraph.consensuses[consensus_ID].nodes_count
-        #         poagraph.consensuses[consensus_ID].nodes_IDs[consensus_nodes_count] = node_ID
-        #         poagraph.consensuses[consensus_ID].nodes_count += 1
-
-                #poagraph.consensuses[sequence_ID - max_source_ID - 1].add_node_ID(node_ID)
-
-    # for node_ID, line in enumerate(po_file_handler):
-    #     base = line[0]
-    #     in_nodes = _extract_node_parameters(line, 'L')
-    #     sequences_IDs = _extract_node_parameters(line, 'S')
-    #     aligned_to =_extract_node_parameters(line, 'A')
-    #     aligned_to = aligned_to[0] if aligned_to else None
-    #     node = Node(ID=node_ID,
-    #                 base=base,
-    #                 in_nodes=np.array(in_nodes),
-    #                 aligned_to=aligned_to
-    #                 )
-    #     assign_this_node_to_its_sequences(sequences_IDs, node_ID)
-    #     poagraph.nodes[node_ID] = node
-    #
-    # return poagraph
-
-
-
-
-
-#
-# def _read_nodes_from_po_lines(poagraph, po_lines, max_source_ID):
-#     def update_aligned_nodes_sets(aligned_node_sets, node_ID, node_aligned_to):
-#         for s in aligned_node_sets:
-#             if node_ID in s:
-#                 s.add(node_aligned_to)
-#         else:
-#             aligned_node_sets.append(set([node_ID, node_aligned_to]))
-#
-#     def update_nodes_with_aligned_nodes(aligned_nodes_sets):
-#         for s in aligned_nodes_sets:
-#             for node_ID in s:
-#                 poagraph.nodes[node_ID].aligned_to.update(s - set([node_ID]))
-#
-#     def assign_this_node_to_its_sequences(sequences_IDs, node_ID):
-#         for sequence_ID in sequences_IDs:
-#             if sequence_ID <= max_source_ID:
-#                 poagraph.sources[sequence_ID].nodes_IDs.append(node_ID)
-#             else:
-#                 poagraph.consensuses[sequence_ID - max_source_ID - 1].add_node_ID(node_ID)
-#
-#     first_node_line_number = _get_first_node_line_number(po_lines)
-#     aligned_nodes_sets = []
-#     for i, line in enumerate(po_lines[first_node_line_number:]):
-#         base = line[0]
-#         in_nodes = set(_extract_node_parameters(line, 'L'))
-#         sequences_IDs = _extract_node_parameters(line, 'S')
-#         sources = set([sequence_ID for sequence_ID in sequences_IDs if sequence_ID <= max_source_ID])
-#         consensuses_count = len(sequences_IDs) - len(sources)
-#         poagraph.add_node(
-#             Node(ID=i,
-#                  base=base,
-#                  in_nodes=in_nodes,
-#                  sources = sources,
-#                  consensuses_count=consensuses_count))
-#
-#         assign_this_node_to_its_sequences(sequences_IDs, i)
-#
-#         aligned_to = _extract_node_parameters(line, 'A')
-#         if aligned_to:
-#             update_aligned_nodes_sets(aligned_nodes_sets, i, aligned_to[0])
-#
-#     update_nodes_with_aligned_nodes(aligned_nodes_sets)
-
-def read_consensus(po_file_path, consensusID=0):#todo czy to jest gdzieś wykorzystywane?
+def read_consensus(po_file_path, consensusID=0):
     print('\tRead consensus ' + str(consensusID) + ' from ' + po_file_path)
     poagraph = parse_to_poagraph(po_file_path, output_dir="")
-    # with open(file_path) as po:
-    #     po_lines = po.readlines()
-    #     p = POAGraph(name=_extract_line_value(po_lines[1]),
-    #                  title=_extract_line_value(po_lines[2]),
-    #                  version=_extract_line_value(po_lines[0]),
-    #                  path='')
-    #     _read_sequence_info_from_po_lines(p, po_lines)
-    #     _read_nodes_from_po_lines(p, po_lines, len(p.sources)-1)
     if not poagraph.consensuses:
         raise NoConsensusFound
     else:
         return poagraph.consensuses[consensusID], poagraph.nc[consensusID][:]
-#
-# def _spread_aligned_nodes(nodes):
-#     column_alignment_cycle = set()
-#     for n in nodes.values():
-#         if not n.alignedTo:
-#             continue
-#         if min(n.alignedTo) in column_alignment_cycle:
-#             n.alignedTo = set(column_alignment_cycle)
-#             n.alignedTo.remove(n.ID)
-#             continue
-#         else:
-#             aligned_node_id = max(n.alignedTo)
-#             column_alignment_cycle = set([n.ID])
-#             while True:
-#                 column_alignment_cycle.add(aligned_node_id)
-#                 next_aligned_node_ID = max(nodes[aligned_node_id].alignedTo)
-#                 if next_aligned_node_ID == n.ID:
-#                     break
-#                 aligned_node_id = next_aligned_node_ID
-#
-#             n.alignedTo = set(column_alignment_cycle)
-#             n.alignedTo.remove(n.ID)
-#
-#
-# def _get_first_sequence_info_line_number():
-#     return 5
-#
-#
-# def _get_first_node_line_number(po_lines):
-#     for i, l in enumerate(po_lines):
-#         if l[1] == ':':
-#             return (i)
-#
-#
-

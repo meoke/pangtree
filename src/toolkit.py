@@ -32,7 +32,6 @@ def create_next_sibling_dir(path, sibling_dir_prefix):
     return new_dir_path.resolve()
 
 def get_next_child_file_name(path, child_file_prefix):
-    #parent_path = get_parentdir_name(path)
     existing_prefixed_files = sorted(list(path.glob("*"+child_file_prefix+"*")))
     if existing_prefixed_files:
         try:
@@ -51,8 +50,6 @@ def create_child_dir(parent_path, dir_name):
     child_dir_path = Path(parent_path).joinpath(dir_name)
     if child_dir_path.exists():
         return create_next_sibling_dir(child_dir_path, dir_name)
-    # if child_dir_path.is_dir():
-    #     return child_dir_path.resolve()
     child_dir_path.mkdir()
     return child_dir_path.resolve()
 

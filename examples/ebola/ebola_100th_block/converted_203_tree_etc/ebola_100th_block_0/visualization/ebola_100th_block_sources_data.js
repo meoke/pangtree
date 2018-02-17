@@ -1,4 +1,5 @@
-  var sources = { data: [
+  var sources =
+  { data: [
 { id: 0,	name:'eboVir3',	title: 'G3686v1_2014',	 group: 'Ebola 2014',	bundle_ID: {0.5742: 0, 0.6059: 2, 0.6238: 8, 0.6188: 6, 0.9663: 10},	weight: -1,	first_node_id: 0,	length: 208}
 ,{ id: 1,	name:'KJ660346v2',	title: 'Guinea_Kissidougou-C15_2014',	 group: 'Ebola 2014',	bundle_ID: {0.5742: 0, 0.6059: 2, 0.6238: 8, 0.6188: 6, 0.9663: 10},	weight: -1,	first_node_id: 0,	length: 208}
 ,{ id: 2,	name:'KJ660347v2',	title: 'Guinea_Gueckedou-C07_2014',	 group: 'Ebola 2014',	bundle_ID: {0.5742: 0, 0.6059: 2, 0.6238: 8, 0.6188: 6, 0.9663: 10},	weight: -1,	first_node_id: 0,	length: 208}

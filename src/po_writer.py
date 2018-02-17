@@ -1,5 +1,6 @@
 import numpy as np
 import toolkit as t
+import time
 
 def save_as_po(poagraph, sources_IDs):
     def write_introduction_data(output_po_file, active_nodes_count):
