@@ -65,21 +65,21 @@ def _read_blocks(file_path):
                 DG.add_edge(i, next_block_ID, weight=1)
 
     a = nx.simple_cycles(DG)
-    print("Cycles: ", [*a])
+    print("Cycles before processing: ", [*a])
+    temp_dg = DG.copy()
+    edges_to_remove = [(u, v) for (u, v) in temp_dg.edges()]
+    temp_dg.remove_edges_from(edges_to_remove)
     for (u, v, wt) in sorted(DG.edges.data('weight'), key=lambda x : x[2], reverse=True):
-        cycle_count = len([*nx.simple_cycles(DG)])
-        if cycle_count == 0:
-            break
+        temp_dg.add_edge(u, v, weight=wt)
+        cycle_count = len([*nx.simple_cycles(temp_dg)])
+        if cycle_count != 0:
+            temp_dg.remove_edge(u, v)
+            print("Edge removed:", (u, v))
 
-        temp_dg = nx.DiGraph(DG)
-        temp_dg.remove_edge(u, v)
-        if len([*nx.simple_cycles(temp_dg)]) < cycle_count:
-            DG.remove_edge(u, v)
-            print("removed", (u, v, wt))
-        print(u, v, wt)
+    DG = temp_dg
 
     a = nx.simple_cycles(DG)
-    print("Cycles: ", [*a])
+    print("Cycles after processing: ", [*a])
     draw_blocks_graph(DG)
 
 def get_blocks(file_path, multialignment_name, output_dir):
