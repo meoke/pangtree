@@ -3,6 +3,7 @@ import maf_reader as maf_reader
 import po_reader as po_reader
 import consensus as cons
 import POAGraphViz as viz
+from Errors import CloseProgram
 
 class Multialignment(object):
     def __init__(self, data_type='ebola'):
@@ -26,6 +27,9 @@ class Multialignment(object):
                                                        merge_option=merge_option,
                                                        multialignment_name=self.name,
                                                        output_dir=self.output_dir)
+        if self.poagraphs is None:
+            raise CloseProgram("No poagraph was built.")
+
         for p in self.poagraphs:
             p.data_type = self.data_type
 

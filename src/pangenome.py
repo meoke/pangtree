@@ -44,7 +44,8 @@ def convert(args):
         parser.error('METAVAR must be \'ebola\' or \'mycoplasma\'')
 
     file_abs_path = os.path.abspath(args.f)
-    converter.convert_maf_to_po(file_abs_path,
+    try:
+        converter.convert_maf_to_po(file_abs_path,
                                 args.format,
                                 args.m,
                                 args.draw,
@@ -59,7 +60,9 @@ def convert(args):
                                 args.fasta,
                                 args.data,
                                 args.blocks)
-
+    except Exception as ex:
+        print(ex.message)
+        return
 
 parser = argparse.ArgumentParser(description='PAN-GENOME tools')
 

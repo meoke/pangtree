@@ -7,21 +7,23 @@ poniedziałek/wtorek
 
 
 todo:
-- oczyszczenie niepotrzebnych komentarzy i pomergowanie
++ oczyszczenie niepotrzebnych komentarzy i pomergowanie
 
 1) LOGIKA OGARNIANIA BLOKÓW I TWORZENIA BEZCYKLOWEGO GRAFU
-- algorytm do usuwania cykli z użyciem networkx
-- testy z dziurą na POA
-- poprawne tworzenie poagraphów (analiza kartkowa)
++ algorytm do usuwania cykli z użyciem networkx
+-- testy z dziurą na POA - przygotować test analogiczny do mycoplasmy1
+- poprawne tworzenie poagraphów (analiza kartkowa) - mail?
 
 2) WYŚWIETLANIE WYNIKÓW
-- tabelki
+-- tabelki
 - graf bloków
-- drzewo consensusów - https://www.tutorialspoint.com/d3js/d3js_quick_guide.htm
+-- drzewo consensusów - https://www.tutorialspoint.com/d3js/d3js_quick_guide.htm
 - graf poagrafu/poagrafów
 
 3) WYDAJNOŚĆ
+-- sprawdzić czy create po jest takie wolne i dlaczego
 - wydajność (Norbert): sparse matrix, bit array
+- cython
 
 4) WYNIKI - EBOLA, MYCOPLASMA, MYCOPLASMA 2
 - generowanie consensusu - drzewiaste - bug z mnożnikiem 1.3
