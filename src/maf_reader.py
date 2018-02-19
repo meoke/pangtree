@@ -1,36 +1,48 @@
 from Bio import AlignIO
 import numpy as np
+from itertools import islice
 
+import toolkit as t
 import nucleotides as nucleotides
 from Sequence import Source
 from Node import Node
 from copy import deepcopy
 import networkx as nx
 import random
+from POAGraph import POAGraph
 
 import matplotlib.pyplot as plt
 
+
 def parse_to_poagraphs(file_path, merge_option, multialignment_name, output_dir):
     blocks = _read_blocks(file_path)
-    poagraphs = _read_poagraphs(blocks)
-    # maf_blocks = [*AlignIO.parse(file_path, "maf")]
-    #
-    # block_to_merge_ranges = _parse_merge_option_to_ranges(merge_option, len(maf_blocks))
-    #
-    # poagraphs = []
-    # for i, r in enumerate(block_to_merge_ranges):
-    #     current_range_blocks = [*islice(maf_blocks, r.start, r.stop)]
-    #     poagraph = POAGraph(name=multialignment_name,
-    #                         title=multialignment_name + '_' + str(i),
-    #                         path=toolkit.create_child_dir(output_dir, multialignment_name + '_' + str(i)),
-    #                         version='NOVEMBER')
-    #     poagraph = _blocks_to_poagraph(poagraph, current_range_blocks)
-    #     poagraph.set_sources_weights()
-    #     poagraphs.append(poagraph)
-    return poagraphs
+    # poagraphs = _read_poagraphs(blocks)
+    maf_blocks = [*AlignIO.parse(file_path, "maf")]
+
+    block_to_merge_ranges = _parse_merge_option_to_ranges(merge_option, len(maf_blocks))
+
+    poagraphs = []
+    #todo wykorzystac wiedze z blocks do tworzenia poagraphs
+    for i, r in enumerate(block_to_merge_ranges):
+        current_range_blocks = [*islice(maf_blocks, r.start, r.stop)]
+        poagraph = POAGraph(name=multialignment_name + '_' + str(i),
+                            title=multialignment_name + '_' + str(i),
+                            path=t.create_child_dir(output_dir, multialignment_name + '_' + str(i)),
+                            version='NOVEMBER')
+        poagraph = _blocks_to_poagraph(poagraph, current_range_blocks)
+        poagraph.set_sources_weights()
+        poagraphs.append(poagraph)
+    return poagraphs, blocks
 
 
 def _read_blocks(file_path):
+    def cycle_exist(cycles_iterator):
+        try:
+            first = next(cycles_iterator)
+        except StopIteration:
+            return False
+        return True
+
     def draw_blocks_graph(DG):
         pos = nx.get_node_attributes(DG, 'pos')
         nx.draw(DG, with_labels=True, font_weight='bold', pos=pos)
@@ -38,7 +50,7 @@ def _read_blocks(file_path):
         nx.draw_networkx_edge_labels(DG, pos=pos, edge_labels=labels)
         plt.show()
 
-    def find_next_block(src_name, next_start, maf_blocks):
+    def find_next_precise_block(src_name, next_start, maf_blocks):
         for i, block in enumerate(maf_blocks):
             for seqrec in block:
                 if seqrec.name == src_name:
@@ -46,156 +58,77 @@ def _read_blocks(file_path):
                         return i
         return None
 
+    def get_src_path(src_name, maf_blocks):
+        src_path = []
+        for i, block in enumerate(maf_blocks):
+            for seqrec in block:
+                if seqrec.name == src_name:
+                    src_path.append((i, seqrec.annotations["start"]))
+                    break
+        return sorted(src_path, key=lambda blockID_start : blockID_start[1])
+
     maf_blocks = [*AlignIO.parse(file_path, "maf")]
+
     DG = nx.DiGraph()
     DG.add_nodes_from(range(len(maf_blocks)))
     for i, block in enumerate(maf_blocks):
         rand_x = random.randrange(20)
         rand_y = random.randrange(20)
         DG.nodes[i]['pos'] = (rand_x, rand_y)
-        for seqrec in block:
-            start = seqrec.annotations["start"]
-            next_start = start + seqrec.annotations["size"]
-            if next_start == seqrec.annotations["srcSize"]:
-                continue
-            next_block_ID = find_next_block(seqrec.name, next_start, maf_blocks)
-            if next_block_ID in list(DG.successors(i)):
-                DG[i][next_block_ID]['weight'] = DG[i][next_block_ID]['weight'] + 1
-            else:
-                DG.add_edge(i, next_block_ID, weight=1)
 
-    a = nx.simple_cycles(DG)
-    print("Cycles before processing: ", [*a])
+    srcs, src_name_to_ID = _get_sources(maf_blocks)
+    for src in srcs:
+        src_path = get_src_path(src.name, maf_blocks)
+        for i, blockID_start in enumerate(src_path):
+            if i == len(src_path)-1:
+                break
+            left_node = blockID_start[0]
+            right_node = (src_path[i+1])[0]
+            if right_node in list(DG.successors(left_node)):
+                DG[left_node][right_node]['weight'] = DG[left_node][right_node]['weight'] + 1
+            else:
+                DG.add_edge(left_node, right_node, weight=1)
+
     temp_dg = DG.copy()
     edges_to_remove = [(u, v) for (u, v) in temp_dg.edges()]
     temp_dg.remove_edges_from(edges_to_remove)
+    edges_count = 0
+    removed_edges_count =0
     for (u, v, wt) in sorted(DG.edges.data('weight'), key=lambda x : x[2], reverse=True):
+        print(edges_count)
+        edges_count = edges_count + 1
         temp_dg.add_edge(u, v, weight=wt)
-        cycle_count = len([*nx.simple_cycles(temp_dg)])
-        if cycle_count != 0:
-            temp_dg.remove_edge(u, v)
-            print("Edge removed:", (u, v))
+        cycles = nx.simple_cycles(temp_dg)
+        if cycle_exist(cycles):
+            # temp_dg.remove_edge(u, v)
+            DG.edges[u, v]['active'] = False
+            removed_edges_count =  removed_edges_count + 1
+        DG.edges[u, v]['active'] = True
 
+    print(removed_edges_count)
+    print(edges_count)
     DG = temp_dg
 
     a = nx.simple_cycles(DG)
     print("Cycles after processing: ", [*a])
-    draw_blocks_graph(DG)
-
-def get_blocks(file_path, multialignment_name, output_dir):
-    #todo to powinno być jakoś zmergowane z wczytywaniem multialignmentu do poagrafów
-    def find_next_block(src_name, next_start, maf_blocks):
-        for i, block in enumerate(maf_blocks):
-            for seqrec in block:
-                if seqrec.name == src_name:
-                    if seqrec.annotations["start"] == next_start:
-                        return i
-        return None
-
-    def remove_loops1(blocks):
-        for src_ID, next_block_ID in blocks[3].srcID_to_next_blockID.items():
-            if next_block_ID == 6:
-                blocks[3].srcID_to_next_blockID[src_ID] = None
-        return blocks
-
-    def remove_loops2(blocks):
-        # for src_ID, next_block_ID in blocks[2].srcID_to_next_blockID.items():
-        #     if next_block_ID == 0:
-        #         blocks[2].srcID_to_next_blockID[src_ID] = None
-        # return blocks
-        def add_to_new_blocks(new_blocks, edge):
-            for b in blocks:
-                if b.ID == edge[0] and edge[1] in b.srcID_to_next_blockID.values():
-                    new_blocks[b.ID].next_blockID_to_weight[edge[1]] = blocks[b.ID].next_blockID_to_weight[edge[1]]
-            return new_blocks
+    # draw_blocks_graph(DG)
+    return DG
 
 
-        def makes_cycle(new_blocks, edge):
-            current_edges = []
-            for block in new_blocks:
-                for next, weight in block.next_blockID_to_weight.items():
-                    if next is not None:
-                        current_edges.append((block.ID, next))
-            paths = []
-            edges_to_check = [edge]
-            while True:
-                # previous_edges = [current_edge for current_edge in current_edges if current_edge[1] == edge[0]]
-                # previous_edges = [current_edge for current_edge in current_edges if current_edge[1] == edge[0]]
-                previous_edges = []
-                for edge_to_check in edges_to_check:
-                    pes = [current_edge for current_edge in current_edges if current_edge[1] == edge_to_check[0]]
-                    if pes:
-                        previous_edges.append(pes[0])
-                if not previous_edges:
-                    break
-                else:
-                    pe_added = False
-                    for pe in previous_edges:
-                        for i, p in enumerate(paths):
-                            if p[-1] == edge:
-                                paths[i].append(pe)
-                                pe_added = True
-                        if not pe_added:
-                            paths.append([edge, pe])
-
-                edges_to_check = previous_edges
-
-            for path in paths:
-                if (path[-1])[0] == edge[1]:
-                    return True
-
-            return False
-
-        edges = {}
-        for block in blocks:
-            for next, weight in block.next_blockID_to_weight.items():
-                if next is not None:
-                    edges[(block.ID, next)] = weight
-        sorted_edges = sorted(edges, key=edges.__getitem__)
-        new_blocks = deepcopy(blocks)
-        for nb in new_blocks:
-            nb.next_blockID_to_weight = {}
-
-        for edge in sorted_edges:
-            if not makes_cycle(new_blocks, edge):
-                new_blocks = add_to_new_blocks(new_blocks, edge)
-
-    maf_blocks = [*AlignIO.parse(file_path, "maf")]
-    sources, sources_name_to_ID = _get_sources(maf_blocks)
-    blocks = [Block() for i in range(len(maf_blocks))]
-    for i, block in enumerate(maf_blocks):
-        for seqrec in block:
-            blocks[i].ID = i
-            start = seqrec.annotations["start"]
-            next_start = start + seqrec.annotations["size"]
-            if next_start == seqrec.annotations["srcSize"]:
-                blocks[i].srcID_to_next_blockID[sources_name_to_ID[seqrec.name]] = None
-                continue
-            next_block_ID = find_next_block(seqrec.name, next_start, maf_blocks)
-            blocks[i].srcID_to_next_blockID[sources_name_to_ID[seqrec.name]] = next_block_ID
-            blocks[i].srcID_to_strand[sources_name_to_ID[seqrec.name]] = seqrec.annotations["strand"]
-        for src_ID, next_block_ID in blocks[i].srcID_to_next_blockID.items():
-            if not next_block_ID in blocks[i].next_blockID_to_weight:
-                blocks[i].next_blockID_to_weight[next_block_ID] = 1
-            else:
-                blocks[i].next_blockID_to_weight[next_block_ID] = blocks[i].next_blockID_to_weight[next_block_ID] + 1
-    # blocks = remove_loops1(blocks)
-    return blocks
-
-class Block(object):
-    def __init__(self):
-        self.ID = -1
-        self.srcID_to_next_blockID = {}
-        self.srcID_to_strand = {}
-        self.next_blockID_to_weight = {}
-
-    def __str__(self):
-        return "ID: {0}\nsrcID_to_next_blockID: {1}\nsrcID_to_strand: {2}".format(self.ID, self.srcID_to_next_blockID, self.srcID_to_strand)
-
+# class Block(object):
+#     def __init__(self):
+#         self.ID = -1
+#         self.srcID_to_next_blockID = {}
+#         self.srcID_to_strand = {}
+#         self.next_blockID_to_weight = {}
+#
+#     def __str__(self):
+#         return "ID: {0}\nsrcID_to_next_blockID: {1}\nsrcID_to_strand: {2}".format(self.ID, self.srcID_to_next_blockID, self.srcID_to_strand)
 
 
 def _read_poagraphs(blocks):
     pass
+
 
 def _parse_merge_option_to_ranges(merge_option, blocks_count):
     if not merge_option:

@@ -2,10 +2,9 @@
 <head>
 <title>Poagraph</title>
 
-
   <!--java script libraries-->
   <script src='assets/cytoscape.js'></script>
- <script src="assets/sorttable.js"></script>
+  <script src="assets/sorttable.js"></script>
 
   <script src="assets/d3.js"></script>
   <script src="assets/d3.min.js"></script>
@@ -13,12 +12,13 @@
 
   <!--custom java script-->
   <script src='assets/script.js'></script>
+
   <!--multialignment data-->
-  <script src='poagraph.js'/></script>
-  <script src='sources.js'/></script>
-  <script src='consensuses.js'/></script>
-  <script src='info.js'/></script>
-  <script src='blocks.js'/></script>
+  <!--<script src='poagraph.js'/></script>-->
+  <!--<script src='sources.js'/></script>-->
+  <!--<script src='consensuses.js'/></script>-->
+  <!--<script src='info.js'/></script>-->
+  <!--<script src='blocks.js'/></script>-->
 
   <meta charset="utf-8">
 
@@ -42,19 +42,28 @@
     <h2>Multialignment</h2><br>
     <h3>Visualization and Consensuses</h3>
       </div>
-    <div id="poagraph_info" class="info">
+    <div id="multialignment_info" class="info">
         <h4>Poagraph info</h4>
         <p id="name">Name: </p>
-        <p id="consensus_algorithm">Consensus algorithm: </p>
         <p id="running_time">Running time: </p>
         <p id="sources_count">Sources count: </p>
-        <p id="nodes_count">Nodes count: </p>
-        <p id="sequences_per_node">Sequences per node: </p>
+        <p id="poagraphs_count">POAGraphs count: </p>
     </div>
-    <div id="consensuses_info" class="info">
-        <h4>Consensuses info</h4>
-    </div>
+
   </header>
+
+    <div id="sep_blocks_info">
+        <h4>Separated Multialignment Blocks - without cycles </h4>
+    </div>
+
+    <div id="consensuses_tree">
+        <h4>Consensuses tree</h4>
+    </div>
+
+    <div id="sources_table">
+        <h4>Sources tables</h4>
+    </div>
+
   <div id='cy'>
   </div>
 

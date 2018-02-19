@@ -1,16 +1,114 @@
 consensuses_colors = ['#ff8000', '#602870', '#983352','yellow', 'purple', 'orange', 'brown']
-var jqxhr = $.getJSON( "ebola_100th_block_01/sources.json", function() {});
-console.log(jqxhr)
 
 document.addEventListener("DOMContentLoaded", function() {
-    //add_poagraph_info();
+    $.getJSON("info.json", function(json) {
+      show_info(json);
+    });
+
+    $.getJSON("blocks.json", function(json) {
+      show_blocks(json);
+    });
+
     //add_consensuses_options();
     //draw_visualization();
-    //show_consensuses_tree();
+    show_consensuses_tree();
     //show_sources_info_table();
     //setup_slider();
-    show_blocks();
 });
+
+function show_blocks(blocks){
+    cytoscape({
+        container: document.getElementById('sep_blocks_info'),
+        elements: blocks,
+        style: [
+          {
+            selector: 'node',
+            style: {
+              'label': 'data(id)',
+              'width': '15px',
+              'height': '15px',
+              'font-size': '8px',
+              'text-halign': 'center',
+              'text-valign': 'center',
+              'background-color' : 'white'
+            }
+          }, {
+            selector: 'edge',
+            style: {
+              'curve-style': 'bezier',
+              'label': get_label,
+              'line-color': get_edge_label_color,
+              'width': '3px',
+              'target-arrow-shape': 'triangle',
+              'target-arrow-color': get_edge_label_color
+          }
+        }
+        ],
+        layout: {
+          name: 'breadthfirst'
+        }
+  });
+
+  function get_label(ele) {
+    srcIDs = ele.data('srcID')
+    return String(srcIDs.length)
+//    if(srcIDs.length > 5)
+//        return '';
+//    return srcIDs;
+    }
+
+  function get_edge_label_color(ele) {
+    return 'Red';
+    srcID = ele.data('srcID');
+    cl = [  'Red',
+            'Green'	,
+            'Yellow'	,
+            'Blue'	,
+            'Orange'	,
+            'Purple'	,
+            'Cyan'	,
+            'Magenta'	,
+            'Lime'	,
+            'Pink'	,
+            'Teal'	,
+            'Lavender',
+            'Brown'	,
+            'Beige'	,
+            'Maroon'	,
+            'Mint'	,
+            'Olive'	,
+            'Coral'	,
+            'Navy'	,
+            'Grey'	,
+            'White'	,
+            'Black']
+    return cl[srcID%cl.length];
+  }
+
+//  function get_edge_width(ele) {
+//    edge_width = Math.abs(Math.log(ele.data('weight') * 20))
+//    return edge_width.toString() + 'px';
+//  }
+
+//  function get_node_width(ele) {
+//    node_width = Math.abs(Math.log(ele.data('weight') * 1000))
+//    return node_width.toString() + 'px';
+//  }
+}
+
+function show_info(info){
+    name_p = document.getElementById('name');
+    name_p.innerHTML += info.name;
+
+    running_time_p = document.getElementById('running_time');
+    running_time_p.innerHTML += info.running_time;
+
+    sources_count_p = document.getElementById('sources_count');
+    sources_count_p.innerHTML += info.sources_count;
+
+    nodes_count_p = document.getElementById('poagraphs_count');
+    nodes_count_p.innerHTML += info.poagraphs.length;
+}
 
 function setup_slider(){
     var slider = document.getElementById("slider");
@@ -24,26 +122,6 @@ function setup_slider(){
     show_table_btn.onclick = function() {
         show_sources_info_table(slider.value);
     }
-}
-
-function add_poagraph_info(){
-    name_p = document.getElementById('name');
-    name_p.innerHTML += info.name;
-
-    consensus_algorithm_p = document.getElementById('consensus_algorithm');
-    consensus_algorithm_p.innerHTML += info.consensus_algorithm;
-
-    running_time_p = document.getElementById('running_time');
-    running_time_p.innerHTML += info.running_time;
-
-    sources_count_p = document.getElementById('sources_count');
-    sources_count_p.innerHTML += info.sources_count;
-
-    nodes_count_p = document.getElementById('nodes_count');
-    nodes_count_p.innerHTML += info.nodes_count;
-
-    sequences_per_node_p = document.getElementById('sequences_per_node');
-    sequences_per_node_p.innerHTML += info.sequences_per_node;
 }
 
 function add_consensuses_options(){
@@ -463,80 +541,3 @@ function get_consensuses_for_table(level_index){
     return consensuses_for_table;
 }
 
-function show_blocks(){
-    var cy = cytoscape({
-        container: document.getElementById('cy'),
-        elements: blocks,
-        style: [
-          {
-            selector: 'node',
-            style: {
-              'label': 'data(id)',
-              'width': '15px',
-              'height': '15px',
-              'font-size': '8px',
-              'text-halign': 'center',
-              'text-valign': 'center',
-              'background-color' : 'white'
-            }
-          }, {
-            selector: 'edge',
-            style: {
-              'curve-style': 'bezier',
-              'label': get_label,
-              'line-color': get_edge_label_color, //to differentiate consensuses
-              'width': '3px', //to show popular edges
-              'target-arrow-shape': 'triangle',
-              'target-arrow-color': get_edge_label_color
-          }
-        }
-        ],
-        layout: {
-          name: 'breadthfirst'
-        }
-  });
-  function get_label(ele) {
-    srcIDs = ele.data('srcID')
-    if(srcIDs.length > 5)
-        return ''
-    return srcIDs;
-    }
-
-  function get_edge_label_color(ele) {
-    return 'Red';
-    srcID = ele.data('srcID');
-    cl = [  'Red',
-            'Green'	,
-            'Yellow'	,
-            'Blue'	,
-            'Orange'	,
-            'Purple'	,
-            'Cyan'	,
-            'Magenta'	,
-            'Lime'	,
-            'Pink'	,
-            'Teal'	,
-            'Lavender',
-            'Brown'	,
-            'Beige'	,
-            'Maroon'	,
-            'Mint'	,
-            'Olive'	,
-            'Coral'	,
-            'Navy'	,
-            'Grey'	,
-            'White'	,
-            'Black']
-    return cl[srcID%cl.length];
-  }
-//
-//  function get_edge_width(ele) {
-//    edge_width = Math.abs(Math.log(ele.data('weight') * 20))
-//    return edge_width.toString() + 'px';
-//  }
-//
-//  function get_node_width(ele) {
-//    node_width = Math.abs(Math.log(ele.data('weight') * 1000))
-//    return node_width.toString() + 'px';
-//  }
-}

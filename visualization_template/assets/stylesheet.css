@@ -16,12 +16,20 @@ header {
 height: 800px;
 width: 2000px;
 }
-#cy {
+#cy{
         width: 100%;
         height: 1300px;
         left: 0px;
         background-color: #DFE2DB;
         opacity: 10%
+}
+
+#sep_blocks_info {
+        width: 100%;
+        height: 30%;
+        left: 0px;
+        background-color: #DFE2DB;
+        opacity: 10%;
 }
 
 #sources_info {

@@ -90,8 +90,15 @@ class POAGraphRefEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-def generate_visualization(multialignment, output_dir, consensus_option, draw_poagraph_option, processing_time):
+class BlockEncoder(json.JSONEncoder):
+    pass
+
+
+def generate_visualization(multialignment, output_dir, consensus_option, draw_poagraph_option, blocks_option, processing_time):
     _create_common_files(multialignment, output_dir, processing_time)
+
+    if blocks_option:
+        _create_blocks_file(multialignment, output_dir)
 
     for p in multialignment.poagraphs:
         poagraph_output_dir = _get_poagraph_output_dir(p, output_dir)
@@ -103,12 +110,12 @@ def generate_visualization(multialignment, output_dir, consensus_option, draw_po
         if draw_poagraph_option:
             _create_poagraph_graph_files(p, poagraph_output_dir)
 
+
 def _get_poagraph_output_dir(p, output_dir):
     return t.create_child_dir(output_dir, p.name)
 
 
 def _create_common_files(multialignment, output_dir, processing_time):
-    # todo skąd się bierze dodatkowy folder o nazwie multialignmentu?
     # wspolne pliki i informacje o multialignmencie (tu będą też bloki? grafy blokowe?)
     def copy_assets_dir():
         common_files_destination = t.join_path(output_dir, 'assets')
@@ -132,7 +139,8 @@ def _create_common_files(multialignment, output_dir, processing_time):
                 'sources_count': -1,
                 'nodes_count': -1,
                 'sequences_per_node': -1,
-                'levels': [-1]
+                'levels': [-1],
+                'poagraphs': [src.name for src in multialignment.poagraphs]
                 }
         with open(info_filename, 'w') as out_file:
             json.dump(info, fp=out_file)
@@ -154,6 +162,13 @@ def _create_common_files(multialignment, output_dir, processing_time):
     #     index_path = t.join_path(self.output_dir, 'index.html')
     #     with open(index_path, 'w') as output:
     #         output.write(index_content)
+
+
+def _create_blocks_file(multialignment, output_dir):
+    blocks_filename = t.join_path(output_dir, "blocks.json")
+    with open(blocks_filename, 'w') as out_file:
+        out_file.writelines(["bloczki"])
+        # json.dump(multialignment.blocks_graph, fp=out_file, cls=BlockEncoder)
 
 
 def _create_poagraph_sources_files(poagraph, output_dir):

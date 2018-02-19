@@ -10,6 +10,7 @@ class Multialignment(object):
         self.name = None
         self.output_dir = None
         self.poagraphs = None
+        self.blocks_graph = None
         self.data_type = data_type
 
     def build_multialignment_from_maf(self, maf_file_path, merge_option):
@@ -23,7 +24,7 @@ class Multialignment(object):
 
         self.name = self._get_multialignment_name(maf_file_path)
         self.output_dir = self._get_output_dir(maf_file_path)
-        self.poagraphs = maf_reader.parse_to_poagraphs(file_path=maf_file_path,
+        self.poagraphs, self.blocks_graph = maf_reader.parse_to_poagraphs(file_path=maf_file_path,
                                                        merge_option=merge_option,
                                                        multialignment_name=self.name,
                                                        output_dir=self.output_dir)
@@ -87,13 +88,15 @@ class Multialignment(object):
 
                         poagraph_IDs_to_process = new_poagraph_IDs_to_process
 
-    def generate_visualization(self, consensus_option, draw_poagraph_option, processing_time):
+    def generate_visualization(self, consensus_option, draw_poagraph_option, blocks_option, processing_time):
         vizualization_output_dir = t.create_child_dir(self.output_dir, "visualization")
         viz.generate_visualization(self,
                                    vizualization_output_dir,
                                    consensus_option,
                                    draw_poagraph_option,
+                                   blocks_option,
                                    processing_time)
+
 
 
 

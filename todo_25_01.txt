@@ -11,12 +11,24 @@ todo:
 
 1) LOGIKA OGARNIANIA BLOKÓW I TWORZENIA BEZCYKLOWEGO GRAFU
 + algorytm do usuwania cykli z użyciem networkx
--- testy z dziurą na POA - przygotować test analogiczny do mycoplasmy1
-- poprawne tworzenie poagraphów (analiza kartkowa) - mail?
+
+## mycoplasma 2
+nodes: 2229
+edges: 3968
+# od najciężych do najlżejszych
+czas: długo, ok. 2h?
+removed edges:
+# od najlżejszych do najcięższych - problem, bo trzeba liczyć ile tych cykli jest, a w odwrotnym podejściu wystarczy stwierdzenie, że jakiś cykl jest
+
+
++ testy z dziurą na POA
+-- poprawne tworzenie poagraphów (analiza kartkowa) - czy wiem jak? mail?
 
 2) WYŚWIETLANIE WYNIKÓW
 -- tabelki
-- graf bloków
+-- graf bloków
+    - wyznaczać oś jako wynik **dag_longest_path**?
+    - zaznaczać usunięte krawędzie linią przerywaną
 -- drzewo consensusów - https://www.tutorialspoint.com/d3js/d3js_quick_guide.htm
 - graf poagrafu/poagrafów
 
