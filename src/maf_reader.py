@@ -16,22 +16,21 @@ import matplotlib.pyplot as plt
 
 def parse_to_poagraphs(file_path, merge_option, multialignment_name, output_dir):
     blocks = _read_blocks(file_path)
-    # poagraphs = _read_poagraphs(blocks)
-    # maf_blocks = [*AlignIO.parse(file_path, "maf")]
-    #
-    # block_to_merge_ranges = _parse_merge_option_to_ranges(merge_option, len(maf_blocks))
-    #
+    #poagraphs = _read_poagraphs(blocks)
+    maf_blocks = [*AlignIO.parse(file_path, "maf")]
+
+    block_to_merge_ranges = _parse_merge_option_to_ranges(merge_option, len(maf_blocks))
     poagraphs = []
-    # #todo wykorzystac wiedze z blocks do tworzenia poagraphs
-    # for i, r in enumerate(block_to_merge_ranges):
-    #     current_range_blocks = [*islice(maf_blocks, r.start, r.stop)]
-    #     poagraph = POAGraph(name=multialignment_name + '_' + str(i),
-    #                         title=multialignment_name + '_' + str(i),
-    #                         path=t.create_child_dir(output_dir, multialignment_name + '_' + str(i)),
-    #                         version='NOVEMBER')
-    #     poagraph = _blocks_to_poagraph(poagraph, current_range_blocks)
-    #     poagraph.set_sources_weights()
-    #     poagraphs.append(poagraph)
+    #todo wykorzystac wiedze z blocks do tworzenia poagraphs
+    for i, r in enumerate(block_to_merge_ranges):
+        current_range_blocks = [*islice(maf_blocks, r.start, r.stop)]
+        poagraph = POAGraph(name=multialignment_name + '_' + str(i),
+                            title=multialignment_name + '_' + str(i),
+                            path=t.create_child_dir(output_dir, multialignment_name + '_' + str(i)),
+                            version='NOVEMBER')
+        poagraph = _blocks_to_poagraph(poagraph, current_range_blocks)
+        poagraph.set_sources_weights()
+        poagraphs.append(poagraph)
     return poagraphs, blocks
 
 

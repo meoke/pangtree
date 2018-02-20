@@ -17,7 +17,7 @@ class EndToEndTest(unittest.TestCase):
                                     #file_name='files/entire_ebola_po/entire_ebola.po',
                                     file_format='maf',
                                     merge_blocks_option="all",
-                                    draw_poagraph_option=True,
+                                    draw_poagraph_option=False,
                                     consensus_option=3,
                                         #min_comp=0.01,
                                         range='[90,100]',

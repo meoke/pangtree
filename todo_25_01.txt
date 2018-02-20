@@ -25,10 +25,10 @@ removed edges:
 -- poprawne tworzenie poagraphów (analiza kartkowa) - czy wiem jak? mail?
 
 2) WYŚWIETLANIE WYNIKÓW
--- tabelki
--- graf bloków
+-- tabelki (mam przygotowane w miarę dane do tabelek, teraz tylko wstawić do tych starych metod)
++ graf bloków
     - wyznaczać oś jako wynik **dag_longest_path**?
-    - zaznaczać usunięte krawędzie linią przerywaną
+    + zaznaczać usunięte krawędzie linią przerywaną
 -- drzewo consensusów - https://www.tutorialspoint.com/d3js/d3js_quick_guide.htm
 - graf poagrafu/poagrafów
 

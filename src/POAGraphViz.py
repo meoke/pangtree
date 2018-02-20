@@ -177,7 +177,7 @@ def _create_blocks_file(multialignment, output_dir):
 
     blocks_filename = t.join_path(output_dir, "blocks.json")
     with open(blocks_filename, 'w') as out_file:
-        json.dump(blocks, fp=out_file, cls=BlockEncoder, indent=4)
+        json.dump(blocks, fp=out_file, indent=4)
 
 
 def _create_poagraph_sources_files(poagraph, output_dir):

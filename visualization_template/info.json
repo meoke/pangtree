@@ -1,8 +1,13 @@
-{"nodes_count": -1,
-  "name": "ebola_100th_block",
-  "running_time": "00:00:21",
-  "poagraphs": ["poagraph_0"],
-  "levels": [-1],
-  "sources_count": -1,
-  "sequences_per_node": -1
+{
+    "name": "ebola_100th_block",
+    "nodes_count": -1,
+    "sequences_per_node": -1,
+    "levels": [
+        -1
+    ],
+    "poagraphs": [
+        "ebola_100th_block_0"
+    ],
+    "running_time": "00:00:21",
+    "sources_count": -1
 }

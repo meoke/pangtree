@@ -105,8 +105,137 @@ $(document).ready(function() {
         }
     }
 
+    function show_sources_tables(poagraph_name, level_index){
+        function draw_table(consensuses, sources){
+            console.log(consensuses, sources);
+            var sources_info_div = document.getElementById("sources_table");
+            sources_info_div.innerHTML = "";
+            var consensus_info_div = document.createElement('div')
+
+            consensus_info_div.setAttribute("class", "consensus_info")
+
+            var table = document.createElement('table');
+            table.className = "sortable";
+            var header  = table.createTHead();
+            var header_row = header.insertRow(0);
+            var head_id = header_row.insertCell(0);
+            var head_name = header_row.insertCell(1);
+            var head_title = header_row.insertCell(2);
+            var head_group = header_row.insertCell(3);
+            var head_bundle_id = header_row.insertCell(4);
+            var consensuses_count = consensuses.length;
+            head_id.innerHTML = "ID"
+            head_name.innerHTML = "Name"
+            head_title.innerHTML = "Title"
+            head_group.innerHTML = "Group"
+            head_bundle_id.innerHTML = "Bundle ID"
+        }
+
+        function filter_consensuses(consensuses_data){
+            var consensuses_for_table = []
+            var closed = []
+            for(var i=0;i<consensuses_data.length; i++){
+                c = consensuses_data[i];
+                if(c.level > level_index)
+                {
+                    var cc = 0;
+                    for(cc=0; cc<closed.length; cc++)
+                    {
+                        if(closed[cc].id == c.parent)
+                        {
+                            closed.push(c);
+                            break;
+                        }
+                    }
+                    if(cc == closed.length)
+                    {
+                        consensuses_for_table.push(c);
+                        closed.push(c);
+                    }
+                }
+            }
+            return consensuses_for_table;
+        }
+
+        consensuses_json_path = poagraph_name + "/consensuses.json"
+        sources_json_path = poagraph_name + "/sources.json"
+        $.getJSON(consensuses_json_path, function(consensuses_data) {
+            consensuses_to_use = filter_consensuses(consensuses_data)
+            $.getJSON(sources_json_path, function(sources_data){
+                draw_table(consensuses_to_use, sources_data);
+            });
+        });
+
+
+    }
+
+    function show_sources_info_table(level_index){
+
+        for(var i=0; i< cses.length; i++){
+            var cons_compatibility = header_row.insertCell(5+i);
+            cons_compatibility.innerHTML = cses[i].name;
+        }
+        body = document.createElement('tbody')
+
+
+
+        for(var j=0;j<sources.data.length;j++){
+            var row = body.insertRow(j);
+            var id = row.insertCell(0);
+            var name = row.insertCell(1);
+            var title = row.insertCell(2);
+            var group =row.insertCell(3)
+            var bundle_id = row.insertCell(4);
+            id.innerHTML = j;
+            name.innerHTML = sources.data[j]['name'];
+            title.innerHTML = sources.data[j]['title'];
+            group.innerHTML = (sources.data[j]['group'].length) ? sources.data[j]['group'] : 'not defined';
+
+            var sorted_levels_keys = Object.keys(sources.data[j]['bundle_ID']).sort()
+            for(var k=0; k<sorted_levels_keys.length ; k++){
+                if(sorted_levels_keys[k] > level_index){
+                    bundle_id.innerHTML = sources.data[j]['bundle_ID'][sorted_levels_keys[k]];
+                    break;
+                }
+            }
+
+
+            for(var k=0;k<cses.length; k++){
+                var compatibility = row.insertCell(5+k);
+                c = cses[k]['sources_compatibility'][j];
+                if(cses[k].sources.indexOf(j) != -1){
+                    compatibility.bgColor = "yellow"
+                }
+                compatibility.innerHTML = c;
+            }
+        }
+        table.appendChild(body)
+        table.createTFoot()
+        consensus_info_div.appendChild(table)
+        sources_info_div.appendChild(consensus_info_div);
+        sorttable.makeSortable(table);
+    }
+
+    function setup_slider(poagraph_name){
+        var slider = document.getElementById("slider");
+        var output = document.getElementById("slider_value");
+        output.innerHTML = slider.value;
+        slider.oninput = function() {
+            output.innerHTML = this.value;
+        }
+
+        var show_table_btn = document.getElementById("show_table_btn");
+        show_table_btn.onclick = function() {
+            show_sources_tables(poagraph_name, slider.value);
+        }
+    }
+
     $.getJSON("info.json", function(json) {
       show_info(json);
+      poagraphs_names = json.poagraphs
+      sources_json_path = poagraphs_names[0] + "/sources.json"
+
+      setup_slider(poagraphs_names[0]);
     });
 
     $.getJSON("blocks.json", function(json) {
@@ -201,19 +330,7 @@ function show_blocks(blocks){
 //  }
 }
 
-function setup_slider(){
-    var slider = document.getElementById("slider");
-    var output = document.getElementById("slider_value");
-    output.innerHTML = slider.value;
-    slider.oninput = function() {
-        output.innerHTML = this.value;
-    }
 
-    var show_table_btn = document.getElementById("show_table_btn");
-    show_table_btn.onclick = function() {
-        show_sources_info_table(slider.value);
-    }
-}
 
 function add_consensuses_options(){
 //    for(i=0; i<info.levels.length;i++)
