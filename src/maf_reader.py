@@ -17,21 +17,21 @@ import matplotlib.pyplot as plt
 def parse_to_poagraphs(file_path, merge_option, multialignment_name, output_dir):
     blocks = _read_blocks(file_path)
     # poagraphs = _read_poagraphs(blocks)
-    maf_blocks = [*AlignIO.parse(file_path, "maf")]
-
-    block_to_merge_ranges = _parse_merge_option_to_ranges(merge_option, len(maf_blocks))
-
+    # maf_blocks = [*AlignIO.parse(file_path, "maf")]
+    #
+    # block_to_merge_ranges = _parse_merge_option_to_ranges(merge_option, len(maf_blocks))
+    #
     poagraphs = []
-    #todo wykorzystac wiedze z blocks do tworzenia poagraphs
-    for i, r in enumerate(block_to_merge_ranges):
-        current_range_blocks = [*islice(maf_blocks, r.start, r.stop)]
-        poagraph = POAGraph(name=multialignment_name + '_' + str(i),
-                            title=multialignment_name + '_' + str(i),
-                            path=t.create_child_dir(output_dir, multialignment_name + '_' + str(i)),
-                            version='NOVEMBER')
-        poagraph = _blocks_to_poagraph(poagraph, current_range_blocks)
-        poagraph.set_sources_weights()
-        poagraphs.append(poagraph)
+    # #todo wykorzystac wiedze z blocks do tworzenia poagraphs
+    # for i, r in enumerate(block_to_merge_ranges):
+    #     current_range_blocks = [*islice(maf_blocks, r.start, r.stop)]
+    #     poagraph = POAGraph(name=multialignment_name + '_' + str(i),
+    #                         title=multialignment_name + '_' + str(i),
+    #                         path=t.create_child_dir(output_dir, multialignment_name + '_' + str(i)),
+    #                         version='NOVEMBER')
+    #     poagraph = _blocks_to_poagraph(poagraph, current_range_blocks)
+    #     poagraph.set_sources_weights()
+    #     poagraphs.append(poagraph)
     return poagraphs, blocks
 
 
@@ -87,31 +87,20 @@ def _read_blocks(file_path):
             if right_node in list(DG.successors(left_node)):
                 DG[left_node][right_node]['weight'] = DG[left_node][right_node]['weight'] + 1
             else:
-                DG.add_edge(left_node, right_node, weight=1)
+                DG.add_edge(left_node, right_node, weight=1, active=True)
 
     temp_dg = DG.copy()
     edges_to_remove = [(u, v) for (u, v) in temp_dg.edges()]
     temp_dg.remove_edges_from(edges_to_remove)
-    edges_count = 0
-    removed_edges_count =0
     for (u, v, wt) in sorted(DG.edges.data('weight'), key=lambda x : x[2], reverse=True):
-        print(edges_count)
-        edges_count = edges_count + 1
         temp_dg.add_edge(u, v, weight=wt)
         cycles = nx.simple_cycles(temp_dg)
         if cycle_exist(cycles):
-            # temp_dg.remove_edge(u, v)
             DG.edges[u, v]['active'] = False
-            removed_edges_count =  removed_edges_count + 1
-        DG.edges[u, v]['active'] = True
+            temp_dg.remove_edge(u, v)
+        else:
+            DG.edges[u, v]['active'] = True
 
-    print(removed_edges_count)
-    print(edges_count)
-    DG = temp_dg
-
-    a = nx.simple_cycles(DG)
-    print("Cycles after processing: ", [*a])
-    # draw_blocks_graph(DG)
     return DG
 
 

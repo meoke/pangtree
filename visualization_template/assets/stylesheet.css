@@ -24,6 +24,7 @@ width: 2000px;
         opacity: 10%
 }
 
+// bloks graph
 #sep_blocks_info {
         width: 100%;
         height: 30%;
@@ -31,6 +32,19 @@ width: 2000px;
         background-color: #DFE2DB;
         opacity: 10%;
 }
+
+
+.links line {
+  stroke: #999;
+  stroke-opacity: 0.6;
+}
+
+.nodes circle {
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+
+
 
 #sources_info {
         width: 100%;

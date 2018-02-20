@@ -90,10 +90,6 @@ class POAGraphRefEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-class BlockEncoder(json.JSONEncoder):
-    pass
-
-
 def generate_visualization(multialignment, output_dir, consensus_option, draw_poagraph_option, blocks_option, processing_time):
     _create_common_files(multialignment, output_dir, processing_time)
 
@@ -143,7 +139,7 @@ def _create_common_files(multialignment, output_dir, processing_time):
                 'poagraphs': [src.name for src in multialignment.poagraphs]
                 }
         with open(info_filename, 'w') as out_file:
-            json.dump(info, fp=out_file)
+            json.dump(info, fp=out_file, indent=4)
 
     copy_assets_dir()
     create_index_file()
@@ -165,17 +161,30 @@ def _create_common_files(multialignment, output_dir, processing_time):
 
 
 def _create_blocks_file(multialignment, output_dir):
+    nodes = []
+    for node in multialignment.blocks_graph.nodes:
+        nodes.append({'id': node})
+        print(node)
+
+    edges = []
+    for (u, v) in multialignment.blocks_graph.edges:
+        edges.append({"source": u,
+                      "target": v,
+                      "weight": multialignment.blocks_graph.edges[u, v]['weight'],
+                      "active": multialignment.blocks_graph.edges[u, v]['active']})
+
+    blocks = {"nodes": nodes, "edges": edges}
+
     blocks_filename = t.join_path(output_dir, "blocks.json")
     with open(blocks_filename, 'w') as out_file:
-        out_file.writelines(["bloczki"])
-        # json.dump(multialignment.blocks_graph, fp=out_file, cls=BlockEncoder)
+        json.dump(blocks, fp=out_file, cls=BlockEncoder, indent=4)
 
 
 def _create_poagraph_sources_files(poagraph, output_dir):
     sources_filename = t.join_path(output_dir, "sources.json")
     SourceEncoder.poagraph = poagraph
     with open(sources_filename, 'w') as out_file:
-        json.dump(poagraph.sources, fp=out_file, cls=SourceEncoder)
+        json.dump(poagraph.sources, fp=out_file, cls=SourceEncoder, indent=4)
 
 
 def _create_poagraph_consensus_files(poagraph, output_dir):
@@ -183,7 +192,7 @@ def _create_poagraph_consensus_files(poagraph, output_dir):
     POAGraphRefEncoder.poagraph = poagraph
     l = poagraph._poagraphrefs
     with open(consensuses_filename, 'w') as out:
-        json.dump(l, fp=out, cls=POAGraphRefEncoder)
+        json.dump(l, fp=out, cls=POAGraphRefEncoder, indent=4)
 
 
 def _create_poagraph_graph_files(poagraph, output_dir):

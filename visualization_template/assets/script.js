@@ -1,20 +1,125 @@
-consensuses_colors = ['#ff8000', '#602870', '#983352','yellow', 'purple', 'orange', 'brown']
+//consensuses_colors = ['#ff8000', '#602870', '#983352','yellow', 'purple', 'orange', 'brown']
 
-document.addEventListener("DOMContentLoaded", function() {
+$(document).ready(function() {
+    function show_info(info){
+    name_p = document.getElementById('name');
+    name_p.innerHTML += info.name;
+
+    running_time_p = document.getElementById('running_time');
+    running_time_p.innerHTML += info.running_time;
+
+    sources_count_p = document.getElementById('sources_count');
+    sources_count_p.innerHTML += info.sources_count;
+
+    nodes_count_p = document.getElementById('poagraphs_count');
+    nodes_count_p.innerHTML += info.poagraphs.length;
+}
+
+    function show_blocks_d3(data){
+        var svg = d3.selectAll("svg").filter("#blocks_svg"),
+            width = +svg.attr("width"),
+            height = +svg.attr("height");
+
+        var color = d3.scaleOrdinal(d3.schemeCategory20);
+
+        var simulation = d3.forceSimulation()
+            .force("link", d3.forceLink().id(function(d) { return d.id; }))
+            .force("charge", d3.forceManyBody())
+            .force("center", d3.forceCenter(width / 2, height / 2));
+
+        var link = svg.append("g")
+          .attr("class", "links")
+          .selectAll("line")
+          .data(data.edges)
+          .enter().append("line")
+          .attr("stroke-width", function(d) { return Math.sqrt(d.weight); })
+          .attr("stroke-dasharray", d=> d.active ? "0" : "10,10");
+          //strzalki
+
+        var node = svg.append("g")
+          .attr("class", "nodes")
+          .selectAll("circle")
+          .data(data.nodes)
+          .enter().append("circle")
+            .attr("r", 30)
+            .attr("fill", function(d) { return color(d.id); })
+            .call(d3.drag()
+                .on("start", dragstarted)
+                .on("drag", dragged)
+                .on("end", dragended));
+
+        var txt = svg.append("g")
+          .attr("class", "nodes")
+          .selectAll("text")
+          .data(data.nodes)
+          .enter().append("text")
+            .attr("x", 8)
+            .attr("y", ".31em")
+            .text(function(d) { return d.id; })
+            .call(d3.drag()
+                    .on("start", dragstarted)
+                    .on("drag", dragged)
+                    .on("end", dragended));
+
+        simulation
+          .nodes(data.nodes)
+          .on("tick", ticked);
+
+
+        simulation.force("link")
+          .links(data.edges)
+          .distance(300);
+
+
+        function ticked() {
+        link
+            .attr("x1", function(d) { return d.source.x; })
+            .attr("y1", function(d) { return d.source.y; })
+            .attr("x2", function(d) { return d.target.x; })
+            .attr("y2", function(d) { return d.target.y; });
+
+        node
+            .attr("cx", function(d) { return d.x; })
+            .attr("cy", function(d) { return d.y; });
+
+          txt
+            .attr("x", function(d) { return d.x; })
+            .attr("y", function(d) { return d.y; });
+        }
+
+        function dragstarted(d) {
+          if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+          d.fx = d.x;
+          d.fy = d.y;
+        }
+
+        function dragged(d) {
+          d.fx = d3.event.x;
+          d.fy = d3.event.y;
+        }
+
+        function dragended(d) {
+          if (!d3.event.active) simulation.alphaTarget(0);
+          d.fx = null;
+          d.fy = null;
+        }
+    }
+
     $.getJSON("info.json", function(json) {
       show_info(json);
     });
 
     $.getJSON("blocks.json", function(json) {
-      show_blocks(json);
+      show_blocks_d3(json);
     });
 
     //add_consensuses_options();
     //draw_visualization();
-    show_consensuses_tree();
+    //show_consensuses_tree();
     //show_sources_info_table();
     //setup_slider();
 });
+
 
 function show_blocks(blocks){
     cytoscape({
@@ -94,20 +199,6 @@ function show_blocks(blocks){
 //    node_width = Math.abs(Math.log(ele.data('weight') * 1000))
 //    return node_width.toString() + 'px';
 //  }
-}
-
-function show_info(info){
-    name_p = document.getElementById('name');
-    name_p.innerHTML += info.name;
-
-    running_time_p = document.getElementById('running_time');
-    running_time_p.innerHTML += info.running_time;
-
-    sources_count_p = document.getElementById('sources_count');
-    sources_count_p.innerHTML += info.sources_count;
-
-    nodes_count_p = document.getElementById('poagraphs_count');
-    nodes_count_p.innerHTML += info.poagraphs.length;
 }
 
 function setup_slider(){
