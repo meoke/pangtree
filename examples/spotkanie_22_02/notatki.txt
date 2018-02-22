@@ -1,0 +1,26 @@
+1) wyniki algorytmu na eboli
+- gdy jest włączone łapanie w jeden węzeł, to istnieje ryzyko, że dziecko będzie miało mniejsze min_compatibility niż rodzic
+- pokazać wyniki dla dwóch wersji
+- wizualizacje - to będzie następny krok? :)
+
+2) wydajność
+- nieruszona
+
+3) usuwanie krawędzi - przerzuciłam się na networkx
+- dla eboli - chwila
+
+- dla starej mycoplasmy - kilka chwil, pokazać widok
+
+- dla nowej mycoplasmy:
+nodes: 2229
+edges: 3968
+czas: ok. 4h (podejście dodajemy kolejne krawędzie do grafu i sprawdzamy,
+czy nie powstanie cykl, wpp. mogą być usunięte niewłaściwe krawędzie)
+
+---> następny krok mądre dzielenie na bloki
+4) testy zachowania poa
+
+I) sekwencja z dziurą -
+
+II) sekwencja przesunięta
+
