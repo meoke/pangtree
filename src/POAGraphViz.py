@@ -74,7 +74,15 @@ class POAGraphRefEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, POAGraphRef):
             if obj.consensus_ID is None:
-                return {}
+                return {"ID": obj.ID,
+                        "name": "",
+                        "title": "",
+                        "sources_compatibility": [],
+                        "length": 0,
+                        "sources": obj.sources_IDs.tolist(),
+                        "parent": obj.parent_ID,
+                        "level": obj.min_compatibility,
+                        "children": obj.children_IDs}
             consensus = self.poagraph.consensuses[obj.consensus_ID]
 
             return {"ID": obj.ID,
@@ -190,9 +198,8 @@ def _create_poagraph_sources_files(poagraph, output_dir):
 def _create_poagraph_consensus_files(poagraph, output_dir):
     consensuses_filename = t.join_path(output_dir, "consensuses.json")
     POAGraphRefEncoder.poagraph = poagraph
-    l = poagraph._poagraphrefs
     with open(consensuses_filename, 'w') as out:
-        json.dump(l, fp=out, cls=POAGraphRefEncoder, indent=4)
+        json.dump(poagraph._poagraphrefs, fp=out, cls=POAGraphRefEncoder, indent=4)
 
 
 def _create_poagraph_graph_files(poagraph, output_dir):

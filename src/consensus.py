@@ -22,100 +22,67 @@ def process_tree_node(poagraph, tree_node_ID, cutoff_search_range, multiplier, r
     children_nodes_IDs = []
     while len(current_srcs):
         print("NOWA")
-        t0 = time.time()
         #1 find top consensus for all sources
         c, c_nodes = get_top_consensus(poagraph, current_srcs, hbmin)
-        t1 = time.time()
-        print("1: %f" % (t1 - t0))
 
         #2 get compatibility of the top consensus to all sources in currently processed sources
-        t0 = time.time()
         comp_to_current_srcs = [poagraph.get_comp(c_nodes, src_ID) for src_ID in current_srcs]
-        t1 = time.time()
-        print("2: %f" % (t1 - t0))
 
         #3 get cutoff based on search range
-        t0 = time.time()
         max_cutoff = _find_max_cutoff(comp_to_current_srcs, cutoff_search_range)
-        t1 = time.time()
-        print("3: %f" % (t1 - t0))
 
         #4 get sources maximally compatible to top consensus and find consensus for them
-        t0 = time.time()
         max_compatible_sources_IDs = current_srcs[np.where(comp_to_current_srcs>=max_cutoff)]
-        t1 = time.time()
-        print("4: %f" % (t1 - t0))
 
-        t0 = time.time()
         max_c, max_consensus_nodes = get_top_consensus(poagraph, max_compatible_sources_IDs, hbmin)
-        t1 = time.time()
-        print("5: %f" % (t1 - t0))
 
         #5 get compatibility of max consensus to all current sources
-        t0 = time.time()
         comp_to_current_srcs = [poagraph.get_comp(max_consensus_nodes, src_ID) for src_ID in current_srcs]
-        t1 = time.time()
-        print("6: %f" % (t1 - t0))
 
         #6 get cutoff based on compatibilties
-        t0 = time.time()
         cutoff_for_node = _find_cutoff_for_node(comp_to_current_srcs, multiplier)
-        t1 = time.time()
-        print("7: %f" % (t1 - t0))
 
         #7 get sources compatible enough to the top consensus
-        t0 = time.time()
         compatible_sources_IDs = get_compatible(current_srcs, comp_to_current_srcs, cutoff_for_node,
                                                 re_consensus)
-        t1 = time.time()
-        print("8: %f" % (t1 - t0))
 
         #8 check if splitting should be continued based on stop condition - moved to the top o
 
-        # add the consensus
-        t0 = time.time()
-        poagraph.add_consensus(max_c, max_consensus_nodes)
-        t1 = time.time()
-        print("9: %f" % (t1 - t0))
+
 
         # decide how many sources will be added to the consensus
         if children_nodes_IDs:
-            t0 = time.time()
             the_smallest_comp_up_to_now = poagraph.get_min_cutoff(children_nodes_IDs) #todo a może jednak max
-            t1 = time.time()
-            print("10: %f" % (t1 - t0))
         else:
             the_smallest_comp_up_to_now = 1
 
-        t0 = time.time()
-        if the_smallest_comp_up_to_now < cutoff_for_node:
-            srcs_to_include = current_srcs
-            current_srcs = []
-            new_children_node_comp = min(comp_to_current_srcs)
-        else:
-            srcs_to_include = compatible_sources_IDs
-            current_srcs = np.setdiff1d(current_srcs, compatible_sources_IDs)
-            new_children_node_comp = cutoff_for_node
-        t1 = time.time()
-        print("11: %f" % (t1 - t0))
+        # wersja z próbą utrzymania węzłów na podobnym poziomie
+        # if the_smallest_comp_up_to_now < cutoff_for_node:
+        #     max_c, max_consensus_nodes = get_top_consensus(poagraph, current_srcs, hbmin)
+        #     konsensus_comps = [poagraph.get_comp(max_consensus_nodes, src_ID) for src_ID in current_srcs]
+        #     srcs_to_include = current_srcs
+        #     new_children_node_comp = min(konsensus_comps)
+        #     current_srcs = []
+        #
+        #     # srcs_to_include = current_srcs
+        #     # current_srcs = []
+        #     # new_children_node_comp = min(comp_to_current_srcs)
+        # else:
+        #wersja bez tego (w razie wrócenia do zakomentowanej - wsunąć do elsa
+        srcs_to_include = compatible_sources_IDs
+        current_srcs = np.setdiff1d(current_srcs, compatible_sources_IDs)
+        new_children_node_comp = cutoff_for_node
 
-        t0 = time.time()
+        # add the consensus
+        poagraph.add_consensus(max_c, max_consensus_nodes)
+
         new_node = POAGraphRef(parent_ID=tree_node_ID,
                                sources_IDs=srcs_to_include,
                                consensus_ID=poagraph.consensuses[-1].ID,
                                min_compatibility=new_children_node_comp)
-        t1 = time.time()
-        print("12: %f" % (t1 - t0))
 
-        t0 = time.time()
         new_node_ID = poagraph.add_poagraphref(new_node, tree_node_ID)
-        t1 = time.time()
-        print("13: %f" % (t1 - t0))
-
-        t0 = time.time()
         children_nodes_IDs.append(new_node_ID)
-        t1 = time.time()
-        print("14: %f" % (t1 - t0))
 
     return children_nodes_IDs
 

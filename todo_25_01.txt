@@ -25,11 +25,19 @@ removed edges:
 -- poprawne tworzenie poagraphów (analiza kartkowa) - czy wiem jak? mail?
 
 2) WYŚWIETLANIE WYNIKÓW
--- tabelki (mam przygotowane w miarę dane do tabelek, teraz tylko wstawić do tych starych metod)
++ tabelki
+    + tytuły consensusów
+    + kolorowanie
 + graf bloków
     - wyznaczać oś jako wynik **dag_longest_path**?
     + zaznaczać usunięte krawędzie linią przerywaną
--- drzewo consensusów - https://www.tutorialspoint.com/d3js/d3js_quick_guide.htm
+    + etykiety nodow
+    + linia przerywana dla inactive
+    + rozmiar kółek
+    + rozmiar linii
+    + etykiety linii
+    - grubość linii
++ drzewo consensusów - https://www.tutorialspoint.com/d3js/d3js_quick_guide.htm
 - graf poagrafu/poagrafów
 
 3) WYDAJNOŚĆ
@@ -43,3 +51,6 @@ removed edges:
 - logowanie
 - wynik consensuswoy dla ograniczonej mycoplasmy (jak rozwiążę problem z wydajnością i porządek w blokach)
 - analiza nowej mycoplasmy (usunięcie nukleotydów i sprawdzenie excelowe przepływu bloków), jeśli moje rozwiązanie podoła - uruchomić
+
+-- ebola wersja z ograniczeniem dzielenia węzłów
+-- ebola wersja bez ograniczenia dzielenia węzłów
