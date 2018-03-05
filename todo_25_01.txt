@@ -1,13 +1,15 @@
-poniedziałek/wtorek
-- mieć wyniki consensusów i wizualizacji na eboli
-- przetestować na mycoplasmie oryginalnej
-    - najpierw sprawdzić jak się zachowuje poa, gdy poda mu się sekwencje z dziurą
-    - jeśli będzie ok - uruchomić na całości, jeśli nie, to jakoś na częściach bloków
-- przetestować na mycoplasmie
-
+wtorek
+- wydajność pozwalająca na uruchomienie na mycoplasmie1
+    - przeczytać o sparse matrix, bit array
+    - na pojedynczym bloku
+    - na blokach po odłączeniu 2-0
+- przeczytać o vg i o możliwościach połączenia z moim projektem
+- poprawne tworzenie poagraphów z części bloków, z uwzględnieniem indeksów
+- informacje o moich planach
 
 todo:
-+ oczyszczenie niepotrzebnych komentarzy i pomergowanie
++ oczyszczenie niepotrzebnych komentarzy i pomergowania
+
 
 1) LOGIKA OGARNIANIA BLOKÓW I TWORZENIA BEZCYKLOWEGO GRAFU
 + algorytm do usuwania cykli z użyciem networkx
@@ -20,15 +22,10 @@ czas: długo, ok. 2h?
 removed edges:
 # od najlżejszych do najcięższych - problem, bo trzeba liczyć ile tych cykli jest, a w odwrotnym podejściu wystarczy stwierdzenie, że jakiś cykl jest
 
+2) wizualizacja
 
-+ testy z dziurą na POA
--- poprawne tworzenie poagraphów (analiza kartkowa) - czy wiem jak? mail?
-
-2) WYŚWIETLANIE WYNIKÓW
-+ tabelki
-    + tytuły consensusów
-    + kolorowanie
 + graf bloków
+    - rozprostować go jakoś
     - wyznaczać oś jako wynik **dag_longest_path**?
     + zaznaczać usunięte krawędzie linią przerywaną
     + etykiety nodow
@@ -40,10 +37,20 @@ removed edges:
 + drzewo consensusów - https://www.tutorialspoint.com/d3js/d3js_quick_guide.htm
 - graf poagrafu/poagrafów
 
-3) WYDAJNOŚĆ
--- sprawdzić czy create po jest takie wolne i dlaczego
-- wydajność (Norbert): sparse matrix, bit array
-- cython
+3) wydajność
+- wyrzucić ze struktury nodes orig id - to przecież indeks tablicy
+- czy na pewno nie trzeba przemapować source id?
+- zamiast zapisywać plik po jednej linii, zapisać jako całość - dla eboli full 22min (i chyba tyle było wcześniej)
+- gdyby w nodes zapisywać tylko active nodes?
+    - zapis poagrafu do po -
+    - odczyt po do poagrafu
+
+aktualne wyniki:
+- 22min po zapisie jako całość i wcześniejszych poprawkach 1-6
+- 9 min 30s po krytycznym przejrzeniu get_node_info
+- 7 min 20s po zastąpieniu intersect przez searchsorted
+- 6 min 29s po zastąpieniu searchsorted przez sprawdzanie nodes
+- 6 min 26s po wczytywaniu całego pliku po zamiast po linii
 
 4) WYNIKI - EBOLA, MYCOPLASMA, MYCOPLASMA 2
 - generowanie consensusu - drzewiaste - bug z mnożnikiem 1.3

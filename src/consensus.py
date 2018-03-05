@@ -63,15 +63,16 @@ def process_tree_node(poagraph, tree_node_ID, cutoff_search_range, multiplier, r
         #     srcs_to_include = current_srcs
         #     new_children_node_comp = min(konsensus_comps)
         #     current_srcs = []
-        #
-        #     # srcs_to_include = current_srcs
-        #     # current_srcs = []
-        #     # new_children_node_comp = min(comp_to_current_srcs)
+
+            # srcs_to_include = current_srcs
+            # current_srcs = []
+            # new_children_node_comp = min(comp_to_current_srcs)
         # else:
         #wersja bez tego (w razie wrócenia do zakomentowanej - wsunąć do elsa
         srcs_to_include = compatible_sources_IDs
         current_srcs = np.setdiff1d(current_srcs, compatible_sources_IDs)
         new_children_node_comp = cutoff_for_node
+            #### koniec przesuniecia
 
         # add the consensus
         poagraph.add_consensus(max_c, max_consensus_nodes)
@@ -122,6 +123,14 @@ def _find_cutoff_for_node(compatibilities, multiplier):
     for i in range(len(compatibilities)-1):
         if sorted_compatibilities[i+1] - sorted_compatibilities[i] >= level_boundary:
             return sorted_compatibilities[i+1]
+    print("NO TRESHOLD FOUND UWAGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+    print("Compatibilities:")
+    print(compatibilities)
+    print("Multiplier:")
+    print(multiplier)
+    print("Returned sorted_compatibilities[0]:")
+    print(sorted_compatibilities[0])
+    return sorted_compatibilities[0]
     raise NoTresholdFound()
 
 

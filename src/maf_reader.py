@@ -15,7 +15,8 @@ import matplotlib.pyplot as plt
 
 
 def parse_to_poagraphs(file_path, merge_option, multialignment_name, output_dir):
-    blocks = _read_blocks(file_path)
+    # blocks = _read_blocks(file_path)
+    blocks = []
     #poagraphs = _read_poagraphs(blocks)
     maf_blocks = [*AlignIO.parse(file_path, "maf")]
 

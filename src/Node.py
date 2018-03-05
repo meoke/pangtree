@@ -1,4 +1,5 @@
 import numpy as np
+from bisect import insort_left
 
 class Node(object):
     def __init__(self, ID, base, in_nodes=np.array([]), aligned_to=None, consensuses_count=0):
@@ -25,4 +26,7 @@ class Node(object):
             self.consensuses_count)
 
     def add_in_node(self, node_ID):
+        # insort_left(self.in_nodes, node_ID)
+
+        # self.in_nodes[idx] = node_ID
         self.in_nodes = np.unique(np.append(self.in_nodes, node_ID))

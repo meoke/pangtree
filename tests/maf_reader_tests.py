@@ -7,7 +7,7 @@ from context import toolkit
 from context import POAGraph
 from context import Source
 from context import Node
-from context import Block
+# from context import Block
 
 @ddt
 class MafReaderTests(unittest.TestCase):

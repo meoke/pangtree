@@ -31,6 +31,8 @@ class Multialignment(object):
         if self.poagraphs is None:
             raise CloseProgram("No poagraph was built.")
 
+        print("POAGRAPH was built.")
+
         for p in self.poagraphs:
             p.data_type = self.data_type
 
