@@ -1,0 +1,146 @@
+/usr/bin/python3.5 /home/meoke/software/pycharm-2017.3.3/helpers/profiler/run_profiler.py 127.0.0.1 46009 /home/meoke/Repos/pang/src/pangenome.py mln -f files/mycoplasma_maf/alignment_clean.maf -format maf -m all -c 3 -r [90,100] -multiplier 1 -stop 0.8 -data mycoplasma
+Starting cProfile profiler
+
+Building multialignment from /home/meoke/Repos/pang/tests/files/mycoplasma_maf/alignment_clean.maf...
+	Processing 1/5 block.
+		Line 44/44
+	Processing 2/5 block.
+		Line 44/44
+	Processing 3/5 block.
+		Line 44/44
+	Processing 4/5 block.
+		Line 44/44
+	Processing 5/5 block.
+		Line 44/44
+
+POAGRAPH was built.
+Generate tree based consensus (hbmin= None , min_comp= None , range= (90, 100) , multiplier= 1.0
+NOWA
+...Read 44 sequences from MSA file /home/meoke/Repos/pang/tests/files/mycoplasma_maf/result_40/alignment_clean_0/alignment_clean_0_00.po...
+*** WARNING: bundling ended prematurely after 1 bundles.
+No sequences fit inside this last bundle.
+A total of 44 sequences incuding consensus were bundled.
+
+...Wrote 45 sequences to PO file /home/meoke/Repos/pang/tests/files/mycoplasma_maf/result_40/alignment_clean_0/alignment_clean_0_00.hb...
+X-Gap Penalties (Open, Aff1, Aff2; LTrunc, LDecay): 12 6 6 16 0
+X-Gap Penalties (0, 1, 2, ...): 12 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 ...
+Y-Gap Penalties (Open, Aff1, Aff2; LTrunc, LDecay): 12 6 6 16 0
+Y-Gap Penalties (0, 1, 2, ...): 12 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 ...
+	Read consensus 0 from /home/meoke/Repos/pang/tests/files/mycoplasma_maf/result_40/alignment_clean_0/alignment_clean_0_00.hb
+	Buliding poagraph from /home/meoke/Repos/pang/tests/files/mycoplasma_maf/result_40/alignment_clean_0/alignment_clean_0_00.hb
+...Read 7 sequences from MSA file /home/meoke/Repos/pang/tests/files/mycoplasma_maf/result_40/alignment_clean_0/alignment_clean_0_00.po...
+*** WARNING: bundling ended prematurely after 1 bundles.
+No sequences fit inside this last bundle.
+A total of 7 sequences incuding consensus were bundled.
+
+...Wrote 8 sequences to PO file /home/meoke/Repos/pang/tests/files/mycoplasma_maf/result_40/alignment_clean_0/alignment_clean_0_00.hb...
+X-Gap Penalties (Open, Aff1, Aff2; LTrunc, LDecay): 12 6 6 16 0
+X-Gap Penalties (0, 1, 2, ...): 12 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 ...
+Y-Gap Penalties (Open, Aff1, Aff2; LTrunc, LDecay): 12 6 6 16 0
+Y-Gap Penalties (0, 1, 2, ...): 12 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 ...
+	Read consensus 0 from /home/meoke/Repos/pang/tests/files/mycoplasma_maf/result_40/alignment_clean_0/alignment_clean_0_00.hb
+	Buliding poagraph from /home/meoke/Repos/pang/tests/files/mycoplasma_maf/result_40/alignment_clean_0/alignment_clean_0_00.hb
+NOWA
+...Read 19 sequences from MSA file /home/meoke/Repos/pang/tests/files/mycoplasma_maf/result_40/alignment_clean_0/alignment_clean_0_00.po...
+*** WARNING: bundling ended prematurely after 1 bundles.
+No sequences fit inside this last bundle.
+A total of 19 sequences incuding consensus were bundled.
+
+...Wrote 20 sequences to PO file /home/meoke/Repos/pang/tests/files/mycoplasma_maf/result_40/alignment_clean_0/alignment_clean_0_00.hb...
+X-Gap Penalties (Open, Aff1, Aff2; LTrunc, LDecay): 12 6 6 16 0
+X-Gap Penalties (0, 1, 2, ...): 12 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 ...
+Y-Gap Penalties (Open, Aff1, Aff2; LTrunc, LDecay): 12 6 6 16 0
+Y-Gap Penalties (0, 1, 2, ...): 12 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 ...
+	Read consensus 0 from /home/meoke/Repos/pang/tests/files/mycoplasma_maf/result_40/alignment_clean_0/alignment_clean_0_00.hb
+	Buliding poagraph from /home/meoke/Repos/pang/tests/files/mycoplasma_maf/result_40/alignment_clean_0/alignment_clean_0_00.hb
+...Read 10 sequences from MSA file /home/meoke/Repos/pang/tests/files/mycoplasma_maf/result_40/alignment_clean_0/alignment_clean_0_00.po...
+*** WARNING: bundling ended prematurely after 1 bundles.
+No sequences fit inside this last bundle.
+A total of 10 sequences incuding consensus were bundled.
+
+...Wrote 11 sequences to PO file /home/meoke/Repos/pang/tests/files/mycoplasma_maf/result_40/alignment_clean_0/alignment_clean_0_00.hb...
+X-Gap Penalties (Open, Aff1, Aff2; LTrunc, LDecay): 12 6 6 16 0
+X-Gap Penalties (0, 1, 2, ...): 12 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 ...
+Y-Gap Penalties (Open, Aff1, Aff2; LTrunc, LDecay): 12 6 6 16 0
+Y-Gap Penalties (0, 1, 2, ...): 12 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 ...
+	Read consensus 0 from /home/meoke/Repos/pang/tests/files/mycoplasma_maf/result_40/alignment_clean_0/alignment_clean_0_00.hb
+	Buliding poagraph from /home/meoke/Repos/pang/tests/files/mycoplasma_maf/result_40/alignment_clean_0/alignment_clean_0_00.hb
+NOWA
+...Read 3 sequences from MSA file /home/meoke/Repos/pang/tests/files/mycoplasma_maf/result_40/alignment_clean_0/alignment_clean_0_00.po...
+*** WARNING: bundling ended prematurely after 1 bundles.
+No sequences fit inside this last bundle.
+A total of 3 sequences incuding consensus were bundled.
+
+...Wrote 4 sequences to PO file /home/meoke/Repos/pang/tests/files/mycoplasma_maf/result_40/alignment_clean_0/alignment_clean_0_00.hb...
+X-Gap Penalties (Open, Aff1, Aff2; LTrunc, LDecay): 12 6 6 16 0
+X-Gap Penalties (0, 1, 2, ...): 12 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 ...
+Y-Gap Penalties (Open, Aff1, Aff2; LTrunc, LDecay): 12 6 6 16 0
+Y-Gap Penalties (0, 1, 2, ...): 12 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 ...
+	Read consensus 0 from /home/meoke/Repos/pang/tests/files/mycoplasma_maf/result_40/alignment_clean_0/alignment_clean_0_00.hb
+	Buliding poagraph from /home/meoke/Repos/pang/tests/files/mycoplasma_maf/result_40/alignment_clean_0/alignment_clean_0_00.hb
+...Read 1 sequences from MSA file /home/meoke/Repos/pang/tests/files/mycoplasma_maf/result_40/alignment_clean_0/alignment_clean_0_00.po...
+*** WARNING: bundling ended prematurely after 1 bundles.
+No sequences fit inside this last bundle.
+A total of 1 sequences incuding consensus were bundled.
+
+...Wrote 2 sequences to PO file /home/meoke/Repos/pang/tests/files/mycoplasma_maf/result_40/alignment_clean_0/alignment_clean_0_00.hb...
+X-Gap Penalties (Open, Aff1, Aff2; LTrunc, LDecay): 12 6 6 16 0
+X-Gap Penalties (0, 1, 2, ...): 12 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 ...
+Y-Gap Penalties (Open, Aff1, Aff2; LTrunc, LDecay): 12 6 6 16 0
+Y-Gap Penalties (0, 1, 2, ...): 12 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 ...
+	Read consensus 0 from /home/meoke/Repos/pang/tests/files/mycoplasma_maf/result_40/alignment_clean_0/alignment_clean_0_00.hb
+	Buliding poagraph from /home/meoke/Repos/pang/tests/files/mycoplasma_maf/result_40/alignment_clean_0/alignment_clean_0_00.hb
+NOWA
+...Read 2 sequences from MSA file /home/meoke/Repos/pang/tests/files/mycoplasma_maf/result_40/alignment_clean_0/alignment_clean_0_00.po...
+*** WARNING: bundling ended prematurely after 1 bundles.
+No sequences fit inside this last bundle.
+A total of 2 sequences incuding consensus were bundled.
+
+...Wrote 3 sequences to PO file /home/meoke/Repos/pang/tests/files/mycoplasma_maf/result_40/alignment_clean_0/alignment_clean_0_00.hb...
+X-Gap Penalties (Open, Aff1, Aff2; LTrunc, LDecay): 12 6 6 16 0
+X-Gap Penalties (0, 1, 2, ...): 12 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 ...
+Y-Gap Penalties (Open, Aff1, Aff2; LTrunc, LDecay): 12 6 6 16 0
+Y-Gap Penalties (0, 1, 2, ...): 12 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 ...
+	Read consensus 0 from /home/meoke/Repos/pang/tests/files/mycoplasma_maf/result_40/alignment_clean_0/alignment_clean_0_00.hb
+	Buliding poagraph from /home/meoke/Repos/pang/tests/files/mycoplasma_maf/result_40/alignment_clean_0/alignment_clean_0_00.hb
+...Read 1 sequences from MSA file /home/meoke/Repos/pang/tests/files/mycoplasma_maf/result_40/alignment_clean_0/alignment_clean_0_00.po...
+*** WARNING: bundling ended prematurely after 1 bundles.
+No sequences fit inside this last bundle.
+A total of 1 sequences incuding consensus were bundled.
+
+...Wrote 2 sequences to PO file /home/meoke/Repos/pang/tests/files/mycoplasma_maf/result_40/alignment_clean_0/alignment_clean_0_00.hb...
+X-Gap Penalties (Open, Aff1, Aff2; LTrunc, LDecay): 12 6 6 16 0
+X-Gap Penalties (0, 1, 2, ...): 12 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 ...
+Y-Gap Penalties (Open, Aff1, Aff2; LTrunc, LDecay): 12 6 6 16 0
+Y-Gap Penalties (0, 1, 2, ...): 12 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 ...
+	Read consensus 0 from /home/meoke/Repos/pang/tests/files/mycoplasma_maf/result_40/alignment_clean_0/alignment_clean_0_00.hb
+	Buliding poagraph from /home/meoke/Repos/pang/tests/files/mycoplasma_maf/result_40/alignment_clean_0/alignment_clean_0_00.hb
+NOWA
+...Read 1 sequences from MSA file /home/meoke/Repos/pang/tests/files/mycoplasma_maf/result_40/alignment_clean_0/alignment_clean_0_00.po...
+*** WARNING: bundling ended prematurely after 1 bundles.
+No sequences fit inside this last bundle.
+A total of 1 sequences incuding consensus were bundled.
+
+...Wrote 2 sequences to PO file /home/meoke/Repos/pang/tests/files/mycoplasma_maf/result_40/alignment_clean_0/alignment_clean_0_00.hb...
+X-Gap Penalties (Open, Aff1, Aff2; LTrunc, LDecay): 12 6 6 16 0
+X-Gap Penalties (0, 1, 2, ...): 12 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 ...
+Y-Gap Penalties (Open, Aff1, Aff2; LTrunc, LDecay): 12 6 6 16 0
+Y-Gap Penalties (0, 1, 2, ...): 12 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 ...
+	Read consensus 0 from /home/meoke/Repos/pang/tests/files/mycoplasma_maf/result_40/alignment_clean_0/alignment_clean_0_00.hb
+	Buliding poagraph from /home/meoke/Repos/pang/tests/files/mycoplasma_maf/result_40/alignment_clean_0/alignment_clean_0_00.hb
+...Read 1 sequences from MSA file /home/meoke/Repos/pang/tests/files/mycoplasma_maf/result_40/alignment_clean_0/alignment_clean_0_00.po...
+*** WARNING: bundling ended prematurely after 1 bundles.
+No sequences fit inside this last bundle.
+A total of 1 sequences incuding consensus were bundled.
+
+...Wrote 2 sequences to PO file /home/meoke/Repos/pang/tests/files/mycoplasma_maf/result_40/alignment_clean_0/alignment_clean_0_00.hb...
+X-Gap Penalties (Open, Aff1, Aff2; LTrunc, LDecay): 12 6 6 16 0
+X-Gap Penalties (0, 1, 2, ...): 12 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 ...
+Y-Gap Penalties (Open, Aff1, Aff2; LTrunc, LDecay): 12 6 6 16 0
+Y-Gap Penalties (0, 1, 2, ...): 12 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 ...
+	Read consensus 0 from /home/meoke/Repos/pang/tests/files/mycoplasma_maf/result_40/alignment_clean_0/alignment_clean_0_00.hb
+	Buliding poagraph from /home/meoke/Repos/pang/tests/files/mycoplasma_maf/result_40/alignment_clean_0/alignment_clean_0_00.hb
+10:33:04
+Snapshot saved to /home/meoke/.PyCharm2017.3/system/snapshots/pang13.pstat
+
+Process finished with exit code 0

@@ -1,0 +1,96 @@
+<html>
+<head>
+<title>Poagraph</title>
+
+  <!--java script libraries-->
+  <script src='assets/cytoscape.js'></script>
+  <script src="assets/sorttable.js"></script>
+
+  <script src="assets/d3.js"></script>
+  <script src="assets/d3.min.js"></script>
+  <script src="assets/jquery-3.2.1.min.js"></script>
+
+  <!--custom java script-->
+  <script src='assets/script.js'></script>
+
+  <!--multialignment data-->
+  <!--<script src='poagraph.js'/></script>-->
+  <!--<script src='sources.js'/></script>-->
+  <!--<script src='consensuses.js'/></script>-->
+  <!--<script src='alignment_clean_info.js'/></script>-->
+  <!--<script src='blocks.js'/></script>-->
+
+  <meta charset="utf-8">
+
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+  <!--<link href="//veg.github.io/phylotree.js/phylotree.css" rel="stylesheet">-->
+
+  <!--<script src="//code.jquery.com/jquery.js"></script>-->
+  <script src="//netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  <!--<script src="//d3js.org/d3.v3.min.js"></script> TODO CZY BYŁ JAKIŚ PROBLEM Z WERSJĄ V4?-->
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="http://d3js.org/d3-selection-multi.v1.js"></script>
+  <!--<script src="//veg.github.io/phylotree.js/phylotree.js"></script>-->
+  <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js" charset="utf-8"></script>-->
+
+    <!--custom stylesheets-->
+  <link rel="stylesheet" type="text/css" href="assets/stylesheet.css">
+</head>
+
+<body>
+  <header>
+    <div id="titl">
+    <h2>Multialignment</h2><br>
+    <h3>Visualization and Consensuses</h3>
+      </div>
+    <div id="multialignment_info" class="info">
+        <h4>Poagraph info</h4>
+        <p id="name">Name: </p>
+        <p id="running_time">Running time: </p>
+        <p id="sources_count">Sources count: </p>
+        <p id="poagraphs_count">POAGraphs count: </p>
+    </div>
+
+  </header>
+
+    <div id="sep_blocks_info">
+        <h4>Separated Multialignment Blocks - without cycles </h4>
+        <svg id='blocks_svg' width="960" height="600"></svg>
+    </div>
+
+    <div id="slidecontainer">
+        <p>Compatibilities values:</p>
+        <input id="slider" type="range" min="0" max="1" value="0.5" step="0.01">
+        <p>Current value: <span id="slider_value"></span></p>
+        <input id="show_table_btn" type="button" value="Show consensuses table for given value">
+    </div>
+
+    <div id="consensuses_tree">
+        <h4>Consensuses tree</h4>
+    </div>
+
+    <div id="sources_table">
+        <h4>Sources tables</h4>
+    </div>
+
+  <div id='cy'>
+  </div>
+
+
+  <!--<svg id="tree_display" />-->
+
+  <!--<div id='sources_info'>-->
+      <!--<h3>Sources info</h3>-->
+  <!--</div>-->
+  <!--<div id='node_info'>-->
+      <!--<h3>Node info</h3>-->
+  <!--</div>-->
+  <div id='blocks_div'>
+  </div>
+
+
+
+<!--<script src="assets/densityplot.js"></script>-->
+</body>
+<!html>
