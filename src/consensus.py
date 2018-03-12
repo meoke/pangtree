@@ -48,26 +48,25 @@ def process_tree_node(poagraph, tree_node_ID, cutoff_search_range, multiplier, r
 
         #8 check if splitting should be continued based on stop condition - moved to the top o
 
-
-
-        # decide how many sources will be added to the consensus
-        if children_nodes_IDs:
-            the_smallest_comp_up_to_now = poagraph.get_min_cutoff(children_nodes_IDs) #todo a może jednak max
-        else:
-            the_smallest_comp_up_to_now = 1
-
         # wersja z próbą utrzymania węzłów na podobnym poziomie
-        # if the_smallest_comp_up_to_now < cutoff_for_node:
-        #     max_c, max_consensus_nodes = get_top_consensus(poagraph, current_srcs, hbmin)
-        #     konsensus_comps = [poagraph.get_comp(max_consensus_nodes, src_ID) for src_ID in current_srcs]
-        #     srcs_to_include = current_srcs
-        #     new_children_node_comp = min(konsensus_comps)
-        #     current_srcs = []
 
-            # srcs_to_include = current_srcs
-            # current_srcs = []
-            # new_children_node_comp = min(comp_to_current_srcs)
-        # else:
+            # decide how many sources will be added to the consensus
+            # if children_nodes_IDs:
+            #     the_smallest_comp_up_to_now = poagraph.get_min_cutoff(children_nodes_IDs) #todo a może jednak max
+            # else:
+            #     the_smallest_comp_up_to_now = 1
+
+            # if the_smallest_comp_up_to_now < cutoff_for_node:
+            #     max_c, max_consensus_nodes = get_top_consensus(poagraph, current_srcs, hbmin)
+            #     konsensus_comps = [poagraph.get_comp(max_consensus_nodes, src_ID) for src_ID in current_srcs]
+            #     srcs_to_include = current_srcs
+            #     new_children_node_comp = min(konsensus_comps)
+            #     current_srcs = []
+
+                # srcs_to_include = current_srcs
+                # current_srcs = []
+                # new_children_node_comp = min(comp_to_current_srcs)
+            # else:
         #wersja bez tego (w razie wrócenia do zakomentowanej - wsunąć do elsa
         srcs_to_include = compatible_sources_IDs
         current_srcs = np.setdiff1d(current_srcs, compatible_sources_IDs)

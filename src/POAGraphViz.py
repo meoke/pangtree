@@ -2,6 +2,7 @@ import json
 import numpy as np
 import toolkit as t
 from data_types import ebola as eb
+from data_types import mycoplasma as myc
 from Sequence import Source, Consensus
 from POAGraphRef import POAGraphRef
 import maf_reader
@@ -31,10 +32,14 @@ class SourceEncoder(json.JSONEncoder):
     poagraph = None
 
     def get_names_and_group(self, source):
-        if self.poagraph.data_type is 'ebola':
+        if self.poagraph.data_type == 'ebola':
             source_name = eb.extract_ebola_code_part(source.name, 0)
             source_alt_name = eb.get_official_ebola_name(eb.extract_ebola_code_part(source.title, 1))
             source_group_name = eb.get_ebola_group_name(eb.extract_ebola_code_part(source.title, 1))
+        elif self.poagraph.data_type == 'mycoplasma':
+            source_name = source.name
+            source_alt_name = myc.get_strain_name(source.name)
+            source_group_name = myc.get_group_name(source.name)
         else:
             source_name = source.name
             source_alt_name = '-'

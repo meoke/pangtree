@@ -72,9 +72,10 @@ def _read_nodes_info(lines_iterator, nodes_count, sources_count, consensuses_cou
 
     for node_ID, line in enumerate(lines_iterator):#po_file_handler):
         base = line[0]
-        in_nodes = _extract_node_parameters(line, 'L')
-        sequences_IDs = _extract_node_parameters(line, 'S')
-        aligned_to =_extract_node_parameters(line, 'A')
+        in_nodes, sequences_IDs, aligned_to = _extract_node_parameters(line)
+        # in_nodes = _extract_node_parameters(line, 'L')
+        # sequences_IDs = _extract_node_parameters(line, 'S')
+        # aligned_to =_extract_node_parameters(line, 'A')
         aligned_to = aligned_to[0] if aligned_to else None
         node = Node(ID=node_ID,
                     base=base,
@@ -87,10 +88,27 @@ def _read_nodes_info(lines_iterator, nodes_count, sources_count, consensuses_cou
     return nodes, ns, nc
 
 
-def _extract_node_parameters(node, code_letter):
-    pattern = '{0}\d+'.format(code_letter)
-    values_with_prefix_letters = re.findall(pattern, node)
-    return [int(letter_value[1:]) for letter_value in values_with_prefix_letters]
+def _extract_node_parameters(line):
+    line = line[2:]
+    line_iter = iter(line)
+
+    node_parameters = {'L':[], 'S': [], 'A': [], '':[]}
+    current_node_parameter = next(line_iter)
+    number_start = 1
+    number_end = 1
+    for i, c in enumerate(line_iter):
+        if c == 'L' or c == 'S' or c == 'A':
+            node_parameters[current_node_parameter].append(int(line[number_start: number_end]))
+            current_node_parameter = c
+            number_start = i + 2
+            number_end = i + 2
+        else:
+            number_end += 1
+    node_parameters[current_node_parameter].append(int(line[number_start: number_end]))
+    return node_parameters['L'], node_parameters['S'], node_parameters['A']
+    # pattern = '{0}\d+'.format(code_letter)
+    # values_with_prefix_letters = re.findall(pattern, node)
+    # return [int(letter_value[1:]) for letter_value in values_with_prefix_letters]
 
 
 def read_consensus(po_file_path, consensusID=0):

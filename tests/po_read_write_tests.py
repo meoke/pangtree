@@ -309,6 +309,18 @@ class PoWriterTests(unittest.TestCase):
         if self.remove_temp_dir:
             toolkit.remove_dir(self.temp_dir)
 
+    @data(('C:L0L1L10S0S123A12', [0, 1, 10], [0, 123], [12]),
+          ('A:S0', [], [0], []),
+          ('T:S12S135A2', [], [12, 135], [2]),
+          ('G:L0L1S13', [0,1], [13], []))
+    @unpack
+    def test_extract_node_parameters(self, line, expected_l, expected_s, expected_a):
+        actual_l, actual_s, actual_a = po_reader._extract_node_parameters(line)
+
+        self.assertEqual(expected_l, actual_l)
+        self.assertEqual(expected_s, actual_s)
+        self.assertEqual(expected_a, actual_a)
+
     def test_reading_po_to_poagraph(self):
         for test_data in self.po_to_poagraph_testing_data:
             expected_poagraph = test_data["poagraph"]

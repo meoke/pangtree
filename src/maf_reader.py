@@ -15,27 +15,29 @@ import matplotlib.pyplot as plt
 
 
 def parse_to_poagraphs(file_path, merge_option, multialignment_name, output_dir):
-    # blocks = _read_blocks(file_path)
-    blocks = []
+    # blocks = _uncycle_blocks_version_1(file_path)
+    # blocks = []
+    blocks = _uncycle_blocks_simple_version(file_path, print_analysis=True)
+
     #poagraphs = _read_poagraphs(blocks)
     maf_blocks = [*AlignIO.parse(file_path, "maf")]
 
     block_to_merge_ranges = _parse_merge_option_to_ranges(merge_option, len(maf_blocks))
     poagraphs = []
     #todo wykorzystac wiedze z blocks do tworzenia poagraphs
-    for i, r in enumerate(block_to_merge_ranges):
-        current_range_blocks = [*islice(maf_blocks, r.start, r.stop)]
-        poagraph = POAGraph(name=multialignment_name + '_' + str(i),
-                            title=multialignment_name + '_' + str(i),
-                            path=t.create_child_dir(output_dir, multialignment_name + '_' + str(i)),
-                            version='NOVEMBER')
-        poagraph = _blocks_to_poagraph(poagraph, current_range_blocks)
-        poagraph.set_sources_weights()
-        poagraphs.append(poagraph)
+    # for i, r in enumerate(block_to_merge_ranges):
+    #     current_range_blocks = [*islice(maf_blocks, r.start, r.stop)]
+    #     poagraph = POAGraph(name=multialignment_name + '_' + str(i),
+    #                         title=multialignment_name + '_' + str(i),
+    #                         path=t.create_child_dir(output_dir, multialignment_name + '_' + str(i)),
+    #                         version='NOVEMBER')
+    #     poagraph = _blocks_to_poagraph(poagraph, current_range_blocks)
+    #     poagraph.set_sources_weights()
+    #     poagraphs.append(poagraph)
     return poagraphs, blocks
 
 
-def _read_blocks(file_path):
+def _uncycle_blocks_version_1(file_path):
     def cycle_exist(cycles_iterator):
         try:
             first = next(cycles_iterator)
@@ -102,6 +104,23 @@ def _read_blocks(file_path):
             DG.edges[u, v]['active'] = True
 
     return DG
+
+
+def _uncycle_blocks_simple_version(file_path, print_analysis=True):
+    maf_blocks = [*AlignIO.parse(file_path, "maf")]
+    blocks = {}
+    for i, block in enumerate(maf_blocks):
+        blocks[i] = [0,0]
+        blocks_srcs = []
+        for line in block:
+            blocks_srcs.append(line.name)
+            if line.annotations["strand"] == 1:
+                blocks[i][0] += 1
+            elif line.annotations["strand"] == -1:
+                blocks[i][1] += 1
+        minus = "MINUS" if blocks[i][1] > blocks[i][0] else ""
+        src = blocks_srcs[0] if len(blocks_srcs) == 1 else ""
+        print("block: {}, +: {}, -:{}, {}, {}".format(i, blocks[i][0], blocks[i][1], minus, src))
 
 
 # class Block(object):
@@ -220,7 +239,9 @@ def _get_sources(blocks):
     for block in blocks:
         for line in block:
             if line.name not in sources_name_to_ID:
-                new_source = Source(ID=len(sources), name=line.name, title=line.name)
+                new_source = Source(ID=len(sources),
+                                    name=line.name,
+                                    title=line.name)
                 sources.append(new_source)
                 sources_name_to_ID[new_source.name] = new_source.ID
     return sources, sources_name_to_ID

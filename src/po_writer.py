@@ -159,24 +159,11 @@ def save_as_po(poagraph, sources_IDs):
 
     def get_nodes(nodes, sources):
         def get_node_info(node, active_nodes):
-            def is_active(node_ID):
-                return nodes[node_ID]['active']
-                # i = np.searchsorted(active_nodes, node_ID)
-                # if i != len(active_nodes) and active_nodes[i] == node_ID:
-                #     return True
-                # return False
-
             active_in_nodes = []
             for in_node_ID in node.in_nodes:
-                # if is_active(in_node_ID):
                 if nodes[in_node_ID]['active']:
                     active_in_nodes.append(in_node_ID)
-            # bl = nodes[node.in_nodes]['active']
-            # r = np.where(bl==True)[0]
-            # j = nodes['temp_ID'][r]
-            # ac = np.where(nodes['active'][np.where(nodes['active'][node.in_nodes])[0]]
-            # if not np.array_equal(np.array(active_in_nodes), j):
-            #     pass
+
             if len(active_in_nodes):
                 L_to_return = 'L' + 'L'.join(nodes['temp_ID'][np.array(active_in_nodes)].astype('str', copy=False))
             else:
@@ -202,9 +189,7 @@ def save_as_po(poagraph, sources_IDs):
 
         active_nodes_IDs = nodes['orig_ID'][nodes['active']]
         nodes_lines = [None] * len(active_nodes_IDs)
-        # for node in poagraph.nodes:
-        #     if nodes[node.ID]['active']:
-        #         nodes_lines.append(get_node_info(node, active_nodes_IDs))
+
         for i, orig_node_ID in enumerate(active_nodes_IDs):
             nodes_lines[i] = get_node_info(poagraph.nodes[orig_node_ID], active_nodes_IDs)
         return nodes_lines
@@ -253,15 +238,14 @@ def save_as_po(poagraph, sources_IDs):
     sources['orig_ID'][:] = range(len(poagraph.sources))
     sources['temp_ID'][sources['active']] = range(len(sources_IDs))
 
-    po_file_name = t.get_next_child_file_name(poagraph.path, poagraph.name + str(".po"))
+    po_file_name = t.get_next_child_file_name(poagraph.path, poagraph.name + ".po")
 
     sources_weights = get_partial_sources_weights(sources_IDs, nodes)
     po_lines = []
-    with open(po_file_name, 'w') as output_po_file:
-        po_lines.extend(get_introduction_data(active_nodes_count))
-        po_lines.extend(get_source_sequences(nodes, sources_weights))
-        n = get_nodes(nodes, sources)
-        po_lines.extend(n)
+    po_lines.extend(get_introduction_data(active_nodes_count))
+    po_lines.extend(get_source_sequences(nodes, sources_weights))
+    n = get_nodes(nodes, sources)
+    po_lines.extend(n)
 
     with open(po_file_name, 'w') as out:
         out.writelines(po_lines)

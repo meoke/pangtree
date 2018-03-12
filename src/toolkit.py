@@ -32,7 +32,7 @@ def create_next_sibling_dir(path, sibling_dir_prefix):
     return new_dir_path.resolve()
 
 def get_next_child_file_name(path, child_file_prefix):
-    existing_prefixed_files = sorted(list(path.glob("*"+child_file_prefix+"*")))
+    existing_prefixed_files = sorted(list(path.glob("*"+child_file_prefix.split('.')[0]+"*")))
     if existing_prefixed_files:
         try:
             last_path_suffix = int(existing_prefixed_files[-1].stem.split("_")[-1])

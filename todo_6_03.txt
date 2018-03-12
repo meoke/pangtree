@@ -1,0 +1,22 @@
+# kontrola mafa
+Policzyć dla każdej pary sekwencji w mycoplasma 2 jak bardzo są ze sobą uliniowione:
+1. znaleźc bloki, w której jest jedna i druga sekwencja
+2. posumować (z opisu linii w mafie) ile nukleotydów jest uliniowynych
+3. dla każdej sekwencji podzielić przez długość tej sekwencji wynikającą z fasta
+
+# opis algorytmu - sposób działania, parametry itd.
+
+# cactus
+1. stworzyć alignment (maf) samodzielnie, korzystając z cactusa i fast od Kuby
+2. wybrać takie sekwencje spośród tych fast, żeby patrząc na drzewo filogenetyczne (linki od Norberta), było one dość blisko, ale nie za blisko - tak żeby tych rozcięć nie musiało być za dużo
+
+# uproszczona wersja rozcinania bloków
+1. zakładamy, że każdy blok ma więcej + (ale sprawdzić czytak rzeczywiście jest)
+2. przy określaniu krawędzi między blokami i ich wag uwzględniać tylko te krawędzie, które mają po obu stronach węzły +
+3. rozcinanie (tworzenie acyklicznego grafu bloków) przeprowadzać na takim ograniczonym grafie
+4. potem poagraf budować nie przejmując się, że któreś ścieżki w niektórych blokach są '-'
+5. pamiętać o dołożeniu brakujących fragmentów z fasty
+
+# podział mycoplasmy na podgrupy
+sprawdzić podział, który dostaliśmy względem bazy patric (nazwy z http://microbiome.wlu.ca/public/Operon_Estimates/Estimates.html)
+ew. jest podział na dwie grupy (ale raczej wynika z różnej oporności na antybiotyki) w pracy comparative genome analysis of mycoplasma pneumoniae

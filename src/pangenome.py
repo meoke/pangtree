@@ -15,8 +15,8 @@ def convert(args):
     if args.hbmin and args.c != 1:
         parser.error("Option -hbmin requires -c = 1.")
 
-    if (args.min_comp or args.r or args.t or args.multiplier or args.stop or args.re_consensus) and not args.c:
-        parser.error("Options -min-comp, -r, -t, -multiplier, -stop and -re_consensus require -c.")
+    if (args.min_comp or args.r or args.multiplier or args.stop or args.re_consensus) and not args.c:
+        parser.error("Options -min-comp, -r, -multiplier, -stop and -re_consensus require -c.")
 
     if args.r and not fullmatch('\[\d+\,\d+\]', str(args.r)):
         parser.error('Wrong formatting for RANGE')
@@ -129,7 +129,7 @@ parser_converter.add_argument('-data',
                               required=True,
                               help='ebola or mycoplasma')
 parser_converter.add_argument('-blocks',
-                              metavar="BLOCKS",
+                              action='store_true',
                               required=False,
                               help="Set if block analysis should be in ouput")
 # parser_converter.set_defaults(func=convert)
