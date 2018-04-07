@@ -71,7 +71,7 @@ def _read_nodes_info(lines_iterator, nodes_count, sources_count, consensuses_cou
     nc = np.zeros(shape=(consensuses_count, nodes_count), dtype=np.bool)
 
     for node_ID, line in enumerate(lines_iterator):#po_file_handler):
-        base = line[0]
+        base = line[0].upper()
         in_nodes, sequences_IDs, aligned_to = _extract_node_parameters(line)
         # in_nodes = _extract_node_parameters(line, 'L')
         # sequences_IDs = _extract_node_parameters(line, 'S')

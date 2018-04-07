@@ -15,12 +15,21 @@ import matplotlib.pyplot as plt
 
 
 def parse_to_poagraphs(file_path, merge_option, multialignment_name, output_dir):
+    # statystyki
+
+    # usunięcie cykli z bloków i zachowanie informacji, jak zbudować poagraf(y)
+    mafblocks_nxgraph = _uncycle_blocks_version2(file_path)
+
     # blocks = _uncycle_blocks_version_1(file_path)
     # blocks = []
-    blocks = _uncycle_blocks_simple_version(file_path, print_analysis=True)
+    #blocks = _uncycle_blocks_simple_version(file_path, print_analysis=True)
+
+    # budowanie poagrafów
+
+
 
     #poagraphs = _read_poagraphs(blocks)
-    maf_blocks = [*AlignIO.parse(file_path, "maf")]
+    #maf_blocks = [*AlignIO.parse(file_path, "maf")]
 
     block_to_merge_ranges = _parse_merge_option_to_ranges(merge_option, len(maf_blocks))
     poagraphs = []
@@ -34,7 +43,17 @@ def parse_to_poagraphs(file_path, merge_option, multialignment_name, output_dir)
     #     poagraph = _blocks_to_poagraph(poagraph, current_range_blocks)
     #     poagraph.set_sources_weights()
     #     poagraphs.append(poagraph)
-    return poagraphs, blocks
+    #return poagraphs, blocks
+
+
+def _uncycle_blocks_version2(file_path: str) -> nx.DiGraph:
+    maf_blocks = AlignIO.parse(file_path, "maf")
+    mafblocks_nxgraph = nx.DiGraph()
+
+    #dodanie wszystkich bloków, bez krawędzi
+    for block in maf_blocks:
+        mafblocks_nxgraph.add_node(block)
+    pass
 
 
 def _uncycle_blocks_version_1(file_path):
@@ -107,9 +126,57 @@ def _uncycle_blocks_version_1(file_path):
 
 
 def _uncycle_blocks_simple_version(file_path, print_analysis=True):
+    def get_src_path(src_name, maf_blocks):
+        src_path = []
+        for i, block in enumerate(maf_blocks):
+            for seqrec in block:
+                if seqrec.name == src_name:
+                    src_path.append((i, seqrec.annotations["start"]))
+                    break
+        return sorted(src_path, key=lambda blockID_start : blockID_start[1])
+
+    def print_blocks_analysis(maf_blocks):
+        blocks = {}
+        for i, block in enumerate(maf_blocks):
+            blocks[i] = [0, 0]
+            blocks_srcs = []
+            for line in block:
+                blocks_srcs.append(line.name)
+                if line.annotations["strand"] == 1:
+                    blocks[i][0] += 1
+                elif line.annotations["strand"] == -1:
+                    blocks[i][1] += 1
+            minus = "MINUS" if blocks[i][1] > blocks[i][0] else ""
+            src = blocks_srcs[0] if len(blocks_srcs) == 1 else ""
+            print("block: {}, +: {}, -:{}, {}, {}".format(i, blocks[i][0], blocks[i][1], minus, src))
+
     maf_blocks = [*AlignIO.parse(file_path, "maf")]
+    if print_analysis:
+        print_blocks_analysis(maf_blocks)
+
+
+    DG = nx.DiGraph()
+    DG.add_nodes_from(range(len(maf_blocks)))
+    srcs, src_name_to_ID = _get_sources(maf_blocks)
+
     blocks = {}
     for i, block in enumerate(maf_blocks):
+        DG.nodes[i]['pos'] = (random.randrange(20), random.randrange(20))
+
+        #trzeba określić czy jest większość +, jeśli nie, to obracamy
+        strands = [line.annotations["strand"] for line in block]
+        plus_strands_count = len([strand for strand in strands if strand == 1])
+        minus_strands_count = len([strand for strand in strands if strand == -1])
+
+        #obracanie
+        #uzupelnic
+
+        #dodanie tylko krawedzi +
+        # for line in block:
+        #     if line.annotations["strand"] == 1:
+        #         src = line.name
+        #         next_block_ID =
+
         blocks[i] = [0,0]
         blocks_srcs = []
         for line in block:
@@ -121,6 +188,18 @@ def _uncycle_blocks_simple_version(file_path, print_analysis=True):
         minus = "MINUS" if blocks[i][1] > blocks[i][0] else ""
         src = blocks_srcs[0] if len(blocks_srcs) == 1 else ""
         print("block: {}, +: {}, -:{}, {}, {}".format(i, blocks[i][0], blocks[i][1], minus, src))
+
+    for src in srcs:
+        src_path = get_src_path(src.name, maf_blocks)
+        for i, blockID_start in enumerate(src_path):
+            if i == len(src_path)-1:
+                break
+            left_node = blockID_start[0]
+            right_node = (src_path[i+1])[0]
+            if right_node in list(DG.successors(left_node)):
+                DG[left_node][right_node]['weight'] = DG[left_node][right_node]['weight'] + 1
+            else:
+                DG.add_edge(left_node, right_node, weight=1, active=True)
 
 
 # class Block(object):

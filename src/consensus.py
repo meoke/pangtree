@@ -7,6 +7,10 @@ import po_reader as po_reader
 import po_writer as po_writer
 import time
 
+class SourceCompatibilitesOptions(object):
+    def __init__(self, assigned_consensus_ID, possible_consensusID_to_compatibility):
+        assigned_consensusID = assigned_consensus_ID
+        possible_consensusID_to_compatibility = possible_consensusID_to_compatibility
 
 def process_tree_node(poagraph, tree_node_ID, cutoff_search_range, multiplier, re_consensus, stop):
     def cancel_splitting(message):
@@ -20,6 +24,8 @@ def process_tree_node(poagraph, tree_node_ID, cutoff_search_range, multiplier, r
 
     current_srcs = tree_node_src_IDs
     children_nodes_IDs = []
+
+    src_to_nodeID = {}
     while len(current_srcs):
         print("NOWA")
         #1 find top consensus for all sources
@@ -68,10 +74,12 @@ def process_tree_node(poagraph, tree_node_ID, cutoff_search_range, multiplier, r
                 # new_children_node_comp = min(comp_to_current_srcs)
             # else:
         #wersja bez tego (w razie wrócenia do zakomentowanej - wsunąć do elsa
+
         srcs_to_include = compatible_sources_IDs
         current_srcs = np.setdiff1d(current_srcs, compatible_sources_IDs)
         new_children_node_comp = cutoff_for_node
             #### koniec przesuniecia
+
 
         # add the consensus
         poagraph.add_consensus(max_c, max_consensus_nodes)
@@ -83,6 +91,57 @@ def process_tree_node(poagraph, tree_node_ID, cutoff_search_range, multiplier, r
 
         new_node_ID = poagraph.add_poagraphref(new_node, tree_node_ID)
         children_nodes_IDs.append(new_node_ID)
+
+        for srcID in srcs_to_include:
+            src_to_nodeID[srcID] = new_node_ID
+
+    # if re_consensus then check if some sequences should be reassigned
+
+    for srcID, assigned_consensusID in src_to_nodeID.items():
+        node_ID_to_comp = {}
+        for child_node_ID in children_nodes_IDs:
+            child_node = poagraph._poagraphrefs[child_node_ID]
+            consensus_ID = child_node.consensus_ID
+            possible_src_comp = poagraph.consensuses[consensus_ID].compatibility_to_sources[srcID]
+            node_ID_to_comp[child_node_ID] = possible_src_comp
+
+        current_src_comp = poagraph.consensuses[assigned_consensusID].compatibility_to_sources[srcID]
+        the_best_comp = max(node_ID_to_comp.values())
+        (the_best_comp, the_best_nodeID) =
+        if the_best_comp > current_src_comp:
+            # usun z obecnego węzła
+            # dodaj do nowego węzła
+
+
+
+    for srcID in tree_node_src_IDs:
+        node_ID_to_comp = {}
+        # check consensus ID for the src
+        for child_node_ID in children_nodes_IDs:
+            child_node = poagraph[child_node_ID]
+            consensus_ID = child_node.consensus_ID
+            if srcID in child_node.sources_IDs:
+                current_src_comp = poagraph.consensuses[consensus_ID].compatibility_to_sources[srcID]
+            else:
+                possible_src_comp = poagraph.consensuses[consensus_ID].compatibility_to_sources[srcID]
+                node_ID_to_comp[child_node_ID] = possible_src_comp
+
+        # check if there is better comp in children nodes ids:
+        the_best_comp = max(node_ID_to_comp.values())
+        if current_src_comp < the_best_comp:
+            for nodeID, comp in node_ID_to_comp.items():
+                if comp == the_best_comp:
+                    better_node_ID = nodeID
+            poagraph._poagraphrefs[better_node_ID].sources_IDs.append(srcID)
+            # poagraph._poagraphrefs[]
+
+
+
+
+
+        # consensus_ID =
+        # src_comp_to_currently_assigned_node =
+
 
     return children_nodes_IDs
 
