@@ -13,3 +13,7 @@ class StopExceeded(Exception):
 class CloseProgram(Exception):
     def __init__(self, message):
         self.message = message
+
+class NoSequenceContinuationFound(Exception):
+    def __init__(self, message):
+        self.message = message

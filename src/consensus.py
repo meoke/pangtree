@@ -107,8 +107,8 @@ def process_tree_node(poagraph, tree_node_ID, cutoff_search_range, multiplier, r
 
         current_src_comp = poagraph.consensuses[assigned_consensusID].compatibility_to_sources[srcID]
         the_best_comp = max(node_ID_to_comp.values())
-        (the_best_comp, the_best_nodeID) =
-        if the_best_comp > current_src_comp:
+        # (the_best_comp, the_best_nodeID) =
+        # if the_best_comp > current_src_comp:
             # usun z obecnego węzła
             # dodaj do nowego węzła
 
