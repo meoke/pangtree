@@ -70,19 +70,23 @@ def _uncycle_blocks_version2(file_path: str) -> nx.DiGraph:
     mafblocks_nxgraph = nx.DiGraph()
     sequences = {}
 
-    # dodanie wszystkich bloków, bez krawędzi
+    # dodanie wszystkich bloków, bez krawędzi i bez sekwencji "Anc0"
     maf_blocks = AlignIO.parse(file_path, "maf")
     for i, block in enumerate(maf_blocks):
+        seqrec_to_remove_ID = -1
         for j, seqrec in enumerate(block):
             short_seqname = seqrec.name.split(".")[0]
             if "Anc0" == short_seqname:
-                del block._records[j]
+                seqrec_to_remove_ID = j
                 continue
             try:
                 sequences[short_seqname].append((i, seqrec.annotations["start"]))
             except KeyError:
                 sequences[short_seqname] = [(i, seqrec.annotations["start"])]
+        if seqrec_to_remove_ID != -1:
+            del block._records[seqrec_to_remove_ID]
         mafblocks_nxgraph.add_node(i, mafblock=block)
+
 
     # sortowanie
     for seqname, blockid_start_list in sequences.items():
@@ -94,7 +98,12 @@ def _uncycle_blocks_version2(file_path: str) -> nx.DiGraph:
             short_seqname = seqrec.name.split(".")[0]
 
             try:
-                next_blockID, next_seqrec = _find_next_seqrec(mafblocks_nxgraph, seqrec)
+                next_blockID = _find_next_seqrec(node[0], seqrec, sequences)
+                nextnode = mafblocks_nxgraph.nodes.data()[next_blockID]
+                for seq in nextnode["mafblock"]:
+                    if short_seqname in seq.name:
+                        next_seqrec = seq
+                        break
             except NoSequenceContinuationFound:
                 continue
 
@@ -125,16 +134,25 @@ def _uncycle_blocks_version2(file_path: str) -> nx.DiGraph:
     return mafblocks_nxgraph
 
 
-def _find_next_seqrec(mafblocks_nxgraph: nx.DiGraph, seqrec: AlignIO.MafIO.SeqRecord) -> (int, AlignIO.MafIO.SeqRecord):
+def _find_next_seqrec(current_blockID: int, seqrec: AlignIO.MafIO.SeqRecord, sequences_sorted_by_pos: []) -> int:
     next_seqrec_start = seqrec.annotations["start"] + seqrec.annotations["size"]
     short_seqrecname = seqrec.name.split(".")[0]
-    for n in mafblocks_nxgraph.nodes.data():
-        for s in n[1]["mafblock"]:
-            short_sname = s.name.split(".")[0]
-            if short_seqrecname == short_sname and s.annotations["start"] == next_seqrec_start:
-                return n[0], s
-    raise NoSequenceContinuationFound("Sequence {} has no continuation after {} nucleotide.".format(
-        short_seqrecname, next_seqrec_start-1))
+    seqrec_info = sequences_sorted_by_pos[short_seqrecname]
+    for i, blockID_start in enumerate(seqrec_info):
+        if blockID_start[0] == current_blockID:
+            try:
+                next_blockID = seqrec_info[i+1][0]
+            except Exception:
+                raise NoSequenceContinuationFound("Sequence {} has no continuation after {} nucleotide.".format(
+                    short_seqrecname, next_seqrec_start - 1))
+    return next_blockID
+
+    # for n in mafblocks_nxgraph.nodes.data():
+    #     for s in n[1]["mafblock"]:
+    #         short_sname = s.name.split(".")[0]
+    #         if short_seqrecname == short_sname and s.annotations["start"] == next_seqrec_start:
+    #             return n[0], s
+
 
 #
 # def _uncycle_blocks_version_1(file_path):
