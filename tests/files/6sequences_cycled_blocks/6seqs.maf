@@ -2,7 +2,7 @@
 
 a
 s seq4 3 3 + 11 ATT
-s seq5 0 2 + 7 A-T
+s seq5 0 2 + 7  A-T
 
 a
 s seq0 0 5 + 14 CCGTA
@@ -17,7 +17,7 @@ s seq4 0 3 + 11 -ATT
 
 a
 s seq2 5 3 + 14 TTG
-s seq5 2 2 + 7 -TG
+s seq5 2 2 + 7  -TG
 
 a
 s seq0 9 5 + 14 GTCA-A

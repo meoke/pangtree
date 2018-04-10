@@ -20,19 +20,23 @@ def parse_to_poagraphs(file_path, merge_option, multialignment_name, output_dir)
     # statystyki
 
     # usunięcie cykli z bloków i zachowanie informacji, jak zbudować poagraf(y)
-    mafblocks_nxgraph = _uncycle_blocks_version2(file_path)
-
-    blocks = []
+    mafblocks_nxgraph, sequences = _uncycle_blocks_version2(file_path)
+    poagraphs = []
 
     # budowanie poagrafów
+    for i, component_nodes in enumerate(nx.weakly_connected_components(mafblocks_nxgraph)):
+        subgraph = mafblocks_nxgraph.subgraph(component_nodes)
+        poagraph = POAGraph(name=multialignment_name + '_' + str(i),
+                            title=multialignment_name + '_' + str(i),
+                            path=t.create_child_dir(output_dir, multialignment_name + '_' + str(i)),
+                            version='APRIL')
+        poagraphs.append(_read_poagraph(poagraph, subgraph, sequences))
 
-
-
-    #poagraphs = _read_poagraphs(blocks)
+    return poagraphs
     #maf_blocks = [*AlignIO.parse(file_path, "maf")]
 
     #block_to_merge_ranges = _parse_merge_option_to_ranges(merge_option, len(maf_blocks))
-    poagraphs = []
+    # poagraphs = []
     #todo wykorzystac wiedze z blocks do tworzenia poagraphs
     # for i, r in enumerate(block_to_merge_ranges):
     #     current_range_blocks = [*islice(maf_blocks, r.start, r.stop)]
@@ -43,7 +47,7 @@ def parse_to_poagraphs(file_path, merge_option, multialignment_name, output_dir)
     #     poagraph = _blocks_to_poagraph(poagraph, current_range_blocks)
     #     poagraph.set_sources_weights()
     #     poagraphs.append(poagraph)
-    return poagraphs, blocks
+    # return poagraphs, blocks
 
 
 def _uncycle_blocks_version2(file_path: str) -> nx.DiGraph:
@@ -116,7 +120,7 @@ def _uncycle_blocks_version2(file_path: str) -> nx.DiGraph:
 
     print_data(mafblocks_nxgraph)
     # rozcięcie cykli (przejść krawędzie zaczynając od największej wagi i dodawać do finalnego grafu, jeśli
-    # to nie spowoduje powstania cyklu_
+    # to nie spowoduje powstania cyklu)
     temp_dg = mafblocks_nxgraph.copy()
     all_edges = [(u, v) for (u, v) in temp_dg.edges()]
     temp_dg.remove_edges_from(all_edges)
@@ -131,7 +135,7 @@ def _uncycle_blocks_version2(file_path: str) -> nx.DiGraph:
     mafblocks_nxgraph.remove_edges_from(edges_causing_cycles)
     print_data(mafblocks_nxgraph)
 
-    return mafblocks_nxgraph
+    return mafblocks_nxgraph, sequences
 
 
 def _find_next_seqrec(current_blockID: int, seqrec: AlignIO.MafIO.SeqRecord, sequences_sorted_by_pos: []) -> int:
@@ -152,7 +156,6 @@ def _find_next_seqrec(current_blockID: int, seqrec: AlignIO.MafIO.SeqRecord, seq
     #         short_sname = s.name.split(".")[0]
     #         if short_seqrecname == short_sname and s.annotations["start"] == next_seqrec_start:
     #             return n[0], s
-
 
 #
 # def _uncycle_blocks_version_1(file_path):
@@ -311,9 +314,104 @@ def _find_next_seqrec(current_blockID: int, seqrec: AlignIO.MafIO.SeqRecord, seq
 #     def __str__(self):
 #         return "ID: {0}\nsrcID_to_next_blockID: {1}\nsrcID_to_strand: {2}".format(self.ID, self.srcID_to_next_blockID, self.srcID_to_strand)
 
-def _read_poagraphs(blocks):
-    pass
+def _read_poagraph(poagraph, subgraph, sequences):
+    def add_block(poagraph, nmatrix):
+        column_nodes={}
+        nodes_count = 0
+        for column_ID in range(nmatrix.shape[0]):
+            for row_ID in range(nmatrix.shape[1]):
+                nucl = nucleotides_matrix[column_ID, row_ID]
+                if nucl == nucleotides.code('-'):
+                    continue
+                if nucl not in column_nodes:
+                    column_nodes[nucl]=Node(ID=nodes_count,
+                                            base=nucleotides.decode(nucl))
+                    nodes_count+=1
+                node_id = column_nodes[nucl].ID
 
+                # połączenie do wcześniejszego
+                # do danego węzła trzeba podłączyć jego wcześniejszy
+                # tylko, jeśli mozemy podłączyć (bo mogłą ta krawędź być rozcięta)
+                poagraph.ns[row_ID, node_id] = True
+
+    # dla każdej kolumny
+    # dla każdego wiersza
+    # stworzyć węzeł (odczytać jego literę, nadać ID)
+    # ?# z sequences odczytać, w którym bloku się kończy -> jeśli jest dziura, to zaciągać dane z fasty
+
+    # współrzędne sekwencji:
+    # jeśli w tym bloku się zaczyna - OK
+    # jeśli wg sequences istenieje połączenie tego bloku i jakiegoś już dodanego bloku i w subgraphie takie                         połączenie też jest  - podpiąć
+    # jeśli brakują nukleotydy, bo są nieujęte - zaciągnąć dane z fasty
+
+    # ?# uzupełnić wpis w macierzy połączeń węzłów i sekwencji
+    # oznaczyć te węzły jako zalignowane
+
+    sources_name_to_ID = {}
+    for id, s in enumerate(sorted(sequences.keys())):
+        sources_name_to_ID[s] = id
+
+    # ustalić liczbę sekwencji
+    all_sequences_count = len(sequences)
+
+    # dla każdego bloku w subgraphie, obojętnie jaka kolejność
+    blockid_to_nucleotides_matrix = {}
+    for n in subgraph.nodes.data():
+        blockid = n[0]
+        mafblock = n[1]["mafblock"]
+        # ustalić szerokość bloku (uwaga na same minusy w kolumnie?
+        block_width = len(mafblock[0].seq)
+
+        # stworzyć macierz liczba sekwencji x szerokość bloku
+        nucleotides_matrix = np.zeros(shape=(block_width, all_sequences_count),
+                                      dtype=np.int8)  # zeros because '-' == 0
+
+        # wypełnić macierz nukleotydami
+        for i, line in enumerate(mafblock):
+            # print("\r\t\tLine " + str(j+1) + '/' + str(len(block)), end='')
+            short_sequence_name = line.name.split(".")[0]
+            sequence_source_ID = sources_name_to_ID[line.name]
+            for nucl_ID, nucl_base in enumerate(line.seq):
+                nucleotides_matrix[nucl_ID][sequence_source_ID] = nucleotides.code(nucl_base)
+
+        blockid_to_nucleotides_matrix[blockid] = nucleotides_matrix
+
+    # sprawdzić ile będzie węzłów w sumie
+    nodes_count = 0
+    for nmatrix in blockid_to_nucleotides_matrix.values():
+        for column_ID in range(nmatrix.shape[0]):
+            nodes_count += len(set(nmatrix[column_ID][:]) - set([0]))
+
+    # przygotować macierz połączeń węzłów i sekwencji
+    poagraph.ns = np.zeros(shape=(all_sequences_count, nodes_count), dtype=np.bool)
+
+    # przygotować listę z miejscem na węzły
+    poagraph.nodes = [None] * nodes_count
+
+    # znalezc pierwsze bloki w subgraphie (bez ścieżek wchodzących, równoległe) - je obsłużyć jako pierwsze?
+    blocks_stack = []
+    for blockid in subgraph.nodes:
+        if subgraph.in_degree(blockid) == 0:
+            blocks_stack.append(blockid)
+
+    # dla każdego bloku w subgraphie w kolejności wyznaczanych przez krawędzie!
+    processed_blocks = []
+    while True:
+        next_blocks = []
+        while blocks_stack:
+            blockID_to_convert = blocks_stack.pop()
+            processed_blocks.append(blockID_to_convert)
+            print("procesuje {}".format(blockID_to_convert))
+            poagraph = add_block(poagraph, blockid_to_nucleotides_matrix[blockID_to_convert])
+            next_blocks.extend([start_end[1]
+                                for start_end in subgraph.out_edges(blockID_to_convert)
+                                if start_end[1] not in processed_blocks])
+        if next_blocks == []:
+            break
+        blocks_stack = next_blocks
+
+    return poagraph
+    # poagraph.set_sources_weights()
 
 def _parse_merge_option_to_ranges(merge_option, blocks_count):
     if not merge_option:

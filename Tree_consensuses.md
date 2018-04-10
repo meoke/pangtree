@@ -21,6 +21,8 @@ poa -read_msa \[po_file_path\] -hb -po \[hb_file_path\] blosum80.mat -hbmin \[hb
 - \[hbmin\] - zazwyczaj przujmuję niską wartość (np. 0.2), bo i tak samodzielnie obliczam compatibility aktualnie rozważanych sekwencji względem consensusu wyegenerowanego przez *poa* jako conensus0
 
 ### Algorytm
+Efektem działania algorytmu jest drzewo, w którym węzły zawierają consensus i listę ID sekwencji, które zostały do niego przydzielone. Węzeł jest dzielony na rozłączne podzbiory sekwencji, każdy z nich ma przydzielony własny nowy consensus i w ten sposób zostają zdefiniowani potomkowie.
+
 Węzły są dzielone na coraz mniejsze węzły, tak długo, aż wszystkie sekwencje będą przydzielone do consensusu względem którego ich compatibility przekracza *stop*.
 
 Dla pojedynczego węzła:
