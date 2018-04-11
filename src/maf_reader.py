@@ -393,7 +393,7 @@ def _read_poagraph(poagraph, subgraph, sequences):
         for i, line in enumerate(mafblock):
             # print("\r\t\tLine " + str(j+1) + '/' + str(len(block)), end='')
             short_sequence_name = line.name.split(".")[0]
-            sequence_source_ID = sources_name_to_ID[line.name]
+            sequence_source_ID = sources_name_to_ID[short_sequence_name]
             for nucl_ID, nucl_base in enumerate(line.seq):
                 nmatrix[sequence_source_ID][nucl_ID] = nucleotides.code(nucl_base)
                 # nucleotides_matrix[nucl_ID][sequence_source_ID] = nucleotides.code(nucl_base)
