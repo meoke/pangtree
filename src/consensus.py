@@ -26,8 +26,8 @@ def process_tree_node(poagraph, tree_node_ID, cutoff_search_range, multiplier, r
     children_nodes_IDs = []
 
     src_to_nodeID = {}
+    smallest_comp_up_to_now = 10
     while len(current_srcs):
-        print("NOWA")
         #1 find top consensus for all sources
         c, c_nodes = get_top_consensus(poagraph, current_srcs, hbmin)
 
@@ -46,16 +46,17 @@ def process_tree_node(poagraph, tree_node_ID, cutoff_search_range, multiplier, r
         comp_to_current_srcs = [poagraph.get_comp(max_consensus_nodes, src_ID) for src_ID in current_srcs]
 
         #6 get cutoff based on compatibilties
-        cutoff_for_node = _find_cutoff_for_node(comp_to_current_srcs, multiplier)
+        cutoff_for_node = _find_cutoff_new(comp_to_current_srcs,
+                                                multiplier,
+                                                smallest_comp_up_to_now)
 
         #7 get sources compatible enough to the top consensus
-        compatible_sources_IDs = get_compatible(current_srcs, comp_to_current_srcs, cutoff_for_node,
-                                                re_consensus)
+        compatible_sources_IDs = get_compatible(current_srcs, comp_to_current_srcs, cutoff_for_node)
 
         #8 check if splitting should be continued based on stop condition - moved to the top o
 
         # wersja z próbą utrzymania węzłów na podobnym poziomie
-
+        #TODOCZWARTEK2
             # decide how many sources will be added to the consensus
             # if children_nodes_IDs:
             #     the_smallest_comp_up_to_now = poagraph.get_min_cutoff(children_nodes_IDs) #todo a może jednak max
@@ -78,7 +79,9 @@ def process_tree_node(poagraph, tree_node_ID, cutoff_search_range, multiplier, r
         srcs_to_include = compatible_sources_IDs
         current_srcs = np.setdiff1d(current_srcs, compatible_sources_IDs)
         new_children_node_comp = cutoff_for_node
-            #### koniec przesuniecia
+        if new_children_node_comp < smallest_comp_up_to_now:
+            smallest_comp_up_to_now = new_children_node_comp
+        #### koniec przesuniecia
 
 
         # add the consensus
@@ -95,53 +98,50 @@ def process_tree_node(poagraph, tree_node_ID, cutoff_search_range, multiplier, r
         for srcID in srcs_to_include:
             src_to_nodeID[srcID] = new_node_ID
 
-    # if re_consensus then check if some sequences should be reassigned
+    if re_consensus:
+        pass
+        #then check if some sequences should be reassigned
 
-    for srcID, assigned_consensusID in src_to_nodeID.items():
-        node_ID_to_comp = {}
-        for child_node_ID in children_nodes_IDs:
-            child_node = poagraph._poagraphrefs[child_node_ID]
-            consensus_ID = child_node.consensus_ID
-            possible_src_comp = poagraph.consensuses[consensus_ID].compatibility_to_sources[srcID]
-            node_ID_to_comp[child_node_ID] = possible_src_comp
-
-        current_src_comp = poagraph.consensuses[assigned_consensusID].compatibility_to_sources[srcID]
-        the_best_comp = max(node_ID_to_comp.values())
-        # (the_best_comp, the_best_nodeID) =
-        # if the_best_comp > current_src_comp:
-            # usun z obecnego węzła
-            # dodaj do nowego węzła
-
-
-
-    for srcID in tree_node_src_IDs:
-        node_ID_to_comp = {}
-        # check consensus ID for the src
-        for child_node_ID in children_nodes_IDs:
-            child_node = poagraph[child_node_ID]
-            consensus_ID = child_node.consensus_ID
-            if srcID in child_node.sources_IDs:
-                current_src_comp = poagraph.consensuses[consensus_ID].compatibility_to_sources[srcID]
-            else:
-                possible_src_comp = poagraph.consensuses[consensus_ID].compatibility_to_sources[srcID]
-                node_ID_to_comp[child_node_ID] = possible_src_comp
-
-        # check if there is better comp in children nodes ids:
-        the_best_comp = max(node_ID_to_comp.values())
-        if current_src_comp < the_best_comp:
-            for nodeID, comp in node_ID_to_comp.items():
-                if comp == the_best_comp:
-                    better_node_ID = nodeID
-            poagraph._poagraphrefs[better_node_ID].sources_IDs.append(srcID)
+    #TODOCZWARTEK1
+    # for srcID, assigned_consensusID in src_to_nodeID.items():
+    #     node_ID_to_comp = {}
+    #     for child_node_ID in children_nodes_IDs:
+    #         child_node = poagraph._poagraphrefs[child_node_ID]
+    #         consensus_ID = child_node.consensus_ID
+    #         possible_src_comp = poagraph.consensuses[consensus_ID].compatibility_to_sources[srcID]
+    #         node_ID_to_comp[child_node_ID] = possible_src_comp
+    #
+    #     current_src_comp = poagraph.consensuses[assigned_consensusID].compatibility_to_sources[srcID]
+    #     the_best_comp = max(node_ID_to_comp.values())
+    #     # (the_best_comp, the_best_nodeID) =
+    #     # if the_best_comp > current_src_comp:
+    #         # usun z obecnego węzła
+    #         # dodaj do nowego węzła
+    #
+    #
+    #
+    # for srcID in tree_node_src_IDs:
+    #     node_ID_to_comp = {}
+    #     # check consensus ID for the src
+    #     for child_node_ID in children_nodes_IDs:
+    #         child_node = poagraph[child_node_ID]
+    #         consensus_ID = child_node.consensus_ID
+    #         if srcID in child_node.sources_IDs:
+    #             current_src_comp = poagraph.consensuses[consensus_ID].compatibility_to_sources[srcID]
+    #         else:
+    #             possible_src_comp = poagraph.consensuses[consensus_ID].compatibility_to_sources[srcID]
+    #             node_ID_to_comp[child_node_ID] = possible_src_comp
+    #
+    #     # check if there is better comp in children nodes ids:
+    #     the_best_comp = max(node_ID_to_comp.values())
+    #     if current_src_comp < the_best_comp:
+    #         for nodeID, comp in node_ID_to_comp.items():
+    #             if comp == the_best_comp:
+    #                 better_node_ID = nodeID
+    #         poagraph._poagraphrefs[better_node_ID].sources_IDs.append(srcID)
             # poagraph._poagraphrefs[]
-
-
-
-
-
         # consensus_ID =
         # src_comp_to_currently_assigned_node =
-
 
     return children_nodes_IDs
 
@@ -164,12 +164,46 @@ def get_top_consensus(poagraph, sources_IDs, hbmin):
     return consensus0, consensus_actual_nodes
 
 
-def get_compatible(poagraphref_srcs_IDs, compatibilities, cutoff_for_node, re_consensus):
+def get_compatible(poagraphref_srcs_IDs, compatibilities, cutoff_for_node):
     #todo użyć re_consensensusu
-    return poagraphref_srcs_IDs[np.where(compatibilities>=cutoff_for_node)]
+    indexes = np.where(compatibilities>=cutoff_for_node)
+    return poagraphref_srcs_IDs[indexes]
+
+def _find_cutoff_new(compatibilities, multiplier, smallest_comp_up_to_now):
+    #dołożenie najmniejszego comp do tej pory
+    values_to_search_for_cutoff = compatibilities.copy()
+    if smallest_comp_up_to_now != 10:
+        values_to_search_for_cutoff.append(smallest_comp_up_to_now)
+
+    #policzyć średnie odległości na całej osi
+    sorted_compatibilities = sorted(values_to_search_for_cutoff)
+    distances = [abs(sorted_compatibilities[i + 1] - sorted_compatibilities[i]) for i in range(len(sorted_compatibilities) - 1)]
+    mean_distance = t.mean(distances)
+
+    #sprawdzić pierwsze przekroczenie na kawałku [0;smallest_comp_up_to_now]
+    if smallest_comp_up_to_now != 10:
+        range_end = sorted_compatibilities.index(smallest_comp_up_to_now)
+    else:
+        range_end = len(sorted_compatibilities)
+
+    level_boundary = mean_distance * multiplier
+    for i in range(len(sorted_compatibilities[0:range_end]) - 1):
+        if sorted_compatibilities[i + 1] - sorted_compatibilities[i] >= level_boundary:
+                return sorted_compatibilities[i + 1]
+
+    if range_end < len(sorted_compatibilities):
+        return sorted_compatibilities[range_end]
+    else:
+        return sorted_compatibilities[-1]
 
 
-def _find_cutoff_for_node(compatibilities, multiplier):
+        #if nie ma:
+        # return pierwszą wartość za smallest comp
+        #else:
+        # return prawą granicę przedziału z przekroczeniem
+
+
+def _find_cutoff_for_node(compatibilities, multiplier, smallest_comp_up_to_now):
     #todo przyjrzeć się i zrobić testy
     sorted_compatibilities = sorted(compatibilities)
     distances = [abs(compatibilities[i+1] - compatibilities[i]) for i in range(len(compatibilities)-1)]
@@ -181,7 +215,7 @@ def _find_cutoff_for_node(compatibilities, multiplier):
     for i in range(len(compatibilities)-1):
         if sorted_compatibilities[i+1] - sorted_compatibilities[i] >= level_boundary:
             return sorted_compatibilities[i+1]
-    print("NO TRESHOLD FOUND UWAGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+    print("NO TRESHOLD FOUND UWAGA")
     print("Compatibilities:")
     print(compatibilities)
     print("Multiplier:")
@@ -194,6 +228,7 @@ def _find_cutoff_for_node(compatibilities, multiplier):
 
 def _find_max_cutoff(compatibilities, cutoff_search_range):
     #todo przeanalizować dokładniej i zrobić testy
+    #todo a może wyrzucić cutoff search range i po prostu szukać największej zmiany? porównać wyniki.
     min_search_idx = round((len(compatibilities)-1) * cutoff_search_range[0]/100)
     max_search_idx = round((len(compatibilities)-1) * cutoff_search_range[1]/100)
     compatibilities_to_be_searched = sorted(compatibilities)[min_search_idx: max_search_idx]

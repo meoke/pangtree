@@ -40,8 +40,8 @@ def convert(args):
     except ValueError:
         parser.error('HBMIN and MIN_COMP must be a float in range [0,1].')
 
-    if args.data != 'ebola' and args.data != 'mycoplasma':
-        parser.error('METAVAR must be \'ebola\' or \'mycoplasma\'')
+    if args.data != 'ebola' and args.data != 'mycoplasma' and args.data != "":
+        parser.error('METAVAR must be \'ebola\' or \'mycoplasma\' or empty string')
 
     file_abs_path = os.path.abspath(args.f)
     # try:
@@ -127,7 +127,7 @@ parser_converter.add_argument('-draw',
 parser_converter.add_argument('-data',
                               metavar="DATATYPE",
                               required=True,
-                              help='ebola or mycoplasma')
+                              help='ebola or mycoplasma or empty string')
 parser_converter.add_argument('-blocks',
                               action='store_true',
                               required=False,

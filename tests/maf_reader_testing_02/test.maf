@@ -1,0 +1,12 @@
+#maf version=1 scoring=roast.v3.3
+a score=1
+s test.seq0 0 2 + 3 -TG
+s test.seq1 0 1 + 3 C--
+
+a score=1
+s test.seq2 0 1 + 4 T
+s test.seq0 2 1 + 3 T
+
+a score=1
+s test.seq1 1 2 + 3 T-A-
+s test.seq2 1 3 + 4 GA-C

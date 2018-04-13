@@ -26,7 +26,7 @@ def parse_to_poagraphs(file_path, merge_option, multialignment_name, output_dir)
     # budowanie poagrafów
     for i, component_nodes in enumerate(nx.weakly_connected_components(mafblocks_nxgraph)):
         subgraph = mafblocks_nxgraph.subgraph(component_nodes)
-        poagraph = POAGraph(name=multialignment_name + '_' + str(i),
+        poagraph = POAGraph(name=multialignment_name,
                             title=multialignment_name + '_' + str(i),
                             path=t.create_child_dir(output_dir, multialignment_name + '_' + str(i)),
                             version='APRIL')
@@ -321,7 +321,7 @@ def _read_poagraph(poagraph, subgraph, sequences):
         sequences_nodes = {srcID: [] for srcID in range(nmatrix.shape[0])}
         for column_ID in range(nmatrix.shape[1]):
             for row_ID in range(nmatrix.shape[0]):
-                 # dla każdego wiersza
+                # dla każdego wiersza
                 # stworzyc wezel - litera, ID
                 nucl = nmatrix[row_ID, column_ID]
                 if nucl == nucleotides.code('-'):
@@ -333,14 +333,19 @@ def _read_poagraph(poagraph, subgraph, sequences):
                     nextnodeid+=1
 
                 sequences_nodes[row_ID].append(column_nodes[nucl].ID)
-                if source_to_its_last_node_ID[row_ID] != -1:
+                if source_to_its_last_node_ID[row_ID] != -1: # czemu 238 nie weszło do 254?
                     column_nodes[nucl].add_in_node([source_to_its_last_node_ID[row_ID]])
-                source_to_its_last_node_ID[row_ID] = nextnodeid-1
+                # source_to_its_last_node_ID[row_ID] = nextnodeid-1
+                source_to_its_last_node_ID[row_ID] = column_nodes[nucl].ID
 
                 # połączenie do wcześniejszego
                 # do danego węzła trzeba podłączyć jego wcześniejszy
                 # tylko, jeśli mozemy podłączyć (bo mogłą ta krawędź być rozcięta)
-                poagraph.ns[row_ID, nextnodeid-1] = True
+                try:
+                    #poagraph.ns[row_ID, nextnodeid-1] = True
+                    poagraph.ns[row_ID, column_nodes[nucl].ID] = True
+                except:
+                    print("poagraph.ns[row_ID, nextnodeid-1] = True")
                 # if column_ID == 0:
                 #     seqs[]
             sorted_column_nodes = sorted([*column_nodes.values()], key=lambda node: node.ID)
@@ -368,8 +373,11 @@ def _read_poagraph(poagraph, subgraph, sequences):
     # oznaczyć te węzły jako zalignowane
 
     sources_name_to_ID = {}
+
     for id, s in enumerate(sorted(sequences.keys())):
         sources_name_to_ID[s] = id
+        source = Source(ID=id, name=s, title=s)
+        poagraph.add_source(source)
 
     # ustalić liczbę sekwencji
     all_sequences_count = len(sequences)
@@ -407,7 +415,9 @@ def _read_poagraph(poagraph, subgraph, sequences):
             nodes_count += len(set(nmatrix[:,column_ID]) - set([0]))
 
     # przygotować macierz połączeń węzłów i sekwencji
+    print("All nodes count: {}".format(nodes_count))
     poagraph.ns = np.zeros(shape=(all_sequences_count, nodes_count), dtype=np.bool)
+    print(nodes_count)
 
     # przygotować listę z miejscem na węzły
     poagraph.nodes = [None] * nodes_count
@@ -450,6 +460,7 @@ def _read_poagraph(poagraph, subgraph, sequences):
 
         print(s)
 
+    poagraph.set_sources_weights()
     return poagraph
     # poagraph.set_sources_weights()
 

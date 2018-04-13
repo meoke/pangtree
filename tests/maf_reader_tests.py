@@ -35,8 +35,8 @@ class MafReaderTests(unittest.TestCase):
           'all',
     ['#maf version=1 scoring=roast.v3.3'
     ,'a score=1.0'
-    ,'s source1 0 2 + 6 AC-'
     ,'s source2 0 3 + 5 ACT'
+    ,'s source1 0 2 + 6 AC-'
     , ''
     ,'a score=2.0'
     ,'s source1 3 4 + 6 GGTC'
@@ -85,33 +85,34 @@ class MafReaderTests(unittest.TestCase):
          "all",
          ["#maf version=1 scoring=roast.v3.3",
           "a score=1",
-          "s test.seq0 0 2 + 3 -TG",
-          "s test.seq1 0 1 + 3 C--",
+          "s testseq0 0 2 + 3 -TG",
+          "s testseq1 0 1 + 3 C--",
           "",
           "a score=1",
-          "s test.seq2 0 1 + 4 T",
-          "s test.seq0 2 1 + 3 T",
+          "s testseq2 0 1 + 4 T",
+          "s testseq0 2 1 + 3 T",
           "",
           "a score=1",
-          "s test.seq1 1 2 + 3 T-A-",
-          "s test.seq2 1 3 + 4 GA-C"],
-         [Source(ID=0, name='test.seq0', title='test.seq0',  weight=100),
-          Source(ID=1, name='test.seq1', title='test.seq1', weight=0),
-          Source(ID=2, name='test.seq2', title='test.seq2',  weight=75)
+          "s testseq1 1 2 + 3 T-A-",
+          "s testseq2 1 3 + 4 GA-C"],
+         [Source(ID=0, name='testseq0', title='testseq0',  weight=100),
+          Source(ID=1, name='testseq1', title='testseq1', weight=0),
+          Source(ID=2, name='testseq2', title='testseq2',  weight=75)
           ],
          [Node(ID=0, base='C', in_nodes=np.array([]), aligned_to=None, consensuses_count=0),
           Node(ID=1, base='T', in_nodes=np.array([]), aligned_to=None, consensuses_count=0),
           Node(ID=2, base='G', in_nodes=np.array([1]), aligned_to=None, consensuses_count=0),
-          Node(ID=3, base='T', in_nodes=np.array([2]), aligned_to=None, consensuses_count=0),
-          Node(ID=4, base='T', in_nodes=np.array([0]), aligned_to=5, consensuses_count=0),
-          Node(ID=5, base='G', in_nodes=np.array([3]), aligned_to=4, consensuses_count=0),
-          Node(ID=6, base='A', in_nodes=np.array([5]), aligned_to=None, consensuses_count=0),
-          Node(ID=7, base='A', in_nodes=np.array([4]), aligned_to=None, consensuses_count=0),
-          Node(ID=8, base='C', in_nodes=np.array([6]), aligned_to=None, consensuses_count=0)
+
+          Node(ID=3, base='T', in_nodes=np.array([0]), aligned_to=4, consensuses_count=0),
+          Node(ID=4, base='G', in_nodes=np.array([8]), aligned_to=3, consensuses_count=0),
+          Node(ID=5, base='A', in_nodes=np.array([4]), aligned_to=None, consensuses_count=0),
+          Node(ID=6, base='A', in_nodes=np.array([3]), aligned_to=None, consensuses_count=0),
+          Node(ID=7, base='C', in_nodes=np.array([5]), aligned_to=None, consensuses_count=0),
+          Node(ID=8, base='T', in_nodes=np.array([2]), aligned_to=None, consensuses_count=0),
           ],
-         np.array([[False, True, True, True, False, False, False, False, False],
-                  [True, False, False, False, True, False, False, True, False],
-                  [False, False, False, True, False, True, True, False, True]])
+         np.array([[False, True, True, False, False, False, False, False, True],
+                  [True, False, False, True, False, False, True, False, False],
+                  [False, False, False, False, True, True, False, True, True]])
          )
     )
     @unpack
@@ -121,7 +122,7 @@ class MafReaderTests(unittest.TestCase):
         poagraphs = maf_reader.parse_to_poagraphs(str(self.maf_path), merge_option, 'test', toolkit.get_parentdir_name(self.maf_path))
         expected_poagraph = POAGraph(name='test',
                                      title='test_0',
-                                     version='NOVEMBER',
+                                     version='APRIL',
                                      path='',
                                      sources = sources,
                                      consensuses = [],

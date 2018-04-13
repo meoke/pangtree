@@ -24,7 +24,7 @@ class Multialignment(object):
 
         self.name = self._get_multialignment_name(maf_file_path)
         self.output_dir = self._get_output_dir(maf_file_path)
-        self.poagraphs, self.blocks_graph = maf_reader.parse_to_poagraphs(file_path=maf_file_path,
+        self.poagraphs = maf_reader.parse_to_poagraphs(file_path=maf_file_path,
                                                                        merge_option=merge_option,
                                                                        multialignment_name=self.name,
                                                                        output_dir=self.output_dir)
