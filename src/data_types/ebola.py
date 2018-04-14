@@ -187,7 +187,11 @@ def get_ebola_group_name(ebola_code):
 
 
 def extract_ebola_code_part(original_ebola_src_name, index):
-    return original_ebola_src_name.split('.')[index]
+    try:
+        return original_ebola_src_name.split('.')[index]
+    except:
+        return original_ebola_src_name
+        # raise Exception()
 
 
 def get_ebola_code_for_group(ebola_group_name):

@@ -170,31 +170,58 @@ def get_compatible(poagraphref_srcs_IDs, compatibilities, cutoff_for_node):
     return poagraphref_srcs_IDs[indexes]
 
 def _find_cutoff_new(compatibilities, multiplier, smallest_comp_up_to_now):
-    #dołożenie najmniejszego comp do tej pory
-    values_to_search_for_cutoff = compatibilities.copy()
-    if smallest_comp_up_to_now != 10:
+    multiplier = 2
+    if smallest_comp_up_to_now == 10:
+        # wersja jak jeszcze nie jest wyznaczone smallest_comp_up_to_now
+        sorted_compatibilities = sorted(compatibilities)
+        distances = [abs(sorted_compatibilities[i + 1] - sorted_compatibilities[i]) for i in
+                     range(len(sorted_compatibilities) - 1)]
+        mean_distance = t.mean(distances)
+        level_boundary = mean_distance * multiplier
+        for i in range(len(sorted_compatibilities) - 1):
+            if sorted_compatibilities[i + 1] - sorted_compatibilities[i] >= level_boundary:
+                return sorted_compatibilities[i + 1]
+        for i in range(len(sorted_compatibilities) - 1):
+            if sorted_compatibilities[i + 1] - sorted_compatibilities[i] >= mean_distance:
+                return sorted_compatibilities[i + 1]
+    else:
+        # wersja dla kolejnych wyznaczanych braci w węźle
+        # dołożenie najmniejszego comp do tej pory
+        values_to_search_for_cutoff = compatibilities.copy()
         values_to_search_for_cutoff.append(smallest_comp_up_to_now)
 
-    #policzyć średnie odległości na całej osi
-    sorted_compatibilities = sorted(values_to_search_for_cutoff)
-    distances = [abs(sorted_compatibilities[i + 1] - sorted_compatibilities[i]) for i in range(len(sorted_compatibilities) - 1)]
-    mean_distance = t.mean(distances)
+        #policzyć średnie odległości na całej osi
+        sorted_compatibilities = sorted(values_to_search_for_cutoff)
+        distances = [abs(sorted_compatibilities[i + 1] - sorted_compatibilities[i]) for i in range(len(sorted_compatibilities) - 1)]
+        mean_distance = t.mean(distances)
 
-    #sprawdzić pierwsze przekroczenie na kawałku [0;smallest_comp_up_to_now]
-    if smallest_comp_up_to_now != 10:
+        #sprawdzić pierwsze przekroczenie na kawałku [0;smallest_comp_up_to_now]
         range_end = sorted_compatibilities.index(smallest_comp_up_to_now)
-    else:
-        range_end = len(sorted_compatibilities)
 
-    level_boundary = mean_distance * multiplier
-    for i in range(len(sorted_compatibilities[0:range_end]) - 1):
-        if sorted_compatibilities[i + 1] - sorted_compatibilities[i] >= level_boundary:
+        # dołożony comp jest przed wszystkimi compatibilities, zwracamy pierwszy za nim:
+        if range_end == 0:
+            return sorted_compatibilities[range_end+1]
+
+        # dołożony comp jest za wszystkimi compatibilities - to problem, na razie rzucam wyjątek
+        if range_end == len(compatibilities):
+            raise Exception("dołożony comp jest za wszystkimi compatibilities")
+
+        #dołożony comp jest gdzieś w środku - szukamy przekroczenia na przedziale [0;nowycomp]
+        # tutaj to ładnie napisać :)
+        level_boundary = mean_distance * multiplier
+        for i in range(len(sorted_compatibilities[0:range_end]) - 1):
+            diff = sorted_compatibilities[i + 1] - sorted_compatibilities[i]
+            if diff >= level_boundary:
                 return sorted_compatibilities[i + 1]
-
-    if range_end < len(sorted_compatibilities):
         return sorted_compatibilities[range_end]
-    else:
-        return sorted_compatibilities[-1]
+    raise Exception("No treshold found")
+    # if range_end == 0:
+    #     return sorted_compatibilities[range_end+1]
+    #
+    # if range_end < len(sorted_compatibilities):
+    #     return sorted_compatibilities[range_end]
+    # else:
+    #     return sorted_compatibilities[-1]
 
 
         #if nie ma:

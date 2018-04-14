@@ -181,8 +181,8 @@ def save_as_po(poagraph, sources_IDs):
                 n = poagraph.nodes[n.aligned_to]
             A_to_return = "A" + str(nodes['temp_ID'][all_aligned[0]]) if all_aligned else ''
 
-            # return "".join([node.base.lower(), ':',
-            return "".join([node.base, ':',
+            return "".join([node.base.lower(), ':',
+            # return "".join([node.base, ':',
                             L_to_return,
                             S_to_return,
                             A_to_return,

@@ -1,7 +1,10 @@
 from subprocess import run
 _mycoplasma_groups_dictionary = {0: '0', #brak grupy
                                  1: '1',
-                                 2: '2'
+                                 2: '2',
+                                 3: '3',
+                                 4: '4',
+                                 5: '5'
                                 }
 
 _mycoplasma_dictionary = {
@@ -45,13 +48,21 @@ _mycoplasma_dictionary = {
     'GCF_000319655': ('Mycoplasma pneumoniae', 'PO1', 'NZ_CP010551.1',0),
     'GCF_002128205': ('Mycoplasma pneumoniae', '1006', 'NZ_CP017337.1',0),
     'GCF_002128285': ('Mycoplasma pneumoniae', 'GA3', 'NZ_CP017336.1',0),
-    'GCF_001901705': ('Mycoplasma pneumoniae', 'FH2009', 'NZ_CP017327.1',0),
-    'GCF_000387745': ('Mycoplasma pneumoniae', '19294', 'NZ_CP010539.1',0),
-    'GCF_002128085': ('Mycoplasma pneumoniae', 'RI3', 'NZ_CP017340.1',0),
-    'GCF_002128005': ('Mycoplasma pneumoniae', 'E57', 'NZ_CP017329.1',0),
-    'GCF_002128265': ('Mycoplasma pneumoniae', '519', 'NZ_CP017339.1',0),
-    'GCF_002128125': ('Mycoplasma pneumoniae', 'CO3', 'NZ_CP017342.1',0),
-    'GCF_000733995': ('Mycoplasma pneumoniae', 'M29', 'NZ_CP008895.1', 2)
+    'GCF_001901705': ('Mycoplasma pneumoniae', 'FH2009', 'NZ_CP017327.1', 0),
+    'GCF_000387745': ('Mycoplasma pneumoniae', '19294', 'NZ_CP010539.1', 0),
+    'GCF_002128085': ('Mycoplasma pneumoniae', 'RI3', 'NZ_CP017340.1', 0),
+    'GCF_002128005': ('Mycoplasma pneumoniae', 'E57', 'NZ_CP017329.1', 0),
+    'GCF_002128265': ('Mycoplasma pneumoniae', '519', 'NZ_CP017339.1', 0),
+    'GCF_002128125': ('Mycoplasma pneumoniae', 'CO3', 'NZ_CP017342.1', 0),
+    'GCF_000733995': ('Mycoplasma pneumoniae', 'M29', 'NZ_CP008895.1', 2),
+    'C267': ('Mycoplasma pneumoniae', 'C267', 'NZ_CP014267.1', 3),
+    '54089': ('Mycoplasma pneumoniae', '54089', 'NZ_CP010542.1', 3),
+    'M2192': ('Mycoplasma pneumoniae', 'M2192', 'NZ_CP010548.1', 3),
+    'M2592': ('Mycoplasma pneumoniae', 'M2592', 'NZ_CP010549.1', 3),
+    'M6320': ('Mycoplasma genitalium', 'M6320', 'NC_018497.1', 4),
+    'M2321': ('Mycoplasma genitalium', 'M2321', 'NC_018495.1', 4),
+    'CA06_2006_052-5-2P': ('Mycoplasma gallisepticum', 'CA06_2006_052-5-2P' ,'NC_018412.1', 5),
+    'S6': ('Mycoplasma gallisepticum', 'S6' ,'NC_023030.2', 5),
 }
 
 def extract_ebola_code_part(original_ebola_src_name, index):
@@ -60,7 +71,10 @@ def extract_ebola_code_part(original_ebola_src_name, index):
 
 def get_strain_name(src_name):
     genbankID = src_name.split('.')[0]
-    return _mycoplasma_dictionary[genbankID][1]
+    try:
+        return _mycoplasma_dictionary[genbankID][1]
+    except:
+        return src_name
 
 def get_group_name(src_name):
     genbankID = src_name.split('.')[0]

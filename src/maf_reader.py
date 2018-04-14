@@ -315,14 +315,14 @@ def _find_next_seqrec(current_blockID: int, seqrec: AlignIO.MafIO.SeqRecord, seq
 #         return "ID: {0}\nsrcID_to_next_blockID: {1}\nsrcID_to_strand: {2}".format(self.ID, self.srcID_to_next_blockID, self.srcID_to_strand)
 
 def _read_poagraph(poagraph, subgraph, sequences):
-    def add_block(poagraph, nmatrix, piesek, nextnodeid, blockID):
+    def add_block(poagraph, nmatrix, piesek, currentnodeid, blockID, brakuje):
         column_nodes = {}
         source_to_its_last_node_ID = {source_ID: -1 for source_ID in range(nmatrix.shape[0])}
         sequences_nodes = {srcID: [] for srcID in range(nmatrix.shape[0])}
+        nextnodeid = currentnodeid
+        block_nodes = 0
         for column_ID in range(nmatrix.shape[1]):
             for row_ID in range(nmatrix.shape[0]):
-                # dla każdego wiersza
-                # stworzyc wezel - litera, ID
                 nucl = nmatrix[row_ID, column_ID]
                 if nucl == nucleotides.code('-'):
                     continue
@@ -331,36 +331,31 @@ def _read_poagraph(poagraph, subgraph, sequences):
                     column_nodes[nucl]=Node(ID=nextnodeid,
                                             base=nucleotides.decode(nucl))
                     nextnodeid+=1
+                    block_nodes +=1
 
                 sequences_nodes[row_ID].append(column_nodes[nucl].ID)
-                if source_to_its_last_node_ID[row_ID] != -1: # czemu 238 nie weszło do 254?
+                if source_to_its_last_node_ID[row_ID] != -1:
                     column_nodes[nucl].add_in_node([source_to_its_last_node_ID[row_ID]])
-                # source_to_its_last_node_ID[row_ID] = nextnodeid-1
                 source_to_its_last_node_ID[row_ID] = column_nodes[nucl].ID
 
-                # połączenie do wcześniejszego
-                # do danego węzła trzeba podłączyć jego wcześniejszy
-                # tylko, jeśli mozemy podłączyć (bo mogłą ta krawędź być rozcięta)
                 try:
-                    #poagraph.ns[row_ID, nextnodeid-1] = True
                     poagraph.ns[row_ID, column_nodes[nucl].ID] = True
                 except:
-                    print("poagraph.ns[row_ID, nextnodeid-1] = True")
-                # if column_ID == 0:
-                #     seqs[]
+                    print("ech")
+
+
             sorted_column_nodes = sorted([*column_nodes.values()], key=lambda node: node.ID)
             for i, node in enumerate(sorted_column_nodes):
                 if not len(sorted_column_nodes) == 1:
                     node.aligned_to = sorted_column_nodes[(i + 1) % len(column_nodes)].ID
                 poagraph.nodes[node.ID] = node
+
             column_nodes = {}
 
         for srcid in piesek.keys():
             if sequences_nodes[srcid]:
-                piesek[srcid][blockID] = (sequences_nodes[srcid][0],
-                                        sequences_nodes[srcid][-1])
-        return poagraph, nextnodeid, piesek
-
+                piesek[srcid][blockID] = (sequences_nodes[srcid][0], sequences_nodes[srcid][-1])
+        return poagraph, block_nodes, piesek, brakuje
 
     # ?# z sequences odczytać, w którym bloku się kończy -> jeśli jest dziura, to zaciągać dane z fasty
 
@@ -368,9 +363,6 @@ def _read_poagraph(poagraph, subgraph, sequences):
     # jeśli w tym bloku się zaczyna - OK
     # jeśli wg sequences istenieje połączenie tego bloku i jakiegoś już dodanego bloku i w subgraphie takie połączenie też jest  - podpiąć
     # jeśli brakują nukleotydy, bo są nieujęte - zaciągnąć dane z fasty
-
-    # ?# uzupełnić wpis w macierzy połączeń węzłów i sekwencji
-    # oznaczyć te węzły jako zalignowane
 
     sources_name_to_ID = {}
 
@@ -393,10 +385,7 @@ def _read_poagraph(poagraph, subgraph, sequences):
 
         # stworzyć macierz liczba sekwencji x szerokość bloku
         nmatrix = np.zeros(shape=(all_sequences_count, block_width), dtype=np.int8)
-        # nucleotides_matrix = np.zeros(shape=(block_width, all_sequences_count),
-        #                               dtype=np.int8)  # zeros because '-' == 0
 
-        block_sequencesIDs_list = []
         # wypełnić macierz nukleotydami
         for i, line in enumerate(mafblock):
             # print("\r\t\tLine " + str(j+1) + '/' + str(len(block)), end='')
@@ -404,7 +393,6 @@ def _read_poagraph(poagraph, subgraph, sequences):
             sequence_source_ID = sources_name_to_ID[short_sequence_name]
             for nucl_ID, nucl_base in enumerate(line.seq):
                 nmatrix[sequence_source_ID][nucl_ID] = nucleotides.code(nucl_base)
-                # nucleotides_matrix[nucl_ID][sequence_source_ID] = nucleotides.code(nucl_base)
 
         blockid_to_nucleotides_matrix[blockid] = nmatrix
 
@@ -433,20 +421,28 @@ def _read_poagraph(poagraph, subgraph, sequences):
     processed_blocks = []
     piesek = {srcid:{} for srcid in range(len(sequences))}
     nextnodeid = 0
+    brakuje = 0
+    current_nodes_added_count = 0
     while True:
         next_blocks = []
         while blocks_stack:
             blockID_to_convert = blocks_stack.pop()
             processed_blocks.append(blockID_to_convert)
             print("procesuje {}".format(blockID_to_convert))
-            poagraph, nextnodeid, piesek = add_block(poagraph, blockid_to_nucleotides_matrix[blockID_to_convert], piesek, nextnodeid, blockID_to_convert)
-            next_blocks.extend([start_end[1]
-                                for start_end in subgraph.out_edges(blockID_to_convert)
-                                if start_end[1] not in processed_blocks])
+            poagraph, added_nodes, piesek, brakuje = add_block(poagraph, blockid_to_nucleotides_matrix[blockID_to_convert], piesek, current_nodes_added_count, blockID_to_convert, brakuje)
+            current_nodes_added_count += added_nodes
+            for start_end in subgraph.out_edges(blockID_to_convert):
+                if start_end[1] not in processed_blocks:
+                    next_blocks.append(start_end[1])
+            # next_blocks.extend([start_end[1]
+            #                     for start_end in subgraph.out_edges(blockID_to_convert)
+            #                     if start_end[1] not in processed_blocks])
+        processed_blocks.extend(next_blocks)
         if next_blocks == []:
             break
         blocks_stack = next_blocks
 
+    print(brakuje)
     # dodac krawedzie pomiedzy blokami, tam gdzie mozna (istnieją i są potrzebne)
     for srcname, srcblocks in sequences.items():
         srcid = sources_name_to_ID[srcname]
@@ -456,7 +452,10 @@ def _read_poagraph(poagraph, subgraph, sequences):
                     #id ostatniego wezla srcid w srcbklocks[i] i pierwszego w srcblocks[i+1]
                     right_node_id = piesek[srcid][srcblocks[i+1][0]][0]
                     left_node_id = piesek[srcid][srcblocks[i][0]][1]
-                    poagraph.nodes[right_node_id].add_in_node(left_node_id)
+                    try:
+                        poagraph.nodes[right_node_id].add_in_node(left_node_id)
+                    except:
+                        pass
 
         print(s)
 
