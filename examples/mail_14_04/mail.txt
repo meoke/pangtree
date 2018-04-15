@@ -1,0 +1,20 @@
+Norbert mail.
+
+Plakat:
+Introduction, Acknowledgements, Graph Idea - drobne zmiany
+Future Work - wspomniałam o obsłudze cykli.
+References - dorzuciłam link do bazy Patric
+
+
+todo
+M2321 i M6320 mogłyby się jeszcze razem spotkać
+
+wizualizacja:
+1) nadanie nazw sekcjom
+2) opis węzłów: ID, min_compatibility, sequences ids
+3) drzewo:
+	- różnicowanie rozmiarów węzłów w zależności od liczby sekwencji w nich
+	- prawidłowe określenie długości gałęzi drzewa
+
+plakat:
+1) 
