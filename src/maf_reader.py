@@ -432,11 +432,9 @@ def _read_poagraph(poagraph, subgraph, sequences):
             poagraph, added_nodes, piesek, brakuje = add_block(poagraph, blockid_to_nucleotides_matrix[blockID_to_convert], piesek, current_nodes_added_count, blockID_to_convert, brakuje)
             current_nodes_added_count += added_nodes
             for start_end in subgraph.out_edges(blockID_to_convert):
-                if start_end[1] not in processed_blocks:
+                if start_end[1] not in processed_blocks and start_end[1] not in next_blocks and start_end[1] not in blocks_stack:
                     next_blocks.append(start_end[1])
-            # next_blocks.extend([start_end[1]
-            #                     for start_end in subgraph.out_edges(blockID_to_convert)
-            #                     if start_end[1] not in processed_blocks])
+
         processed_blocks.extend(next_blocks)
         if next_blocks == []:
             break
