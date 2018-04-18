@@ -79,10 +79,10 @@ A powerful way to achieve this result is to use graph representation of multiple
 %	GRAPH REPRESENTATION
 %----------------------------------------------------------------------------------------
 
-\headerbox{Graph idea}{name=graph,column=0,below=introduction}{
+\headerbox{POA graph}{name=graph,column=0,below=introduction}{
 
 \begin{description}
-\item[Graph representation] of multiple alignment is based on partial order alignment graph\cite{lee02}. It reflects the multiple alignment structure in a more concise and intuitive way than typical approaches like MAF files or alignment browsers.
+\item[Graph representation] of multiple alignment is based on partial order alignment graph (POA graph)\cite{lee02}. It reflects the multiple alignment structure in a more concise and intuitive way than typical approaches like MAF files or alignment browsers.
 \end{description}
 The basic idea is to merge aligned nucleotides which are the same into single nodes, create directed edges between subsequent nodes and undirected edges between aligned but different nucleotides.
 \begin{center}
@@ -124,25 +124,18 @@ $$\downarrow$$
 \end{center}
 
 \begin{description}
-\item[Consensuses] can be find in such a graph by using heaviest bundle algorithm implemented in software called \textsl{poa}\cite{lee04}. It reads the POA graph and effectively finds possible consensuses.
+\item[Consensus] in  a POA graph is a path representing some sequences present in the multialignment. By using heaviest bundle algorithm implemented in software called \textsl{poa}\cite{lee04} many consensuses can be defined.
 \end{description}
 
 }
 
 %----------------------------------------------------------------------------------------
-%	FUTURE WORK
+%	CONCLUSION
 %----------------------------------------------------------------------------------------
 
-\headerbox{Future work}{name=conclusion,column=0,below=graph}{
-\begin{description}
-\item[Visualisation:] Development of the graph visualisation, especially to make it more interactive.
-\end{description}
-\begin{description}
-\item[Import/Export:] More formats of input and output files will be introduced in order to assure broad software compatibility.
-\end{description}
-\begin{description}
-\item[Algorithms:] Development of fast algorithm for handling cycles in genome graphs.
-\end{description}
+\headerbox{Conclusion}{name=conclusion,column=0,below=graph}{
+This work represents an approach to analyse \textbf{a pan-genome}. An insight into complex multialignments is given by \textbf{a tree of consensuses}. This is not only an attempt to reconstruct phylogenetic tree but also identification of sequences patterns shared by individuals and analysis of the alignment structure.\\
+Enhancements planned to be undertaken are: a fast algorithm for handling cycles in genome graphs and visualization development.
 }
 
 %----------------------------------------------------------------------------------------
@@ -168,8 +161,8 @@ $$\downarrow$$
 \bibitem{ebolaportal}
 Haeussler et al. 
 \textit{The UCSC Ebola Genome Portal.},
- PLOS Currents Outbreaks. 2014 Nov 7 . Edition 1. doi: 10.1371/currents.outbreaks.386ab0964ab4d6c8cb550bfb6071d822.
-
+ PLOS Currents Outbreaks. 2014 Nov 7 . Edition 1.
+ 
 \bibitem{mycoplasma}
 \textit{Mycoplasma genomes phylogeny} \url{https://www.patricbrc.org/view/Taxonomy/2093#view_tab=phylogeny}, Accessed: April 2018
 \end{thebibliography}
@@ -179,27 +172,30 @@ Haeussler et al.
 %	ACKNOWLEDGEMENTS
 %----------------------------------------------------------------------------------------
 
-\headerbox{Acknowledgements-OK}{name=acknowledgements,column=0,below=references, above=bottom}{
+\headerbox{Acknowledgements}{name=acknowledgements,column=0,below=references, above=bottom}{
 \smaller % Reduce the font size in this block
 This work was supported by the National Science Centre, Poland, under grant number 2016/21/B/ST6/01471.} 
 
 
 %----------------------------------------------------------------------------------------
-%	METHODS AND DATA
+%	TREE OF CONSENSUSES
 %----------------------------------------------------------------------------------------
 
 \headerbox{How to get the tree of consensuses?}{name=methods,span=2,column=1,row=0}{ % To reduce this block to 1 column width, remove 'span=2'
 
-Firstly, convert a multiple sequence alignment (eg. MAF file) into POA graph \textbf{G}. The consensuses tree is being built in a breadth first manner. In the following iterations, on the subsequent subgraphs \textbf{SG} of the original graph \textbf{G}, the procedure of consensus generation and sequences assignment is carried out:
+The tree of consensuses is being built in the top-down manner from the POA graph \textbf{G} representing the multiple sequence alignment. Given a \textbf{G}-subgraph \textbf{SG} reflecting sequences assigned to the current node, the following procedeure creates this node's children:
+
+%Firstly, convert a multiple sequence alignment (eg. MAF file) into POA graph \textbf{G}. The consensuses tree is being built in a breadth first manner. In the following iterations, on the subsequent subgraphs \textbf{SG} of the original graph \textbf{G}, the procedure of consensus generation and sequences assignment is carried out:
 \begin{center}
 \begin{minipage}{0.49\linewidth}
 \begin{enumerate}
 \setlength\itemsep{0em}
 \item Run consensus generation algorithm on the \textbf{SG} to get a consensus \textbf{C}
-\item Choose the most compatible to \textbf{C} sequences from \textbf{SG} and generate a consensus \textbf{BestC} for them only.
-\item Set group \textbf{S} of the most compatible to \textbf{BestC} sequences from the \textbf{SG}.
+\item Choose the most compatible with \textbf{C} sequences from \textbf{SG} and generate a consensus \textbf{BestC} for them only.
+\item Set group \textbf{S} of the most compatible with \textbf{BestC} \textbf{SG}-sequences.
 \item Add \textbf{BestC} with sequences \textbf{S} to the consensuses tree and assign to it the minimum compatibility \textbf{Comp} to \textbf{BestC} among \textbf{S}.
-\item Remove from \textbf{SG} sequences \textbf{S} and go to 2 if any sequences are left.
+\item Remove from \textbf{SG} sequences \textbf{S} and go to 1 if any sequences are left.
+\item Re-assign sequences to \textbf{BestC} consensuses.
 \end{enumerate}
 \end{minipage}
 \begin{minipage}{0.49\linewidth}
@@ -210,50 +206,50 @@ Firstly, convert a multiple sequence alignment (eg. MAF file) into POA graph \te
 \end{minipage}
 \end{center}
 
-Use the above schema to split sequences into groups and assign a best consensus for them, until required level of fragmentation is reached.
-
+The above schema is used to split sequences into groups and assign a best consensus for them, until required level of fragmentation is reached.
 }
 
 %----------------------------------------------------------------------------------------
-%	RESULTS 1
+%	RESULTS EBOLA
 %----------------------------------------------------------------------------------------
 
-\headerbox{Data and results}{name=results1,span=2,column=1,below=methods}{ % To reduce this block to 1 column width, remove 'span=2'
-The above solution was tested on two multiple alignments. One contains 159 genomes of the Ebola virus and the other one 7 genomes of the bacteria Mycoplasma (only a part of the genomes was used due to efficiency issues). The results were confronted with existing taxonomic databases \cite{ebolaportal}\cite{mycoplasma}.
+\headerbox{Results - Ebola}{name=results1,column=1,below=methods}{ % To reduce this block to 1 column width, remove 'span=2'
+One dataset used in this research comes from USCB Ebola Portal \cite{ebolaportal}. There is a multiple alignment created for 158 Ebola and 2 Marburg viruses coming from all over the world, sequenced at different times. The received consensus tree is compatible with the biologically substantiated sequences division.
+
+%The above solution was tested on two multiple alignments. One contains 159 genomes of the Ebola virus and the other one 7 genomes of the bacteria Mycoplasma (only a part of the genomes was used due to efficiency issues). The results were confronted with existing taxonomic databases \cite{ebolaportal}\cite{mycoplasma}.
 
 %------------------------------------------------
 
 \begin{center}
-\begin{minipage}{0.49\linewidth}
-\centering	
 \includegraphics[width=1\linewidth]{ebola_tree}
-\captionof{figure}{Tree of consensuses generated for Ebola}
-\end{minipage}
-\begin{minipage}{0.49\linewidth}
-\centering
-\includegraphics[width=0.8\linewidth]{mycoplasma_tree}
-\captionof{figure}{Tree of consensuses generated for Mycoplasma}
-\end{minipage}
-\end{center}
-
-\begin{center}
-\begin{minipage}{0.89\linewidth}
-The received sequences division for both alignments is compatible with the biological knowledge. The results are enriched with visualization and available online:
-\end{minipage}
-\begin{minipage}{0.1\linewidth}
-\begin{center}
-\includegraphics[width=0.7\textwidth]{qrcode}
-\end{center}
-\end{minipage}
 \end{center}
 
 }
 
 %----------------------------------------------------------------------------------------
 
+%----------------------------------------------------------------------------------------
+%	RESULTS MYCOPLASMA
+%----------------------------------------------------------------------------------------
+
+\headerbox{Results - Mycoplasma}{name=results2,column=2,below=methods}{ % To reduce this block to 1 column width, remove 'span=2'
+The other dataset was a multiple alignment built from 7 genomes of the bacteria Mycoplasma (M. pneumoniae, M. genitalium, M. gallisepticum). Only the part of the genomes could be used that satisfies POA graph requirement for being cycles-free.\\
+
+The results were successfully confronted with existing taxonomic databases \cite{mycoplasma}.
+
+%------------------------------------------------
+
+\begin{center}
+\includegraphics[width=0.5\linewidth]{mycoplasma_tree}
+\end{center}
+
+
+}
 
 %----------------------------------------------------------------------------------------
-%	RESULTS 2
+
+%----------------------------------------------------------------------------------------
+%	Visual representation
 %----------------------------------------------------------------------------------------
 
 \headerbox{Visual representation}{name=results2,span=2,column=1,below=results1,above=bottom}{ % To reduce this block to 1 column width, remove 'span=2'

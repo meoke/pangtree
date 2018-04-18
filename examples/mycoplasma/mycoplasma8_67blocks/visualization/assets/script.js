@@ -1,4 +1,4 @@
-//consensuses_colors = ['#ff8000', '#602870', '#983352','yellow', 'purple', 'orange', 'brown']
+consensuses_colors = ['#ff8000', '#602870', '#983352','yellow', 'purple', 'orange', 'brown']
 
 $(document).ready(function() {
     function show_info(info){
@@ -299,7 +299,8 @@ $(document).ready(function() {
             function get_consensus_node(id){
                 var c = consensuses[id];
                 if(c.children.length == 0){
-                    return {"name": "ID" + String(c.ID) + " : " + String(c.level) + " : " + String(c.sources),
+                    // return {"name": "ID" + String(c.ID) + " : " + String(c.level) + " : " + String(c.sources),
+                    return {"name": "ID" + String(c.ID) + ": " + String(c.level),
                             "parent":c.parent,
                             "children":[]}
                 }
@@ -307,7 +308,8 @@ $(document).ready(function() {
                 for(var j=0; j<c.children.length; j++){
                     children.push(get_consensus_node(c.children[j]))
                 }
-                return {"name": "ID" + String(c.ID) + " : " + String(c.level) + " : " + String(c.sources.length) + " sources",
+                // return {"name": "ID" + String(c.ID) + " : " + String(c.level) + " : " + String(c.sources.length) + " sources",
+                return {"name": "ID" + String(c.ID) + " : " + String(c.level),
                         "parent":c.parent,
                         "children":children}
             }
@@ -421,6 +423,33 @@ $(document).ready(function() {
              });
 
           // Update the node attributes and style
+            // set radius based on number of sequences - go recursively through children and count them
+            function calc_children(source, consensuses) {
+                var stack = [source.id];
+                children_count = 0;
+                next_children = [];
+                while(stack.length)
+                {
+                    var nodeid = stack.pop();
+                    var nodechildren = consensuses[nodeid].children;
+                    for(i = 0; i< nodechildren.length; i++)
+                    {
+                        if(nodechildren[i].children){
+                            next_children.concat(nodechildren[i].children);
+                        }
+                        else{
+                            children_count += 1;
+                        }
+                    }
+                    stack = next_children;
+                }
+                // return children_count;
+                return 0.5;
+            }
+            var radius = calc_children(source, consensuses)/consensuses.length * 20;
+            console.log(source.id);
+            console.log(radius);
+
           nodeUpdate.select('circle.node')
             .attr('r', 10)
             .style("fill", function(d) {
@@ -521,12 +550,21 @@ $(document).ready(function() {
 
     });
 
-    $.getJSON("blocks.json", function(json) {
-      show_blocks(json);
-    });
+    // $.getJSON("blocks.json", function(json) {
+    //   show_blocks(json);
+    // });
 
     //add_consensuses_options();
-    //draw_visualization();
+     $.getJSON("info.json", function(info) {
+        var poagraphs_names = info.poagraphs;
+        var edges_json_path = poagraphs_names[0] + "/edges.json";
+        var nodes_json_path = poagraphs_names[0] + "/nodes.json";
+        $.getJSON(nodes_json_path, function(nodes_json) {
+            $.getJSON(edges_json_path, function(edges_json) {
+              draw_visualization(edges_json, nodes_json);
+          });
+        });
+     });
 });
 
 
@@ -630,10 +668,15 @@ function add_consensuses_options(){
 //    }
 }
 
-function draw_visualization(){
+function draw_visualization(edges_json, nodes_json){
+    function prepare_poagraph(e, n) {
+        return {nodes: n, edges: e};
+    }
+    var p = prepare_poagraph(edges_json, nodes_json);
+    var p2 = poagraph;
     var cy = cytoscape({
     container: document.getElementById('cy'),
-    elements: poagraph,
+    elements: p,
     style: [
       {
         selector: 'node',
@@ -689,7 +732,6 @@ function draw_visualization(){
     node_width = Math.abs(Math.log(ele.data('weight') * 1000))
     return node_width.toString() + 'px';
   }
-
 }
 
 function show_consensuses_tree2(poagraph_name){

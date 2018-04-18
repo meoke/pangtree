@@ -1,0 +1,44 @@
+[
+    {
+      "data": {
+        "id": 0,
+        "nucleobase": "A",
+        "source": [0],
+        "weight": 0.33
+      },
+      "position": { "x": 60, "y": 15 }
+    }, {
+      "data": {
+        "id": 1,
+        "nucleobase": "T",
+        "source": [1,2],
+        "weight": 0.66
+      },
+      "position": { "x": 60, "y": -15 }
+    },{
+      "data": {
+        "id": 2,
+        "nucleobase": "G",
+        "source": [0],
+        "weight": 0.33
+      },
+      "position": { "x": 120, "y": 15 }
+    },{
+      "data": {
+        "id": 3,
+        "nucleobase": "C",
+        "source": [1,2],
+        "weight": 0.66
+      },
+      "position": { "x": 120, "y": -15 }
+    },
+    {
+      "data": {
+        "id": 4,
+        "nucleobase": "C",
+        "source": [0,1,2],
+        "weight": 1
+      },
+      "position": { "x": 180, "y": 0.5 }
+    }
+]

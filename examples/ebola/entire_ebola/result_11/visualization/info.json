@@ -1,0 +1,13 @@
+{
+    "name": "ebola_ncbi",
+    "poagraphs": [
+        "ebola_ncbi_0"
+    ],
+    "running_time": "00:19:39",
+    "sequences_per_node": -1,
+    "levels": [
+        -1
+    ],
+    "sources_count": -1,
+    "nodes_count": -1
+}

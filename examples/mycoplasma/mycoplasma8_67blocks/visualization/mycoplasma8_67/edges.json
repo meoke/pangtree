@@ -1,0 +1,43 @@
+[
+    {
+      "data": {
+        "id": 13,
+        "source": 0,
+        "target": 2,
+        "weight": 0.33,
+        "consensus": -1,
+        "level": -1
+      },
+      "classes": "edge"
+    },{
+      "data": {
+        "id": 14,
+        "source": 1,
+        "target": 3,
+        "consensus": -1,
+        "weight": 0.66,
+        "level": -1
+      },
+      "classes": "edge"
+    },{
+      "data": {
+        "id": 15,
+        "source": 2,
+        "target": 4,
+        "consensus": -1,
+        "weight": 0.33,
+        "level": -1
+      },
+      "classes": "edge"
+    },{
+      "data": {
+        "id": 16,
+        "source": 3,
+        "target": 4,
+        "consensus": -1,
+        "weight": 0.66,
+        "level": -1
+      },
+      "classes": "edge"
+    }
+  ]

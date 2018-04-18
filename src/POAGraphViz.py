@@ -5,7 +5,9 @@ from data_types import ebola as eb
 from data_types import mycoplasma as myc
 from Sequence import Source, Consensus
 from POAGraphRef import POAGraphRef
+from Node import Node
 import maf_reader
+from nucleotides import _nucleotide_dictionary
 
 WEBPAGE_DIR = t.get_real_path('../visualization_template')
 
@@ -101,6 +103,64 @@ class POAGraphRefEncoder(json.JSONEncoder):
                     "children": obj.children_IDs}
 
         return json.JSONEncoder.default(self, obj)
+
+
+class POAGraphNodeEncoder(json.JSONEncoder):
+    poagraph = None
+    def get_source_list(self, node_ID):
+        return []
+
+    def get_weight(self, node_ID):
+        return 0
+
+    def get_pos(self, node_ID):
+        return 0, 0
+
+    def default(self, obj):
+        if isinstance(obj, Node):
+            sources = self.get_source_list(obj.ID)
+            weight = self.get_weight(obj.ID)
+            x, y = self.get_pos(obj.ID)
+            return {
+                      "data": {
+                        "id": obj.ID,
+                        "nucleobase": _nucleotide_dictionary[obj.base],
+                        "source": sources,
+                        "weight": weight
+                      },
+                      "position": { "x": x, "y": y }
+                    }
+        return json.JSONEncoder.default(self, obj)
+
+
+class Edge(object):
+    def __init__(self, id, source, target, weight, consensus, level, classes):
+        self.id = id
+        self.source = source
+        self.target = target
+        self.weight = weight
+        self.consensus = consensus
+        self.level = level
+        self.classes = classes
+
+
+class POAGraphEdgeEncoder(json.JSONEncoder):
+    poagraph = None
+    def default(self, obj):
+        if isinstance(obj, Edge):
+            return {
+                      "data": {
+                        "id": obj.id,
+                        "source": obj.source,
+                        "target": obj.target,
+                        "weight": obj.weight,
+                        "consensus": obj.consensus,
+                        "level": obj.level
+                      },
+                      "classes": obj.classes
+                    }
+        return json.JSONEncoder.default(self, obj)
+
 
 
 def generate_visualization(multialignment, output_dir, consensus_option, draw_poagraph_option, blocks_option, processing_time):
@@ -209,8 +269,6 @@ def _create_poagraph_consensus_files(poagraph, output_dir):
 
 def _create_poagraph_graph_files(poagraph, output_dir):
     # jeśli draw_poagraph_option - informacje o poagrafie
-    pass
-
     def generate_blocks_graph(self, maf_file_path):
         # todo wykorzystać generowanie jsona
         # todo mergowanie bloków, które przechodzą w siebie po całości
@@ -330,3 +388,27 @@ def _create_poagraph_graph_files(poagraph, output_dir):
         blocks_data_path = t.join_path(self.output_dir, str(self.name) + '_blocks_data.js')
         with open(blocks_data_path, 'w') as blocks_data_output:
             blocks_data_output.write(get_blocks_data_as_json(blocks))
+
+    def convert_nodes_to_edges(poagraph):
+        edges = []
+        edge_id = -1
+        for node in poagraph.nodes:
+            for in_node in node.in_nodes:
+                e = Edge(edge_id, in_node, node.ID, 1, -1, -1, "edge")
+                edges.append(e)
+                edge_id -= 1
+            for a in node.aligned_to:
+                e = Edge(edge_id, node.ID, a, 1, -1, "")
+
+    # nodes
+    nodes_filename = t.join_path(output_dir, "nodes.json")
+    POAGraphNodeEncoder.poagraph = poagraph
+    with open(nodes_filename, 'w') as out:
+        json.dump(poagraph.nodes, fp=out, cls=POAGraphNodeEncoder, indent=4)
+
+    # edges
+    edges = convert_nodes_to_edges(poagraph)
+    edges_filename = t.join_path(output_dir, "edges.json")
+    POAGraphEdgeEncoder.poagraph = poagraph
+    with open(edges_filename, 'w') as out:
+        json.dump(edges, fp=out, cls=POAGraphEdgeEncoder, indent=4)

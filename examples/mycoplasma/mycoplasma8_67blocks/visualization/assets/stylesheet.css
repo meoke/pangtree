@@ -16,24 +16,26 @@ header {
 height: 800px;
 width: 2000px;
 }
-#cy{
-        width: 100%;
-        height: 1300px;
-        left: 0px;
-        background-color: #DFE2DB;
-        opacity: 10%;
-}
+/*#cy{*/
+        /*width: 100%;*/
+        /*height: 500px;*/
+        /*left: 0px;*/
+        /*background-color: #DFE2DB;*/
+        /*opacity: 10%;*/
+/*}*/
 
 /*bloks graph*/
-#sep_blocks_info {
+#cy {
         width: 100%;
         height: 30%;
         left: 0px;
         background-color: #DFE2DB;
         opacity: 10%;
         border-bottom: 5px solid #FFF056;
-        border-top: 5px solid #FFF056;
+        /*border-top: 5px solid #FFF056;*/
 }
+
+
 
 
 .links line {
@@ -144,6 +146,7 @@ border: 5px solid #FFF056;
   font: 12px sans-serif;
 }
 
+
 .link {
   fill: none;
   stroke: #ccc;
@@ -153,6 +156,11 @@ border: 5px solid #FFF056;
 h4{
     padding: 10px;
     font-weight: bold;
+}
+
+#h4cy{
+    background-color: #DFE2DB;
+    margin: 0px;
 }
 
 #consensues, #sources_summary {
