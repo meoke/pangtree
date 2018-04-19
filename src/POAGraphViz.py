@@ -7,7 +7,7 @@ from Sequence import Source, Consensus
 from POAGraphRef import POAGraphRef
 from Node import Node
 import maf_reader
-from nucleotides import _nucleotide_dictionary
+from nucleotides import _nucleotide_inverse_dictionary
 
 WEBPAGE_DIR = t.get_real_path('../visualization_template')
 
@@ -108,13 +108,40 @@ class POAGraphRefEncoder(json.JSONEncoder):
 class POAGraphNodeEncoder(json.JSONEncoder):
     poagraph = None
     def get_source_list(self, node_ID):
-        return []
+        return np.where(self.poagraph.ns[:, node_ID] == True)[0]
 
     def get_weight(self, node_ID):
-        return 0
+        return 1
 
     def get_pos(self, node_ID):
-        return 0, 0
+        n = self.poagraph.nodes[node_ID]
+        if n.aligned_to is None:
+            y = 0
+            x = node_ID * 20
+        else:
+            aligned_nodes = []
+            while True:
+                next_aligned_node = n.aligned_to
+                if next_aligned_node in aligned_nodes:
+                    break
+                aligned_nodes.append(next_aligned_node)
+                n = self.poagraph.nodes[n.aligned_to]
+            sorted_aligned_nodes = sorted(aligned_nodes)
+            node_index = sorted_aligned_nodes.index(node_ID)
+            if len(aligned_nodes) == 4:
+                positions = [-40, -20, 20, 40]
+                y = positions[node_index]
+                x = 20*(sorted_aligned_nodes[1] + sorted_aligned_nodes[2])/2
+            elif len(aligned_nodes) == 3:
+                positions = [-30, 0, 30]
+                y = positions[node_index]
+                x = 20*(sorted_aligned_nodes[1])
+            elif len(aligned_nodes) == 2:
+                positions = [-30, 30]
+                y = positions[node_index]
+                x = 20*(sorted_aligned_nodes[0] + sorted_aligned_nodes[1]) / 2
+
+        return x, y
 
     def default(self, obj):
         if isinstance(obj, Node):
@@ -124,12 +151,13 @@ class POAGraphNodeEncoder(json.JSONEncoder):
             return {
                       "data": {
                         "id": obj.ID,
-                        "nucleobase": _nucleotide_dictionary[obj.base],
+                        "nucleobase": obj.base,
                         "source": sources,
                         "weight": weight
                       },
                       "position": { "x": x, "y": y }
                     }
+        return {}
         return json.JSONEncoder.default(self, obj)
 
 
@@ -159,6 +187,7 @@ class POAGraphEdgeEncoder(json.JSONEncoder):
                       },
                       "classes": obj.classes
                     }
+        return {}
         return json.JSONEncoder.default(self, obj)
 
 
@@ -394,11 +423,31 @@ def _create_poagraph_graph_files(poagraph, output_dir):
         edge_id = -1
         for node in poagraph.nodes:
             for in_node in node.in_nodes:
-                e = Edge(edge_id, in_node, node.ID, 1, -1, -1, "edge")
+                e = Edge(int(edge_id), int(in_node), node.ID, 1, -1, -1, "edge")
                 edges.append(e)
                 edge_id -= 1
-            for a in node.aligned_to:
-                e = Edge(edge_id, node.ID, a, 1, -1, "")
+            if node.aligned_to:
+                e = Edge(int(edge_id), int(node.ID), int(node.aligned_to), 1, -1, -1, "edge aligned")
+                edges.append(e)
+                edge_id -=1
+        for cons in poagraph.consensuses:
+            cons_nodes = np.where(poagraph.nc[cons.ID, :]==True)[0]
+            for i, n in enumerate(cons_nodes):
+                if i == len(cons_nodes)-1:
+                    break
+                if n in poagraph.nodes[cons_nodes[i+1]].in_nodes:
+                    e = Edge(id=int(edge_id),
+                             source=int(n),
+                             target=int(cons_nodes[i+1]),
+                             weight=1,
+                             consensus=cons.ID,
+                             level=-1,
+                             classes="edge consensus")
+                    edges.append(e)
+                    edge_id -= 1
+            # sprawdzic przez jakie sources przechodzi
+            # dla każdych nodow w tym sources zrobić krawędzie i odpowiednio je oznaczyć
+        return edges
 
     # nodes
     nodes_filename = t.join_path(output_dir, "nodes.json")

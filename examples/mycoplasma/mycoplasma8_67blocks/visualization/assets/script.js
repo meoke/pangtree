@@ -1,6 +1,9 @@
 consensuses_colors = ['#ff8000', '#602870', '#983352','yellow', 'purple', 'orange', 'brown']
+slider_node_value = 0
+slider_nodes_count_value = 50
 
 $(document).ready(function() {
+    active_consensuses = new Set([]);
     function show_info(info){
         name_p = document.getElementById('name');
         name_p.innerHTML += info.name;
@@ -190,7 +193,7 @@ $(document).ready(function() {
             head_name.innerHTML = "Genbank ID"
             head_title.innerHTML = "Organism"
             head_group.innerHTML = "Species"
-            head_bundle_id.innerHTML = "Bundle ID"
+            head_bundle_id.innerHTML = "    Consensus ID: "
 
             for(var i=0; i< consensuses.length; i++){
                 var cons_compatibility = header_row.insertCell(5+i);
@@ -293,6 +296,35 @@ $(document).ready(function() {
             show_sources_tables(poagraph_name, slider.value);
         }
     }
+
+    function setup_node_slider(){
+        // how many nodes to draw
+        var slider_nodes_count = document.getElementById("slider_nodes_count");
+        var output_slider_nodes_count = document.getElementById("slider_nodes_count_value");
+        output_slider_nodes_count.innerHTML = slider_nodes_count.value;
+        slider_nodes_count.oninput = function() {
+            output_slider_nodes_count.innerHTML = this.value;
+            slider_nodes_count_value = parseInt(this.value);
+        }
+
+
+        // starting point
+        var slider_node = document.getElementById("slider_node");
+        var output_slider_node = document.getElementById("slider_node_value");
+        output_slider_node.innerHTML = slider_node.value;
+        slider_node.oninput = function() {
+            output_slider_node.innerHTML = this.value;
+            slider_node_value = parseInt(this.value);
+        }
+
+        // draw poagraph
+        var show_poagraph_btn = document.getElementById("draw_poagraph");
+        show_poagraph_btn.onclick = function() {
+            console.log("click")
+            draw_poagraph(active_consensuses);
+        }
+    }
+    setup_node_slider();
 
     function draw(consensuses){
         function transorm_to_tree_data(consensuses){
@@ -536,6 +568,43 @@ $(document).ready(function() {
         }
     }
 
+    function setup_consensuses_display(){
+        var ids = ["#id1", "#id2", "#id3", "#id4", "#id5", "#id6", "#id7"];
+        ids.forEach(function(element) {
+            var checkBtn = $(element);
+            checkBtn.click( function(){
+                if ($(this).is(':checked'))
+                {
+                  // draw_consensus($(this).val())
+                    active_consensuses.add(parseInt($(this).val()));
+                    draw_poagraph(active_consensuses);
+                }
+                else{
+                    // $(this).val()
+                    active_consensuses.delete(parseInt($(this).val()));
+                    draw_poagraph(active_consensuses);
+                    // undraw_consensus($(this).val());
+                }
+            });
+        });
+     };
+    setup_consensuses_display();
+
+    function draw_poagraph(active_consensuses)
+    {
+        $.getJSON("info.json", function(info) {
+        var poagraphs_names = info.poagraphs;
+        var edges_json_path = poagraphs_names[0] + "/edges.json";
+        var nodes_json_path = poagraphs_names[0] + "/nodes.json";
+        $.getJSON(nodes_json_path, function(nodes_json) {
+           $.getJSON(edges_json_path, function(edges_json) {
+                    draw_visualization(edges_json, nodes_json, active_consensuses);
+                });
+            });
+        });
+    }
+    draw_poagraph(active_consensuses);
+
     $.getJSON("info.json", function(info) {
       // show_info(info);
       var poagraphs_names = info.poagraphs;
@@ -555,18 +624,10 @@ $(document).ready(function() {
     // });
 
     //add_consensuses_options();
-     $.getJSON("info.json", function(info) {
-        var poagraphs_names = info.poagraphs;
-        var edges_json_path = poagraphs_names[0] + "/edges.json";
-        var nodes_json_path = poagraphs_names[0] + "/nodes.json";
-        $.getJSON(nodes_json_path, function(nodes_json) {
-            $.getJSON(edges_json_path, function(edges_json) {
-              draw_visualization(edges_json, nodes_json);
-          });
-        });
-     });
-});
 
+
+
+});
 
 function show_blocks_cytoscape(blocks){
     cytoscape({
@@ -668,11 +729,39 @@ function add_consensuses_options(){
 //    }
 }
 
-function draw_visualization(edges_json, nodes_json){
+function draw_visualization(edges_json, nodes_json, active_consensuses){
     function prepare_poagraph(e, n) {
         return {nodes: n, edges: e};
     }
-    var p = prepare_poagraph(edges_json, nodes_json);
+    function remove_not_active_consensuses(e, active_consensuses){
+        edges = []
+        for(var i = 0; i< e.length; i++)
+        {
+            if((active_consensuses.has(e[i].data.consensus) || e[i].data.consensus == -1) &&
+                (e[i].data.source >= slider_node_value && e[i].data.source <= slider_node_value + slider_nodes_count_value) &&
+                (e[i].data.target >= slider_node_value && e[i].data.target <= slider_node_value + slider_nodes_count_value)){
+                edges.push(e[i]);
+            }
+        }
+        return edges;
+    }
+
+    function choose_nodes_to_draw(n) {
+        nodes = []
+        for(var i = slider_node_value; i< slider_node_value + slider_nodes_count_value; i++)
+        {
+            nodes.push(n[i]);
+        }
+        return nodes;
+    }
+
+
+    active_edges = remove_not_active_consensuses(edges_json, active_consensuses);
+    active_nodes = choose_nodes_to_draw(nodes_json);
+    console.log(active_edges.length);
+    console.log(active_nodes.length);
+    var p = prepare_poagraph(active_edges, active_nodes);
+
     var p2 = poagraph;
     var cy = cytoscape({
     container: document.getElementById('cy'),
@@ -895,7 +984,7 @@ function show_sources_info_table(level_index){
     head_name.innerHTML = "Name"
     head_title.innerHTML = "Title"
     head_group.innerHTML = "Group"
-    head_bundle_id.innerHTML = "Bundle ID"
+    head_bundle_id.innerHTML = "Consensus ID"
 
     for(var i=0; i< cses.length; i++){
         var cons_compatibility = header_row.insertCell(5+i);
@@ -984,7 +1073,7 @@ function show_node_info_table(node_name){
     head_name.innerHTML = "Name"
     head_title.innerHTML = "Title"
     head_group.innerHTML = "Group"
-    head_bundle_id.innerHTML = "Bundle ID"
+    head_bundle_id.innerHTML = "Consensus ID"
 
     for(var i=0; i< cses.length; i++){
         var cons_compatibility = header_row.insertCell(5+i);

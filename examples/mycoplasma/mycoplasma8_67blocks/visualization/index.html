@@ -46,6 +46,32 @@
     <h2>Mycoplasma</h2><br>
     <h3>POA graph visualization and tree of consensuses</h3>
       </div>
+    <div id="consensuses_choosing" class="info">
+        <h5>Choose consensuses to display:</h5>
+        <form action="">
+        <input type="checkbox" id="id1" value="1">ID 1<br>
+        <input type="checkbox" id="id2" value="2">ID 2<br>
+        <input type="checkbox" id="id3" value="3">ID 3<br>
+        <input type="checkbox" id="id4" value="4">ID 4<br>
+        <input type="checkbox" id="id5" value="5">ID 5<br>
+        <input type="checkbox" id="id6" value="6">ID 6<br>
+        <input type="checkbox" id="id7" value="7">ID 7<br>
+        </form>
+    </div>
+
+      <div id="poagraph_size" class="info">
+        <h5>How many nodes to draw:<span id="slider_nodes_count_value"></span></h5>
+            <input id="slider_nodes_count" type="range" value="50" name="points" min="50" max="500"> <br>
+
+        <h5>Starting from node id: <span id="slider_node_value"></span></h5>
+             <input id="slider_node" type="range" name="points" value="0" min="0" max="7316"> <br>
+
+        <input type="button" id="draw_poagraph" value="Draw POA graph">
+
+
+    </div>
+
+
     <div id="multialignment_info" class="info">
         <h4>Information</h4>
         <p id="name">Dataset name: Mycoplasma</p>
