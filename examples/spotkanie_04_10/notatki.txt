@@ -1,0 +1,40 @@
+1. nie mam wyników, ale może umówmy się na piątek 12.30-17.30 jestem dostępna
+piątek 13:00
+
+- algorytm do acykliczności
+- poprawne budowanie poagrafu z uwzględnieniem wyników algorytmu
+2. problem z mycoplasmą 8
+/home/meoke/Repos/pang/tests/files/mycoplasma8/mycoplasma_more.hal.maf
+
+A. sekwencje ANC0 - wyrzucam je
+B. w sekwencjach ANC0 są kawałeczki nnnnn - ognoruję
+C. w blokach powtarzające sie fragmenty tych samych sekwencji - teoretycznie powinno się je rozdzielić na osobne bloki? bo właściwie one nie są ze sobą uliniowione. w takim razie - które są?
+
+a już teraz jest tak:
+Edges count: 14777
+Nodes count: 13596
+
+Tymczasowe rozwiązanie mycoplasma8_67blocks (tam nie ma cykli, ale wymagane jest na przykład uzupełnienie z FASTY)
+
+3. Mój mały przykład z 6 sekwencjami
+
+4. Odczyt z bloków do poagrafów - czy dobrze to robię:
+- depth first search
+
+5. Praca magisterska
+
+w uzasadnionym przypadku promotorem pracy dyplomowej może być osoba
+spoza wydziału MiNI (wtedy recenzent musi być z wydziału). Proszę
+napisać podanie w tradycyjnej formie do prodziekana Konstantego
+Junoszy-Szaniawskiego z krótkim wyjaśnieniem (Prodziekana dołączam do
+tej korespondencji).
+
+Do podania należy dołączyć zgłoszenie tematu pracy. Druk - do
+przekazania promotorowi - w załączniku. "Cel pracy" powinien zawierać
+krótkie (dwie-trzy linijki) rozwinięcie tematu, natomiast sekcja
+"Tematyka zgłaszanej pracy" - więcej szczegółów. "Literatura
+pomocnicza" to przynajmniej trzy pozycje, które ukazały się drukiem.
+Zgłoszone tematy dyplomowe są następnie zatwierdzane na posiedzeniach
+Komisji Programowej kierunku Informatyka.
+
+6. magisterka dziewczyny?

@@ -9,29 +9,31 @@ from Errors import NoConsensusFound
 def parse_to_poagraph(file_path, output_dir):
     print('\tBuliding poagraph from ' + file_path) # todo logging
     with open(file_path) as po:
-        poagraph = POAGraph(version=_extract_line_value(po.readline()),
-                            name=_extract_line_value(po.readline()),
-                            title=_extract_line_value(po.readline()),
-                            path=output_dir)
+        po_lines = po.readlines()
+    lines_iterator = iter(po_lines)
+    poagraph = POAGraph(version=_extract_line_value(next(lines_iterator)),
+                        name=_extract_line_value(next(lines_iterator)),
+                        title=_extract_line_value(next(lines_iterator)),
+                        path=output_dir)
 
-        nodes_count = int(_extract_line_value(po.readline()))
-        poagraph.sources, poagraph.consensuses = _read_sequence_info(po)
-        poagraph.nodes, poagraph.ns, poagraph.nc = _read_nodes_info(po, nodes_count, len(poagraph.sources), len(poagraph.consensuses))
+    nodes_count = int(_extract_line_value(next(lines_iterator)))
+    poagraph.sources, poagraph.consensuses = _read_sequence_info(lines_iterator)
+    poagraph.nodes, poagraph.ns, poagraph.nc = _read_nodes_info(lines_iterator, nodes_count, len(poagraph.sources), len(poagraph.consensuses))
     return poagraph
 
 def _extract_line_value(line):
     return line.split('=')[1].strip()
 
-def _read_sequence_info(po_file_handler):
-    source_count = int(_extract_line_value(po_file_handler.readline()))
+def _read_sequence_info(lines_iterator):
+    source_count = int(_extract_line_value(next(lines_iterator)))
 
     source_ID = -1
     consensus_ID = -1
     sources = []
     consensuses = []
-    for line in po_file_handler:
+    for line in lines_iterator:
         sequence_name = _extract_line_value(line)
-        detailed_info_line = po_file_handler.readline()
+        detailed_info_line = next(lines_iterator)#po_file_handler.readline()
         detailed_info = _extract_line_value(detailed_info_line).split(' ')
         if 'CONSENS' in sequence_name:
             consensus_ID += 1
@@ -53,7 +55,7 @@ def _read_sequence_info(po_file_handler):
 
     return sources, consensuses
 
-def _read_nodes_info(po_file_handler, nodes_count, sources_count, consensuses_count):
+def _read_nodes_info(lines_iterator, nodes_count, sources_count, consensuses_count):
     def assign_this_node_to_its_sequences(sequences_IDs, node_ID):
         sequeunces_IDs = np.array(sequences_IDs)
         srcs_IDs = sequeunces_IDs[sequeunces_IDs < sources_count]
@@ -68,11 +70,12 @@ def _read_nodes_info(po_file_handler, nodes_count, sources_count, consensuses_co
     ns = np.zeros(shape=(sources_count, nodes_count), dtype=np.bool)
     nc = np.zeros(shape=(consensuses_count, nodes_count), dtype=np.bool)
 
-    for node_ID, line in enumerate(po_file_handler):
-        base = line[0]
-        in_nodes = _extract_node_parameters(line, 'L')
-        sequences_IDs = _extract_node_parameters(line, 'S')
-        aligned_to =_extract_node_parameters(line, 'A')
+    for node_ID, line in enumerate(lines_iterator):#po_file_handler):
+        base = line[0].upper()
+        in_nodes, sequences_IDs, aligned_to = _extract_node_parameters(line)
+        # in_nodes = _extract_node_parameters(line, 'L')
+        # sequences_IDs = _extract_node_parameters(line, 'S')
+        # aligned_to =_extract_node_parameters(line, 'A')
         aligned_to = aligned_to[0] if aligned_to else None
         node = Node(ID=node_ID,
                     base=base,
@@ -85,10 +88,27 @@ def _read_nodes_info(po_file_handler, nodes_count, sources_count, consensuses_co
     return nodes, ns, nc
 
 
-def _extract_node_parameters(node, code_letter):
-    pattern = '{0}\d+'.format(code_letter)
-    values_with_prefix_letters = re.findall(pattern, node)
-    return [int(letter_value[1:]) for letter_value in values_with_prefix_letters]
+def _extract_node_parameters(line):
+    line = line[2:]
+    line_iter = iter(line)
+
+    node_parameters = {'L':[], 'S': [], 'A': [], '':[]}
+    current_node_parameter = next(line_iter)
+    number_start = 1
+    number_end = 1
+    for i, c in enumerate(line_iter):
+        if c == 'L' or c == 'S' or c == 'A':
+            node_parameters[current_node_parameter].append(int(line[number_start: number_end]))
+            current_node_parameter = c
+            number_start = i + 2
+            number_end = i + 2
+        else:
+            number_end += 1
+    node_parameters[current_node_parameter].append(int(line[number_start: number_end]))
+    return node_parameters['L'], node_parameters['S'], node_parameters['A']
+    # pattern = '{0}\d+'.format(code_letter)
+    # values_with_prefix_letters = re.findall(pattern, node)
+    # return [int(letter_value[1:]) for letter_value in values_with_prefix_letters]
 
 
 def read_consensus(po_file_path, consensusID=0):

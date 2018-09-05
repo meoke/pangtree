@@ -1,0 +1,28 @@
+##maf version=1 scoring=N/A
+
+a
+s seq4 3 3 + 11 ATT
+s seq5 0 2 + 7  A-T
+
+a
+s seq0 0 5 + 14 CCGTA
+s seq1 4 4 + 12 C-TTA
+s seq2 0 5 - 14 CGGTA
+s seq3 6 4 + 10 CG-AA
+
+a
+s seq0 5 4 + 14 GGCT
+s seq1 8 4 - 12 GACT
+s seq4 0 3 + 11 -ATT
+
+a
+s seq2 5 3 + 14 TTG
+s seq5 2 2 + 7  -TG
+
+a
+s seq0 9 5 + 14 GTCA-A
+s seq1 0 4 - 12 G--AAA
+s seq2 8 6 + 14 GTCAAA
+s seq3 0 6 + 10 TCCAAT
+s seq4 6 5 + 11 -CGAAA
+s seq5 4 3 + 7 ---AAT

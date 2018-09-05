@@ -11,11 +11,13 @@ class EndToEndTest(unittest.TestCase):
                                     #file_name='files/entire_ebola/ebola_ncbi.maf',
                                     #file_name='files/mycoplasma_maf/alignment_clean.maf',
                                     #file_name='files/mycoplasma_maf/alignment.maf',
+                                    #file_name='files/mycoplasma2/alignment.maf',
+                                    # file_name='files/mycoplasma2/alignment_bez_GCA_002205575.maf',
                                     #file_name= 'files/simple/simple.maf',
                                     #file_name='files/entire_ebola_po/entire_ebola.po',
                                     file_format='maf',
                                     merge_blocks_option="all",
-                                    draw_poagraph_option=True,
+                                    draw_poagraph_option=False,
                                     consensus_option=3,
                                         #min_comp=0.01,
                                         range='[90,100]',
@@ -24,7 +26,7 @@ class EndToEndTest(unittest.TestCase):
                                         re_consensus = True,
                                     fasta_option=False,
                                     data_type='ebola',
-                                    blocks_option=False
+                                    blocks_option=True
                                     )
 
         self.assertTrue(True)

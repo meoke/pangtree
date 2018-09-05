@@ -66,8 +66,8 @@ class POAGraph(object):
         return min([p.min_compatibility for p in poagrahrefs_to_check])
 
     def get_comp(self, consensus_nodes, source_ID):#:calc_compatibility(consensus, tree_node)
-        common_nodes_count = sum(self.ns[source_ID][:] & consensus_nodes)
-        source_nodes_count = sum(self.ns[source_ID][:])
+        common_nodes_count = np.sum(self.ns[source_ID][:] & consensus_nodes)
+        source_nodes_count = np.sum(self.ns[source_ID][:])
         return round(common_nodes_count / source_nodes_count, 4)
 
     def get_poagraphref_sources_IDs(self, tree_node_ID):

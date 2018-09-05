@@ -8,3 +8,12 @@ class NoTresholdFound(Exception):
 
 class StopExceeded(Exception):
     pass
+
+
+class CloseProgram(Exception):
+    def __init__(self, message):
+        self.message = message
+
+class NoSequenceContinuationFound(Exception):
+    def __init__(self, message):
+        self.message = message

@@ -2,9 +2,12 @@ import json
 import numpy as np
 import toolkit as t
 from data_types import ebola as eb
+from data_types import mycoplasma as myc
 from Sequence import Source, Consensus
 from POAGraphRef import POAGraphRef
+from Node import Node
 import maf_reader
+from nucleotides import _nucleotide_inverse_dictionary
 
 WEBPAGE_DIR = t.get_real_path('../visualization_template')
 
@@ -31,10 +34,14 @@ class SourceEncoder(json.JSONEncoder):
     poagraph = None
 
     def get_names_and_group(self, source):
-        if self.poagraph.data_type is 'ebola':
+        if self.poagraph.data_type == 'ebola':
             source_name = eb.extract_ebola_code_part(source.name, 0)
             source_alt_name = eb.get_official_ebola_name(eb.extract_ebola_code_part(source.title, 1))
             source_group_name = eb.get_ebola_group_name(eb.extract_ebola_code_part(source.title, 1))
+        elif self.poagraph.data_type == 'mycoplasma':
+            source_name = source.name
+            source_alt_name = myc.get_strain_name(source.name)
+            source_group_name = myc.get_group_name(source.name)
         else:
             source_name = source.name
             source_alt_name = '-'
@@ -74,7 +81,15 @@ class POAGraphRefEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, POAGraphRef):
             if obj.consensus_ID is None:
-                return {}
+                return {"ID": obj.ID,
+                        "name": "",
+                        "title": "",
+                        "sources_compatibility": [],
+                        "length": 0,
+                        "sources": obj.sources_IDs.tolist(),
+                        "parent": obj.parent_ID,
+                        "level": obj.min_compatibility,
+                        "children": obj.children_IDs}
             consensus = self.poagraph.consensuses[obj.consensus_ID]
 
             return {"ID": obj.ID,
@@ -90,8 +105,98 @@ class POAGraphRefEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-def generate_visualization(multialignment, output_dir, consensus_option, draw_poagraph_option, processing_time):
+class POAGraphNodeEncoder(json.JSONEncoder):
+    poagraph = None
+    def get_source_list(self, node_ID):
+        return np.where(self.poagraph.ns[:, node_ID] == True)[0]
+
+    def get_weight(self, node_ID):
+        return 1
+
+    def get_pos(self, node_ID):
+        n = self.poagraph.nodes[node_ID]
+        if n.aligned_to is None:
+            y = 0
+            x = node_ID * 20
+        else:
+            aligned_nodes = []
+            while True:
+                next_aligned_node = n.aligned_to
+                if next_aligned_node in aligned_nodes:
+                    break
+                aligned_nodes.append(next_aligned_node)
+                n = self.poagraph.nodes[n.aligned_to]
+            sorted_aligned_nodes = sorted(aligned_nodes)
+            node_index = sorted_aligned_nodes.index(node_ID)
+            if len(aligned_nodes) == 4:
+                positions = [-40, -20, 20, 40]
+                y = positions[node_index]
+                x = 20*(sorted_aligned_nodes[1] + sorted_aligned_nodes[2])/2
+            elif len(aligned_nodes) == 3:
+                positions = [-30, 0, 30]
+                y = positions[node_index]
+                x = 20*(sorted_aligned_nodes[1])
+            elif len(aligned_nodes) == 2:
+                positions = [-30, 30]
+                y = positions[node_index]
+                x = 20*(sorted_aligned_nodes[0] + sorted_aligned_nodes[1]) / 2
+
+        return x, y
+
+    def default(self, obj):
+        if isinstance(obj, Node):
+            sources = self.get_source_list(obj.ID)
+            weight = self.get_weight(obj.ID)
+            x, y = self.get_pos(obj.ID)
+            return {
+                      "data": {
+                        "id": obj.ID,
+                        "nucleobase": obj.base,
+                        "source": sources,
+                        "weight": weight
+                      },
+                      "position": { "x": x, "y": y }
+                    }
+        return {}
+        return json.JSONEncoder.default(self, obj)
+
+
+class Edge(object):
+    def __init__(self, id, source, target, weight, consensus, level, classes):
+        self.id = id
+        self.source = source
+        self.target = target
+        self.weight = weight
+        self.consensus = consensus
+        self.level = level
+        self.classes = classes
+
+
+class POAGraphEdgeEncoder(json.JSONEncoder):
+    poagraph = None
+    def default(self, obj):
+        if isinstance(obj, Edge):
+            return {
+                      "data": {
+                        "id": obj.id,
+                        "source": obj.source,
+                        "target": obj.target,
+                        "weight": obj.weight,
+                        "consensus": obj.consensus,
+                        "level": obj.level
+                      },
+                      "classes": obj.classes
+                    }
+        return {}
+        return json.JSONEncoder.default(self, obj)
+
+
+
+def generate_visualization(multialignment, output_dir, consensus_option, draw_poagraph_option, blocks_option, processing_time):
     _create_common_files(multialignment, output_dir, processing_time)
+
+    if blocks_option:
+        _create_blocks_file(multialignment, output_dir)
 
     for p in multialignment.poagraphs:
         poagraph_output_dir = _get_poagraph_output_dir(p, output_dir)
@@ -103,12 +208,12 @@ def generate_visualization(multialignment, output_dir, consensus_option, draw_po
         if draw_poagraph_option:
             _create_poagraph_graph_files(p, poagraph_output_dir)
 
+
 def _get_poagraph_output_dir(p, output_dir):
     return t.create_child_dir(output_dir, p.name)
 
 
 def _create_common_files(multialignment, output_dir, processing_time):
-    # todo skąd się bierze dodatkowy folder o nazwie multialignmentu?
     # wspolne pliki i informacje o multialignmencie (tu będą też bloki? grafy blokowe?)
     def copy_assets_dir():
         common_files_destination = t.join_path(output_dir, 'assets')
@@ -132,10 +237,11 @@ def _create_common_files(multialignment, output_dir, processing_time):
                 'sources_count': -1,
                 'nodes_count': -1,
                 'sequences_per_node': -1,
-                'levels': [-1]
+                'levels': [-1],
+                'poagraphs': [src.name for src in multialignment.poagraphs]
                 }
         with open(info_filename, 'w') as out_file:
-            json.dump(info, fp=out_file)
+            json.dump(info, fp=out_file, indent=4)
 
     copy_assets_dir()
     create_index_file()
@@ -156,25 +262,42 @@ def _create_common_files(multialignment, output_dir, processing_time):
     #         output.write(index_content)
 
 
+def _create_blocks_file(multialignment, output_dir):
+    nodes = []
+    for node in multialignment.blocks_graph.nodes:
+        nodes.append({'id': node})
+        print(node)
+
+    edges = []
+    for (u, v) in multialignment.blocks_graph.edges:
+        edges.append({"source": u,
+                      "target": v,
+                      "weight": multialignment.blocks_graph.edges[u, v]['weight'],
+                      "active": multialignment.blocks_graph.edges[u, v]['active']})
+
+    blocks = {"nodes": nodes, "edges": edges}
+
+    blocks_filename = t.join_path(output_dir, "blocks.json")
+    with open(blocks_filename, 'w') as out_file:
+        json.dump(blocks, fp=out_file, indent=4)
+
+
 def _create_poagraph_sources_files(poagraph, output_dir):
     sources_filename = t.join_path(output_dir, "sources.json")
     SourceEncoder.poagraph = poagraph
     with open(sources_filename, 'w') as out_file:
-        json.dump(poagraph.sources, fp=out_file, cls=SourceEncoder)
+        json.dump(poagraph.sources, fp=out_file, cls=SourceEncoder, indent=4)
 
 
 def _create_poagraph_consensus_files(poagraph, output_dir):
     consensuses_filename = t.join_path(output_dir, "consensuses.json")
     POAGraphRefEncoder.poagraph = poagraph
-    l = poagraph._poagraphrefs
     with open(consensuses_filename, 'w') as out:
-        json.dump(l, fp=out, cls=POAGraphRefEncoder)
+        json.dump(poagraph._poagraphrefs, fp=out, cls=POAGraphRefEncoder, indent=4)
 
 
 def _create_poagraph_graph_files(poagraph, output_dir):
     # jeśli draw_poagraph_option - informacje o poagrafie
-    pass
-
     def generate_blocks_graph(self, maf_file_path):
         # todo wykorzystać generowanie jsona
         # todo mergowanie bloków, które przechodzą w siebie po całości
@@ -294,3 +417,47 @@ def _create_poagraph_graph_files(poagraph, output_dir):
         blocks_data_path = t.join_path(self.output_dir, str(self.name) + '_blocks_data.js')
         with open(blocks_data_path, 'w') as blocks_data_output:
             blocks_data_output.write(get_blocks_data_as_json(blocks))
+
+    def convert_nodes_to_edges(poagraph):
+        edges = []
+        edge_id = -1
+        for node in poagraph.nodes:
+            for in_node in node.in_nodes:
+                e = Edge(int(edge_id), int(in_node), node.ID, 1, -1, -1, "edge")
+                edges.append(e)
+                edge_id -= 1
+            if node.aligned_to:
+                e = Edge(int(edge_id), int(node.ID), int(node.aligned_to), 1, -1, -1, "edge aligned")
+                edges.append(e)
+                edge_id -=1
+        for cons in poagraph.consensuses:
+            cons_nodes = np.where(poagraph.nc[cons.ID, :]==True)[0]
+            for i, n in enumerate(cons_nodes):
+                if i == len(cons_nodes)-1:
+                    break
+                if n in poagraph.nodes[cons_nodes[i+1]].in_nodes:
+                    e = Edge(id=int(edge_id),
+                             source=int(n),
+                             target=int(cons_nodes[i+1]),
+                             weight=1,
+                             consensus=cons.ID,
+                             level=-1,
+                             classes="edge consensus")
+                    edges.append(e)
+                    edge_id -= 1
+            # sprawdzic przez jakie sources przechodzi
+            # dla każdych nodow w tym sources zrobić krawędzie i odpowiednio je oznaczyć
+        return edges
+
+    # nodes
+    nodes_filename = t.join_path(output_dir, "nodes.json")
+    POAGraphNodeEncoder.poagraph = poagraph
+    with open(nodes_filename, 'w') as out:
+        json.dump(poagraph.nodes, fp=out, cls=POAGraphNodeEncoder, indent=4)
+
+    # edges
+    edges = convert_nodes_to_edges(poagraph)
+    edges_filename = t.join_path(output_dir, "edges.json")
+    POAGraphEdgeEncoder.poagraph = poagraph
+    with open(edges_filename, 'w') as out:
+        json.dump(edges, fp=out, cls=POAGraphEdgeEncoder, indent=4)

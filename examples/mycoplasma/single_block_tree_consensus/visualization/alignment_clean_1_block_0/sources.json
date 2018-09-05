@@ -1,0 +1,442 @@
+[
+    {
+        "first_node_ID": 0,
+        "bundle_ID": -1,
+        "length": 496118,
+        "title": "-",
+        "group": "-",
+        "weight": 48,
+        "ID": 0,
+        "name": "GCF_002128265.NZ_CP017339.1"
+    },
+    {
+        "first_node_ID": 30,
+        "bundle_ID": -1,
+        "length": 497295,
+        "title": "-",
+        "group": "-",
+        "weight": 21,
+        "ID": 1,
+        "name": "GCF_002090295.NZ_CP020692.1"
+    },
+    {
+        "first_node_ID": 0,
+        "bundle_ID": -1,
+        "length": 495994,
+        "title": "-",
+        "group": "-",
+        "weight": 37,
+        "ID": 2,
+        "name": "GCF_002128165.NZ_CP017335.1"
+    },
+    {
+        "first_node_ID": 0,
+        "bundle_ID": -1,
+        "length": 496032,
+        "title": "-",
+        "group": "-",
+        "weight": 59,
+        "ID": 3,
+        "name": "GCF_000319655.NZ_CP010551.1"
+    },
+    {
+        "first_node_ID": 0,
+        "bundle_ID": -1,
+        "length": 496092,
+        "title": "-",
+        "group": "-",
+        "weight": 56,
+        "ID": 4,
+        "name": "GCF_001901705.NZ_CP017327.1"
+    },
+    {
+        "first_node_ID": 0,
+        "bundle_ID": -1,
+        "length": 497854,
+        "title": "-",
+        "group": "-",
+        "weight": 5,
+        "ID": 5,
+        "name": "GCF_002147855.NZ_CP017343.1"
+    },
+    {
+        "first_node_ID": 0,
+        "bundle_ID": -1,
+        "length": 496073,
+        "title": "-",
+        "group": "-",
+        "weight": 36,
+        "ID": 6,
+        "name": "GCF_002128285.NZ_CP017336.1"
+    },
+    {
+        "first_node_ID": 0,
+        "bundle_ID": -1,
+        "length": 497766,
+        "title": "-",
+        "group": "-",
+        "weight": 10,
+        "ID": 7,
+        "name": "GCF_002096015.NZ_CP020710.1"
+    },
+    {
+        "first_node_ID": 0,
+        "bundle_ID": -1,
+        "length": 497859,
+        "title": "-",
+        "group": "-",
+        "weight": 1,
+        "ID": 8,
+        "name": "GCF_001272775.NZ_CP010543.1"
+    },
+    {
+        "first_node_ID": 0,
+        "bundle_ID": -1,
+        "length": 497783,
+        "title": "-",
+        "group": "-",
+        "weight": 9,
+        "ID": 9,
+        "name": "GCF_000331085.NC_020076.2"
+    },
+    {
+        "first_node_ID": 0,
+        "bundle_ID": -1,
+        "length": 496161,
+        "title": "-",
+        "group": "-",
+        "weight": 45,
+        "ID": 10,
+        "name": "GCF_002128125.NZ_CP017342.1"
+    },
+    {
+        "first_node_ID": 0,
+        "bundle_ID": -1,
+        "length": 497721,
+        "title": "-",
+        "group": "-",
+        "weight": 5,
+        "ID": 11,
+        "name": "GCF_000027345.NC_000912.1"
+    },
+    {
+        "first_node_ID": 0,
+        "bundle_ID": -1,
+        "length": 497763,
+        "title": "-",
+        "group": "-",
+        "weight": 2,
+        "ID": 12,
+        "name": "GCF_002096035.NZ_CP020712.1"
+    },
+    {
+        "first_node_ID": 0,
+        "bundle_ID": -1,
+        "length": 497768,
+        "title": "-",
+        "group": "-",
+        "weight": 9,
+        "ID": 13,
+        "name": "GCF_000319675.NZ_CP010538.1"
+    },
+    {
+        "first_node_ID": 0,
+        "bundle_ID": -1,
+        "length": 496181,
+        "title": "-",
+        "group": "-",
+        "weight": 31,
+        "ID": 14,
+        "name": "GCF_002128085.NZ_CP017340.1"
+    },
+    {
+        "first_node_ID": 0,
+        "bundle_ID": -1,
+        "length": 495979,
+        "title": "-",
+        "group": "-",
+        "weight": 61,
+        "ID": 15,
+        "name": "GCF_001272875.NZ_CP010548.1"
+    },
+    {
+        "first_node_ID": 0,
+        "bundle_ID": -1,
+        "length": 497600,
+        "title": "-",
+        "group": "-",
+        "weight": 14,
+        "ID": 16,
+        "name": "GCF_002127985.NZ_CP017328.1"
+    },
+    {
+        "first_node_ID": 0,
+        "bundle_ID": -1,
+        "length": 497691,
+        "title": "-",
+        "group": "-",
+        "weight": 11,
+        "ID": 17,
+        "name": "GCF_001272795.NZ_CP010544.1"
+    },
+    {
+        "first_node_ID": 0,
+        "bundle_ID": -1,
+        "length": 497687,
+        "title": "-",
+        "group": "-",
+        "weight": 10,
+        "ID": 18,
+        "name": "GCF_001272735.NZ_CP010541.1"
+    },
+    {
+        "first_node_ID": 0,
+        "bundle_ID": -1,
+        "length": 496056,
+        "title": "-",
+        "group": "-",
+        "weight": 59,
+        "ID": 19,
+        "name": "GCF_002128205.NZ_CP017337.1"
+    },
+    {
+        "first_node_ID": 0,
+        "bundle_ID": -1,
+        "length": 495976,
+        "title": "-",
+        "group": "-",
+        "weight": 60,
+        "ID": 20,
+        "name": "GCF_002128235.NZ_CP017338.1"
+    },
+    {
+        "first_node_ID": 0,
+        "bundle_ID": -1,
+        "length": 496035,
+        "title": "-",
+        "group": "-",
+        "weight": 38,
+        "ID": 21,
+        "name": "GCF_002128105.NZ_CP017341.1"
+    },
+    {
+        "first_node_ID": 0,
+        "bundle_ID": -1,
+        "length": 496055,
+        "title": "-",
+        "group": "-",
+        "weight": 59,
+        "ID": 22,
+        "name": "GCF_001272895.NZ_CP010549.1"
+    },
+    {
+        "first_node_ID": 0,
+        "bundle_ID": -1,
+        "length": 495997,
+        "title": "-",
+        "group": "-",
+        "weight": 61,
+        "ID": 23,
+        "name": "GCF_001272915.NZ_CP010550.1"
+    },
+    {
+        "first_node_ID": 0,
+        "bundle_ID": -1,
+        "length": 497762,
+        "title": "-",
+        "group": "-",
+        "weight": 10,
+        "ID": 24,
+        "name": "GCF_002090315.NZ_CP020693.1"
+    },
+    {
+        "first_node_ID": 0,
+        "bundle_ID": -1,
+        "length": 497741,
+        "title": "-",
+        "group": "-",
+        "weight": 10,
+        "ID": 25,
+        "name": "GCF_002090275.NZ_CP020691.1"
+    },
+    {
+        "first_node_ID": 0,
+        "bundle_ID": -1,
+        "length": 482532,
+        "title": "-",
+        "group": "-",
+        "weight": 100,
+        "ID": 26,
+        "name": "GCF_001509195.NZ_CP013829.1"
+    },
+    {
+        "first_node_ID": 0,
+        "bundle_ID": -1,
+        "length": 496049,
+        "title": "-",
+        "group": "-",
+        "weight": 57,
+        "ID": 27,
+        "name": "GCF_001272715.NZ_CP010540.1"
+    },
+    {
+        "first_node_ID": 0,
+        "bundle_ID": -1,
+        "length": 497744,
+        "title": "-",
+        "group": "-",
+        "weight": 9,
+        "ID": 28,
+        "name": "GCF_002128065.NZ_CP017332.1"
+    },
+    {
+        "first_node_ID": 0,
+        "bundle_ID": -1,
+        "length": 497783,
+        "title": "-",
+        "group": "-",
+        "weight": 5,
+        "ID": 29,
+        "name": "GCF_002128045.NZ_CP017331.1"
+    },
+    {
+        "first_node_ID": 0,
+        "bundle_ID": -1,
+        "length": 497815,
+        "title": "-",
+        "group": "-",
+        "weight": 7,
+        "ID": 30,
+        "name": "GCF_002128025.NZ_CP017330.1"
+    },
+    {
+        "first_node_ID": 0,
+        "bundle_ID": -1,
+        "length": 497852,
+        "title": "-",
+        "group": "-",
+        "weight": 2,
+        "ID": 31,
+        "name": "GCF_001272755.NZ_CP010542.1"
+    },
+    {
+        "first_node_ID": 0,
+        "bundle_ID": -1,
+        "length": 497766,
+        "title": "-",
+        "group": "-",
+        "weight": 9,
+        "ID": 32,
+        "name": "GCF_002095995.NZ_CP020711.1"
+    },
+    {
+        "first_node_ID": 0,
+        "bundle_ID": -1,
+        "length": 496022,
+        "title": "-",
+        "group": "-",
+        "weight": 59,
+        "ID": 33,
+        "name": "GCF_001272835.NZ_CP010546.1"
+    },
+    {
+        "first_node_ID": 0,
+        "bundle_ID": -1,
+        "length": 495840,
+        "title": "-",
+        "group": "-",
+        "weight": 61,
+        "ID": 34,
+        "name": "GCF_002128185.NZ_CP017334.1"
+    },
+    {
+        "first_node_ID": 0,
+        "bundle_ID": -1,
+        "length": 496075,
+        "title": "-",
+        "group": "-",
+        "weight": 48,
+        "ID": 35,
+        "name": "GCF_000283755.NC_016807.1"
+    },
+    {
+        "first_node_ID": 0,
+        "bundle_ID": -1,
+        "length": 495889,
+        "title": "-",
+        "group": "-",
+        "weight": 62,
+        "ID": 36,
+        "name": "GCF_001272855.NZ_CP010547.1"
+    },
+    {
+        "first_node_ID": 0,
+        "bundle_ID": -1,
+        "length": 495989,
+        "title": "-",
+        "group": "-",
+        "weight": 51,
+        "ID": 37,
+        "name": "GCF_002128005.NZ_CP017329.1"
+    },
+    {
+        "first_node_ID": 0,
+        "bundle_ID": -1,
+        "length": 497711,
+        "title": "-",
+        "group": "-",
+        "weight": 8,
+        "ID": 38,
+        "name": "GCF_002090235.NZ_CP020690.1"
+    },
+    {
+        "first_node_ID": 0,
+        "bundle_ID": -1,
+        "length": 497808,
+        "title": "-",
+        "group": "-",
+        "weight": 4,
+        "ID": 39,
+        "name": "GCF_001558175.NZ_CP014267.1"
+    },
+    {
+        "first_node_ID": 0,
+        "bundle_ID": -1,
+        "length": 497768,
+        "title": "-",
+        "group": "-",
+        "weight": 10,
+        "ID": 40,
+        "name": "GCF_002090215.NZ_CP020689.1"
+    },
+    {
+        "first_node_ID": 0,
+        "bundle_ID": -1,
+        "length": 495862,
+        "title": "-",
+        "group": "-",
+        "weight": 65,
+        "ID": 41,
+        "name": "GCF_000143945.NC_017504.1"
+    },
+    {
+        "first_node_ID": 0,
+        "bundle_ID": -1,
+        "length": 497667,
+        "title": "-",
+        "group": "-",
+        "weight": 12,
+        "ID": 42,
+        "name": "GCF_001272815.NZ_CP010545.1"
+    },
+    {
+        "first_node_ID": 0,
+        "bundle_ID": -1,
+        "length": 497875,
+        "title": "-",
+        "group": "-",
+        "weight": 0,
+        "ID": 43,
+        "name": "GCF_002128145.NZ_CP017333.1"
+    }
+]

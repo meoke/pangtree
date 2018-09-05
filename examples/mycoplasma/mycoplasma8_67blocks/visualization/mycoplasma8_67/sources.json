@@ -1,0 +1,72 @@
+[
+    {
+        "length": 4934,
+        "name": "NZ_CP010542.1",
+        "title": "54089",
+        "ID": 0,
+        "bundle_ID": -1,
+        "first_node_ID": 7,
+        "weight": 100,
+        "group": "Mycoplasma pneumoniae"
+    },
+    {
+        "length": 4934,
+        "name": "NZ_CP014267.1",
+        "title": "C267",
+        "ID": 1,
+        "bundle_ID": -1,
+        "first_node_ID": 7,
+        "weight": 100,
+        "group": "Mycoplasma pneumoniae"
+    },
+    {
+        "length": 3085,
+        "name": "NC_018412.1",
+        "title": "CA06_2006_052-5-2P",
+        "ID": 2,
+        "bundle_ID": -1,
+        "first_node_ID": 0,
+        "weight": 0,
+        "group": "Mycoplasma gallisepticum"
+    },
+    {
+        "length": 4935,
+        "name": " NZ_CP010548.1",
+        "title": "M2192",
+        "ID": 3,
+        "bundle_ID": -1,
+        "first_node_ID": 7,
+        "weight": 100,
+        "group": "Mycoplasma pneumoniae"
+    },
+    {
+        "length": 4721,
+        "name": " NC_018495.1",
+        "title": "M2321",
+        "ID": 4,
+        "bundle_ID": -1,
+        "first_node_ID": 0,
+        "weight": 55,
+        "group": "Mycoplasma genitalium"
+    },
+    {
+        "length": 4935,
+        "name": "NZ_CP010549.1",
+        "title": "M2592",
+        "ID": 5,
+        "bundle_ID": -1,
+        "first_node_ID": 7,
+        "weight": 100,
+        "group": "Mycoplasma pneumoniae"
+    },
+    {
+        "length": 4721,
+        "name": " NC_018497.1",
+        "title": "M6320",
+        "ID": 6,
+        "bundle_ID": -1,
+        "first_node_ID": 0,
+        "weight": 55,
+        "group": "Mycoplasma genitalium"
+    }
+]

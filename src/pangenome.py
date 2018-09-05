@@ -9,20 +9,20 @@ def convert(args):
     if args.format != 'maf' and args.format != 'po':
         parser.error('FILE FORMAT must be \'maf\' or \'po\'')
 
-    if args.m and not fullmatch('\[\d+\:\d+\]', str(args.m)):
+    if args.m and not (args.m == "all" or fullmatch('\[\d+\:\d+\]', str(args.m))):
         parser.error('Wrong formatting for MERGE_BLOCKS')
 
     if args.hbmin and args.c != 1:
         parser.error("Option -hbmin requires -c = 1.")
 
-    if (args.min_comp or args.r or args.t or args.multiplier or args.stop or args.re_consensus) and not args.c:
-        parser.error("Options -min-comp, -r, -t, -multiplier, -stop and -re_consensus require -c.")
+    if (args.min_comp or args.r or args.multiplier or args.stop or args.re_consensus) and not args.c:
+        parser.error("Options -min-comp, -r, -multiplier, -stop and -re_consensus require -c.")
 
     if args.r and not fullmatch('\[\d+\,\d+\]', str(args.r)):
         parser.error('Wrong formatting for RANGE')
 
-    if args.t and not fullmatch('\[\d+(\,\d+)?\]', str(args.r)):
-        parser.error('Wrong formatting for TRESHOLDS')
+    # if args.t and not fullmatch('\[\d+(\,\d+)?\]', str(args.r)):
+    #     parser.error('Wrong formatting for TRESHOLDS')
 
     try:
         if args.hbmin:
@@ -40,26 +40,30 @@ def convert(args):
     except ValueError:
         parser.error('HBMIN and MIN_COMP must be a float in range [0,1].')
 
-    if args.data != 'ebola' and args.data != 'mycoplasma':
-        parser.error('METAVAR must be \'ebola\' or \'mycoplasma\'')
+    if args.data != 'ebola' and args.data != 'mycoplasma' and args.data != "":
+        parser.error('METAVAR must be \'ebola\' or \'mycoplasma\' or empty string')
 
     file_abs_path = os.path.abspath(args.f)
-    converter.convert_maf_to_po(file_abs_path,
-                                args.format,
-                                args.m,
-                                args.draw,
-                                args.c,
-                                args.r,
-                                args.multiplier,
-                                args.stop,
-                                args.re_consensus,
-                                args.t,
-                                args.hbmin,
-                                args.min_comp,
-                                args.fasta,
-                                args.data,
-                                args.blocks)
-
+    # try:
+    converter.convert_maf_to_po(file_name=file_abs_path,
+                            file_format=args.format,
+                            merge_blocks_option=args.m,
+                            draw_poagraph_option=args.draw,
+                            consensus_option=args.c,
+                            range=args.r,
+                            multiplier=args.multiplier,
+                            stop=args.stop,
+                            re_consensus=args.re_consensus,
+                            hbmin=args.hbmin,
+                            min_comp=args.min_comp,
+                            fasta_option=args.fasta,
+                            data_type=args.data,
+                            blocks_option=args.blocks)
+    # except ValueError as ex:
+    #     print(ex.message)
+    # except Exception as ex:
+    #     print("Exception in convert occured.")
+    return
 
 parser = argparse.ArgumentParser(description='PAN-GENOME tools')
 
@@ -116,10 +120,6 @@ parser_converter.add_argument('-re_consensus',
                               action='store_true',
                               required=False,
                               help='Used in the tree consensus generation algorithm to reconsider consensus assignement after every iteration.')
-parser_converter.add_argument('-t',
-                              type=str,
-                              required=False,
-                              help='series of tresholds t1, t2, t3... to be used on tree levels, format (t1, t2... - floats): [t1, t2, t3,...]')
 parser_converter.add_argument('-draw',
                               action='store_true',
                               required=False,
@@ -127,13 +127,15 @@ parser_converter.add_argument('-draw',
 parser_converter.add_argument('-data',
                               metavar="DATATYPE",
                               required=True,
-                              help='ebola or mycoplasma')
+                              help='ebola or mycoplasma or empty string')
 parser_converter.add_argument('-blocks',
-                              metavar="BLOCKS",
+                              action='store_true',
                               required=False,
                               help="Set if block analysis should be in ouput")
-parser_converter.set_defaults(func=convert)
+# parser_converter.set_defaults(func=convert)
 
 args = parser.parse_args()
-args.func(args)
+# args.func(args)
 
+if __name__ == "__main__":
+    convert(args)
