@@ -1,3 +1,6 @@
+**WARNING**
+Master branch of this repo is outdated. The *pang* package is currently under development and will be updated soon.
+
 # Multialignment processing tool for pangenomes
 
 ## Features
