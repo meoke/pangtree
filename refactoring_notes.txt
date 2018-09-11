@@ -1,0 +1,27 @@
+1. co robi ta aplikacja
+- szukanie consensusu (konieczne parametry):
+    - jednego wg poa
+    - tree wg naszego algorytmu
+- budowa naszej reprezentacji grafu
+    - to właściwie dzieje się zawsze...?
+    - można z poa, można z mafa, może jeszcze z naszego wewnętrznego formatu?
+- generowanie plików fasta
+- mierzy swój czas działania
+- rysuje (generuje stronkę)
+    - czysty poagraph
+    - wygenerowane consensusy
+    - bloki
+    - operacje na tym co jest wyświetlane (pokaż część, rozwiń itp.)
+
+
+2. jak powinna być obsługiwana:
+
+
+3. podział na moduły:
+
+rzeczy do zmiany:
+1. ustalić format jsonowy plików z danymi (ebola, myco itd.)
+2. osobny moduł, który można rozszerzać o własne funkcje obsługujące nowe typy danych (jakiś template funkcji??)
+3. zrobić możliwość zrzutu reprezentacji poagrafu i potem szybkiego wczytania go (pickle czy json?)
+4. powinno być automatyczne sprawdzanie formatu danych wejściowych
+5. co z opcją MERGE_BLOCKS? chyba już tego nie ma?
