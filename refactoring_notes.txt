@@ -27,9 +27,10 @@ rzeczy do zmiany:
 5. co z opcją MERGE_BLOCKS? chyba już tego nie ma?
 6. maf(po)_reader / writer - zamknąć w jakiś moduł
 7. budowa multialignmentu - to chyba w konstruktorze?
-8. argparse
+8+ argparse
 
 na bieżąco:
 - logowanie na konsolę / do pliku (przełącznik -v verbose?)
 - docstringi razem z doctest wszędzie
 - testy cmdargs
+- annotacje metod

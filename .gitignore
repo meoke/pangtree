@@ -106,6 +106,6 @@ tests/files/*/test*
 examples/mycoplasma/*/*/consensus/*
 tests/files/mycoplasma_po/consensus
 tests/files/mycoplasma_po
-tests/files/mycoplasma_po/mycoplasma.po
+tests/files/mycoplasmsa_po/mycoplasma.po
 *.xml
 *.iml

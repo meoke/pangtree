@@ -1,14 +1,26 @@
 import argparse
 from os.path import exists
+from os import getcwd
+from pathlib import Path
+from typing import Union, Dict
+
+from .pathtools import create_default_output_dir
+
+ArgType = Union[str, float, str, Path]
+ArgsList = Dict[str, ArgType]
 
 
-def _file_arg(path):
+def _file_arg(path: str) -> Path:
+    """Check if path exists."""
+
     if not exists(path):
         raise argparse.ArgumentTypeError(f"File {path} does not exist.")
-    return path
+    return Path(path)
 
 
-def _float_0_1(arg):
+def _float_0_1(arg: str) -> float:
+    """Check if convertable to float and in range [0,1]."""
+
     try:
         v = float(arg)
     except:
@@ -25,17 +37,25 @@ class _RangeArgAction(argparse.Action):
         setattr(namespace, self.dest, values)
 
 
-def _validate_args_presence(args):
+def _all_required_args_present(args: argparse.Namespace) -> bool:
+    """Check specific requirements for argumets presence."""
+
     if args.consensus == 'simple' and args.hbmin is None:
-        raise argparse.ArgumentError('Consensus \'simple\' requires also hbmin value.')
+        raise Exception('Consensus \'simple\' requires also hbmin value.')
     elif args.consensus == 'tree':
-        tree_required_args = [args.hbmin, args.mincomp, args.r, args.muliplier, args.stop, args.re_consensus]
+        tree_required_args = [args.hbmin, args.mincomp, args.r, args.multiplier, args.stop, args.re_consensus]
         if any([arg is None for arg in tree_required_args]):
-            raise argparse.ArgumentError('Consensus \'tree\' requires also hbmin, mincomp, r, multiplier, stop and '
+            raise Exception('Consensus \'tree\' requires also hbmin, mincomp, r, multiplier, stop and '
                                          're_consensus values.')
+
+    if args.output is None:
+        args.output = create_default_output_dir(Path(getcwd()))
+    return True
 
 
 def _get_parser():
+    """Create ArgumentParser for pang module."""
+
     p = argparse.ArgumentParser(prog='pang',
                                 description='Consensus generation and visulization of Pangenome',
                                 epilog='For more information check github.com/meoke/pang')
@@ -82,7 +102,12 @@ def _get_parser():
 
 
 def get_validated_args():
+    """Parse and validate command line arguments"""
+
     parser = _get_parser()
-    args = parser.parse_args()
-    validated_args = _validate_args_presence(args)
-    return validated_args
+    try:
+        args = parser.parse_args()
+        if _all_required_args_present(args):
+            return args
+    except Exception as e:
+        raise parser.error(e)
