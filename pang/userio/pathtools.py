@@ -18,3 +18,16 @@ def create_default_output_dir(parrent_path: Path) -> Path:
     current_time = datetime.now().strftime('%m_%d__%H_%M_%S')
     output_dir_name = "_".join([output_dir_prefix, current_time])
     return create_child_dir(parrent_path, output_dir_name)
+
+
+def remove_dir_if_empty(dir_path: Path) -> bool:
+    """Checks if directory exists and is empty, if yes - removes it."""
+
+    if dir_path.exists() and dir_path.is_dir():
+        for item in dir_path.iterdir():
+            if not item.is_dir():
+                return False
+            else:
+                item.rmdir()
+        dir_path.rmdir()
+        return True

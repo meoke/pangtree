@@ -20,7 +20,7 @@
 3. podział na moduły:
 
 rzeczy do zmiany:
-1. ustalić format jsonowy plików z danymi (ebola, myco itd.) - ale też żeby sobie radzić, jak tego nie ma?
+1+ ustalić format jsonowy plików z danymi (ebola, myco itd.)
 2. osobny moduł, który można rozszerzać o własne funkcje obsługujące nowe typy danych (jakiś template funkcji??)
 3. zrobić możliwość zrzutu reprezentacji poagrafu i potem szybkiego wczytania go (pickle czy json?)
 4. powinno być automatyczne sprawdzanie formatu danych wejściowych
@@ -28,9 +28,3 @@ rzeczy do zmiany:
 6. maf(po)_reader / writer - zamknąć w jakiś moduł
 7. budowa multialignmentu - to chyba w konstruktorze?
 8+ argparse
-
-na bieżąco:
-- logowanie na konsolę / do pliku (przełącznik -v verbose?)
-- docstringi razem z doctest wszędzie
-- testy cmdargs
-- annotacje metod

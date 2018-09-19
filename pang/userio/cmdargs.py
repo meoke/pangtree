@@ -1,5 +1,4 @@
 import argparse
-from os.path import exists
 from os import getcwd
 from pathlib import Path
 from typing import Union, Dict
@@ -13,9 +12,19 @@ ArgsList = Dict[str, ArgType]
 def _file_arg(path: str) -> Path:
     """Check if path exists."""
 
-    if not exists(path):
-        raise argparse.ArgumentTypeError(f"File {path} does not exist.")
-    return Path(path)
+    file_path = Path(path)
+    if not file_path.is_file():
+        raise argparse.ArgumentTypeError(f"File {path} does not exist or is not a file.")
+    return file_path
+
+
+def _dir_arg(path: str) -> Path:
+    """Check if dir exists and creates it if not."""
+
+    dir_path = Path(path)
+    if not dir_path.exists():
+        dir_path.mkdir()
+    return dir_path
 
 
 def _float_0_1(arg: str) -> float:
@@ -23,7 +32,7 @@ def _float_0_1(arg: str) -> float:
 
     try:
         v = float(arg)
-    except:
+    except ValueError:
         raise argparse.ArgumentTypeError(f"{arg} was passed, a float excpected.")
     if v < 0 or v > 1:
         raise argparse.ArgumentTypeError(f"This argument must be in range [0,1].")
@@ -31,26 +40,12 @@ def _float_0_1(arg: str) -> float:
 
 
 class _RangeArgAction(argparse.Action):
+    """Command line argument \'range\' (\'-r\') validation"""
+
     def __call__(self, parser, namespace, values, option_string=None):
         if values[1] < values[0]:
             raise ValueError("First r argument must be smaller or equal than the second r argument")
         setattr(namespace, self.dest, values)
-
-
-def _all_required_args_present(args: argparse.Namespace) -> bool:
-    """Check specific requirements for argumets presence."""
-
-    if args.consensus == 'simple' and args.hbmin is None:
-        raise Exception('Consensus \'simple\' requires also hbmin value.')
-    elif args.consensus == 'tree':
-        tree_required_args = [args.hbmin, args.mincomp, args.r, args.multiplier, args.stop, args.re_consensus]
-        if any([arg is None for arg in tree_required_args]):
-            raise Exception('Consensus \'tree\' requires also hbmin, mincomp, r, multiplier, stop and '
-                                         're_consensus values.')
-
-    if args.output is None:
-        args.output = create_default_output_dir(Path(getcwd()))
-    return True
 
 
 def _get_parser():
@@ -68,6 +63,8 @@ def _get_parser():
                    required=True,
                    help='Path to the json file with genomes specification. Format details: TODO.')
     p.add_argument('--output', '-o',
+                   type=_dir_arg,
+                   default=create_default_output_dir(Path(getcwd())),
                    help='Output directory path.')
     p.add_argument('-fasta',
                    action='store_true',
@@ -80,23 +77,29 @@ def _get_parser():
                    help='Use if consensus must be generated. Algorithms to choose: \'simple\' or \'tree\'.')
     p.add_argument('-hbmin',
                    type=_float_0_1,
+                   default=0.5,
                    help='POA algorithm parameter. TODO')
     p.add_argument('-mincomp',
                    type=_float_0_1,
+                   default=0.5,
                    help='Tree POA algorithm parameter. TODO')
     p.add_argument('-r',
                    nargs=2,
                    type=_float_0_1,
                    action=_RangeArgAction,
+                   default=[0.2, 0.5],
                    help='Tree POA algorithm parameter. TODO')
     p.add_argument('-multiplier',
                    type=float,
+                   default=1,
                    help='Tree POA algorithm parameter. TODO')
     p.add_argument('-stop',
                    type=_float_0_1,
+                   default=0.99,
                    help='Tree POA algorithm parameter. TODO')
     p.add_argument('-re_consensus',
                    action='store_true',
+                   default=True,
                    help='Tree POA algorithm parameter. TODO')
     return p
 
@@ -106,8 +109,6 @@ def get_validated_args():
 
     parser = _get_parser()
     try:
-        args = parser.parse_args()
-        if _all_required_args_present(args):
-            return args
+        return parser.parse_args()
     except Exception as e:
         raise parser.error(e)

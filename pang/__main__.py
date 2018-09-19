@@ -8,6 +8,7 @@ from .Pangraph import Pangraph
 
 def run_pang(args):
     """Creates Pangraph and runs required algorithms."""
+
     p = Pangraph(args.multialignment, args.data)
     if args.fasta:
         p.generate_fasta_files(pathtools.create_child_dir(args.output, 'fasta'))
@@ -23,11 +24,27 @@ def run_pang(args):
         p.generate_visualization(pathtools.create_child_dir(args.output, 'vis'))
 
 
+def cleanup(args: cmdargs.ArgsList)-> None:
+    """Removes output directory if it is empty."""
+
+    no_output = pathtools.remove_dir_if_empty(args.output)
+    if no_output:
+        logging.info("No output was produced.")
+    else:
+        logging.info(f"Program output is placed in {args.output}")
+
+
 args = cmdargs.get_validated_args()
 logging.info(f'Input arguments: {args}')
 start = time.clock()
 
-run_pang(args)
+try:
+    run_pang(args)
+except Exception as e:
+    logging.error("Something went wrong...")
+    print(e)
+finally:
+    cleanup(args)
 
 end = time.clock()
 processing_time = time.strftime('%H:%M:%S', time.gmtime(end - start))

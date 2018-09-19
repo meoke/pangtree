@@ -1,0 +1,25 @@
+- algorytm bloków:
+podczas tworzenia poagrafu mi to jest potrzebne, czyli jakiś pośrednik we wczytywaniu mafa
+
+podczas rysowania: niezależnie to wizualizacji bloków
+
+input: maf
+output: maf ze zmienioną kolejnością bloków
+
+skierowany acykliczny
+networkx
+
+specyfikacja api
+cykl / nie zgadzają się boki <- powody złych krawęðzi
+
+wierzchołki blokómają swoje dwa końce
+
+garf skierowany /nieskierowany
+
+mathtools - ogarnie gorsze mafy, ale póki co korzystamy z mugsy
+
+
+1. włączenie algorytmu
+2. opis algorytmu w ostatniej wersji (możliwie szczegółowy) i zaznaczyć gdzie są zmiany powodujące dziwne zachowanie
+
+poniedziałek 24.09 10:00

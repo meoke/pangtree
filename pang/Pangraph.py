@@ -1,5 +1,5 @@
 # from .geninfo import input_reader
-import geninfo.input_reader
+import genmetadata.reader
 
 class Pangraph:
     def __init__(self, multialignment_file, data_file):
@@ -16,7 +16,7 @@ class Pangraph:
         pass
 
     def _read_genomes_info(self, data_file):
-        return geninfo.input_reader.read(data_file)
+        return genmetadata.reader.read(data_file)
 
     def _build_graph(self, multialignment_file):
         pass
