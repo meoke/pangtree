@@ -9,9 +9,10 @@ def read(gen_info_file):
     with open(gen_info_file) as p:
         metadata = json.load(p)
         genome_metadata = {seq['id']: SequenceMetadata(genbankID=seq['genbankID'],
-                                                        assemblyID=seq['assemblyID'],
-                                                        name=seq['name'],
-                                                        group=seq['group'])for seq in metadata['data']}
+                                                       assemblyID=seq['assemblyID'],
+                                                       mafname=seq['mafname'],
+                                                       name=seq['name'],
+                                                       group=seq['group'])for seq in metadata['data']}
         return MultialignmentMetadata(title=metadata['title'],
                                       source=metadata['source'],
                                       genomes_metadata=genome_metadata)

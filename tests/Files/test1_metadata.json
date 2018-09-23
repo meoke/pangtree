@@ -1,0 +1,8 @@
+{"title": "Ebola",
+  "source": "Ebola portal",
+  "data": [
+      {"id": 0, "genbankID": "", "assemblyID": "", "mafname": "testseq0", "name": "testseq0", "group": ""},
+      {"id": 1, "genbankID": "", "assemblyID": "", "mafname": "testseq1", "name": "testseq1", "group": ""},
+      {"id": 2, "genbankID": "", "assemblyID": "", "mafname": "testseq2", "name": "testseq2", "group": ""}
+    ]
+}
