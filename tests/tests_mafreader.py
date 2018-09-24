@@ -14,8 +14,19 @@ class CmdargsTest(unittest.TestCase):
         self.ebola_metadata = metadatareader.read("Files/ebola_metadata.json")
         self.mycoplasma_metadata = metadatareader.read("Files/mycoplasma_metadata.json")
 
-    @data("Files/mycoplasma_full.maf")
+    @data("Files/test1.maf")
+    @unittest.skip("simple")
     def test_read_maf(self, maf_path):
+        graph, paths_manager = mafreader.read(maf_path, self.test1_metadata)    \
+
+    @data("Files/ebola_ncbi.maf")
+    # @unittest.skip("ebola")
+    def test_read_maf_ebola(self, maf_path):
+        graph, paths_manager = mafreader.read(maf_path, self.ebola_metadata)    \
+
+    @data("Files/mycoplasma_full.maf")
+    @unittest.skip("myco")
+    def test_read_maf_myco(self, maf_path):
         graph, paths_manager = mafreader.read(maf_path, self.mycoplasma_metadata)
 
 

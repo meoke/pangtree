@@ -19,3 +19,15 @@ class PathManager:
 
     def trim(self, nodes_count):
         self.paths = np.delete(self.paths, np.s_[nodes_count:], 1)
+
+    def get_in_nodes(self, node_id):
+        in_nodes = []
+        node_ids_to_check = range(node_id-1, -1, -1)
+        for seq in self.paths:
+            if seq[node_id]:
+                for col_id in node_ids_to_check:
+                    if seq[col_id]:
+                        in_nodes.append(col_id)
+                        break
+        return in_nodes
+
