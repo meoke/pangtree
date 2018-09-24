@@ -100,12 +100,13 @@ ENV/
 # mypy
 .mypy_cache/
 
-tests/files/*/converted*
-tests/files/*/result*
-tests/files/*/test*
-examples/mycoplasma/*/*/consensus/*
-tests/files/mycoplasma_po/consensus
-tests/files/mycoplasma_po
-tests/files/mycoplasmsa_po/mycoplasma.po
+tests_old/files/*/converted*
+tests_old/files/*/result*
+tests_old/files/*/test*
+examples_old/mycoplasma/*/*/consensus/*
+tests_old/files/mycoplasma_po/consensus
+tests_old/files/mycoplasma_po
+tests_old/files/mycoplasmsa_po/mycoplasma.po
+inne/*
 *.xml
 *.iml

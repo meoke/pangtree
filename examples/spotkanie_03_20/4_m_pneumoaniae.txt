@@ -1,4 +1,0 @@
-C267 ./examples_paulina/mycoplasma/GCA_001558175.fasta
-54089 ./examples_paulina/mycoplasma/GCF_001272755.fasta
-M2192 ./examples_paulina/mycoplasma/GCF_001272875.fasta
-M2592 ./examples_paulina/mycoplasma/GCF_001272895.fasta

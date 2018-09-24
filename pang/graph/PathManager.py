@@ -14,11 +14,8 @@ class PathManager:
     def update(self, pathmanager, start):
         for path_name, array_id in pathmanager.path_names_to_array_id.items():
             current_array_id = self.path_names_to_array_id[path_name]
-            end=np.shape(pathmanager.paths)[1]
-            f=pathmanager.paths[array_id, :]
-            g=self.paths[current_array_id, start:end]
-            self.paths[current_array_id, start:end] = f
-            pass
+            end = start+np.shape(pathmanager.paths)[1]
+            self.paths[current_array_id, start:end] = pathmanager.paths[array_id, :]
 
-    def trim(self, last_node_id):
-        self.paths = np.delete(self.paths, np.s_[last_node_id+1:],1)
+    def trim(self, nodes_count):
+        self.paths = np.delete(self.paths, np.s_[nodes_count:], 1)

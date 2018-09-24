@@ -22,4 +22,26 @@ mathtools - ogarnie gorsze mafy, ale póki co korzystamy z mugsy
 1. włączenie algorytmu
 2. opis algorytmu w ostatniej wersji (możliwie szczegółowy) i zaznaczyć gdzie są zmiany powodujące dziwne zachowanie
 
-poniedziałek 24.09 10:00
+poniedziałek 24.09 10:00]
+
+pytania:
+- czy uważa BioPythona
+- wierzchołki mają dwa końće -> czyli wystarczy oznaczenie, czyprzechodzimy przez blok z lewo na prawą czy na odwrót
+- jakie użycie networkx (powody odrzucenia krawędzi -> żeby to były atrybuty networkx)
+(ma tylko te krawędzie, które są używane)
+
+co zrobiłam:
+- przepisywanie wvzytywania do mafu i algorytmu consensusowego
+- ja po drodze też mam sortowanie i chciałabym czym prędzej włączyć to nowe
+- mam wstępnie jak bym chciała, żeby wyglądał ten obiekt grafu
+
+jest, pominięta bo cykl
+krawędzie:
+1. usunięte bo powodują cykl
+2. z prawego do lewego końca
+3. z prawego do prawego
+
+atrybut dla krawędzi -
+to nie taka prosta sprawa, że po prostu krawędź ma atrybut: "istnieje"/"nie istenieje", jeszcze jest istotna wiedza o bloku - czy wychodzi z lewej czy z prawej strony, a właściwie to info o połączeniu z  konkretnymi sekwencjami
+- niekoniecznie networkx
+- networkx to tylko reprezentacja danych, żadnych algorytmów z networkx nie wykorzystuje, więc to można zmienić

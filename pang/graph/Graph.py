@@ -14,3 +14,6 @@ class Graph:
         if new_nodes:
             self.nodes[new_nodes[0].id: new_nodes[-1].id] = new_nodes
 
+    def trim(self, nodes_count):
+        del self.nodes[nodes_count:]
+

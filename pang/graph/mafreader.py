@@ -18,17 +18,18 @@ def read(multialignment_file: Path, multialignment_metadata: MultialignmentMetad
 def parse(maf: str, multialignment_metadata):
     mafgraph = get_sorted_mafgraph(maf) #żeby znać kolejność
     nodes_count = get_max_count_nodes(mafgraph)
-    sequences_count = len(multialignment_metadata.genomes_metadata)
 
     graph = Graph(nodes_count=nodes_count)
-    paths_names=[m.mafname for m in multialignment_metadata.genomes_metadata.values()]
+    paths_names = [m.mafname for m in multialignment_metadata.genomes_metadata.values()]
     paths_manager = PathManager(start_node_id=0, max_nodes_count=nodes_count, paths_names=paths_names)
     last_node_id = -1
     for b in mafgraph:
         nodes, minipathmanager, last_node_id = parse_maf_block(b, last_node_id)
         graph.update_nodes(nodes)
         paths_manager.update(minipathmanager, last_node_id+1-len(nodes))
-    pass
+    graph.trim(nodes_count=last_node_id+1)
+    paths_manager.trim(nodes_count=last_node_id+1)
+    return graph, paths_manager
 
 
 def get_sorted_mafgraph(maf):
@@ -76,5 +77,5 @@ def parse_maf_block(block, previous_node_id):
                     minipathmanager.mark(path_name=sequence, node_id=current_node_id)
             nodes.append(node)
 
-    minipathmanager.trim(current_node_id)
+    minipathmanager.trim(nodes_count=len(nodes))
     return nodes, minipathmanager, current_node_id
