@@ -5,7 +5,7 @@ GenomeMetadataDict = Dict[int, SequenceMetadata]
 
 
 class MultialignmentMetadata:
-    def __init__(self, title: str, source: str, genomes_metadata: GenomeMetadataDict):
+    def __init__(self, title: str, version: str, genomes_metadata: GenomeMetadataDict):
         self.title = title
-        self.source = source
+        self.version = version
         self.genomes_metadata = genomes_metadata

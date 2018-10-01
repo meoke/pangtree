@@ -1,0 +1,37 @@
+VERSION=October
+NAME=test01
+TITLE=test01
+LENGTH=18
+SOURCECOUNT=4
+SOURCENAME=testseq0
+SOURCEINFO=0 -1 -1 -1 testseq0
+SOURCENAME=testseq1
+SOURCEINFO=0 -1 -1 -1 testseq1
+SOURCENAME=testseq2
+SOURCEINFO=0 -1 -1 -1 testseq2
+SOURCENAME=testseq3
+SOURCEINFO=0 -1 -1 -1 testseq3
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

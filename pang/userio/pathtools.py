@@ -3,8 +3,11 @@ from pathlib import Path
 from datetime import datetime
 
 
-def create_child_dir(parent_path: Path, child_dir_name: str) -> Path:
+def create_child_dir(parent_path: Path, child_dir_name: str, add_timestamp: bool = False) -> Path:
     """Creates child dir with given name under parent path."""
+
+    if add_timestamp:
+        child_dir_name += _get_current_time()
 
     child_dir_path = parent_path.joinpath(child_dir_name)
     child_dir_path.mkdir()
@@ -15,9 +18,14 @@ def create_default_output_dir(parrent_path: Path) -> Path:
     """Creates timestamped child dir under parent path"""
 
     output_dir_prefix = 'pang_output'
-    current_time = datetime.now().strftime('%m_%d__%H_%M_%S')
+    current_time = _get_current_time()
     output_dir_name = "_".join([output_dir_prefix, current_time])
     return create_child_dir(parrent_path, output_dir_name)
+
+
+def remove_dir(dir_path: Path) -> None:
+    if dir_path.exists() and dir_path.is_dir():
+        dir_path.rmdir()
 
 
 def remove_dir_if_empty(dir_path: Path) -> bool:
@@ -31,3 +39,11 @@ def remove_dir_if_empty(dir_path: Path) -> bool:
                 item.rmdir()
         dir_path.rmdir()
         return True
+
+
+def get_child_file_path(directory: Path, file_name: str) -> Path:
+    return directory.joinpath(file_name)
+
+
+def _get_current_time() -> str:
+    return datetime.now().strftime('%m_%d__%H_%M_%S')

@@ -3,17 +3,18 @@ import logging
 import time
 
 from .userio import cmdargs, pathtools
-from .Pangraph import Pangraph
+from .Pangenome import Pangenome
 
 
 def run_pang(args):
     """Creates Pangraph and runs required algorithms."""
 
-    p = Pangraph(args.multialignment, args.data)
+    p = Pangenome(args.multialignment, args.data)
     if args.fasta:
         p.generate_fasta_files(pathtools.create_child_dir(args.output, 'fasta'))
     if args.consensus:
         p.generate_consensus(pathtools.create_child_dir(args.output, 'consensus'),
+                             args.consensus,
                              args.hbmin,
                              args.mincomp,
                              args.r,
