@@ -43,7 +43,7 @@ try:
     run_pang(args)
 except Exception as e:
     logging.error("Something went wrong...")
-    print(e)
+    raise e
 finally:
     cleanup(args)
 

@@ -7,10 +7,12 @@ class Pangraph():
     def __init__(self, max_nodes_count: int=0, start_node_id: int=0, paths_names: List[str]=None):
         self._nodes = [None] * max_nodes_count
         self._pathmanager = PathManager(start_node_id, max_nodes_count, paths_names)
+        self._consensusmanager = PathManager()
 
     def __eq__(self, other):
         return (self._nodes == other._nodes and
-                self._pathmanager == other._pathmanager)
+                self._pathmanager == other._pathmanager and
+                self._consensusmanager == other._consensusmanager)
 
     def update(self, pangraph, start_node):
         self.update_nodes(pangraph._nodes)
@@ -72,3 +74,6 @@ class Pangraph():
 
     def get_sources_ids(self, node_id: int) -> List[int]:
         return self._pathmanager.get_sources_ids(node_id)
+
+    def set_consensuses(self, paths_to_node_ids):
+        self._consensusmanager.init_from_dict(paths_to_node_ids)

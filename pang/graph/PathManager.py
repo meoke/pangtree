@@ -5,18 +5,18 @@ PathsNodesDict = Dict[str, int]
 PathsNamesList = List[str]
 #todo czy path to aby na pewno string? a nie path/sequence?
 
+
 class PathManager:
     def __init__(self, start_node_id: int=0, max_nodes_count: int=0, paths_names: PathsNamesList=None):
-        # if paths_to_node_ids:
-        #     self.init_from_dict(paths_to_node_ids)
-        # else:
         paths_names = [] if not paths_names else paths_names
         self.paths = np.zeros(shape=(len(paths_names), max_nodes_count), dtype=bool)
         self.path_names_to_array_id = {path_name: i for i, path_name in enumerate(sorted(paths_names))}
         self.start_node_id = start_node_id
 
     def init_from_dict(self, paths_to_node_ids):
-        max_node_id = max([node_id for node_ids in paths_to_node_ids.values() for node_id in node_ids] )
+        if not paths_to_node_ids.keys():
+            return
+        max_node_id = max([node_id for node_ids in paths_to_node_ids.values() for node_id in node_ids])
         self.start_node_id = 0
         self.paths = np.zeros(shape=(len(paths_to_node_ids.keys()), max_node_id+1), dtype=bool)
         self.path_names_to_array_id = {path_name: array_id

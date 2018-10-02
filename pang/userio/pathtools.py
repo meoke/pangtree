@@ -35,7 +35,7 @@ def remove_dir_if_empty(dir_path: Path) -> bool:
 
     if dir_path.exists() and dir_path.is_dir():
         for item in dir_path.iterdir():
-            if not item.is_dir():
+            if not item.is_dir() or (item.is_dir() and [*item.iterdir()]):
                 return False
             else:
                 item.rmdir()

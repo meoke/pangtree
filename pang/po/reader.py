@@ -6,15 +6,17 @@ from graph.Pangraph import Node
 import graph.nucleotides as n
 
 
-def read(path: Path, genomes_info: MultialignmentMetadata) -> Pangraph:
+def read(path: Path) -> Pangraph:
     with open(path) as input:
         po_lines = input.readlines()
 
     p = Pangraph()
-    nodes, paths_to_nodes_ids = extract_pangraph(po_lines)
+    nodes, sequences_to_nodes_ids, consensuses_to_nodes_ids = extract_pangraph(po_lines)
     p.update_nodes(new_nodes=nodes)
-    p.set_paths(paths_to_node_ids=paths_to_nodes_ids)
+    p.set_paths(paths_to_node_ids=sequences_to_nodes_ids)
+    p.set_consensuses(paths_to_node_ids=consensuses_to_nodes_ids)
     return p
+
 
 def extract_pangraph(po_lines):
     po_lines_iterator = iter(po_lines)
@@ -60,7 +62,7 @@ def extract_pangraph(po_lines):
             else:
                 consensusnames_to_nodes_ids[pathname].append(i)
 
-    return nodes, seqnames_to_nodes_ids
+    return nodes, seqnames_to_nodes_ids, consensusnames_to_nodes_ids
 
 
 

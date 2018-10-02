@@ -79,6 +79,56 @@ def get_pangraph1() -> (Pangraph, List[str]):
 
     return pangraph, expected_pofile
 
+def get_pangraph_with_consensuses() -> (Pangraph, List[str]):
+    nodes = [Node(id=0, base=n.code('C'), in_nodes=[], aligned_to=1),
+             Node(id=1, base=n.code('T'), in_nodes=[], aligned_to=0),
+             Node(id=2, base=n.code('A'), in_nodes=[1], aligned_to=3),
+             Node(id=3, base=n.code('G'), in_nodes=[0], aligned_to=2),
+             Node(id=4, base=n.code('C'), in_nodes=[2, 3], aligned_to=None),
+             Node(id=5, base=n.code('T'), in_nodes=[4], aligned_to=None),
+             Node(id=6, base=n.code('A'), in_nodes=[5], aligned_to=7),
+             Node(id=7, base=n.code('T'), in_nodes=[5], aligned_to=6),
+             Node(id=8, base=n.code('G'), in_nodes=[6, 7], aligned_to=None),
+             ]
+
+    sequences_paths_to_node_ids = {
+        'testseq0': [0, 3, 4, 5, 6, 8],
+        'testseq1': [1, 2, 4, 5, 7, 8]
+    }
+    consensuses_paths_to_node_ids = {
+        'CONSENS0': [0, 3, 4, 5, 7, 8],
+        'CONSENS1': [1, 2, 4, 5, 6, 8]
+    }
+    pangraph = Pangraph()
+    pangraph.update_nodes(nodes)
+    pangraph.set_paths(sequences_paths_to_node_ids)
+    pangraph.set_consensuses(consensuses_paths_to_node_ids)
+
+    expected_pofile = ["VERSION=October",
+                       "NAME=test01",
+                       "TITLE=test01",
+                       "LENGTH=9",
+                       "SOURCECOUNT=4",
+                       "SOURCENAME=testseq0",
+                       "SOURCEINFO=6 0 100 0 testseq0",
+                       "SOURCENAME=testseq1",
+                       "SOURCEINFO=6 1 100 1 testseq1",
+                       "SOURCENAME=CONSENS0",
+                       "SOURCEINFO=6 0 -1 0 CONSENS0",
+                       "SOURCENAME=CONSENS1",
+                       "SOURCEINFO=6 1 -1 1 CONSENS1",
+                       "C:S0S2A1",
+                       "T:S1S3A0",
+                       "A:L1S1S3A3",
+                       "G:L0S0S2A2",
+                       "C:L2L3S0S1S2S3",
+                       "T:L4S0S1S2S3",
+                       "A:L5S0S3A7",
+                       "T:L5S1S2A6",
+                       "G:L6L7S0S1S2S3"]
+
+    return pangraph, expected_pofile
+
 @ddt
 class PoWriteReadTest(unittest.TestCase):
 
@@ -107,7 +157,8 @@ class PoWriteReadTest(unittest.TestCase):
             self.remove_temp_dir = False
             raise ex
 
-    @data((get_pangraph1()[0], get_pangraph1()[1]))
+    @data((get_pangraph1()[0], get_pangraph1()[1]),
+          (get_pangraph_with_consensuses()[0], get_pangraph_with_consensuses()[1]))
     @unpack
     def test_read_po(self, expected_pangraph, pofile_lines):
         poa_path = pathtools.get_child_file_path(self.output_dir, "pangraph_to_read.po")
@@ -116,8 +167,7 @@ class PoWriteReadTest(unittest.TestCase):
 
         actual_pangraph = poreader.read(poa_path, self.genomes_info)
         try:
-            diff.show_pangraph_differences(actual_pangraph=actual_pangraph,
-                                           expected_pangraph=expected_pangraph)
+            self.compare_pangraphs(actual_pangraph=actual_pangraph, expected_pangraph=expected_pangraph)
             self.remove_temp_dir = True
         except Exception as ex:
             self.remove_temp_dir = False
@@ -151,6 +201,13 @@ class PoWriteReadTest(unittest.TestCase):
 
         self.assertEqual(actual_aligned_to_info, expected_aligned_to)
 
+
+    def compare_pangraphs(self, actual_pangraph, expected_pangraph):
+        try:
+            self.assertEqual(actual_pangraph, expected_pangraph)
+        except Exception as ex:
+            diff.show_pangraph_differences(actual_pangraph=actual_pangraph, expected_pangraph=expected_pangraph)
+            raise ex
 
     def tearDown(self):
         if self.remove_temp_dir:
