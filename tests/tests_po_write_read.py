@@ -11,6 +11,7 @@ from context import poreader
 from context import pathtools
 from context import MultialignmentMetadata
 from context import SequenceMetadata
+import helper_show_diffs as diff
 
 
 def get_pangraph1() -> (Pangraph, List[str]):
@@ -115,11 +116,13 @@ class PoWriteReadTest(unittest.TestCase):
 
         actual_pangraph = poreader.read(poa_path, self.genomes_info)
         try:
-            self.assertEqual(expected_pangraph, actual_pangraph)
+            diff.show_pangraph_differences(actual_pangraph=actual_pangraph,
+                                           expected_pangraph=expected_pangraph)
             self.remove_temp_dir = True
         except Exception as ex:
             self.remove_temp_dir = False
             raise ex
+
 
     @data(([], ""),
           ([0, 1], "L0L1"))
