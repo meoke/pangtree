@@ -1,4 +1,5 @@
 from pathlib import Path
+import shutil
 
 from datetime import datetime
 
@@ -10,7 +11,8 @@ def create_child_dir(parent_path: Path, child_dir_name: str, add_timestamp: bool
         child_dir_name += _get_current_time()
 
     child_dir_path = parent_path.joinpath(child_dir_name)
-    child_dir_path.mkdir()
+    if not child_dir_path.is_dir():
+        child_dir_path.mkdir()
     return child_dir_path.resolve()
 
 
@@ -25,7 +27,7 @@ def create_default_output_dir(parrent_path: Path) -> Path:
 
 def remove_dir(dir_path: Path) -> None:
     if dir_path.exists() and dir_path.is_dir():
-        dir_path.rmdir()
+        shutil.rmtree(dir_path)
 
 
 def remove_dir_if_empty(dir_path: Path) -> bool:

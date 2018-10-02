@@ -10,9 +10,9 @@ from pang.graph.Graph import Graph
 from pang.graph.Node import Node
 import pang.graph.nucleotides as nucleotides
 from pang.graph.PathManager import PathManager
-import pang.graph.Subgraph as subgraph
 from pang.graph.Pangraph import Pangraph
 import po.writer as powriter
+import po.reader as poreader
 import userio.pathtools as pathtools
 from pang.metadata.SequenceMetadata import SequenceMetadata
 from pang.metadata.MultialignmentMetadata import MultialignmentMetadata

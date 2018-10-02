@@ -2,6 +2,8 @@ from graph.Pangraph import Pangraph
 from pathlib import Path
 from typing import List
 from metadata import MultialignmentMetadata
+from graph import Node
+import graph.nucleotides as n
 
 
 def save(p: Pangraph, path: Path, genomes_info: MultialignmentMetadata) -> None:
@@ -15,20 +17,12 @@ def save(p: Pangraph, path: Path, genomes_info: MultialignmentMetadata) -> None:
     file_cursor = len(introduction)
     po_lines[0:len(introduction)] = introduction
 
-    sources = get_sources(p, genomes_info)
+    sources = get_sources(p)
     po_lines[file_cursor: file_cursor + len(sources)] = sources
     file_cursor += len(sources)
 
     nodes = get_nodes(p)
     po_lines[file_cursor: file_cursor + len(nodes)] = nodes
-
-    # for j, i in enumerate(po_lines):
-    #     if i is None:
-    #         po_lines[j] = ""
-
-    # po_lines.extend(get_source_sequences(nodes, sources_weights))
-    # n = get_nodes(nodes, sources)
-    # po_lines.extend(n)
 
     lines = "\n".join(po_lines)
     with open(path, 'w') as out:
@@ -37,7 +31,7 @@ def save(p: Pangraph, path: Path, genomes_info: MultialignmentMetadata) -> None:
 
 def get_poa_file_length(pangraph: Pangraph) -> int:
     const_lines_count = 4
-    source_lines_count = 4 * pangraph.get_paths_count()
+    source_lines_count = 2 * pangraph.get_paths_count()
     nodes_lines_count = pangraph.get_nodes_count()
     return const_lines_count + source_lines_count + nodes_lines_count
 
@@ -51,21 +45,47 @@ def get_introduction(version: str, nodes_count: int, source_count: int, title: s
     return introduction_data
 
 
-def get_sources(pangraph: Pangraph, genomes_metadata: MultialignmentMetadata) -> List[str]:
+def get_sources(pangraph: Pangraph) -> List[str]:
     source_count = pangraph.get_paths_count()
     sources_data = [None] * source_count * 2
     line_id = 0
-    for source in pangraph.get_path_names():
-        sources_data[line_id] = f"SOURCENAME={source}"
+    sources_weights = pangraph.get_sources_weights()
+    for source_name, weight in zip(pangraph.get_path_names(), sources_weights):
+        sources_data[line_id] = f"SOURCENAME={source_name}"
         sources_data[line_id + 1] = ("SOURCEINFO=" +
-                                " ".join([f"{pangraph.get_path_nodes_count(source)}",
-                                f"{pangraph.get_start_node_id(source)}",
-                                f"{pangraph.get_source_weight(source)}",
-                                f"{pangraph.get_source_consensus_id(source)}",
-                                f"{source}"]))
+                                     " ".join([f"{pangraph.get_path_nodes_count(source_name)}",
+                                               f"{pangraph.get_start_node_id(source_name)}",
+                                               f"{weight}",
+                                               f"{pangraph.get_source_consensus_id(source_name)}",
+                                               f"{source_name}"]))
         line_id += 2
     return sources_data
 
 
+def get_node_code(node):
+    return n.decode(node.base)
+
+
 def get_nodes(pangraph: Pangraph) -> List[str]:
-    for i in range(pangraph.get_nodes_count()):
+    nodes_count = pangraph.get_nodes_count()
+    nodes_data = [None] * nodes_count
+    for i, node in enumerate(pangraph.get_nodes()):
+        sources_ids = pangraph.get_sources_ids(node.id)
+        nodes_data[i] = "".join([get_node_code(node),
+                                 ":",
+                                 get_in_nodes_info(node),
+                                 get_sources_info(sources_ids),
+                                 get_aligned_to_info(node)])
+    return nodes_data
+
+
+def get_in_nodes_info(node: Node) -> str:
+    return "".join([f'L{i}' for i in node.in_nodes])
+
+
+def get_sources_info(sources_ids):
+    return "".join([f'S{i}' for i in sources_ids])
+
+
+def get_aligned_to_info(node):
+    return f"A{node.aligned_to}" if node.aligned_to is not None else ""

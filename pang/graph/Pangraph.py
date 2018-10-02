@@ -19,7 +19,7 @@ class Pangraph():
     def update_nodes(self, new_nodes: List[Node]):
         #todo metoda kontrolująca poprawność
         if not new_nodes:
-            print("tu")
+            raise Exception("empty new nodes")
         if len(self._nodes) <= new_nodes[-1].id:
             self._nodes = new_nodes
             return
@@ -28,11 +28,14 @@ class Pangraph():
     def get_nodes_count(self):
         return len(self._nodes)
 
+    def get_nodes(self):
+        return self._nodes
+
     def trim_nodes(self, nodes_count: int):
         del self._nodes[nodes_count:]
         self._pathmanager.trim(nodes_count)
 
-    def set_paths(self, paths_to_node_ids: Dict[str, int] = None):
+    def set_paths(self, paths_to_node_ids: Dict[str, List[int]] = None):
         #todo metoda kontrolująca poprawność
         self._pathmanager.init_from_dict(paths_to_node_ids)
 
@@ -55,14 +58,17 @@ class Pangraph():
     def get_path_names(self):
         return self._pathmanager.path_names_to_array_id.keys()
 
-    def get_path_nodes_count(self, source):
-        return 0
+    def get_path_nodes_count(self, pathname):
+        return self._pathmanager.get_path_nodes_count(pathname)
 
     def get_start_node_id(self, source):
         return self._pathmanager.get_start_node_id(source)
 
-    def get_source_weight(self, source):
-        return self._pathmanager.get_source_weight(source)
+    def get_sources_weights(self):
+        return self._pathmanager.get_sources_weights()
 
     def get_source_consensus_id(self, source):
         return -1
+
+    def get_sources_ids(self, node_id: int) -> List[int]:
+        return self._pathmanager.get_sources_ids(node_id)
