@@ -16,3 +16,4 @@ import po.reader as poreader
 import userio.pathtools as pathtools
 from pang.metadata.SequenceMetadata import SequenceMetadata
 from pang.metadata.MultialignmentMetadata import MultialignmentMetadata
+import pang.consensus.tree as tree

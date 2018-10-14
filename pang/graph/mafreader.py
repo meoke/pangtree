@@ -27,6 +27,7 @@ def parse_mafcontent_to_graph(maf: str, metadata: MultialignmentMetadata) -> Pan
         pangraph.update(block_pangraph, last_node_id+1-block_pangraph.get_nodes_count())
     pangraph.trim_nodes(nodes_count=last_node_id+1)
     pangraph.fill_in_nodes()
+    pangraph.remove_empty_paths()
     return pangraph
 
 

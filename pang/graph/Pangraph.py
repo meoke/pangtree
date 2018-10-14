@@ -1,6 +1,7 @@
 from typing import List, Dict
 from .Node import Node
 from .PathManager import PathManager
+import numpy as np
 
 
 class Pangraph():
@@ -58,7 +59,10 @@ class Pangraph():
         return self._pathmanager.get_paths_count()
 
     def get_path_names(self):
-        return self._pathmanager.path_names_to_array_id.keys()
+        return self._pathmanager.get_path_names()
+
+    def get_path_ids(self):
+        return self._pathmanager.get_path_ids()
 
     def get_path_nodes_count(self, pathname):
         return self._pathmanager.get_path_nodes_count(pathname)
@@ -66,8 +70,8 @@ class Pangraph():
     def get_start_node_id(self, source):
         return self._pathmanager.get_start_node_id(source)
 
-    def get_sources_weights(self):
-        return self._pathmanager.get_sources_weights()
+    def get_sources_weights_dict(self):
+        return self._pathmanager.get_sources_weights_dict()
 
     def get_source_consensus_id(self, source):
         return -1
@@ -77,3 +81,31 @@ class Pangraph():
 
     def set_consensuses(self, paths_to_node_ids):
         self._consensusmanager.init_from_dict(paths_to_node_ids)
+
+    def set_cm(self, cm):
+        #todo trochę nieczyste
+        self._consensusmanager = cm
+
+    def get_top_consensus(self):
+        return self._consensusmanager.get_top_consensus()
+
+    def get_node(self, node_id):
+        return self._nodes[node_id]
+
+    def remove_empty_paths(self):
+        self._pathmanager.remove_empty_paths()
+
+    def get_paths(self):
+        return self._pathmanager.get_paths()
+
+    def get_path_compatibility(self, path, consensus):
+        common_nodes_count = np.sum(path & consensus)
+        source_nodes_count = np.sum(path)
+        return round(common_nodes_count / source_nodes_count, 4)
+
+    def get_paths_compatibility(self, consensus_id):
+        consensus = self._consensusmanager.paths[consensus_id]
+        return [self.get_path_compatibility(path, consensus) for path in self._pathmanager.paths]
+
+    def get_paths_compatibility_to_consensus(self, consensus):
+        return [self.get_path_compatibility(path, consensus) for path in self._pathmanager.paths]

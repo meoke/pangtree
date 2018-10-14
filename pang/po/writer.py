@@ -49,8 +49,8 @@ def get_sources(pangraph: Pangraph) -> List[str]:
     source_count = pangraph.get_paths_count()
     sources_data = [None] * source_count * 2
     line_id = 0
-    sources_weights = pangraph.get_sources_weights()
-    for source_name, weight in zip(pangraph.get_path_names(), sources_weights):
+    sources_weights = pangraph.get_sources_weights_dict()
+    for source_name, weight in sources_weights.items():
         sources_data[line_id] = f"SOURCENAME={source_name}"
         sources_data[line_id + 1] = ("SOURCEINFO=" +
                                      " ".join([f"{pangraph.get_path_nodes_count(source_name)}",

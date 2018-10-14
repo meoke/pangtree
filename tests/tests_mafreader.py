@@ -10,7 +10,7 @@ from context import Pangraph
 
 
 @ddt
-class CmdargsTest(unittest.TestCase):
+class MafreaderTest(unittest.TestCase):
 
     def setUp(self):
         self.test1_metadata = metadatareader.read("Files/test1_metadata.json")
@@ -35,8 +35,7 @@ class CmdargsTest(unittest.TestCase):
         expected_pats = {
             "testseq0": [1, 2, 3],
             "testseq1": [0, 5, 7],
-            "testseq2": [3, 4, 6, 8],
-            "testseq3": []
+            "testseq2": [3, 4, 6, 8]
         }
         expected_pangraph = Pangraph()
         expected_pangraph.update_nodes(expected_nodes)
@@ -59,10 +58,8 @@ class CmdargsTest(unittest.TestCase):
         ]
 
         expected_pats = {
-            "testseq0": [],
             "testseq1": [0, 1, 3, 4, 6, 7],
             "testseq2": [0, 1, 2, 3, 5],
-            "testseq3": []
         }
 
         expected_pangraph = Pangraph()
@@ -78,9 +75,7 @@ class CmdargsTest(unittest.TestCase):
 
         expected_pats = {
             "testseq0": [],
-            "testseq1": [],
-            "testseq2": [],
-            "testseq3": []
+            "testseq1": []
         }
 
         expected_pangraph = Pangraph()
@@ -125,8 +120,7 @@ class CmdargsTest(unittest.TestCase):
         expected_pats = {
             "testseq0": [1, 2, 3],
             "testseq1": [0, 5, 7],
-            "testseq2": [3, 4, 6, 8],
-            "testseq3": []
+            "testseq2": [3, 4, 6, 8]
         }
         expected_pangraph = Pangraph()
         expected_pangraph.update_nodes(expected_nodes)

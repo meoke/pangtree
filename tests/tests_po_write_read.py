@@ -165,7 +165,7 @@ class PoWriteReadTest(unittest.TestCase):
         with open(poa_path, 'w') as poa_file:
             poa_file.writelines("\n".join(pofile_lines))
 
-        actual_pangraph = poreader.read(poa_path, self.genomes_info)
+        actual_pangraph = poreader.read(poa_path)
         try:
             self.compare_pangraphs(actual_pangraph=actual_pangraph, expected_pangraph=expected_pangraph)
             self.remove_temp_dir = True

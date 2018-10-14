@@ -87,7 +87,7 @@ def _get_parser():
                    nargs=2,
                    type=_float_0_1,
                    action=_RangeArgAction,
-                   default=[0.2, 0.5],
+                   default=[0, 1],
                    help='Tree POA algorithm parameter. TODO')
     p.add_argument('-multiplier',
                    type=float,

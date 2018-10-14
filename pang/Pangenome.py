@@ -2,6 +2,8 @@ import metadata.reader
 from .graph import mafreader
 import consensus.simple
 import consensus.tree
+from .consensus.TreeConfig import TreeConfig
+
 
 class Pangenome:
     def __init__(self, multialignment_file, data_file):
@@ -15,8 +17,10 @@ class Pangenome:
     def generate_consensus(self, output_dir, consensus_type, hbmin, mincomp, r, multiplier, stop, re_consensus):
         if consensus_type == 'simple':
             self.pangraph = consensus.simple.run(output_dir, self.pangraph, hbmin, self.genomes_info)
-        else:
-            self.pangraph = consensus.tree.run(self.pangraph)
+        elif consensus_type == 'tree':
+            tree_config = TreeConfig(hbmin=hbmin, mincomp=mincomp, r=r,
+                                     multiplier=multiplier, stop=stop, re_consensus=re_consensus)
+            self.pangraph = consensus.tree.run(output_dir, self.pangraph, tree_config, self.genomes_info)
 
     def generate_visualization(self, output_dir):
         pass
