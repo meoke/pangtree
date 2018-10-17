@@ -1,4 +1,5 @@
 from typing import List
+from .nucleotides import decode
 
 
 NodesIDsList = List[int]
@@ -22,6 +23,6 @@ class Node:
             and self.aligned_to == other.aligned_to)
 
     def __str__(self):
-        return f"id: {self.id}, base: {self.base}, in_nodes: {self.in_nodes}, aligned_to: {self.aligned_to}"
+        return f"id: {self.id}, base: {decode(self.base)}, in_nodes: {self.in_nodes}, aligned_to: {self.aligned_to}"
 
 

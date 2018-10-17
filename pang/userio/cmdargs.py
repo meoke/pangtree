@@ -77,7 +77,7 @@ def _get_parser():
                    help='Use if consensus must be generated. Algorithms to choose: \'simple\' or \'tree\'.')
     p.add_argument('-hbmin',
                    type=_float_0_1,
-                   default=0.9,
+                   default=0.6,
                    help='POA algorithm parameter. TODO')
     p.add_argument('-mincomp',
                    type=_float_0_1,

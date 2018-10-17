@@ -1,8 +1,8 @@
 import metadata.reader
 from .graph import mafreader
-import consensus.simple
-import consensus.tree
-from .consensus.TreeConfig import TreeConfig
+import consensus_algorithm.simple as consensussimple
+import consensus_algorithm.tree as consensustree
+from .consensus_algorithm.TreeConfig import TreeConfig
 
 
 class Pangenome:
@@ -16,11 +16,11 @@ class Pangenome:
 
     def generate_consensus(self, output_dir, consensus_type, hbmin, mincomp, r, multiplier, stop, re_consensus):
         if consensus_type == 'simple':
-            self.pangraph = consensus.simple.run(output_dir, self.pangraph, hbmin, self.genomes_info)
+            self.pangraph = consensussimple.run(output_dir, self.pangraph, hbmin, self.genomes_info)
         elif consensus_type == 'tree':
             tree_config = TreeConfig(hbmin=hbmin, mincomp=mincomp, r=r,
                                      multiplier=multiplier, stop=stop, re_consensus=re_consensus)
-            self.pangraph = consensus.tree.run(output_dir, self.pangraph, tree_config, self.genomes_info)
+            self.pangraph = consensustree.run(output_dir, self.pangraph, tree_config, self.genomes_info)
 
     def generate_visualization(self, output_dir):
         pass

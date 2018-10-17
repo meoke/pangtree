@@ -29,6 +29,7 @@ class PathManager:
         return (np.array_equal(self.paths, other.paths)
                 and self.path_names_to_array_id == other.path_names_to_array_id
                 and self.start_node_id == other.start_node_id)
+
     #
     # def no_paths(self):
     #     return not any(x for p in self.paths for x in p)
@@ -120,6 +121,9 @@ class PathManager:
         for path_name in path_names_to_delete:
             del self.path_names_to_array_id[path_name]
 
+    def keep_nodes_ids(self, nodes_ids_to_keep):
+        inactive_nodes = [node_id for node_id in range(self.paths.shape[1]) if node_id not in nodes_ids_to_keep]
+        self.paths = np.delete(self.paths, inactive_nodes, 1)
 
     def get_top_consensus(self):
         return self.paths[0]

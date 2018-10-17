@@ -1,0 +1,2 @@
+class NoConsensus(Exception):
+    pass
