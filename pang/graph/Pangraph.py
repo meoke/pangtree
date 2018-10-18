@@ -114,3 +114,6 @@ class Pangraph():
     #     self._consensusmanager.add_path(consensus)
     #
     # def set_consensus_manager(self, consensus_manager):
+
+    def get_source_name(self, src_id):
+        return self._pathmanager.get_path_name(src_id)

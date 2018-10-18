@@ -1,5 +1,6 @@
 import numpy as np
 from typing import Dict, List
+from graph.errors import NoPath
 
 PathsNodesDict = Dict[str, int]
 PathsNamesList = List[str]
@@ -9,7 +10,7 @@ PathsNamesList = List[str]
 class PathManager:
     def __init__(self, start_node_id: int=0, max_nodes_count: int=0, paths_names: PathsNamesList=None):
         paths_names = [] if not paths_names else paths_names
-        self.paths = np.zeros(shape=(len(paths_names), max_nodes_count), dtype=bool)
+        self.paths = np.empty(shape=(len(paths_names), max_nodes_count), dtype=bool)
         self.path_names_to_array_id = {path_name: i for i, path_name in enumerate(sorted(paths_names))}
         self.start_node_id = start_node_id
 
@@ -140,3 +141,15 @@ class PathManager:
 
     def get_paths(self):
         return self.paths
+
+    def get_path_name(self, path_id):
+        pathname = [pathname for pathname, array_id in self.path_names_to_array_id.items() if array_id == path_id]
+        if len(pathname) == 0:
+            raise NoPath
+        return pathname[0]
+
+    def add_path(self, pathname_prefix, path):
+        path_id = self.paths.shape[0]
+        self.path_names_to_array_id[f"{pathname_prefix}_{path_id}"] = path_id
+        self.paths = np.append(self.paths, [path], axis=0)
+        return path_id

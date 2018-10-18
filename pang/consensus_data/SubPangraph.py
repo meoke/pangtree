@@ -2,6 +2,9 @@ from typing import List
 from graph.Pangraph import Pangraph
 from graph.PathManager import PathManager
 from graph.Node import Node
+from graph.errors import NoPath
+import numpy as np
+import copy
 
 
 class SubPangraph(object):
@@ -9,14 +12,15 @@ class SubPangraph(object):
         self.pangraph = Pangraph()
 
         if pangraph.get_path_ids() == sequences_ids_to_keep:
-            self.pangraph = pangraph
+            self.pangraph = copy.deepcopy(pangraph)
             self.nodes_ids_mapping = {i: i for i in range(self.pangraph.get_nodes_count())}
+            self.orig_nodes_count = len(self.nodes_ids_mapping)
         else:
-            self.pangraph._pathmanager = pangraph._pathmanager
+            self.pangraph._pathmanager = copy.deepcopy(pangraph._pathmanager)
             self.pangraph._pathmanager.keep_paths_ids(sequences_ids_to_keep)
             nodes_ids_to_keep = self.pangraph._pathmanager.get_active_nodes()
             self.pangraph._pathmanager.keep_nodes_ids(nodes_ids_to_keep)
-            self.pangraph._nodes, self.nodes_ids_mapping = self.build_nodes(pangraph, nodes_ids_to_keep)
+            self.pangraph._nodes, self.nodes_ids_mapping, self.orig_nodes_count = self.build_nodes(pangraph, nodes_ids_to_keep)
             self.pangraph._consensusmanager = PathManager()
 
     # def set_pangraph(self, pangraph):
@@ -53,13 +57,16 @@ class SubPangraph(object):
                 node.aligned_to = old_to_new_mapping[node.aligned_to]
             node.in_nodes = [old_to_new_mapping[in_node] for in_node in node.in_nodes if in_node in nodes_ids_to_keep]
 
-        return new_nodes, new_to_old_mapping
+        return new_nodes, new_to_old_mapping, pangraph.get_nodes_count()
 
     def remap_to_original(self, child_consensus_manager):
         raise NotImplemented
 
     def get_consensus_remapped_to_original_nodes(self, consensus_id):
-        return [self.nodes_ids_mapping[node_id] for node_id in self.pangraph._consensusmanager.paths[consensus_id]]
+        original_path = np.zeros(shape=(self.orig_nodes_count), dtype=bool)
+        consensus_nodes_ids = [self.nodes_ids_mapping[node_id] for node_id in np.where(self.pangraph._consensusmanager.paths[consensus_id])[0]]
+        original_path[consensus_nodes_ids] = True
+        return original_path
 
     def get_path_ids(self):
         return self.pangraph.get_path_ids()
@@ -79,3 +86,15 @@ class SubPangraph(object):
     def __eq__(self, other):
         return (self.pangraph == other.pangraph and
                 self.nodes_ids_mapping == other.nodes_ids_mapping)
+
+    def get_sources_names(self, specific_sources_ids = None):
+        if specific_sources_ids is None:
+            return self.pangraph._pathmanager.get_path_names()
+        try:
+            return [self.pangraph.get_source_name(src_id) for src_id in specific_sources_ids]
+        except NoPath:
+            return []
+
+    def get_nodes_count(self):
+        return self.pangraph.get_nodes_count()
+
