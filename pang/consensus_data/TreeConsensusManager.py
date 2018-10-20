@@ -13,7 +13,7 @@ class TreeConsensusManager(PathManager):
         return self.consensus_tree.get_root_node()
 
     def get_consensus(self, consensus_id):
-        if consensus_id in self.path_names_to_array_id.keys():
+        if consensus_id in self.path_names_to_array_id.values():
             return self.paths[consensus_id]
         raise NoConsensus
 
@@ -22,3 +22,6 @@ class TreeConsensusManager(PathManager):
         node.consensus_id = node_id
         self.consensus_tree.add_node(node)
         return node_id
+
+    def get_nodes(self):
+        return self.consensus_tree.nodes

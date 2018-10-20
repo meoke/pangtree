@@ -8,19 +8,24 @@ import copy
 
 
 class SubPangraph(object):
-    def __init__(self, pangraph: Pangraph, sequences_ids_to_keep: List[int]):
+    def __init__(self, pangraph: Pangraph, sequences_ids_to_keep: List[int], orig_nodes_count: int = None):
         self.pangraph = Pangraph()
+        if orig_nodes_count:
+            self.orig_nodes_count = orig_nodes_count
+        else:
+            self.orig_nodes_count = pangraph.get_nodes_count()
+
 
         if pangraph.get_path_ids() == sequences_ids_to_keep:
             self.pangraph = copy.deepcopy(pangraph)
             self.nodes_ids_mapping = {i: i for i in range(self.pangraph.get_nodes_count())}
-            self.orig_nodes_count = len(self.nodes_ids_mapping)
         else:
             self.pangraph._pathmanager = copy.deepcopy(pangraph._pathmanager)
             self.pangraph._pathmanager.keep_paths_ids(sequences_ids_to_keep)
             nodes_ids_to_keep = self.pangraph._pathmanager.get_active_nodes()
             self.pangraph._pathmanager.keep_nodes_ids(nodes_ids_to_keep)
-            self.pangraph._nodes, self.nodes_ids_mapping, self.orig_nodes_count = self.build_nodes(pangraph, nodes_ids_to_keep)
+            self.pangraph._nodes, self.nodes_ids_mapping = self.build_nodes(pangraph, nodes_ids_to_keep)
+            self
             self.pangraph._consensusmanager = PathManager()
 
     # def set_pangraph(self, pangraph):
@@ -57,7 +62,7 @@ class SubPangraph(object):
                 node.aligned_to = old_to_new_mapping[node.aligned_to]
             node.in_nodes = [old_to_new_mapping[in_node] for in_node in node.in_nodes if in_node in nodes_ids_to_keep]
 
-        return new_nodes, new_to_old_mapping, pangraph.get_nodes_count()
+        return new_nodes, new_to_old_mapping
 
     def remap_to_original(self, child_consensus_manager):
         raise NotImplemented
@@ -81,7 +86,7 @@ class SubPangraph(object):
         self.pangraph = pangraph_with_consensus
 
     def keep_sources_ids(self, sources_ids_to_keep):
-        return SubPangraph(self.pangraph, sources_ids_to_keep)
+        return SubPangraph(self.pangraph, sources_ids_to_keep, self.orig_nodes_count)
 
     def __eq__(self, other):
         return (self.pangraph == other.pangraph and
@@ -97,4 +102,6 @@ class SubPangraph(object):
 
     def get_nodes_count(self):
         return self.pangraph.get_nodes_count()
+
+
 

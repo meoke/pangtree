@@ -8,9 +8,9 @@ PathsNamesList = List[str]
 
 
 class PathManager:
-    def __init__(self, start_node_id: int=0, max_nodes_count: int=0, paths_names: PathsNamesList=None):
+    def __init__(self, start_node_id: int = 0, max_nodes_count: object = 0, paths_names: object = None) -> object:
         paths_names = [] if not paths_names else paths_names
-        self.paths = np.empty(shape=(len(paths_names), max_nodes_count), dtype=bool)
+        self.paths = np.zeros(shape=(len(paths_names), max_nodes_count), dtype=bool)
         self.path_names_to_array_id = {path_name: i for i, path_name in enumerate(sorted(paths_names))}
         self.start_node_id = start_node_id
 
@@ -153,3 +153,11 @@ class PathManager:
         self.path_names_to_array_id[f"{pathname_prefix}_{path_id}"] = path_id
         self.paths = np.append(self.paths, [path], axis=0)
         return path_id
+
+    def get_path_id(self, pathname):
+        return self.path_names_to_array_id[pathname]
+
+    def clear_paths(self):
+        self.path_names_to_array_id = {}
+        self.paths = np.delete(self.paths, slice(0, self.paths.shape[0]), axis=0)
+
