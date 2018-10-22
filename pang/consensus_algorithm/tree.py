@@ -63,8 +63,8 @@ def produce_tree2(pangraph: Pangraph) -> TreeConsensusManager:
         children_nodes = get_children_cm2(current_node_pangraph, subtree_root)  # TreeConsensusManager z węzłami-braćmi i odpowiadającymi im consensusami w wersji dla pangraohu ograniczonego do ścieżek w danym nodzie
 
         for child in children_nodes.get_nodes():
-            consensus_in_subpangraph = children_nodes.get_consensus([child.consensus_id])
-            consensus = current_node_pangraph.remap_to_original(consensus_in_subpangraph)
+            # consensus_in_subpangraph = children_nodes.get_consensus(child.consensus_id)
+            consensus = current_node_pangraph.get_consensus_remapped_to_original_nodes(child.consensus_id)
 
             child.parent_node_id = subtree_root.consensus_id
             child_node_id = cm.add_node(child, consensus)
@@ -78,7 +78,7 @@ def get_children_cm2(subpangraph: SubPangraph, node: ConsensusNode) -> TreeConse
     current_paths_names = node.sequences_names
     # current_paths_ids = [subpangraph.pangraph.get_path_id(path_name) for path_name in current_paths_names]
     local_consensus_manager = TreeConsensusManager(max_nodes_count=subpangraph.get_nodes_count())
-    # subpangraph = deepcopy(orig_subpangraph)
+    s = deepcopy(subpangraph)
     while current_paths_names:
         subpangraph = run_poa(subpangraph)
         c_to_node = subpangraph.get_paths_compatibility(0) #zgodnie ze swoją przechowywaną kolejnością
@@ -104,7 +104,7 @@ def get_children_cm2(subpangraph: SubPangraph, node: ConsensusNode) -> TreeConse
 
         current_paths_names = sorted(list((set(current_paths_names) - set(compatible_sources_names))))
         # current_paths_ids = (set(current_paths_ids)) - set(compatible_sources_ids)
-        subpangraph = SubPangraph(subpangraph.pangraph, current_paths_names, subpangraph.orig_nodes_count)
+        subpangraph = SubPangraph(s.pangraph, current_paths_names, subpangraph.orig_nodes_count)
     return local_consensus_manager
 
 def get_top_consensus(subpangraph: SubPangraph):
@@ -185,7 +185,7 @@ def find_max_cutoff(compatibility_to_node_sequences):
 
 def find_node_cutoff(compatibility_to_node_sequences):
     #todo napisać
-    return 0.9
+    return 0.7
 
 
 def get_max_compatible_sources_ids(current_paths_names, compatibility_to_node_sequences, max_cutoff):
