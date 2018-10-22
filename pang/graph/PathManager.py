@@ -122,6 +122,26 @@ class PathManager:
         for path_name in path_names_to_delete:
             del self.path_names_to_array_id[path_name]
 
+    def keep_paths_names(self, sequences_names: List[str]):
+        """Removes unnecessary paths info and return ids of still necessary nodes."""
+        # paths_ids_to_delete = list(set(self.path_names_to_array_id.values()) - set(sequences_ids))
+        # self.paths = np.delete(self.paths, paths_ids_to_delete, 0)
+        # return np.where(np.logical_or.reduce(self.paths))[0]
+        path_names_to_delete = []
+        path_ids_to_delete = []
+        d_copy = self.path_names_to_array_id.copy()
+        i = 0
+        for path_name, path_id in d_copy.items():
+            if path_name in sequences_names:
+                self.path_names_to_array_id[path_name] = i
+                i += 1
+            else:
+                path_names_to_delete.append(path_name)
+                path_ids_to_delete.append(path_id)
+        self.paths = np.delete(self.paths, path_ids_to_delete, 0)
+        for path_name in path_names_to_delete:
+            del self.path_names_to_array_id[path_name]
+
     def keep_nodes_ids(self, nodes_ids_to_keep):
         inactive_nodes = [node_id for node_id in range(self.paths.shape[1]) if node_id not in nodes_ids_to_keep]
         self.paths = np.delete(self.paths, inactive_nodes, 1)

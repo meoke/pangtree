@@ -10,3 +10,6 @@ class ConsensusTree(object):
 
     def add_node(self, node):
         self.nodes.append(node)
+
+    def get_node(self, node_id):
+        return self.nodes[node_id]

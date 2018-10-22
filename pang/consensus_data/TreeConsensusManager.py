@@ -25,3 +25,6 @@ class TreeConsensusManager(PathManager):
 
     def get_nodes(self):
         return self.consensus_tree.nodes
+
+    def get_node(self, node_id):
+        return self.consensus_tree.get_node(node_id)

@@ -8,24 +8,24 @@ import copy
 
 
 class SubPangraph(object):
-    def __init__(self, pangraph: Pangraph, sequences_ids_to_keep: List[int], orig_nodes_count: int = None):
+    def __init__(self, pangraph: Pangraph, sequences_names_to_keep: List[int], orig_nodes_count: int = None):
         self.pangraph = Pangraph()
         if orig_nodes_count:
             self.orig_nodes_count = orig_nodes_count
         else:
             self.orig_nodes_count = pangraph.get_nodes_count()
 
-
-        if pangraph.get_path_ids() == sequences_ids_to_keep:
+        sorted_sequences_names = sorted(sequences_names_to_keep)
+        if pangraph.get_path_names() == sorted_sequences_names:
             self.pangraph = copy.deepcopy(pangraph)
             self.nodes_ids_mapping = {i: i for i in range(self.pangraph.get_nodes_count())}
         else:
             self.pangraph._pathmanager = copy.deepcopy(pangraph._pathmanager)
-            self.pangraph._pathmanager.keep_paths_ids(sequences_ids_to_keep)
+            # self.pangraph._pathmanager.keep_paths_ids(sequences_ids_to_keep)
+            self.pangraph._pathmanager.keep_paths_names(sorted_sequences_names)
             nodes_ids_to_keep = self.pangraph._pathmanager.get_active_nodes()
             self.pangraph._pathmanager.keep_nodes_ids(nodes_ids_to_keep)
             self.pangraph._nodes, self.nodes_ids_mapping = self.build_nodes(pangraph, nodes_ids_to_keep)
-            self
             self.pangraph._consensusmanager = PathManager()
 
     # def set_pangraph(self, pangraph):
