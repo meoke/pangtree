@@ -35,14 +35,11 @@ def run(outputdir: Path, pangraph: Pangraph, config: TreeConfig, genomes_info: M
     return pangraph
 
 
-def node_ready(subpangraph: SubPangraph, treeconsensusmanager: TreeConsensusManager, child_node_id: int):
-    # todo należałoby usprawnić
-    node = treeconsensusmanager.get_node(child_node_id)
-    consensus = treeconsensusmanager.get_consensus(child_node_id)
-    node_compatibility = min(subpangraph.get_paths_compatibility_to_consensus(consensus))
+def node_ready(node: ConsensusNode):
+    min_own_comp = min(node.get_compatibilities_to_own_sources())
     if len(node.sequences_names) == 1:
         return True
-    if node_compatibility >= ap.config.stop:
+    if min_own_comp >= ap.config.stop:
         return True
     return False
 
@@ -57,27 +54,32 @@ def produce_tree2(pangraph: Pangraph) -> TreeConsensusManager:
 
     nodes_to_process = deque([root_node])
     while nodes_to_process:
-        subtree_root = nodes_to_process.pop()  # ConsensusTreeNode
-        # sequences_ids = [pangraph.get_path_id(pathname) for pathname in subtree_root.sequences_names]
+        subtree_root = nodes_to_process.pop()
         current_node_pangraph = SubPangraph(pangraph, subtree_root.sequences_names)
-        children_nodes = get_children_cm2(current_node_pangraph, subtree_root)  # TreeConsensusManager z węzłami-braćmi i odpowiadającymi im consensusami w wersji dla pangraohu ograniczonego do ścieżek w danym nodzie
+        children_nodes_manager = get_children_cm2(current_node_pangraph, subtree_root)  # TreeConsensusManager z węzłami-braćmi i odpowiadającymi im consensusami w wersji dla pangraohu ograniczonego do ścieżek w danym nodzie
 
-        for child in children_nodes.get_nodes():
+        chidren_nodes = children_nodes_manager.get_nodes()
+        if len(chidren_nodes) == 1:
+            continue
+
+        for child in chidren_nodes:
             # consensus_in_subpangraph = children_nodes.get_consensus(child.consensus_id)
-            consensus = current_node_pangraph.get_consensus_remapped_to_original_nodes(child.consensus_id)
-
+            # consensus = current_node_pangraph.get_consensus_remapped_to_original_nodes(child.consensus_id) #przekazać consensus z managera lokalnego
+            consensus = children_nodes_manager.get_consensus(child.consensus_id)
             child.parent_node_id = subtree_root.consensus_id
+            child.compatibilities_to_all = pangraph.get_paths_compatibility_to_consensus(consensus)
             child_node_id = cm.add_node(child, consensus)
             subtree_root.children_nodes.append(child_node_id)
 
-            if not node_ready(pangraph, cm, child_node_id):
+            if not node_ready(child):
                 nodes_to_process.append(child)
     return cm
 
 def get_children_cm2(subpangraph: SubPangraph, node: ConsensusNode) -> TreeConsensusManager:
     current_paths_names = node.sequences_names
     # current_paths_ids = [subpangraph.pangraph.get_path_id(path_name) for path_name in current_paths_names]
-    local_consensus_manager = TreeConsensusManager(max_nodes_count=subpangraph.get_nodes_count())
+    # local_consensus_manager = TreeConsensusManager(max_nodes_count=subpangraph.get_nodes_count())
+    local_consensus_manager = TreeConsensusManager(max_nodes_count=subpangraph.orig_nodes_count)
     s = deepcopy(subpangraph)
     while current_paths_names:
         subpangraph = run_poa(subpangraph)

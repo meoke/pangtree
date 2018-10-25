@@ -111,7 +111,8 @@ class Pangraph():
         return [self.get_path_compatibility(path, consensus) for path in self._pathmanager.paths]
 
     def get_paths_compatibility_to_consensus(self, consensus):
-        return [self.get_path_compatibility(path, consensus) for path in self._pathmanager.paths]
+        return {self._pathmanager.get_path_name(path_id): self.get_path_compatibility(path, consensus)
+                for path_id, path in enumerate(self._pathmanager.paths)}
 
     def add_consensus(self, consensus):
         self._consensusmanager.add_path("CONSENSUS", consensus)
@@ -121,3 +122,6 @@ class Pangraph():
 
     def clear_consensuses(self):
         self._consensusmanager.clear_paths()
+
+    def set_consensus_manager(self, consensus_manager):
+        self._consensusmanager = consensus_manager

@@ -57,11 +57,11 @@ def _get_parser():
     p.add_argument('--multialignment', '-m',
                    type=_file_arg,
                    required=True,
-                   help='Path to the file with mulitalignment. Accepted formats: .maf, .po.')
+                   help='Path to the mulitalignment file. Accepted formats: .maf, .po.')
     p.add_argument('--data', '-d',
                    type=_file_arg,
                    required=True,
-                   help='Path to the json file with genomes specification. Format details: TODO.')
+                   help='Path to the json file with genomes specification. See... examples\Ebola\ebola_metadata.json')
     p.add_argument('--output', '-o',
                    type=_dir_arg,
                    default=create_default_output_dir(Path(getcwd())),
@@ -74,33 +74,39 @@ def _get_parser():
                    help='Set if visualization must be produced.')
     p.add_argument('-consensus',
                    choices=['simple', 'tree'],
-                   help='Use if consensus must be generated. Algorithms to choose: \'simple\' or \'tree\'.')
+                   help='Set if consensus must be generated. Algorithms to choose: \'simple\' or \'tree\'.')
     p.add_argument('-hbmin',
                    type=_float_0_1,
                    default=0.6,
-                   help='POA algorithm parameter. TODO')
-    p.add_argument('-mincomp',
-                   type=_float_0_1,
-                   default=0.5,
-                   help='Tree POA algorithm parameter. TODO')
+                   help='Simple POA algorithm parameter. '
+                        'The minimum value of sequence compatibility to generated consensus')
+    # p.add_argument('-mincomp',
+    #                type=_float_0_1,
+    #                default=0.5,
+    #                help='Tree POA algorithm parameter. The minimum value of sequence compatibility to generated consensus')
     p.add_argument('-r',
                    nargs=2,
                    type=_float_0_1,
                    action=_RangeArgAction,
                    default=[0, 1],
-                   help='Tree POA algorithm parameter. TODO')
+                   help='Tree POA algorithm parameter.'
+                        'Specify what part of sorted capabilities should be searched for node cutoff. E.g. [0.2,0.8]')
     p.add_argument('-multiplier',
                    type=float,
                    default=1,
-                   help='Tree POA algorithm parameter. TODO')
+                   help='Tree POA algorithm parameter.'
+                        'Cutoff value for node parameter. The greater it is, the more granular the tree is.')
     p.add_argument('-stop',
                    type=_float_0_1,
                    default=0.99,
-                   help='Tree POA algorithm parameter. TODO')
-    p.add_argument('-re_consensus',
-                   action='store_true',
-                   default=True,
-                   help='Tree POA algorithm parameter. TODO')
+                   help='Tree POA algorithm parameter.'
+                        'Value of node compatibility above which the node is no more split.')
+    # p.add_argument('-re_consensus',
+    #                action='store_true',
+    #                default=True,
+    #                help='Tree POA algorithm parameter.'
+    #                     'Set if sequences already assigned to sibling nodes should be checked if '
+    #                     'they are more compatible to consensus generated for current node.')
     return p
 
 
