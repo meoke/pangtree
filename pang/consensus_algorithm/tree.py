@@ -84,7 +84,7 @@ def get_children_cm2(subpangraph: SubPangraph, node: ConsensusNode) -> TreeConse
     while current_paths_names:
         subpangraph = run_poa(subpangraph)
         c_to_node = subpangraph.get_paths_compatibility(0) #zgodnie ze swoją przechowywaną kolejnością
-        max_cutoff = find_max_cutoff(c_to_node)
+        max_cutoff = find_max_cutoff(c_to_node, ap.config.cutoff_search_range)
         max_c_sources_names = get_max_compatible_sources_ids(current_paths_names, c_to_node, max_cutoff)
 
         subsubpangraph = SubPangraph(subpangraph.pangraph, max_c_sources_names, subpangraph.get_nodes_count())
@@ -164,25 +164,33 @@ def get_top_consensus(subpangraph: SubPangraph):
 #     return local_consensus_manager
 
 
-def find_max_cutoff(compatibility_to_node_sequences):
-    cutoff_search_range = ap.config.cutoff_search_range
-    #określić które compatiilities przeglądać -> indeksy
-    min_search_idx = round((len(compatibility_to_node_sequences))*cutoff_search_range[0])
-    max_search_idx = round((len(compatibility_to_node_sequences))*cutoff_search_range[1])
-    #znaleźć wśród nich największą różnicę
-    compatibilities_to_be_searched = sorted(compatibility_to_node_sequences)[min_search_idx: max_search_idx]
-    if len(compatibilities_to_be_searched) == 1 or len(compatibilities_to_be_searched) == 2:
-        return compatibilities_to_be_searched[0]
-    elif len(compatibilities_to_be_searched) == 0:
-        return sorted(compatibility_to_node_sequences)[min_search_idx]
-    max_diff = 0
-    differences = []
-    for i, c in enumerate(compatibilities_to_be_searched):
-        if i < len(compatibilities_to_be_searched)-1:
-            differences.append(compatibilities_to_be_searched[i+1] - compatibilities_to_be_searched[i])
-    max_difference = max(differences)
-    cutoff = compatibilities_to_be_searched[differences.index(max_difference)+1]
-    return cutoff
+def find_max_cutoff(compatibility_to_node_sequences, cutoff_search_range):
+    if not compatibility_to_node_sequences:
+        raise ValueError("Empty compatibilities list. Finding max cutoff is not possible.")
+    if len(cutoff_search_range) != 2:
+        raise ValueError("Cutoff search range must have length 2.")
+    if cutoff_search_range[1] < cutoff_search_range[0]:
+        raise ValueError("For cutoff search range [x, y] x must be <= y.")
+
+    min_search_pos = round((len(compatibility_to_node_sequences)-1)*cutoff_search_range[0])
+    max_search_pos = round((len(compatibility_to_node_sequences)-1)*cutoff_search_range[1])
+    sorted_comp = sorted(compatibility_to_node_sequences)
+    if min_search_pos == max_search_pos:
+        return sorted_comp[min_search_pos]
+
+    search_range = sorted_comp[min_search_pos: max_search_pos+1]
+    if len(search_range) == 1 or len(search_range) == 2:
+        return search_range[0]
+
+    max_diff = search_range[1] - search_range[0]
+    max_cutoff = search_range[0]
+    for i in range(1, len(search_range)-1):
+        current_diff = search_range[i+1] - search_range[i]
+        if current_diff > max_diff:
+            max_diff = current_diff
+            max_cutoff = search_range[i+1]
+
+    return max_cutoff
 
 
 def find_node_cutoff(compatibility_to_node_sequences):

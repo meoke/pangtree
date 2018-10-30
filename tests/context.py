@@ -18,3 +18,4 @@ from pang.metadata.SequenceMetadata import SequenceMetadata
 from pang.metadata.MultialignmentMetadata import MultialignmentMetadata
 import pang.consensus_algorithm.tree as tree
 from pang.consensus_data.SubPangraph import SubPangraph
+import consensus_algorithm.tree as tree
