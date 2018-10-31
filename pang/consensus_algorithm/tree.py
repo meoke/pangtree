@@ -10,9 +10,11 @@ from consensus_data.SubPangraph import SubPangraph
 from consensus_data.TreeConsensusManager import TreeConsensusManager
 from consensus_data.ConsensusNode import ConsensusNode
 from consensus_data.Errors import NoConsensus
-
+from statistics import mean
 from collections import deque
 
+# import logging
+# logger = logging.getLogger(__name__)
 
 ap = AlgorithmParams()
 
@@ -109,6 +111,7 @@ def get_children_cm2(subpangraph: SubPangraph, node: ConsensusNode) -> TreeConse
         subpangraph = SubPangraph(s.pangraph, current_paths_names, subpangraph.orig_nodes_count)
     return local_consensus_manager
 
+
 def get_top_consensus(subpangraph: SubPangraph):
     subpangraph_with_consensus = run_poa(subpangraph)
     return subpangraph_with_consensus.get_consensus_remapped_to_original_nodes(0)
@@ -178,44 +181,48 @@ def find_max_cutoff(compatibility_to_node_sequences, cutoff_search_range):
     if min_search_pos == max_search_pos:
         return sorted_comp[min_search_pos]
 
-    search_range = sorted_comp[min_search_pos: max_search_pos+1]
-    if len(search_range) == 1 or len(search_range) == 2:
+    search_range = sorted(set(sorted_comp[min_search_pos: max_search_pos+1]))
+    if len(search_range) == 1:
         return search_range[0]
+    if len(search_range) == 2:
+        return search_range[1]
 
     max_diff = search_range[1] - search_range[0]
     max_cutoff = search_range[0]
     for i in range(1, len(search_range)-1):
         current_diff = search_range[i+1] - search_range[i]
-        if current_diff > max_diff:
+        if current_diff >= max_diff:
             max_diff = current_diff
             max_cutoff = search_range[i+1]
 
     return max_cutoff
 
 
-def find_node_cutoff(compatibility_to_node_sequences):
-    #todo napisać
-    return 0.7
+def find_node_cutoff(compatibility_to_node_sequences, multiplier):
+    if not compatibility_to_node_sequences:
+        raise ValueError("Empty compatibilities list. Finding max cutoff.")
+    sorted_comp = sorted(set(compatibility_to_node_sequences))
+    if len(compatibility_to_node_sequences) == 1:
+        return sorted_comp[0]
+    elif len(compatibility_to_node_sequences) == 2:
+        return sorted_comp[1]
+
+    mean_distance = (compatibility_to_node_sequences[-1] - compatibility_to_node_sequences[0])/(len(compatibility_to_node_sequences)-1)
+    required_gap = mean_distance * multiplier
+
+    distances = np.array([sorted_comp[i + 1] - sorted_comp[i] for i in range(len(sorted_comp)-1)])
+    if any(distances >= required_gap):
+        a = np.where(distances >= required_gap)[0][0]+1
+        return sorted_comp[a]
+    else:
+        # logger.warning("Cannot find node cutoff for given multiplier. Multiplier == 1 was used instead.")
+        return sorted_comp[np.where(distances >= mean_distance)[0][0]+1]
 
 
 def get_max_compatible_sources_ids(current_paths_names, compatibility_to_node_sequences, max_cutoff):
     npver = np.array(compatibility_to_node_sequences)
     path_names=np.array(current_paths_names)
     return list(path_names[np.where(npver >= max_cutoff)[0]])
-
-#
-# def node_complete(subpangraph, consensus_manager):
-#     node = consensus_manager.get_root_node()
-#     if len(node.sequences_ids) == 1:
-#         return True
-#     try:
-#         consensus = consensus_manager.get_consensus(node.consensus_id)
-#         node_compatibility = min(subpangraph.get_paths_compatibility_to_consensus(consensus))  # czy nodes ids się zgadzają?
-#         if node_compatibility >= ap.config.stop:
-#             return True
-#     except NoConsensus:
-#         return False
-
 
 
 def run_poa(subpangraph: SubPangraph) -> SubPangraph:

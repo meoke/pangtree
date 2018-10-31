@@ -5,7 +5,7 @@ from context import tree
 
 
 @ddt
-class TreeTest(unittest.TestCase):
+class TreeTestMaxCutoff(unittest.TestCase):
 
     def setUp(self):
         pass
@@ -33,15 +33,23 @@ class TreeTest(unittest.TestCase):
     def test_get_max_cutoff_single_comp_value(self, expected_cutoff, compatibilities, cutoff_search_range):
 
         actual_cutoff = tree.find_max_cutoff(compatibilities, cutoff_search_range)
-        self.assertEquals(actual_cutoff, expected_cutoff)
+        self.assertEqual(actual_cutoff, expected_cutoff)
 
-    @data((0.5, [0.5, 0.7], [0, 1]),
-          (0.45, [1, 0.45], [.1, .9]),
-          (0.5, [0.9, 0.5], [.01, .8]))
+    @data((0.7, [0.5, 0.7], [0, 1]),
+          (1, [1, 0.45], [.1, .9]),
+          (0.9, [0.9, 0.5], [.01, .8]))
     @unpack
     def test_get_max_cutoff_two_comp_values(self, expected_cutoff, compatibilities, cutoff_search_range):
         actual_cutoff = tree.find_max_cutoff(compatibilities, cutoff_search_range)
-        self.assertEquals(actual_cutoff, expected_cutoff)
+        self.assertEqual(actual_cutoff, expected_cutoff)
+
+    @data((0.7, [0.5, 0.7, 0.7], [0, 1]),
+          (0.9, [0.9, 0.5, 0.5], [0, 1]),
+          (1, [1, 0.45, 0.45, 0.45], [0, 1]))
+    @unpack
+    def test_get_max_cutoff_the_same_values(self, expected_cutoff, compatibilities, cutoff_search_range):
+        actual_cutoff = tree.find_max_cutoff(compatibilities, cutoff_search_range)
+        self.assertEqual(actual_cutoff, expected_cutoff)
 
     @data((.8, [.3, .4, .8], [0, 1]),
           (0.91, [0.31, 0.32, 0.91, 0.92, 0.93, 0.97], [0, 0.5]),
@@ -52,13 +60,13 @@ class TreeTest(unittest.TestCase):
     @unpack
     def test_get_max_cutoff_correct_search_range(self, expected_cutoff, compatibilities, cutoff_search_range):
         actual_cutoff = tree.find_max_cutoff(compatibilities, cutoff_search_range)
-        self.assertEquals(actual_cutoff, expected_cutoff)
+        self.assertEqual(actual_cutoff, expected_cutoff)
 
     @data((.4, [.3, .4, .8], [0.4, 0.45]))
     @unpack
     def test_get_max_cutoff_single_value_in_search_range(self, expected_cutoff, compatibilities, cutoff_search_range):
         actual_cutoff = tree.find_max_cutoff(compatibilities, cutoff_search_range)
-        self.assertEquals(actual_cutoff, expected_cutoff)
+        self.assertEqual(actual_cutoff, expected_cutoff)
 
     # @data((, []),
     #       (, [0.5]),
