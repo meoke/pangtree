@@ -35,7 +35,7 @@ class SubPangraphTest(unittest.TestCase):
         }
         self.pangraph = Pangraph()
         self.pangraph.update_nodes(nodes)
-        self.pangraph.set_paths(paths_to_node_ids)
+        self.pangraph.set_paths(len(nodes), paths_to_node_ids)
 
     def test_subpangraph_construction_from_pangraph_keep_seq_0_1(self):
         expected_nodes = [Node(id=0, base=n.code('T'), in_nodes=[], aligned_to=None),
@@ -55,7 +55,7 @@ class SubPangraphTest(unittest.TestCase):
         }
         expected_pangraph = Pangraph()
         expected_pangraph.update_nodes(expected_nodes)
-        expected_pangraph.set_paths(expected_paths_to_node_ids)
+        expected_pangraph.set_paths(len(expected_nodes), expected_paths_to_node_ids)
 
         expected_nodes_ids_mapping = {0: 0, 1: 1, 2: 3, 3: 5, 4: 6, 5: 9, 6: 10, 7: 11, 8: 13}
 
@@ -63,7 +63,7 @@ class SubPangraphTest(unittest.TestCase):
         expected_subpangraph.pangraph = expected_pangraph
         expected_subpangraph.nodes_ids_mapping = expected_nodes_ids_mapping
 
-        actual_subpangraph = SubPangraph(self.pangraph, [0, 1])
+        actual_subpangraph = SubPangraph(self.pangraph, ['testseq0', 'testseq1'])
         self.assertEqual(actual_subpangraph, expected_subpangraph)
 
     def test_subpangraph_construction_from_pangraph_keep_seq3(self):
@@ -81,7 +81,7 @@ class SubPangraphTest(unittest.TestCase):
         }
         expected_pangraph = Pangraph()
         expected_pangraph.update_nodes(expected_nodes)
-        expected_pangraph.set_paths(expected_paths_to_node_ids)
+        expected_pangraph.set_paths(len(expected_nodes), expected_paths_to_node_ids)
 
         expected_nodes_ids_mapping = {0: 2, 1: 4, 2: 8, 3: 9, 4: 11, 5: 12, 6: 14}
 
@@ -89,7 +89,7 @@ class SubPangraphTest(unittest.TestCase):
         expected_subpangraph.pangraph = expected_pangraph
         expected_subpangraph.nodes_ids_mapping = expected_nodes_ids_mapping
 
-        actual_subpangraph = SubPangraph(self.pangraph, [3])
+        actual_subpangraph = SubPangraph(self.pangraph, ['testseq3'])
         self.assertEqual(actual_subpangraph, expected_subpangraph)
 
     def test_subsubpangraph_construction(self):
@@ -105,7 +105,7 @@ class SubPangraphTest(unittest.TestCase):
         }
         expected_pangraph = Pangraph()
         expected_pangraph.update_nodes(expected_nodes)
-        expected_pangraph.set_paths(expected_paths_to_node_ids)
+        expected_pangraph.set_paths(len(expected_nodes), expected_paths_to_node_ids)
 
         expected_nodes_ids_mapping = {0: 1, 1: 2, 2: 4, 3: 5, 4: 7}
 
@@ -113,8 +113,8 @@ class SubPangraphTest(unittest.TestCase):
         expected_subpangraph.pangraph = expected_pangraph
         expected_subpangraph.nodes_ids_mapping = expected_nodes_ids_mapping
 
-        actual_subpangraph = SubPangraph(self.pangraph, [0, 1])
-        actual_subpangraph = actual_subpangraph.keep_sources_ids([1])  # tu pewnie musi być wg names
+        actual_subpangraph = SubPangraph(self.pangraph, ['testseq0', 'testseq1'])
+        actual_subpangraph = actual_subpangraph.keep_sources_ids(['testseq1'])  # tu pewnie musi być wg names
         self.assertEqual(actual_subpangraph, expected_subpangraph)
 
     def test_subsubpangraph_construction_2(self):
@@ -130,7 +130,7 @@ class SubPangraphTest(unittest.TestCase):
         }
         expected_pangraph = Pangraph()
         expected_pangraph.update_nodes(expected_nodes)
-        expected_pangraph.set_paths(expected_paths_to_node_ids)
+        expected_pangraph.set_paths(len(expected_nodes), expected_paths_to_node_ids)
 
         expected_nodes_ids_mapping = {0: 1, 1: 2, 2: 4, 3: 5, 4: 7}
 
@@ -138,6 +138,6 @@ class SubPangraphTest(unittest.TestCase):
         expected_subpangraph.pangraph = expected_pangraph
         expected_subpangraph.nodes_ids_mapping = expected_nodes_ids_mapping
 
-        actual_subpangraph = SubPangraph(self.pangraph, [0, 1])
-        actual_subpangraph = actual_subpangraph.keep_sources_ids([1])  # tu pewnie musi być wg names
+        actual_subpangraph = SubPangraph(self.pangraph, ['testseq0', 'testseq1'])
+        actual_subpangraph = actual_subpangraph.keep_sources_ids(['testseq1'])  # tu pewnie musi być wg names
         self.assertEqual(actual_subpangraph, expected_subpangraph)

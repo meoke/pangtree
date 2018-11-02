@@ -13,8 +13,8 @@ def read(path: Path) -> Pangraph:
     p = Pangraph()
     nodes, sequences_to_nodes_ids, consensuses_to_nodes_ids = extract_pangraph(po_lines)
     p.update_nodes(new_nodes=nodes)
-    p.set_paths(paths_to_node_ids=sequences_to_nodes_ids)
-    p.set_consensuses(paths_to_node_ids=consensuses_to_nodes_ids)
+    p.set_paths(max_nodes_count=len(nodes), paths_to_node_ids=sequences_to_nodes_ids)
+    p.set_consensuses(max_nodes_count=len(nodes), paths_to_node_ids=consensuses_to_nodes_ids)
     return p
 
 

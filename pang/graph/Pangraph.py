@@ -38,9 +38,9 @@ class Pangraph():
         del self._nodes[nodes_count:]
         self._pathmanager.trim(nodes_count)
 
-    def set_paths(self, paths_to_node_ids: Dict[str, List[int]] = None):
+    def set_paths(self, max_nodes_count: int, paths_to_node_ids: Dict[str, List[int]] = None):
         #todo metoda kontrolująca poprawność
-        self._pathmanager.init_from_dict(paths_to_node_ids)
+        self._pathmanager.init_from_dict(max_nodes_count, paths_to_node_ids)
 
     def add_path_to_node(self, path_name, node_id):
         self._pathmanager.mark(path_name, node_id)
@@ -82,8 +82,8 @@ class Pangraph():
     def get_sources_ids(self, node_id: int) -> List[int]:
         return self._pathmanager.get_sources_ids(node_id)
 
-    def set_consensuses(self, paths_to_node_ids):
-        self._consensusmanager.init_from_dict(paths_to_node_ids)
+    def set_consensuses(self, max_nodes_count, paths_to_node_ids):
+        self._consensusmanager.init_from_dict(max_nodes_count, paths_to_node_ids)
 
     def set_cm(self, cm):
         #todo trochę nieczyste

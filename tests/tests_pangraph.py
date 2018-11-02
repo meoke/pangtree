@@ -37,5 +37,5 @@ class PangraphTest(unittest.TestCase):
         }
         self.pangraph = Pangraph()
         self.pangraph.update_nodes(nodes)
-        self.pangraph.set_paths(paths_to_node_ids)
+        self.pangraph.set_paths(len(nodes), paths_to_node_ids)
 

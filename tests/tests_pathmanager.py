@@ -14,7 +14,7 @@ class PanthmanagerTest(unittest.TestCase):
             'testseq3': [11, 13, 14, 15]
         }
         self.pathmanager = PathManager()
-        self.pathmanager.init_from_dict(paths_to_node_ids)
+        self.pathmanager.init_from_dict(18, paths_to_node_ids)
 
     @data((0, [0]),
           (2, [0, 1]),

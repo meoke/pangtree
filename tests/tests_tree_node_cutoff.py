@@ -37,7 +37,8 @@ class TreeTestNodeCutoff(unittest.TestCase):
           (0.91, [0.29, 0.3, 0.33, 0.91, 0.92, 0.93, 0.97], 1),
           (0.5, [0.5], 1),
           (0.75, [0.1, 0.75, 0.8, 0.81, 1], 1),
-          (0.9, [0.5, 0.9, 0.99], 1))
+          (0.9, [0.5, 0.9, 0.99], 1),
+          (0.8333, [1.0, 0.9444, 0.8333, 0.0556, 0.1111], 1))
     @unpack
     def test_get_node_cutoff_multiplier_1(self, expected_cutoff, compatibilities, cutoff_search_range):
         actual_cutoff = tree.find_node_cutoff(compatibilities, cutoff_search_range)

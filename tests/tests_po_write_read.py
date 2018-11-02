@@ -43,7 +43,7 @@ def get_pangraph1() -> (Pangraph, List[str]):
     }
     pangraph = Pangraph()
     pangraph.update_nodes(nodes)
-    pangraph.set_paths(paths_to_node_ids)
+    pangraph.set_paths(len(nodes), paths_to_node_ids)
 
     expected_pofile = ["VERSION=October",
                        "NAME=test01",
@@ -101,8 +101,8 @@ def get_pangraph_with_consensuses() -> (Pangraph, List[str]):
     }
     pangraph = Pangraph()
     pangraph.update_nodes(nodes)
-    pangraph.set_paths(sequences_paths_to_node_ids)
-    pangraph.set_consensuses(consensuses_paths_to_node_ids)
+    pangraph.set_paths(len(nodes), sequences_paths_to_node_ids)
+    pangraph.set_consensuses(len(nodes), consensuses_paths_to_node_ids)
 
     expected_pofile = ["VERSION=October",
                        "NAME=test01",

@@ -39,7 +39,7 @@ class MafreaderTest(unittest.TestCase):
         }
         expected_pangraph = Pangraph()
         expected_pangraph.update_nodes(expected_nodes)
-        expected_pangraph.set_paths(expected_pats)
+        expected_pangraph.set_paths(len(expected_nodes), expected_pats)
         pangraph = mafreader.read(maf_path, self.test1_metadata)
         self.compare_pangraphs(actual_pangraph=pangraph, expected_pangraph=expected_pangraph)
 
@@ -64,7 +64,7 @@ class MafreaderTest(unittest.TestCase):
 
         expected_pangraph = Pangraph()
         expected_pangraph.update_nodes(expected_nodes)
-        expected_pangraph.set_paths(expected_pats)
+        expected_pangraph.set_paths(len(expected_nodes), expected_pats)
         pangraph = mafreader.read(maf_path, self.test1_metadata)
         self.compare_pangraphs(actual_pangraph=pangraph, expected_pangraph=expected_pangraph)
 
@@ -80,7 +80,7 @@ class MafreaderTest(unittest.TestCase):
 
         expected_pangraph = Pangraph()
         expected_pangraph.update_nodes(expected_nodes)
-        expected_pangraph.set_paths(expected_pats)
+        expected_pangraph.set_paths(len(expected_nodes), expected_pats)
         pangraph = mafreader.read(maf_path, self.test1_metadata)
         self.compare_pangraphs(actual_pangraph=pangraph, expected_pangraph=expected_pangraph)
 
@@ -99,7 +99,7 @@ class MafreaderTest(unittest.TestCase):
 
         expected_pangraph = Pangraph()
         expected_pangraph.update_nodes(expected_nodes)
-        expected_pangraph.set_paths(expected_pats)
+        expected_pangraph.set_paths(len(expected_nodes), expected_pats)
         pangraph = mafreader.read(maf_path, self.test1_metadata)
         self.compare_pangraphs(actual_pangraph=pangraph, expected_pangraph=expected_pangraph)
 
@@ -124,7 +124,7 @@ class MafreaderTest(unittest.TestCase):
         }
         expected_pangraph = Pangraph()
         expected_pangraph.update_nodes(expected_nodes)
-        expected_pangraph.set_paths(expected_pats)
+        expected_pangraph.set_paths(len(expected_nodes), expected_pats)
         pangraph = mafreader.read(maf_path, self.test1_metadata)
         self.compare_pangraphs(actual_pangraph=pangraph, expected_pangraph=expected_pangraph)
 

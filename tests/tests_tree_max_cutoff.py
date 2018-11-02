@@ -67,11 +67,3 @@ class TreeTestMaxCutoff(unittest.TestCase):
     def test_get_max_cutoff_single_value_in_search_range(self, expected_cutoff, compatibilities, cutoff_search_range):
         actual_cutoff = tree.find_max_cutoff(compatibilities, cutoff_search_range)
         self.assertEqual(actual_cutoff, expected_cutoff)
-
-    # @data((, []),
-    #       (, [0.5]),
-    #       (, [0, 2, 3]))
-    # @unpack
-    # def test_get_node_cutoff(self, expected_cutoff, compatibilities):
-    #     actual_cutoff = tree.find_node_cutoff(compatibilities)
-    #     self.assertEquals(actual_cutoff, expected_cutoff)
