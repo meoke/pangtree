@@ -125,3 +125,9 @@ class Pangraph():
 
     def set_consensus_manager(self, consensus_manager):
         self._consensusmanager = consensus_manager
+
+    def get_sequence_nodes_ids(self, sequence):
+        return self._pathmanager.get_nodes_ids(sequence)
+
+    def get_consensus_nodes_ids(self, sequence):
+        return self._consensusmanager.get_nodes_ids(sequence)

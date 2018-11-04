@@ -3,6 +3,7 @@
 ## Wymagania
 * [BioPython](https://biopython.org/)
 * [numpy](http://www.numpy.org/)
+* [jsonpickle](http://jsonpickle.github.io/)
 * [Mafgraph-todo]()
 * [Unittest](https://docs.python.org/3/library/unittest.html)
 * [DDT](https://github.com/txels/ddt)

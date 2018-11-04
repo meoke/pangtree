@@ -62,12 +62,12 @@ class PathManager:
         return self.paths.shape[0]
 
     def get_start_node_id(self, pathname):
-        return self.get_nodes(pathname)[0]
+        return self.get_nodes_ids(pathname)[0]
 
     def get_sources_weights_dict(self):
         unweighted_sources_weights = {}
         for path in self.path_names_to_array_id.keys():
-            path_nodes_ids = self.get_nodes(path)
+            path_nodes_ids = self.get_nodes_ids(path)
             average_paths_in_nodes_count = self.get_average_paths_in_nodes_count(path_nodes_ids)
             unweighted_sources_weights[path] = average_paths_in_nodes_count
 
@@ -88,12 +88,12 @@ class PathManager:
             return np.mean(sum(self.paths[:, path_nodes_ids]))
         return 0
 
-    def get_nodes(self, pathname):
+    def get_nodes_ids(self, pathname):
         source_id = self.path_names_to_array_id[pathname]
         return np.where(self.paths[source_id, :])[0]
 
     def get_path_nodes_count(self, pathname):
-        return len(self.get_nodes(pathname))
+        return len(self.get_nodes_ids(pathname))
 
     def get_path_names(self):
         return list(self.path_names_to_array_id.keys())

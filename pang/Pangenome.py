@@ -3,6 +3,7 @@ from .graph import mafreader
 import consensus_algorithm.simple as consensussimple
 import consensus_algorithm.tree as consensustree
 from .consensus_algorithm.TreeConfig import TreeConfig
+from fileformat.json import writer as jsonwriter
 
 
 class Pangenome:
@@ -14,13 +15,13 @@ class Pangenome:
     def generate_fasta_files(self, output_dir):
         pass
 
-    # def generate_consensus(self, output_dir, consensus_type, hbmin, mincomp, r, multiplier, stop, re_consensus):
     def generate_consensus(self, output_dir, consensus_type, hbmin, r, multiplier, stop):
         if consensus_type == 'simple':
             self.pangraph = consensussimple.run(output_dir, self.pangraph, hbmin, self.genomes_info)
         elif consensus_type == 'tree':
             tree_config = TreeConfig(hbmin=hbmin, r=r, multiplier=multiplier, stop=stop)
             self.pangraph = consensustree.run(output_dir, self.pangraph, tree_config, self.genomes_info)
+        jsonwriter.save(output_dir, self.pangraph, self.genomes_info)
 
     def generate_visualization(self, output_dir):
         pass
