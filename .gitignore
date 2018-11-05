@@ -100,6 +100,9 @@ ENV/
 # mypy
 .mypy_cache/
 
+#PyCharm
+.idea/*
+
 tests_old/files/*/converted*
 tests_old/files/*/result*
 tests_old/files/*/test*
@@ -110,3 +113,4 @@ tests_old/files/mycoplasmsa_po/mycoplasma.po
 inne/*
 *.xml
 *.iml
+
