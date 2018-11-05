@@ -114,3 +114,5 @@ inne/*
 *.xml
 *.iml
 
+pang_output*
+
