@@ -6,7 +6,6 @@ import pang.userio.cmdargs as cmdargs
 import pang.graph.mafreader as mafreader
 
 import pang.metadata.reader as metadatareader
-from pang.graph.Graph import Graph
 from pang.graph.Node import Node
 import pang.graph.nucleotides as nucleotides
 from pang.graph.PathManager import PathManager

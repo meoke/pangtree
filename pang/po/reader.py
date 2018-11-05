@@ -39,17 +39,17 @@ def extract_pangraph(po_lines):
         detailed_info = _extract_line_value(detailed_path_info).split(' ')
 
         path_nodes_count = int(detailed_info[0])
-        consensus_number = int(detailed_info[3]) #todo wykorzystac
+        consensus_number = int(detailed_info[3]) #todo use this info
 
         if 'CONSENS' in path_name:
-            consensusnames_to_nodes_ids[path_name] = []# todo byłoby szybciej [None] * path_nodes_count
+            consensusnames_to_nodes_ids[path_name] = []# todo would be faster? [None] * path_nodes_count
         else:
-            seqnames_to_nodes_ids[path_name] = []# todo byłoby szybciej [None] * path_nodes_count
+            seqnames_to_nodes_ids[path_name] = []# todo would be faster? [None] * path_nodes_count
 
     nodes = [None] * nodes_count
     for i in range(nodes_count):
         node_line = next(po_lines_iterator)
-        base = node_line[0].upper() #todo czy to ma być upper?
+        base = node_line[0].upper() #todo upper?
         in_nodes, sequences_IDs, aligned_to = _extract_node_parameters(node_line)
         nodes[i] = Node(id=i,
                         base=n.code(base),
@@ -63,7 +63,6 @@ def extract_pangraph(po_lines):
                 consensusnames_to_nodes_ids[pathname].append(i)
 
     return nodes, seqnames_to_nodes_ids, consensusnames_to_nodes_ids
-
 
 
 def _extract_line_value(line):
@@ -87,8 +86,5 @@ def _extract_node_parameters(line):
         else:
             number_end += 1
     node_parameters[current_node_parameter].append(int(line[number_start: number_end]))
-    aligned_to = node_parameters['A'][0] if node_parameters['A'] else None #todo trochę brzydkie wyłuskanie [0] z A
+    aligned_to = node_parameters['A'][0] if node_parameters['A'] else None
     return node_parameters['L'], node_parameters['S'], aligned_to
-    # pattern = '{0}\d+'.format(code_letter)
-    # values_with_prefix_letters = re.findall(pattern, node)
-    # return [int(letter_value[1:]) for letter_value in values_with_prefix_letters]

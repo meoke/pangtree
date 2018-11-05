@@ -4,7 +4,6 @@ from ddt import ddt, data
 from context import mafreader
 from context import metadatareader
 from context import Node
-from context import Graph
 from context import nucleotides as n
 from context import Pangraph
 
@@ -88,9 +87,8 @@ class MafreaderTest(unittest.TestCase):
     # @unittest.skip("simple4")
     def test_read_maf4(self, maf_path):
         expected_nodes = [Node(id=0, base=n.code('A'), in_nodes=[], aligned_to=None)]
-        expected_graph = Graph(nodes=expected_nodes)
 
-        expected_pats = {
+        expected_paths = {
             "testseq0": [0],
             "testseq1": [0],
             "testseq2": [0],
@@ -99,7 +97,7 @@ class MafreaderTest(unittest.TestCase):
 
         expected_pangraph = Pangraph()
         expected_pangraph.update_nodes(expected_nodes)
-        expected_pangraph.set_paths(len(expected_nodes), expected_pats)
+        expected_pangraph.set_paths(len(expected_nodes), expected_paths)
         pangraph = mafreader.read(maf_path, self.test1_metadata)
         self.compare_pangraphs(actual_pangraph=pangraph, expected_pangraph=expected_pangraph)
 

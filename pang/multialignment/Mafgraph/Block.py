@@ -10,9 +10,8 @@ class Block:
         self.out_edges = []
 
     def __str__(self):
-        block_str = []
-        block_str.append(f"Block id: {self.block_id}, order id: {self.order_id}")
-        block_str.append(f"Out edges: {[str(e) for e in self.out_edges]}")
+        block_str = [f"Block id: {self.block_id}, order id: {self.order_id}",
+                     f"Out edges: {[str(e) for e in self.out_edges]}"]
         return "\n".join(block_str)
 
     def add_out_edge(self, to: int, sequence, edge_type: EdgeType):

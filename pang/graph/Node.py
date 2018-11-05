@@ -2,15 +2,12 @@ from typing import List
 from .nucleotides import decode
 
 
-NodesIDsList = List[int]
-
-
 class Node:
     def __init__(self,
                  id: int,
                  base: int,
-                 in_nodes: NodesIDsList,
-                 aligned_to: NodesIDsList):
+                 in_nodes: List[int],
+                 aligned_to: List[int]):
         self.id = id
         self.base = base
         self.in_nodes = in_nodes

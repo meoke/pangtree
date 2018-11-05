@@ -1,7 +1,5 @@
 from pathlib import Path
 from Bio import AlignIO
-from .Graph import Graph
-from .PathManager import PathManager
 from maf.Mafgraph import Mafgraph
 from metadata.MultialignmentMetadata import MultialignmentMetadata
 from .Node import Node
@@ -31,19 +29,12 @@ def parse_mafcontent_to_graph(maf: str, metadata: MultialignmentMetadata) -> Pan
     return pangraph
 
 
-def fill_in_nodes(graph: Graph, path_manager: PathManager):
-    for node in graph.nodes:
-        node.in_nodes = path_manager.get_in_nodes(node.id)
-
-
 def get_sorted_mafgraph(maf) -> Mafgraph:
-    #todo typ maf (generator?)
     return Mafgraph(maf=maf, remove_cycles=True)
 
 
 def get_max_count_nodes(mafgraph: Mafgraph) -> int:
-    #todo czy może być takie tymczasowe rozwiązanie:
-    #szerokość każdego bloku maf *4 (bo to maksymalna liczba węzłów) i potem przyciąć tablicę
+    # block_width * 4 because this is max possible aligned nodes count. It is trimmed later.
 
     max_nodes_count = 0
     for block in mafgraph.blocks:
@@ -59,9 +50,6 @@ def get_next_aligned_node_id(current_column_i, column_nodes_ids):
 
 
 def parse_maf_block(block, previous_node_id):
-    # todo uwzględniać + i - z sekwencji
-    # todo uwzględniać czy blok jest odwrócony czy nie
-
     block_width = len(block.alignment[0].seq)
     block_sequences_names = [seq.id for seq in block.alignment]
 
@@ -86,3 +74,4 @@ def parse_maf_block(block, previous_node_id):
             pg.add_node(node, current_node_id-previous_node_id-1)
     pg.trim_nodes(nodes_count=current_node_id-previous_node_id)
     return pg, current_node_id
+

@@ -1,6 +1,7 @@
 from subprocess import run
 from pathlib import Path
 
+
 def run_poa(po_file_path: Path, hb_file_path: Path, hbmin):
     poa_path = po_file_path.joinpath('../../../bin/poa').resolve()
     blosum_path = po_file_path.joinpath('../../../bin/blosum80.mat').resolve()

@@ -1,6 +1,3 @@
-from .ConsensusNode import ConsensusNode
-
-
 class ConsensusTree(object):
     def __init__(self):
         self.nodes = []

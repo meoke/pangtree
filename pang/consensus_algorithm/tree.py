@@ -9,11 +9,9 @@ from .AlgorithmParams import AlgorithmParams
 from consensus_data.SubPangraph import SubPangraph
 from consensus_data.TreeConsensusManager import TreeConsensusManager
 from consensus_data.ConsensusNode import ConsensusNode
-from consensus_data.Errors import NoConsensus
 from collections import deque
 
 import logging
-# logger = logging.getLogger(__name__)
 
 ap = AlgorithmParams()
 
@@ -49,7 +47,7 @@ def produce_tree(pangraph: Pangraph) -> TreeConsensusManager:
     while nodes_to_process:
         subtree_root = nodes_to_process.pop()
         current_node_pangraph = SubPangraph(pangraph, subtree_root.sequences_names)
-        children_nodes_manager = get_children_nodes(current_node_pangraph, subtree_root)  # TreeConsensusManager z węzłami-braćmi i odpowiadającymi im consensusami w wersji dla pangraohu ograniczonego do ścieżek w danym nodzie
+        children_nodes_manager = get_children_nodes(current_node_pangraph, subtree_root)
 
         chidren_nodes = children_nodes_manager.get_nodes()
         if len(chidren_nodes) == 1:
@@ -71,7 +69,6 @@ def get_children_nodes(subpangraph: SubPangraph, node: ConsensusNode) -> TreeCon
     current_paths_names = node.sequences_names
     local_consensus_manager = TreeConsensusManager(max_nodes_count=subpangraph.orig_nodes_count)
     s = deepcopy(subpangraph)
-    # print(f"Searching children for id: {node.consensus_id}, names: {node.sequences_names}")
     logging.info(f"Searching children for id: {node.consensus_id}, len: {len(node.sequences_names)}, names: {node.sequences_names}")
     while current_paths_names:
         subpangraph = run_poa(subpangraph)
@@ -151,13 +148,13 @@ def find_node_cutoff(compatibility_to_node_sequences, multiplier):
         a = np.where(distances >= required_gap)[0][0]+1
         return sorted_comp[a]
     else:
-        # logger.warning("Cannot find node cutoff for given multiplier. Multiplier == 1 was used instead.")
+        logging.warning("Cannot find node cutoff for given multiplier. Multiplier == 1 was used instead.")
         return sorted_comp[np.where(distances >= mean_distance)[0][0]+1]
 
 
 def get_max_compatible_sources_ids(current_paths_names, compatibility_to_node_sequences, max_cutoff):
     npver = np.array(compatibility_to_node_sequences)
-    path_names=np.array(current_paths_names)
+    path_names = np.array(current_paths_names)
     return list(path_names[np.where(npver >= max_cutoff)[0]])
 
 

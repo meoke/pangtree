@@ -20,7 +20,7 @@ class Pangraph():
         self._pathmanager.update(pangraph._pathmanager, start=start_node)
 
     def update_nodes(self, new_nodes: List[Node]):
-        #todo metoda kontrolująca poprawność
+        #todo something to control new_nodes correctness
         if not new_nodes:
             raise Exception("empty new nodes")
         if len(self._nodes) <= new_nodes[-1].id:
@@ -39,7 +39,7 @@ class Pangraph():
         self._pathmanager.trim(nodes_count)
 
     def set_paths(self, max_nodes_count: int, paths_to_node_ids: Dict[str, List[int]] = None):
-        #todo metoda kontrolująca poprawność
+        # todo something to control paths correctness
         self._pathmanager.init_from_dict(max_nodes_count, paths_to_node_ids)
 
     def add_path_to_node(self, path_name, node_id):
@@ -86,7 +86,6 @@ class Pangraph():
         self._consensusmanager.init_from_dict(max_nodes_count, paths_to_node_ids)
 
     def set_cm(self, cm):
-        #todo trochę nieczyste
         self._consensusmanager = cm
 
     def get_top_consensus(self):

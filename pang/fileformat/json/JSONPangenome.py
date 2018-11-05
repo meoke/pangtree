@@ -58,4 +58,3 @@ class JSONPangenome:
                                              sequences=node.sequences_names,
                                              nodes_ids=[int(node_id) for node_id in
                                                         pangenome.pangraph.get_consensus_nodes_ids(cm.get_path_name(node.consensus_id))]) for node in cm_tree_nodes]
-        pass

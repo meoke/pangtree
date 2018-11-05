@@ -21,21 +21,11 @@ class SubPangraph(object):
             self.nodes_ids_mapping = {i: i for i in range(self.pangraph.get_nodes_count())}
         else:
             self.pangraph._pathmanager = copy.deepcopy(pangraph._pathmanager)
-            # self.pangraph._pathmanager.keep_paths_ids(sequences_ids_to_keep)
             self.pangraph._pathmanager.keep_paths_names(sorted_sequences_names)
             nodes_ids_to_keep = self.pangraph._pathmanager.get_active_nodes()
             self.pangraph._pathmanager.keep_nodes_ids(nodes_ids_to_keep)
             self.pangraph._nodes, self.nodes_ids_mapping = self.build_nodes(pangraph, nodes_ids_to_keep)
             self.pangraph._consensusmanager = PathManager()
-
-    # def set_pangraph(self, pangraph):
-    #     self.pangraph = pangraph
-
-    # def get_mapping(self):
-    #     return self.nodes_ids_mapping
-
-    # def keep_paths(self, sequences_ids_to_keep: List[int]):
-    #     raise NotImplemented
 
     def build_nodes(self, pangraph: Pangraph, nodes_ids_to_keep: List[int]):
         new_nodes = [None] * len(nodes_ids_to_keep)
@@ -68,7 +58,7 @@ class SubPangraph(object):
         raise NotImplemented
 
     def get_consensus_remapped_to_original_nodes(self, consensus_id):
-        original_path = np.zeros(shape=(self.orig_nodes_count), dtype=bool)
+        original_path = np.zeros(shape=self.orig_nodes_count, dtype=bool)
         consensus_nodes_ids = [self.nodes_ids_mapping[node_id] for node_id in np.where(self.pangraph._consensusmanager.paths[consensus_id])[0]]
         original_path[consensus_nodes_ids] = True
         return original_path

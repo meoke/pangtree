@@ -16,14 +16,12 @@ def run_pang(args):
         p.generate_consensus(pathtools.create_child_dir(args.output, 'consensus'),
                              args.consensus,
                              args.hbmin,
-                             #args.mincomp,
                              args.r,
                              args.multiplier,
-                             args.stop,
-                             #args.re_consensus
+                             args.stop
                              )
     if args.vis:
-        p.generate_visualization(pathtools.create_child_dir(args.output, 'vis'))#todo być może wyrzucić to wszystko i zawsze generować...? bo właściwie nic szczególnego tu nie będzie, json zawsze można wypluć
+        p.generate_visualization(pathtools.create_child_dir(args.output, 'vis'))
     data_path = pathtools.create_child_dir(args.output, 'data')
     jsonwriter.save(data_path, p)
 
@@ -39,7 +37,6 @@ def cleanup(args: cmdargs.ArgsList)-> None:
 
 
 # logging.config.fileConfig('logging.conf')
-
 
 args = cmdargs.get_validated_args()
 logging.info(f'Input arguments: {args}')

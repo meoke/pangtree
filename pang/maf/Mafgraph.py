@@ -2,9 +2,9 @@ from .Block import Block
 from .Direction import Direction
 from . import sorter
 
+
 class Mafgraph:
     def __init__(self, maf, remove_cycles: bool):
-        #todo typ dla mafa
         self.blocks = self._maf_to_blocks(maf)
         if remove_cycles:
             self._sort_blocks()
@@ -22,7 +22,4 @@ class Mafgraph:
 
     def _sort_blocks(self):
         return sorter.sort_mafblocks(self.blocks)
-
-# pytania:
-# czy chce przechowywać treść z AlignIO?
 

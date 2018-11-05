@@ -1,10 +1,6 @@
 import numpy as np
-from typing import Dict, List
+from typing import List
 from graph.errors import NoPath
-
-PathsNodesDict = Dict[str, int]
-PathsNamesList = List[str]
-#todo czy path to aby na pewno string? a nie path/sequence?
 
 
 class PathManager:
@@ -29,10 +25,6 @@ class PathManager:
         return (np.array_equal(self.paths, other.paths)
                 and self.path_names_to_array_id == other.path_names_to_array_id
                 and self.start_node_id == other.start_node_id)
-
-    #
-    # def no_paths(self):
-    #     return not any(x for p in self.paths for x in p)
 
     def mark(self, path_name, node_id):
         array_id = self.path_names_to_array_id[path_name]
@@ -103,9 +95,6 @@ class PathManager:
 
     def keep_paths_ids(self, sequences_ids: List[int]):
         """Removes unnecessary paths info and return ids of still necessary nodes."""
-        # paths_ids_to_delete = list(set(self.path_names_to_array_id.values()) - set(sequences_ids))
-        # self.paths = np.delete(self.paths, paths_ids_to_delete, 0)
-        # return np.where(np.logical_or.reduce(self.paths))[0]
         path_names_to_delete = []
         path_ids_to_delete = []
         d_copy = self.path_names_to_array_id.copy()
@@ -123,9 +112,6 @@ class PathManager:
 
     def keep_paths_names(self, sequences_names: List[str]):
         """Removes unnecessary paths info and return ids of still necessary nodes."""
-        # paths_ids_to_delete = list(set(self.path_names_to_array_id.values()) - set(sequences_ids))
-        # self.paths = np.delete(self.paths, paths_ids_to_delete, 0)
-        # return np.where(np.logical_or.reduce(self.paths))[0]
         path_names_to_delete = []
         path_ids_to_delete = []
         d_copy = self.path_names_to_array_id.copy()

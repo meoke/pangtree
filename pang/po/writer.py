@@ -69,7 +69,7 @@ def get_node_code(node):
 def get_nodes(pangraph: Pangraph) -> List[str]:
     nodes_count = pangraph.get_nodes_count()
     nodes_data = [None] * nodes_count
-    #todo przerobić na list comprehension
+    #todo write as list comprehension
     for i, node in enumerate(pangraph.get_nodes()):
         sources_ids = pangraph.get_sources_ids(node.id)
         nodes_data[i] = "".join([get_node_code(node),

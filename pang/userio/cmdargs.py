@@ -80,10 +80,6 @@ def _get_parser():
                    default=0.6,
                    help='Simple POA algorithm parameter. '
                         'The minimum value of sequence compatibility to generated consensus')
-    # p.add_argument('-mincomp',
-    #                type=_float_0_1,
-    #                default=0.5,
-    #                help='Tree POA algorithm parameter. The minimum value of sequence compatibility to generated consensus')
     p.add_argument('-r',
                    nargs=2,
                    type=_float_0_1,
@@ -101,12 +97,6 @@ def _get_parser():
                    default=0.99,
                    help='Tree POA algorithm parameter.'
                         'Value of node compatibility above which the node is no more split.')
-    # p.add_argument('-re_consensus',
-    #                action='store_true',
-    #                default=True,
-    #                help='Tree POA algorithm parameter.'
-    #                     'Set if sequences already assigned to sibling nodes should be checked if '
-    #                     'they are more compatible to consensus generated for current node.')
     return p
 
 

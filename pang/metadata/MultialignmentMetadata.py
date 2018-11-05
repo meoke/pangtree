@@ -9,5 +9,5 @@ class MultialignmentMetadata:
         self.genomes_metadata = genomes_metadata
 
     def get_id(self, sequence_name: str) -> int:
-        #todo zabezpieczenie przed złym indeksem
+        # todo empty array protection
         return [seq_id for seq_id, data in self.genomes_metadata.items() if data.name == sequence_name][0]
