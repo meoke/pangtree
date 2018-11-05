@@ -1,7 +1,0 @@
-#maf version=1 scoring=roast.v3.3",
-a score=1
-s testseq0 0 18 + 18 AAAAAGCCATACCCAACC
-s testseq1 0 18 + 18 AACAAGCCATACCCAACC
-s testseq2 0 18 + 18 AAAAAGGGATACCCGACC
-s testseq3 0 18 + 18 GCGTCTTAGTGGTGTCGG
-s testseq4 0 18 + 18 GCTTCGTAGTTGTGTCTG

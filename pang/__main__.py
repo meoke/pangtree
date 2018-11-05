@@ -1,9 +1,9 @@
-import logging
-
+import logging.config
 import time
 
-from .userio import cmdargs, pathtools
-from .Pangenome import Pangenome
+from userio import cmdargs, pathtools
+from Pangenome import Pangenome
+from fileformat.json import writer as jsonwriter
 
 
 def run_pang(args):
@@ -16,13 +16,16 @@ def run_pang(args):
         p.generate_consensus(pathtools.create_child_dir(args.output, 'consensus'),
                              args.consensus,
                              args.hbmin,
-                             args.mincomp,
+                             #args.mincomp,
                              args.r,
                              args.multiplier,
                              args.stop,
-                             args.re_consensus)
+                             #args.re_consensus
+                             )
     if args.vis:
-        p.generate_visualization(pathtools.create_child_dir(args.output, 'vis'))
+        p.generate_visualization(pathtools.create_child_dir(args.output, 'vis'))#todo być może wyrzucić to wszystko i zawsze generować...? bo właściwie nic szczególnego tu nie będzie, json zawsze można wypluć
+    data_path = pathtools.create_child_dir(args.output, 'data')
+    jsonwriter.save(data_path, p)
 
 
 def cleanup(args: cmdargs.ArgsList)-> None:
@@ -33,6 +36,9 @@ def cleanup(args: cmdargs.ArgsList)-> None:
         logging.info("No output was produced.")
     else:
         logging.info(f"Program output is placed in {args.output}")
+
+
+# logging.config.fileConfig('logging.conf')
 
 
 args = cmdargs.get_validated_args()

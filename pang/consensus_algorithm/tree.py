@@ -12,7 +12,7 @@ from consensus_data.ConsensusNode import ConsensusNode
 from consensus_data.Errors import NoConsensus
 from collections import deque
 
-# import logging
+import logging
 # logger = logging.getLogger(__name__)
 
 ap = AlgorithmParams()
@@ -32,13 +32,18 @@ def node_ready(node: ConsensusNode):
     return False
 
 
-def produce_tree(pangraph: Pangraph) -> TreeConsensusManager:
-    all_sequences_names = pangraph.get_path_names()
-
-    cm = TreeConsensusManager(max_nodes_count=pangraph.get_nodes_count())
-    root_node = ConsensusNode(sequences_names=list(all_sequences_names))
+def get_root_node(pangraph: Pangraph):
     root_pangraph = SubPangraph(pangraph, pangraph.get_path_names())
-    cm.add_node(root_node, get_top_consensus(root_pangraph))
+    root_node = ConsensusNode(sequences_names=list(pangraph.get_path_names()))
+    root_node_consensus = get_top_consensus(root_pangraph)
+    root_node.compatibilities_to_all = pangraph.get_paths_compatibility_to_consensus(root_node_consensus)
+    return root_node, root_node_consensus
+
+
+def produce_tree(pangraph: Pangraph) -> TreeConsensusManager:
+    cm = TreeConsensusManager(max_nodes_count=pangraph.get_nodes_count())
+    root_node, root_consensus = get_root_node(pangraph)
+    cm.add_node(root_node, root_consensus)
 
     nodes_to_process = deque([root_node])
     while nodes_to_process:
@@ -66,6 +71,8 @@ def get_children_nodes(subpangraph: SubPangraph, node: ConsensusNode) -> TreeCon
     current_paths_names = node.sequences_names
     local_consensus_manager = TreeConsensusManager(max_nodes_count=subpangraph.orig_nodes_count)
     s = deepcopy(subpangraph)
+    # print(f"Searching children for id: {node.consensus_id}, names: {node.sequences_names}")
+    logging.info(f"Searching children for id: {node.consensus_id}, len: {len(node.sequences_names)}, names: {node.sequences_names}")
     while current_paths_names:
         subpangraph = run_poa(subpangraph)
         c_to_node = subpangraph.get_paths_compatibility(0)
@@ -131,9 +138,9 @@ def find_node_cutoff(compatibility_to_node_sequences, multiplier):
     if not compatibility_to_node_sequences:
         raise ValueError("Empty compatibilities list. Finding max cutoff.")
     sorted_comp = sorted(set(compatibility_to_node_sequences))
-    if len(compatibility_to_node_sequences) == 1:
+    if len(sorted_comp) == 1:
         return sorted_comp[0]
-    elif len(compatibility_to_node_sequences) == 2:
+    elif len(sorted_comp) == 2:
         return sorted_comp[1]
 
     mean_distance = (sorted_comp[-1] - sorted_comp[0])/(len(sorted_comp)-1)

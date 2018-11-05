@@ -1,9 +1,8 @@
 import metadata.reader
-from .graph import mafreader
+from graph import mafreader
 import consensus_algorithm.simple as consensussimple
 import consensus_algorithm.tree as consensustree
-from .consensus_algorithm.TreeConfig import TreeConfig
-from fileformat.json import writer as jsonwriter
+from consensus_algorithm.TreeConfig import TreeConfig
 
 
 class Pangenome:
@@ -21,7 +20,6 @@ class Pangenome:
         elif consensus_type == 'tree':
             tree_config = TreeConfig(hbmin=hbmin, r=r, multiplier=multiplier, stop=stop)
             self.pangraph = consensustree.run(output_dir, self.pangraph, tree_config, self.genomes_info)
-        jsonwriter.save(output_dir, self.pangraph, self.genomes_info)
 
     def generate_visualization(self, output_dir):
         pass

@@ -48,6 +48,9 @@ optional arguments:
                         
   **-stop STOP**            Tree POA algorithm parameter.Value of node
                         compatibility above which the node is no more split.
+
+## Przykłady
+python3 pang -m examples/Fabricated/f2.maf -d examples/Fabricated/f_metadata.json -consensus tree
                         
 ## Opisy funkcjonalności
 ### Konstrukcja poagraphu
