@@ -1,0 +1,6 @@
+biopython
+numpy
+jsonpickle
+unittest
+ddt
+# Mafgraph-https://github.com/anialisiecka/Mafgraph

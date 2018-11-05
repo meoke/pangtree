@@ -1,0 +1,6 @@
+#maf version=1 scoring=roast.v3.3
+a score=1.0
+s testseq0 1 0 + 1 A
+s testseq1 1 0 + 1 A
+s testseq2 1 0 + 1 A
+s testseq3 1 0 + 1 A
