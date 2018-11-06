@@ -10,7 +10,7 @@
 ## Użycie programu
 usage: pang [-h] --multialignment MULTIALIGNMENT --data DATA [--output OUTPUT]
             [-fasta] [-vis] [-consensus {simple,tree}] [-hbmin HBMIN] [-r R R]
-            [-multiplier MULTIPLIER] [-stop STOP] [-re_consensus]
+            [-multiplier MULTIPLIER] [-stop STOP]
 
 Consensus generation and visulization of Pangenome
 
@@ -48,9 +48,11 @@ optional arguments:
                         
   **-stop STOP**            Tree POA algorithm parameter.Value of node
                         compatibility above which the node is no more split.
+                        
+                        
 
 ## Przykłady
-python3 pang -m examples/Fabricated/f2.maf -d examples/Fabricated/f_metadata.json -consensus tree
+python3 pang -m examples/Fabricated/f.maf -d examples/Fabricated/f_metadata.json -consensus tree
                         
 ## Opisy funkcjonalności
 ### Konstrukcja poagraphu
@@ -59,7 +61,7 @@ Input: plik .maf (Multialignment Alignment Format)
 Output: plik .po 
 
 Konstrukcja grafu:
-![konstrukcja](images/pangraph_construcion.png "Logo Title Text 1")
+![konstrukcja](docs/images/pangraph_construcion.png "Pangraph construction")
 
 ### Wizualizacja
 TBA
