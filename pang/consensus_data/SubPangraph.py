@@ -66,6 +66,9 @@ class SubPangraph(object):
     def get_path_ids(self):
         return self.pangraph.get_path_ids()
 
+    def get_paths_names(self):
+        return self.pangraph.get_path_names()
+
     def get_paths_compatibility(self, consensus_id):
         return self.pangraph.get_paths_compatibility(consensus_id)
 

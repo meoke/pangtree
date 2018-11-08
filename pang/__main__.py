@@ -18,7 +18,8 @@ def run_pang(args):
                              args.hbmin,
                              args.r,
                              args.multiplier,
-                             args.stop
+                             args.stop,
+                             args.re_consensus
                              )
     if args.vis:
         p.generate_visualization(pathtools.create_child_dir(args.output, 'vis'))
