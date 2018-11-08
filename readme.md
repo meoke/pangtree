@@ -10,7 +10,7 @@
 ## Użycie programu
 usage: pang [-h] --multialignment MULTIALIGNMENT --data DATA [--output OUTPUT]
             [-fasta] [-vis] [-consensus {simple,tree}] [-hbmin HBMIN] [-r R R]
-            [-multiplier MULTIPLIER] [-stop STOP]
+            [-multiplier MULTIPLIER] [-stop STOP] [-re_consensus]
 
 Consensus generation and visulization of Pangenome
 
