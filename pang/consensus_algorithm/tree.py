@@ -43,13 +43,13 @@ def produce_tree(pangraph: Pangraph) -> TreeConsensusManager:
     root_node, root_consensus = get_root_node(pangraph)
     cm.add_node(root_node, root_consensus)
     nodes_to_process = deque([root_node])
+    p = deepcopy(pangraph)
     while nodes_to_process:
         subtree_root = nodes_to_process.pop()
-        current_node_pangraph = SubPangraph(pangraph, subtree_root.sequences_names)
-        children_nodes_manager = get_children_nodes(current_node_pangraph, subtree_root)
+        children_nodes_manager = get_children_nodes(p, subtree_root)
 
         if ap.config.re_consensus:
-            children_nodes_manager = rearrange(pangraph, children_nodes_manager)
+            children_nodes_manager = rearrange(p, children_nodes_manager)
 
         chidren_nodes = children_nodes_manager.get_nodes()
         if len(chidren_nodes) == 1:
@@ -67,10 +67,11 @@ def produce_tree(pangraph: Pangraph) -> TreeConsensusManager:
     return cm
 
 
-def get_children_nodes(subpangraph: SubPangraph, cn: ConsensusNode) -> TreeConsensusManager:
+def get_children_nodes(orig_pangraph: Pangraph, cn: ConsensusNode) -> TreeConsensusManager:
     current_paths_names = cn.sequences_names
+    op = deepcopy(orig_pangraph)
+    subpangraph = SubPangraph(op, cn.sequences_names)
     local_consensus_manager = TreeConsensusManager(max_nodes_count=subpangraph.orig_nodes_count)
-    s = deepcopy(subpangraph)
     logging.info(f"Searching children for id: {cn.consensus_id}, len: {len(cn.sequences_names)}, names: {cn.sequences_names}")
     while current_paths_names:
         subpangraph = run_poa(subpangraph)
@@ -93,8 +94,7 @@ def get_children_nodes(subpangraph: SubPangraph, cn: ConsensusNode) -> TreeConse
         local_consensus_manager.add_node(node, remapped_to_orig_best_path)
 
         current_paths_names = sorted(list((set(current_paths_names) - set(compatible_sources_names))))
-        subpangraph = SubPangraph(s.pangraph, current_paths_names, subpangraph.orig_nodes_count)
-
+        subpangraph = SubPangraph(op, current_paths_names, subpangraph.orig_nodes_count)
 
     return local_consensus_manager
 
@@ -145,7 +145,7 @@ def find_max_cutoff(compatibility_to_node_sequences, cutoff_search_range):
         return search_range[1]
 
     max_diff = search_range[1] - search_range[0]
-    max_cutoff = search_range[0]
+    max_cutoff = search_range[1]
     for i in range(1, len(search_range)-1):
         current_diff = search_range[i+1] - search_range[i]
         if current_diff >= max_diff:
