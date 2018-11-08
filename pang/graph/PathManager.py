@@ -166,3 +166,19 @@ class PathManager:
         self.path_names_to_array_id = {}
         self.paths = np.delete(self.paths, slice(0, self.paths.shape[0]), axis=0)
 
+    def remove_path(self, path_to_remove_id):
+        #todo it works for pathmanager as consensusmanager only!!!
+        pathname = [name for name, path_id in self.path_names_to_array_id.items() if path_id == path_to_remove_id][0]
+        self.paths = np.delete(self.paths, slice(0, path_to_remove_id), axis=0)
+        name_to_id = self.path_names_to_array_id
+        del self.path_names_to_array_id[pathname]
+        for name, path_id in name_to_id.items():
+            if path_id > path_to_remove_id:
+                del self.path_names_to_array_id[name]
+                self.path_names_to_array_id[f"CONSENSUS{path_id-1}"] = path_id - 1
+
+    def get_path(self, pathname):
+        path_id = self.get_path_id(pathname)
+        return self.paths[path_id]
+
+

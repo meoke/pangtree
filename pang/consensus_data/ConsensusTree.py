@@ -10,3 +10,7 @@ class ConsensusTree(object):
 
     def get_node(self, node_id):
         return self.nodes[node_id]
+
+    def remove_consensus_node(self, c_id):
+        node_id_to_remove = [i for i, n in enumerate(self.nodes) if n.consensus_id == c_id][0]
+        del self.nodes[node_id_to_remove]

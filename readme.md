@@ -49,6 +49,10 @@ optional arguments:
   **-stop STOP**            Tree POA algorithm parameter.Value of node
                         compatibility above which the node is no more split.
                         
+
+  **-re_consensus**         Tree POA algorithm parameter.Set if after producing
+                        children nodes, sequences should be moved to siblings
+                        nodes if compatibility to its consensus is higher.
                         
 
 ## Przykłady
@@ -76,6 +80,7 @@ TBA
 - *cutoff_search_range* - Wśród posortowanych wartości compatibilities poszukiwany jest próg odcięcia, czyli taka wartość compatibility, poniżej której sekwencje nie są przydzielane do danego węzła. *cutoff_search_range* określa, w której części listy wartość będzie poszukiwana. Np. dla [0.2, 0.5, 0.8, 0.9, 0.95] i *cutoff_search_range* = [0.5, 1], próg odcięcia będzie szukany wśród [0.8, 0.9, 0.95]
 - *multiplier* - Próg odcięcia jest liczony wg procedury: oblicz średnią odległość między wartościami compatibilities i znajdź pierwszą odległość, która tę średnią*multiplier przekracza.
 - *stop* - compatibility węzła, przy osiągnięciu którego węzeł nie jest już dzielony
+- *re_consensus* - przełącznik. Jeśli ma wartość True, to po wygenerowaniu dzieci danego węzła dokonywane jest sprawdzenie, czy sekwencje nie powinny przynależeć do innego węzła spośród rodzeństwa, niż zostały pierwotnie przypisane.
 
 ##### Output:
 - lista consensusów
@@ -99,7 +104,7 @@ while nodes_to_process:
     for child in children_nodes:
         subtree_root.children.append(child)
         
-        if not_ready(child):
+        if node_ready(child):
             nodes_to_process.append(child)
             
 def node_ready(node):
@@ -125,6 +130,9 @@ def get_children(node):
         
         nodes.append(TreeNode(compatible_sequences))
         sequences = sequences - compatible_sequences
+    
+    if re_consensus:
+        nodes.move_sequences_if_needed()
     return nodes
     
 def find_max_cutoff(compatibilities):
@@ -163,3 +171,4 @@ Słowny opis podziału węzła (odpowiada get_children):
     - ID consensusu **C_MAX**
     - sekwencje **node_sequences**
     - minimalne compatibility wśród compatibilities **node_sequences** do **C_MAX**
+

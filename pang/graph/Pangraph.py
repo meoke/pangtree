@@ -100,6 +100,9 @@ class Pangraph():
     def get_paths(self):
         return self._pathmanager.get_paths()
 
+    def get_path(self, pathname):
+        return self._pathmanager.get_path(pathname)
+
     def get_path_compatibility(self, path, consensus):
         common_nodes_count = np.sum(path & consensus)
         source_nodes_count = np.sum(path)

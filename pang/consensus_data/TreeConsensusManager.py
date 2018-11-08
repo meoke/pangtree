@@ -28,3 +28,14 @@ class TreeConsensusManager(PathManager):
 
     def get_node(self, node_id):
         return self.consensus_tree.get_node(node_id)
+
+    def remove_consensus(self, consensus_id):
+        self.consensus_tree.remove_consensus_node(consensus_id)
+        super(TreeConsensusManager, self).remove_path(path_to_remove_id=consensus_id)
+
+    def get_sequences_names(self):
+        sequences_names = set([])
+        for n in self.consensus_tree.nodes:
+            for s in n.sequences_names:
+                sequences_names.add(s)
+        return list(sequences_names)
