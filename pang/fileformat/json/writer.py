@@ -11,3 +11,4 @@ def save(output_dir: Path, pangenome: Pangenome):
     jsonpickle.set_encoder_options('simplejson', indent=4)
     with open(json_path, 'w') as json_output:
         json_output.write(jsonpickle.encode(jsonpoagraph, unpicklable=False))
+    return json_path

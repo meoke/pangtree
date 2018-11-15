@@ -2,17 +2,17 @@
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
+import shutil
 
-external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+import flask
+from app_style import colors, external_css
 
-app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
-colors = {
-    'light_shades': '#F2F0F2',
-    'light_accent': '#79A6A4',
-    'main_brand': '#73C700',
-    'dark_accent': '#7D603E',
-    'dark_dashes': '#2B2730'
-}
+from pang_run import run_pang
+from components import consensus_tree
+
+
+app = dash.Dash(__name__)
+app.title = 'pang'
 
 app.layout = html.Div(style={'backgroundColor': colors['light_shades']}, children=[
     html.Div([
@@ -24,12 +24,8 @@ app.layout = html.Div(style={'backgroundColor': colors['light_shades']}, childre
                 src="logo.png"
             )
         ],
-            # className="banner",
-            style={
-            # 'textAlign': 'center',
-            'backgroundColor': colors['main_brand']
-        }
-        ),
+            style={'backgroundColor': colors['dark_accent']}
+    ),
     html.Div(
         id="program",
         children=[
@@ -52,7 +48,7 @@ app.layout = html.Div(style={'backgroundColor': colors['light_shades']}, childre
                               )]
                           )]),
             dcc.Checklist(
-                id='opt',
+                id='pang_options',
                 options=[
                     {'label': 'Generate fasta files', 'value': 'FASTA'}
                 ],
@@ -67,120 +63,175 @@ app.layout = html.Div(style={'backgroundColor': colors['light_shades']}, childre
                 value='tree'
             ),
             html.Div(
-                id="consensus_options"
+                id="consensus_params",
+                children=[html.Div(
+                               id='simple_consensus_params',
+                               children=[html.P("HBMIN value"),
+                                         dcc.Input(
+                                             id='hbmin',
+                                             placeholder='Enter hbmin value...',
+                                             min=0,
+                                             max=1.0,
+                                             type='number',
+                                             value=0.9
+                                            )
+                                        ],
+                               style={'display': None}
+                         ),
+                          html.Div(
+                              id='tree_consensus_params',
+                              children=[html.P("Range"),
+                                        dcc.RangeSlider(
+                                            id='r',
+                                            marks={i: f'{i}' for i in range(0, 101, 5)},
+                                            min=0,
+                                            max=100,
+                                            value=[0, 100],
+                                            step=1),
+                                        html.Div(
+                                            [html.P("Multiplier value"),
+                                             dcc.Input(
+                                             id='multiplier',
+                                             placeholder='Enter multiplier value...',
+                                             min=0,
+                                             type='number',
+                                             value=0.7
+                                             )]
+                                        ),
+                                        html.Div(
+                                            [html.P("Stop value"),
+                                             dcc.Input(
+                                                id='stop',
+                                                placeholder='Enter stop value...',
+                                                min=0,
+                                                max=1.0,
+                                                type='number',
+                                                value=0.99
+                                            )]
+                                        ),
+                                        dcc.Checklist(
+                                            id='tree_consensus_options',
+                                            options=[
+                                                {'label': 'Use re consensus', 'value': 're_consensus'}
+                                            ],
+                                            values=['re_consensus']
+                                        ),
+                                        ],
+                                style={'display': None}
+                          )
+                ]
             ),
             html.Button("Run pang",
-                        id="pang_button"),
+                        id="pang_button"
+            ),
+            html.A(html.Button("Download result as json",
+                                 id="json_download",
+                                 disabled=True),
+                     href='download_pangenome'),
             html.Div(
-                id='program_result'
+                id='hidden_pang_result',
+                style={'display': 'none'}
             )
-            ]),
+            ]
+    ),
     html.Div(
-        id='visualisation'
+        id='visualisation',
+        children=[
+            html.Div(
+                id='consensus_tree'
+            ),
+            html.Div(
+                id='consensus_table'
+            ),
+            html.Div(
+                id='blocks_graph'
+            )
+        ]
     )
 ])
 
 
 @app.callback(
-    dash.dependencies.Output('consensus_options', 'children'),
+    dash.dependencies.Output('simple_consensus_params', 'style'),
     [dash.dependencies.Input('consensus_algorithm', 'value')])
-def show_consensus_algorithm_options(consensus_algorithm):
+def show_simple_consensus_algorithm_options(consensus_algorithm):
     if consensus_algorithm == 'simple':
-        return [html.P("HBMIN value"),
-                dcc.Input(
-                placeholder='Enter hbmin value...',
-                min=0,
-                max=1.0,
-                type='number',
-                value=0.9
-                )
-                ]
-    elif consensus_algorithm == 'tree':
-        return [html.P("Range"),
-                dcc.RangeSlider(
-                    marks={i: f'{i}' for i in range(0, 101, 5)},
-                    min=0,
-                    max=100,
-                    value=[0, 100],
-                    step=1),
-                html.Div(
-                    [html.P("Multiplier value"),
-                     dcc.Input(
-                     placeholder='Enter multiplier value...',
-                     min=0,
-                     type='number',
-                     value=0.7
-                     )]
-                ),
-                html.Div(
-                    [html.P("Stop value"),
-                     dcc.Input(
-                        placeholder='Enter stop value...',
-                        min=0,
-                        max=1.0,
-                        type='number',
-                        value=0.99
-                    )]
-                ),
-                dcc.Checklist(
-                    options=[
-                        {'label': 'Use re consensus', 'value': 're_consensus'}
-                    ],
-                    values=['re_consensus']
-                ),
-                ]
+        return {'display': 'block'}
+    else:
+        return {'display': 'none'}
 
-# @app.callback(
-#     dash.dependencies.Output('program_result', 'children'),
-#     [(dash.dependencies.Input('pang_button', 'n_clicks'))],
-#     [dash.dependencies.State('opt', 'values')])
-# def call_pan(n_clicks, values):
-#     #maf file
-#     #metadata file
-#     #fasta
-#     #vis
-#     #consensus
-#     #hbmin
-#     #r
-#     #multiplier
-#     #stop
-#     #re consensus
-#     return 'The program value was "{}" and the button has been clicked {} times'.format(
-#         values,
-#         n_clicks
-#     )
-
-def parse_contents(content, filename):
-    return html.Div(f"File: {content}, {filename}")
 
 @app.callback(
-    dash.dependencies.Output('program_result', 'children'),
+    dash.dependencies.Output('tree_consensus_params', 'style'),
+    [dash.dependencies.Input('consensus_algorithm', 'value')])
+def show_tree_consensus_algorithm_options(consensus_algorithm):
+    if consensus_algorithm == 'tree':
+        return {'display': 'block'}
+    else:
+        return {'display': 'none'}
+
+
+@app.callback(
+    dash.dependencies.Output('json_download', 'disabled'),
+    [dash.dependencies.Input('hidden_pang_result', 'children')])
+def download_json_button(_):
+    return False
+
+
+@app.callback(
+    dash.dependencies.Output('consensus_tree', 'children'),
+    [dash.dependencies.Input('hidden_pang_result', 'children')])
+def show_consensus_tree(jsonified_pangenome):
+    return consensus_tree.get_consensus_tree(jsonified_pangenome)
+
+
+@app.callback(
+    dash.dependencies.Output('hidden_pang_result', 'children'),
     [dash.dependencies.Input('pang_button', 'n_clicks')],
-     [dash.dependencies.State('maf_upload', 'contents'),
+    [dash.dependencies.State('maf_upload', 'contents'),
      dash.dependencies.State('metadata_upload', 'contents'),
-     dash.dependencies.State('opt', 'values'),
-     dash.dependencies.State('consensus_algorithm', 'value')])
-def update_output(n_clicks, value, ff):
-    return html.Div(f"F{n_clicks}, c{value}, f{ff}")
-#
-# @app.callback(dash.dependencies.State('test', 'children'),
-#               [dash.dependencies.State('maf_upload', 'contents')],
-#               [dash.dependencies.Input('maf_upload', 'contents')],
-#               [dash.dependencies.State('maf_upload', 'filename')])
-# def update_output(list_of_contents, list_of_names):
-#     print("AA", list_of_contents)
-#     print("BB", list_of_names)
-#     return html.Div(f"{list_of_names}")
-#     # if list_of_contents is not None:
-#     #     children = [
-#     #         parse_contents(c, n) for c, n in
-#     #         zip(list_of_contents, list_of_names)]
-#     #     return children
+     dash.dependencies.State('pang_options', 'values'),
+     dash.dependencies.State('consensus_algorithm', 'value'),
+     dash.dependencies.State('hbmin', 'value'),
+     dash.dependencies.State('r', 'value'),
+     dash.dependencies.State('multiplier', 'value'),
+     dash.dependencies.State('stop', 'value'),
+     dash.dependencies.State('tree_consensus_options', 'values')
+     ])
+def call_pang(_,
+             maf_contents,
+             metadata_contents,
+             pang_options_values,
+             consensus_algorithm_value,
+             hbmin_value,
+             r_value,
+             multiplier_value,
+             stop_value,
+             tree_consensus_options_values):
+    fasta_option = True if 'FASTA' in pang_options_values else False
+    re_consensus_value = True if 're_consensus' in tree_consensus_options_values else False
+    pangenome, json_path = run_pang(maf_contents,
+                                     metadata_contents,
+                                     fasta_option,
+                                     consensus_algorithm_value,
+                                     hbmin_value,
+                                     r_value,
+                                     multiplier_value,
+                                     stop_value,
+                                     re_consensus_value)
+    with open(json_path) as j:
+        json_content = j.read()
+    shutil.copy(json_path, "download/pangenome.json")
+    return json_content
 
 
-external_css = [
-    "https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
-]
+@app.server.route('/download_pangenome')
+def download_csv():
+    return flask.send_file('download/pangenome.json',
+                     mimetype='text/csv',
+                     attachment_filename='pangenome.json',
+                     as_attachment=True)
+
 
 for css in external_css:
     app.css.append_css({"external_url": css})

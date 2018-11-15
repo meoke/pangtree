@@ -6,10 +6,10 @@ from consensus_algorithm.TreeConfig import TreeConfig
 
 
 class Pangenome:
-    def __init__(self, multialignment_file, data_file):
-        self.genomes_info = self._read_genomes_info(data_file)
+    def __init__(self, multialignment_file, data_file, as_string=True):
+        self.genomes_info = self._read_genomes_info(data_file, as_string=True)
         self.pangraph = None
-        self._build_graph(multialignment_file)
+        self._build_graph(multialignment_file, as_string=True)
 
     def generate_fasta_files(self, output_dir):
         pass
@@ -24,8 +24,8 @@ class Pangenome:
     def generate_visualization(self, output_dir):
         pass
 
-    def _read_genomes_info(self, data_file):
-        return metadata.reader.read(data_file)
+    def _read_genomes_info(self, data_file, as_string=False):
+        return metadata.reader.read(data_file, as_string)
 
-    def _build_graph(self, multialignment_file):
-        self.pangraph = mafreader.read(multialignment_file, self.genomes_info)
+    def _build_graph(self, multialignment_file, as_string=False):
+        self.pangraph = mafreader.read(multialignment_file, self.genomes_info, as_string)
