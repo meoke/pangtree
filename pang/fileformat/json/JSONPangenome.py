@@ -17,9 +17,10 @@ class JSONEdge:
 
 
 class JSONSequence:
-    def __init__(self, id: int, nodes_ids: List[int]):
+    def __init__(self, id: int, nodes_ids: List[int], name: str):
         self.id = id
         self.nodes_ids = nodes_ids
+        self.name = name
 
 
 class JSONConsensus:
@@ -45,7 +46,8 @@ class JSONPangenome:
         self.nodes = [JSONNode(node.id, decode(node.base)) for node in pangenome.pangraph.get_nodes()]
         self.edges = []
         self.sequences = [JSONSequence(pangenome.genomes_info.get_id(sequence),
-                                       [int(node_id) for node_id in pangenome.pangraph.get_sequence_nodes_ids(sequence)])
+                                       [int(node_id) for node_id in pangenome.pangraph.get_sequence_nodes_ids(sequence)],
+                                       sequence)
                           for sequence in pangenome.pangraph.get_path_names()]
         cm = pangenome.pangraph._consensusmanager
         cm_tree_nodes = pangenome.pangraph._consensusmanager.consensus_tree.nodes

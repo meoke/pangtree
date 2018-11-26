@@ -520,6 +520,7 @@
     "sequences": [
         {
             "id": 0,
+            "name": "testseq0",
             "nodes_ids": [
                 0,
                 2,
@@ -543,6 +544,7 @@
         },
         {
             "id": 1,
+            "name": "testseq1",
             "nodes_ids": [
                 0,
                 2,
@@ -566,6 +568,7 @@
         },
         {
             "id": 2,
+            "name": "testseq2",
             "nodes_ids": [
                 0,
                 2,
@@ -589,6 +592,7 @@
         },
         {
             "id": 3,
+            "name": "testseq3",
             "nodes_ids": [
                 1,
                 3,
@@ -612,6 +616,7 @@
         },
         {
             "id": 4,
+            "name": "testseq4",
             "nodes_ids": [
                 1,
                 3,

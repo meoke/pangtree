@@ -3,20 +3,24 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import shutil
+import dash_table
+import re
 
+import pandas as pd
 import flask
 from app_style import colors, external_css
-
 from pang_run import run_pang
 from components import consensus_tree
+from components import consensus_table
 from pang.fileformat.json import reader as pangenomejson_reader
 from pang.fileformat.json import writer as pangenomejson_writer
 
-from networkx.readwrite import json_graph
 
+
+from networkx.readwrite import json_graph
+df = pd.read_csv('https://raw.githubusercontent.com/plotly/datasets/master/solar.csv')
 app = dash.Dash(__name__)
 app.title = 'pang'
-
 app.layout = html.Div(
     children=[
         html.Div(
@@ -25,9 +29,9 @@ app.layout = html.Div(
                     'Multiuliniowienie',
                     id='title'
                 ),
-                html.Img(
-                    src="logo.png"
-                )
+                # html.Img(
+                #     src="logo.png",
+                # )
             ],
             style={'backgroundColor': colors['light_shades']},
         ),
@@ -101,7 +105,8 @@ app.layout = html.Div(
                                                min=0,
                                                type='number',
                                                value=0.7
-                                           )]
+                                           )],
+                            style={'margin-top': '25px'}
                                       ),
                                       html.Div(
                                           [html.P("Stop value"),
@@ -127,7 +132,8 @@ app.layout = html.Div(
                     ]
                 ),
                 html.Button("Run pang",
-                            id="pang_button"
+                            id="pang_button",
+                            className='button-primary'
                             ),
                 html.A(html.Button("Download result as json",
                                    id="json_download",
@@ -145,39 +151,48 @@ app.layout = html.Div(
                 html.Div(
                     id='consensus_tree',
                     children=[
-                        dcc.Graph(
-                            id='consensus_tree_graph',
-                            figure={
-                                'data': [
-                                    {
-                                        'x': [10, 20, 30, 40],
-                                        'y': [40, 10, 30, 50],
-                                        'text': ['a', 'b', 'c', 'd'],
-                                        'customdata': ['c.a', 'c.b', 'c.c', 'c.d'],
-                                        'name': 'Trace 1',
-                                        'mode': 'markers',
-                                        'marker': {'size': 12}
-                                    },
-                                    {
-                                        'x': [1, 2, 3, 4],
-                                        'y': [9, 4, 1, 4],
-                                        'text': ['w', 'x', 'y', 'z'],
-                                        'customdata': ['c.w', 'c.x', 'c.y', 'c.z'],
-                                        'name': 'Trace 2',
-                                        'mode': 'markers',
-                                        'marker': {'size': 12}
-                                    }
-                                ]
-                            }
-                        ),
                         html.Div(
                             id='hidden_consensus_tree_data',
                             style={'display': 'none'}
+                        ),
+                        dcc.Graph(
+                            id='consensus_tree_graph'
+                        ),
+                        dcc.Slider(
+                            id='consensus_tree_slider',
+                            min=0,
+                            max=1,
+                            marks={int(i) if i % 1 == 0 else i: '{}'.format(i) for i in [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1]},
+                            step=0.01,
+                            value=0.5,
+                            dots=True
+                        ),
+                        html.Div(
+                            id='consensus_tree_slider_value',
+                            style={'margin-top': '25px'}
+                        ),
+                        html.Div(
+                            id='hidden_consensuses_table_data',
+                            style={'display': 'none'}
+                        ),
+                        html.Div(
+                            dash_table.DataTable(
+                                id='consensuses_table',
+                                filtering=True,
+                                sorting=True,
+                                sorting_type="multi"
+                            ),
+                            style={'margin-top': '25px'},
                         )
-                    ]
+                    ],
+                    style={'display': 'none'}
+
                 ),
                 html.Div(
-                    id='consensus_table'
+                    id='consensus_table',
+                    children=[
+
+                    ]
                 ),
                 html.Div(
                     id='blocks_graph'
@@ -255,24 +270,72 @@ def call_pang(_,
 @app.callback(
     dash.dependencies.Output('hidden_consensus_tree_data', 'children'),
     [dash.dependencies.Input('hidden_pang_result', 'children'),
-     dash.dependencies.Input('consensus_tree_graph', 'clickData')])
-def update_consensus_graph_data(jsonified_pangenome, click_data):
+     dash.dependencies.Input('consensus_tree_graph', 'clickData')],
+    [dash.dependencies.State('hidden_consensus_tree_data', 'children')])
+def update_consensus_graph_data(jsonified_pangenome, click_data, old_jsonfied_consensus_tree):
+    old_tree = None
+    if old_jsonfied_consensus_tree:
+        old_tree = json_graph.tree_graph(eval(old_jsonfied_consensus_tree))
+
     print(click_data)
     jsonpangenome = pangenomejson_reader.json_to_jsonpangenome(jsonified_pangenome)
-    tree = consensus_tree.get_tree(jsonpangenome, click_data) # czy to jest
-    #  jsonable?
+    tree = consensus_tree.get_tree(jsonpangenome, click_data, old_tree)
     jsonified_tree = json_graph.tree_data(tree, root=0)
     return str(jsonified_tree)
 
+
+@app.callback(
+    dash.dependencies.Output('consensus_tree', 'style'),
+    [dash.dependencies.Input('consensus_tree_graph', 'figure')])
+def show_graph(_):
+    return {'display': 'block'}
+
+@app.callback(
+    dash.dependencies.Output('hidden_consensuses_table_data', 'children'),
+    [dash.dependencies.Input('hidden_consensus_tree_data', 'children'),
+     dash.dependencies.Input('consensus_tree_slider', 'value')],
+    [dash.dependencies.State('hidden_pang_result', 'children')]
+)
+def update_consensuses_table(jsonified_consensus_tree, slider_value, jsonified_pangenome):
+    tree = json_graph.tree_graph(eval(jsonified_consensus_tree))
+    jsonpangenome = pangenomejson_reader.json_to_jsonpangenome(jsonified_pangenome)
+    return str(consensus_table.get_consensus_table_data(jsonpangenome, tree, slider_value))
+
+
+@app.callback(
+    dash.dependencies.Output('consensuses_table', 'data'),
+    [dash.dependencies.Input('hidden_consensuses_table_data', 'children')]
+)
+def update_consensuses_table_rows(jsonified_consensuses_table_data):
+    a = re.sub("\s+", ",", jsonified_consensuses_table_data.strip())
+    return consensus_table.get_table_rows(eval(a))
+
+@app.callback(
+    dash.dependencies.Output('consensuses_table', 'columns'),
+    [dash.dependencies.Input('hidden_consensuses_table_data', 'children')]
+)
+def update_consensuses_table_columncs(jsonified_consensuses_table_data):
+    a = re.sub("\s+", ",", jsonified_consensuses_table_data.strip())
+    return consensus_table.get_table_columns(eval(a))
+
+@app.callback(
+    dash.dependencies.Output('consensus_tree_slider_value', 'children'),
+    [dash.dependencies.Input('consensus_tree_slider', 'value')]
+)
+def show_slider_value(slider_value):
+    return f"Current value: {slider_value}."
+
+
 @app.callback(
     dash.dependencies.Output('consensus_tree_graph', 'figure'),
-    [dash.dependencies.Input('hidden_consensus_tree_data', 'children')],
+    [dash.dependencies.Input('hidden_consensus_tree_data', 'children'),
+     dash.dependencies.Input('consensus_tree_slider', 'value')],
     [dash.dependencies.State('hidden_pang_result', 'children')])
-def update_consensus_tree_graph(jsonified_consensus_tree, jsonified_pangenome):
+def update_consensus_tree_graph(jsonified_consensus_tree, slider_value,  jsonified_pangenome):
     jsonpangenome = pangenomejson_reader.json_to_jsonpangenome(jsonified_pangenome)
 
     tree = json_graph.tree_graph(eval(jsonified_consensus_tree))
-    return consensus_tree.get_consensus_tree_graph(jsonpangenome, tree)
+    return consensus_tree.get_consensus_tree_graph(jsonpangenome, tree, slider_value)
 
 
 @app.server.route('/download_pangenome')

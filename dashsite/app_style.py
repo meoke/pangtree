@@ -7,5 +7,5 @@ colors = {
 }
 
 external_css = [
-    "https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+'https://codepen.io/chriddyp/pen/bWLwgP.css'
 ]
