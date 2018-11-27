@@ -7,9 +7,9 @@ from consensus_algorithm.TreeConfig import TreeConfig
 
 class Pangenome:
     def __init__(self, multialignment_file, data_file, as_string=True):
-        self.genomes_info = self._read_genomes_info(data_file, as_string=True)
+        self.genomes_info = self._read_genomes_info(data_file, as_string=as_string)
         self.pangraph = None
-        self._build_graph(multialignment_file, as_string=True)
+        self._build_graph(multialignment_file, as_string=as_string)
 
     def generate_fasta_files(self, output_dir):
         pass

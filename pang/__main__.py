@@ -9,7 +9,7 @@ from fileformat.json import writer as jsonwriter
 def run_pang(args):
     """Creates Pangraph and runs required algorithms."""
 
-    p = Pangenome(args.multialignment, args.data)
+    p = Pangenome(args.multialignment, args.data, as_string=False)
     if args.fasta:
         p.generate_fasta_files(pathtools.create_child_dir(args.output, 'fasta'))
     if args.consensus:

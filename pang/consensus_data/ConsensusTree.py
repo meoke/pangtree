@@ -14,3 +14,11 @@ class ConsensusTree(object):
     def remove_consensus_node(self, c_id):
         node_id_to_remove = [i for i, n in enumerate(self.nodes) if n.consensus_id == c_id][0]
         del self.nodes[node_id_to_remove]
+
+    def get_all_leaves_mincomps(self):
+        leaves_mincomps = []
+        for n in self.nodes:
+            if n.children_nodes:
+                continue
+            leaves_mincomps.append(n.mincomp)
+        return leaves_mincomps

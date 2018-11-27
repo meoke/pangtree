@@ -39,3 +39,6 @@ class TreeConsensusManager(PathManager):
             for s in n.sequences_names:
                 sequences_names.add(s)
         return list(sequences_names)
+
+    def get_all_leaves_mincomps(self):
+        return self.consensus_tree.get_all_leaves_mincomps()
