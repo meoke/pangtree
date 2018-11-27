@@ -88,7 +88,10 @@ def get_children_nodes(orig_pangraph: Pangraph, cn: ConsensusNode) -> TreeConsen
         subpangraph.pangraph.add_consensus(remapped_best_path)
         max_c_to_node = subpangraph.get_paths_compatibility(0)
         remapped_to_orig_best_path = subpangraph.get_consensus_remapped_to_original_nodes(0)
-        node_cutoff = find_node_cutoff(max_c_to_node, ap.config.multiplier, local_consensus_manager.get_all_leaves_mincomps())
+        if ap.config.anti_granular:
+            node_cutoff = find_node_cutoff(max_c_to_node, ap.config.multiplier, local_consensus_manager.get_all_leaves_mincomps())
+        else:
+            node_cutoff = find_node_cutoff_old(max_c_to_node, ap.config.multiplier)
         compatible_sources_names = get_max_compatible_sources_ids(current_paths_names, max_c_to_node, node_cutoff)
 
         node = ConsensusNode(sequences_names=list(compatible_sources_names), mincomp=node_cutoff)
@@ -179,34 +182,44 @@ def find_node_cutoff_old(compatibility_to_node_sequences, multiplier):
 def find_node_cutoff(compatibility_to_node_sequences, multiplier, mincomps=None):
     if not mincomps:
         return find_node_cutoff_old(compatibility_to_node_sequences, multiplier)
+    sorted_comp = sorted(set(compatibility_to_node_sequences))
 
-    anti_granular_guard = [min(mincomps)] if mincomps else []
-    if not compatibility_to_node_sequences:
-        raise ValueError("Empty compatibilities list. Finding max cutoff.")
-    sorted_comp = sorted(set(compatibility_to_node_sequences + anti_granular_guard))
     if len(sorted_comp) == 1:
         return sorted_comp[0]
-    elif len(sorted_comp) == 2:
-        return sorted_comp[1]
+    # elif len(sorted_comp) == 2:
+    #     return sorted_comp[1]
 
+    anti_granular_guard = min(mincomps) if mincomps else []
     mean_distance = (sorted_comp[-1] - sorted_comp[0])/(len(sorted_comp)-1)
     required_gap = mean_distance * multiplier
+    small_comps = [sc for sc in sorted_comp if sc <= anti_granular_guard]
 
-    small_comps = [sc for sc in sorted_comp if sc <= anti_granular_guard[0]]
-    guard_index = small_comps.index(anti_granular_guard[0])
-    distances = np.array([small_comps[i + 1] - small_comps[i] for i in range(len(small_comps)-1)])
+    distances = np.array([small_comps[i + 1] - small_comps[i] for i in range(len(small_comps) - 1)])
     if any(distances >= required_gap):
         a = np.where(distances >= required_gap)[0][0]+1
         return small_comps[a]
     else:
-        i = guard_index + 1
-        while i < len(sorted_comp):
-            if sorted_comp[i] > anti_granular_guard[0]:
-                return sorted_comp[i]
-        logging.warning("Guard problems...")
-        return anti_granular_guard[0]
-        logging.warning("Cannot find node cutoff for given multiplier. Multiplier == 1 was used instead.")
-        # return sorted_comp[np.where(distances >= mean_distance)[0][0]+1]
+        try:
+            left_to_guard = [c for c in sorted_comp if c < anti_granular_guard][-1]
+            left_to_guard_diff = anti_granular_guard - left_to_guard
+        except:
+            left_to_guard_diff = 1
+        try:
+            right_to_guard = [c for c in sorted_comp if c > anti_granular_guard][0]
+            right_to_guard_diff = right_to_guard - anti_granular_guard
+        except:
+            right_to_guard_diff = 1
+        if right_to_guard_diff <= left_to_guard_diff:
+            try:
+                return right_to_guard
+            except:
+                pass
+        else:
+            return left_to_guard
+
+            ###
+            #     logging.warning("Cannot find node cutoff for given multiplier. Multiplier == 1 was used instead.")
+            #     # return sorted_comp[np.where(distances >= mean_distance)[0][0]+1]
 
 
 def get_max_compatible_sources_ids(current_paths_names, compatibility_to_node_sequences, max_cutoff):

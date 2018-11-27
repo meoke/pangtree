@@ -31,7 +31,8 @@ class JSONConsensus:
                  children: List[int],
                  comp_to_all_sequences: Dict[str, float],
                  sequences: List[int],
-                 nodes_ids: List[int]):
+                 nodes_ids: List[int],
+                 mincomp: float):
         self.id = id
         self.name = name
         self.parent = parent
@@ -39,6 +40,7 @@ class JSONConsensus:
         self.comp_to_all_sequences = comp_to_all_sequences
         self.sequences = sequences
         self.nodes_ids = nodes_ids
+        self.mincomp = mincomp
 
 
 class JSONPangenome:
@@ -57,6 +59,7 @@ class JSONPangenome:
                                              children=node.children_nodes,
                                              comp_to_all_sequences={str(seq_id): float(comp)
                                for seq_id, comp in node.compatibilities_to_all.items()} if node.compatibilities_to_all else None,
-                                             sequences=node.sequences_names,
+                                             sequences=[str(s_name) for s_name in node.sequences_names],
                                              nodes_ids=[int(node_id) for node_id in
-                                                        pangenome.pangraph.get_consensus_nodes_ids(cm.get_path_name(node.consensus_id))]) for node in cm_tree_nodes]
+                                                        pangenome.pangraph.get_consensus_nodes_ids(cm.get_path_name(node.consensus_id))],
+                                             mincomp=float(node.mincomp)) for node in cm_tree_nodes]

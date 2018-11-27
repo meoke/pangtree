@@ -103,6 +103,11 @@ def _get_parser():
                    help='Tree POA algorithm parameter.'
                         'Set if after producing children nodes, sequences should be moved to'
                         ' siblings nodes if compatibility to its consensus is higher.')
+    p.add_argument('-anti_granular',
+                   action='store_true',
+                   default=True,
+                   help='Tree POA algorithm parameter.'
+                        'Set if consensuses tree should be processed in a way to avoid fragmentation.')
     return p
 
 

@@ -21,9 +21,15 @@ class TreeTestNodeCutoffAntiGranular(unittest.TestCase):
         actual_cutoff = tree.find_node_cutoff(compatibilities, multiplier, old_comps)
         self.assertEqual(actual_cutoff, expected_cutoff)
 
-    @data((0.7, [0.2, 0.7, 0.8, 0.85], [0.3], 1))
+    @data((0.2, [0.2, 0.7, 0.8, 0.85], [0.3], 1))
     @unpack
-    def test_cutoff_greater_than_previous(self, expected_cutoff, compatibilities, old_comps, multiplier):
+    def test_cutoff_take_previous(self, expected_cutoff, compatibilities, old_comps, multiplier):
+        actual_cutoff = tree.find_node_cutoff(compatibilities, multiplier, old_comps)
+        self.assertEqual(actual_cutoff, expected_cutoff)
+
+    @data((0.85, [0.85, 0.7], [0.83, 0.9], 1))
+    @unpack
+    def test_cutoff_take_next(self, expected_cutoff, compatibilities, old_comps, multiplier):
         actual_cutoff = tree.find_node_cutoff(compatibilities, multiplier, old_comps)
         self.assertEqual(actual_cutoff, expected_cutoff)
 
