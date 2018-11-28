@@ -14,7 +14,8 @@ def run_pang(multialignment_contents,
              r,
              multiplier,
              stop,
-             re_consensus):
+             re_consensus,
+             anti_fragmentation_value):
     #maf
     content_type, content_string = multialignment_contents.split(',')
     maf_str = b64decode(content_string).decode('ascii')
@@ -37,7 +38,8 @@ def run_pang(multialignment_contents,
                              r,
                              multiplier,
                              stop,
-                             re_consensus
+                             re_consensus,
+                             anti_fragmentation_value
                              )
     #zwroc jsona
     json_path = jsonwriter.save(output_dir, p)

@@ -51,9 +51,9 @@ def get_consensus_tree_graph(jsonpangenome: JSONPangenome, tree, sliderValue):
 
     # prepare dots todo uprościć
     dots_labels = [tree.nodes[node_id] for node_id in range(len(node_id_to_x_y))]
-    dots_labels_on_hover = [f'min_comp: {tree.nodes[node_id]["mincomp"]}\nsequences: {tree.nodes[node_id]["sequences"]}' for node_id in range(len(node_id_to_x_y))]
+    dots_labels_on_hover = [f'min_comp: {tree.nodes[node_id]["mincomp"]}' for node_id in range(len(node_id_to_x_y))]
+    # dots_labels_on_hover = [f'min_comp: {tree.nodes[node_id]["mincomp"]}\nsequences: {tree.nodes[node_id]["sequences"]}' for node_id in range(len(node_id_to_x_y))]
     dots_numbers = [n for n in range(len(node_id_to_x_y))]
-    # dots_positions = [[node_id_to_x_y[node_id][0], node_id_to_x_y[node_id][1]] for node_id in range(len(node_id_to_x_y))] #todo sprawdzic czy dobrze
     dots_positions = [[tree.nodes[node_id]["mincomp"]*100, node_id_to_x_y[node_id][1]] for node_id in range(len(node_id_to_x_y))] #todo sprawdzic czy dobrze
     dots_x = [dot_x for [dot_x, _] in dots_positions] #todo czy to będzie dobrze posortowane?
     dots_y = [dot_y for [_, dot_y] in dots_positions] #todo czy to będzie dobrze posortowane?
