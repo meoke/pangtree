@@ -1,0 +1,9 @@
+- możliwość odtworzeniaśrodowiska na nowymserwerze fizycznym
+- tworzenie kopii roboczej (developerskiej, testy)
+- niezależność  od innych (rzeczy na serwerze fizycznym np. Apache, inne webserwisy itp,)
+- możliwość korzystania ze wspólnych danych na tym serwerze
+- łatwe ustawienia sieciowe i sprzętowe (konfiguracja jakie zasoby zostaną przypisane)
+
+
+
+- jednak prawy przedział przy node cutoff!!!

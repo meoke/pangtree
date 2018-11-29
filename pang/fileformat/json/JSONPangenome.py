@@ -44,7 +44,9 @@ class JSONConsensus:
 
 
 class JSONPangenome:
-    def __init__(self, pangenome: Pangenome):
+    def __init__(self, pangenome: Pangenome=None):
+        if not pangenome:
+            return
         self.nodes = [JSONNode(node.id, decode(node.base)) for node in pangenome.pangraph.get_nodes()]
         self.edges = []
         self.sequences = [JSONSequence(pangenome.genomes_info.get_id(sequence),
@@ -63,3 +65,20 @@ class JSONPangenome:
                                              nodes_ids=[int(node_id) for node_id in
                                                         pangenome.pangraph.get_consensus_nodes_ids(cm.get_path_name(node.consensus_id))],
                                              mincomp=float(node.mincomp)) for node in cm_tree_nodes]
+
+    def build_from_dict(self, dictionary):
+        self.nodes = [JSONNode(node['id'],node['nucleobase']) for node in dictionary['nodes']]
+        self.edges = dictionary['edges']
+        self.sequences = [JSONSequence(sequence['id'],
+                                       [int(node_id) for node_id in sequence['nodes_ids']],
+                                       sequence['name'])
+                          for sequence in dictionary['sequences']]
+        self.consensus_tree = [JSONConsensus(n['id'],
+                                             n['name'],
+                                             n['parent'],
+                                             [c for c in n['children']],
+                                             {seqname:comp for seqname, comp in n['comp_to_all_sequences'].items()},
+                                             [s for s in n['sequences']],
+                                             [c for c in n['nodes_ids']],
+                                             n['mincomp'])
+                               for n in dictionary['consensus_tree']]

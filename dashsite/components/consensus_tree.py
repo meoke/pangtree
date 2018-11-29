@@ -110,7 +110,9 @@ def get_consensus_tree_graph(jsonpangenome: JSONPangenome, tree, sliderValue):
                   yaxis=go.layout.YAxis(axis),
                   margin=dict(l=40, r=40, b=85, t=100),
                   hovermode='closest',
-                  plot_bgcolor='rgb(248,248,248)'
+                  plot_bgcolor='rgb(248,248,248)',
+                  width=1000,
+                  height=700
                   )
 
     return go.Figure(

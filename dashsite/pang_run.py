@@ -44,3 +44,8 @@ def run_pang(multialignment_contents,
     #zwroc jsona
     json_path = jsonwriter.save(output_dir, p)
     return p, json_path
+
+def decode_json(pangenome_json_contents):
+    content_type, content_string = pangenome_json_contents.split(',')
+    json_str = b64decode(content_string).decode('ascii')
+    return json_str
