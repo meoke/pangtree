@@ -74,14 +74,16 @@ def get_children_nodes(orig_pangraph: Pangraph, cn: ConsensusNode) -> TreeConsen
     subpangraph = SubPangraph(op, cn.sequences_names)
     local_consensus_manager = TreeConsensusManager(max_nodes_count=subpangraph.orig_nodes_count)
     logging.info(f"Searching children for id: {cn.consensus_id}, len: {len(cn.sequences_names)}, names: {cn.sequences_names}")
+    loop_counter = 1
     while current_paths_names:
-        subpangraph = run_poa(subpangraph)
+        loop_counter += 1
+        subpangraph = run_poa(subpangraph, f"{cn.consensus_id}_{loop_counter}_all")
         c_to_node = subpangraph.get_paths_compatibility(0)
         max_cutoff = find_max_cutoff(c_to_node, ap.config.cutoff_search_range)
         max_c_sources_names = get_max_compatible_sources_ids(current_paths_names, c_to_node, max_cutoff)
 
         subsubpangraph = SubPangraph(subpangraph.pangraph, max_c_sources_names, subpangraph.get_nodes_count())
-        subsubpangraph = run_poa(subsubpangraph)
+        subsubpangraph = run_poa(subsubpangraph, f"{cn.consensus_id}_{loop_counter}_best")
         remapped_best_path = subsubpangraph.get_consensus_remapped_to_original_nodes(0)
 
         subpangraph.pangraph.clear_consensuses()
@@ -124,7 +126,7 @@ def reorder_consensuses(pangraph, tcm: TreeConsensusManager):
 
 
 def get_top_consensus(subpangraph: SubPangraph):
-    subpangraph_with_consensus = run_poa(subpangraph)
+    subpangraph_with_consensus = run_poa(subpangraph, "0_consensus")
     return subpangraph_with_consensus.get_consensus_remapped_to_original_nodes(0)
 
 
@@ -228,10 +230,11 @@ def get_max_compatible_sources_ids(current_paths_names, compatibility_to_node_se
     return list(path_names[np.where(npver >= max_cutoff)[0]])
 
 
-def run_poa(subpangraph: SubPangraph) -> SubPangraph:
+def run_poa(subpangraph: SubPangraph, filename_prefix) -> SubPangraph:
     pangraph_with_consensus = simple.run(ap.outputdir,
                                          subpangraph.pangraph,
                                          ap.config.hbmin,
-                                         ap.genomes_info)
+                                         ap.genomes_info,
+                                         filename_prefix)
     subpangraph.set_pangraph(pangraph_with_consensus)
     return subpangraph

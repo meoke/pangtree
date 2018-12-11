@@ -19,7 +19,8 @@ class JSONEdge:
 class JSONSequence:
     def __init__(self, id: int, nodes_ids: List[int], name: str):
         self.id = id
-        self.nodes_ids = nodes_ids
+        # TODO perf self.nodes_ids = nodes_ids
+        self.nodes_ids = []
         self.name = name
 
 
@@ -62,8 +63,8 @@ class JSONPangenome:
                                              comp_to_all_sequences={str(seq_id): float(comp)
                                for seq_id, comp in node.compatibilities_to_all.items()} if node.compatibilities_to_all else None,
                                              sequences=[str(s_name) for s_name in node.sequences_names],
-                                             nodes_ids=[int(node_id) for node_id in
-                                                        pangenome.pangraph.get_consensus_nodes_ids(cm.get_path_name(node.consensus_id))],
+                                             # TODO perf # nodes_ids=[int(node_id) for node_id in pangenome.pangraph.get_consensus_nodes_ids(cm.get_path_name(node.consensus_id))],
+                                             nodes_ids=[],
                                              mincomp=float(node.mincomp)) for node in cm_tree_nodes]
 
     def build_from_dict(self, dictionary):

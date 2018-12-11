@@ -1,4 +1,4 @@
-- możliwość odtworzeniaśrodowiska na nowymserwerze fizycznym
+- możliwość odtworzenia środowiska na nowym serwerze fizycznym
 - tworzenie kopii roboczej (developerskiej, testy)
 - niezależność  od innych (rzeczy na serwerze fizycznym np. Apache, inne webserwisy itp,)
 - możliwość korzystania ze wspólnych danych na tym serwerze
