@@ -1,6 +1,12 @@
 biopython
 numpy
+networkx
 jsonpickle
-unittest
 ddt
+
+dash
+dash-core-components
+dash-html-components
+dash-table
+pandas
 # Mafgraph-https://github.com/anialisiecka/Mafgraph

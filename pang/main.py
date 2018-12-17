@@ -38,20 +38,25 @@ def cleanup(args: cmdargs.ArgsList)-> None:
         logging.info(f"Program output is placed in {args.output}")
 
 
-# logging.config.fileConfig('logging.conf')
+def main():
+    # logging.config.fileConfig('logging.conf')
 
-args = cmdargs.get_validated_args()
-logging.info(f'Input arguments: {args}')
-start = time.clock()
+    args = cmdargs.get_validated_args()
+    logging.info(f'Input arguments: {args}')
+    start = time.clock()
 
-try:
-    run_pang(args)
-except Exception as e:
-    logging.error("Something went wrong...")
-    raise e
-finally:
-    cleanup(args)
+    try:
+        run_pang(args)
+    except Exception as e:
+        logging.error("Something went wrong...")
+        raise e
+    finally:
+        cleanup(args)
 
-end = time.clock()
-processing_time = time.strftime('%H:%M:%S', time.gmtime(end - start))
-logging.info(f'DONE! Running time: {processing_time}')
+    end = time.clock()
+    processing_time = time.strftime('%H:%M:%S', time.gmtime(end - start))
+    print(f'DONE! Running time: {processing_time}')
+
+
+if __name__ == "__main__":
+    main()
