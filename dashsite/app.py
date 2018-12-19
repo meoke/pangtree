@@ -20,6 +20,8 @@ from fileformat.json.JSONPangenome import JSONPangenome
 from pang.fileformat.json import reader as pangenomejson_reader
 from pang.fileformat.json import writer as pangenomejson_writer
 
+import numpy as np
+
 
 from networkx.readwrite import json_graph
 
@@ -267,7 +269,8 @@ app.layout = html.Div(
                             style={'display': 'none'}
                         ),
                         dcc.Graph(
-                            id='consensus_tree_graph'
+                            id='consensus_tree_graph',
+                            style={'height': '600px'}
                         ),
                         dcc.Slider(
                             id='consensus_tree_slider',
@@ -312,8 +315,8 @@ app.layout = html.Div(
             className='row'
         )
     ],
-style={'margin':'0px',
-       'padding':'0px'})
+style={'margin': '0px',
+       'padding': '0px'})
 
 @app.callback(
     dash.dependencies.Output('hidden_last_clicked', 'children'),
@@ -389,11 +392,7 @@ def call_pang(last_clicked,
               tree_consensus_options_values):
     last_clicked = json.loads(last_clicked)
     if last_clicked[2] == 'load_pangenome':
-        jsonpangenome_dict = pangenomejson_reader.json_to_jsonpangenome(decode_json(pangenome_contents[0]))
-        jsonpangenome = JSONPangenome()
-        jsonpangenome.build_from_dict(jsonpangenome_dict)
-        a = pangenomejson_writer.jsonpangenome_to_json(jsonpangenome)
-        return str(a)
+        return decode_json(pangenome_contents[0])
     else:
         fasta_option = True if 'FASTA' in pang_options_values else False
         re_consensus_value = True if 're_consensus' in tree_consensus_options_values else False
@@ -445,7 +444,9 @@ def show_graph(_):
 def update_consensuses_table(jsonified_consensus_tree, slider_value, jsonified_pangenome):
     tree = json_graph.tree_graph(eval(jsonified_consensus_tree))
     jsonpangenome = pangenomejson_reader.json_to_jsonpangenome(jsonified_pangenome)
-    return str(consensus_table.get_consensus_table_data(jsonpangenome, tree, slider_value))
+    consensus_table_data = consensus_table.get_consensus_table_data(jsonpangenome, tree, slider_value)
+    consensus_table_data_json = pd.DataFrame(consensus_table_data).to_json()
+    return str(consensus_table_data_json)
 
 
 @app.callback(
@@ -453,16 +454,19 @@ def update_consensuses_table(jsonified_consensus_tree, slider_value, jsonified_p
     [dash.dependencies.Input('hidden_consensuses_table_data', 'children')]
 )
 def update_consensuses_table_rows(jsonified_consensuses_table_data):
-    a = re.sub("\s+", ",", jsonified_consensuses_table_data.strip())
-    return consensus_table.get_table_rows(eval(a))
+    b = json.loads(jsonified_consensuses_table_data)
+    b_dataframe = pd.DataFrame(b)
+    return consensus_table.get_table_rows(eval(b_dataframe.to_json(orient="records")))
 
 @app.callback(
     dash.dependencies.Output('consensuses_table', 'columns'),
     [dash.dependencies.Input('hidden_consensuses_table_data', 'children')]
 )
 def update_consensuses_table_columncs(jsonified_consensuses_table_data):
-    a = re.sub("\s+", ",", jsonified_consensuses_table_data.strip())
-    return consensus_table.get_table_columns(eval(a))
+    b = json.loads(jsonified_consensuses_table_data)
+    b_dataframe = pd.DataFrame(b)
+    return [{"name": b_dataframe[col_id][0], "id": b_dataframe[col_id][0]} for i, col_id in enumerate(b_dataframe.columns)]
+
 
 @app.callback(
     dash.dependencies.Output('consensus_tree_slider_value', 'children'),

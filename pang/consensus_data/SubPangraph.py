@@ -34,6 +34,7 @@ class SubPangraph(object):
         for i, node_id in enumerate(nodes_ids_to_keep):
             node = pangraph.get_node(node_id)
             in_nodes = [in_node for in_node in node.in_nodes if in_node in nodes_ids_to_keep]
+            # todo perf did not work # in_nodes = sorted(set(node.in_nodes) & set(nodes_ids_to_keep))
             next_node_id = node.aligned_to
             while True:
                 if next_node_id == node.id or next_node_id is None:
@@ -51,6 +52,7 @@ class SubPangraph(object):
             if node.aligned_to:
                 node.aligned_to = old_to_new_mapping[node.aligned_to]
             node.in_nodes = [old_to_new_mapping[in_node] for in_node in node.in_nodes if in_node in nodes_ids_to_keep]
+            # todo perf did not work #node.in_nodes = [old_to_new_mapping[in_node] for in_node in sorted(set(node.in_nodes) & set(nodes_ids_to_keep))]
 
         return new_nodes, new_to_old_mapping
 

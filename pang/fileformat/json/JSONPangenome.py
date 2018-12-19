@@ -17,11 +17,10 @@ class JSONEdge:
 
 
 class JSONSequence:
-    def __init__(self, id: int, nodes_ids: List[int], name: str):
+    def __init__(self, id: int, name: str, nodes_ids: List[int]):
         self.id = id
-        # TODO perf self.nodes_ids = nodes_ids
-        self.nodes_ids = []
         self.name = name
+        self.nodes_ids = nodes_ids
 
 
 class JSONConsensus:
@@ -31,7 +30,7 @@ class JSONConsensus:
                  parent: int,
                  children: List[int],
                  comp_to_all_sequences: Dict[str, float],
-                 sequences: List[int],
+                 sequences_ids: List[int],
                  nodes_ids: List[int],
                  mincomp: float):
         self.id = id
@@ -39,7 +38,7 @@ class JSONConsensus:
         self.parent = parent
         self.children = children
         self.comp_to_all_sequences = comp_to_all_sequences
-        self.sequences = sequences
+        self.sequences_ids = sequences_ids
         self.nodes_ids = nodes_ids
         self.mincomp = mincomp
 
@@ -48,38 +47,47 @@ class JSONPangenome:
     def __init__(self, pangenome: Pangenome=None):
         if not pangenome:
             return
-        self.nodes = [JSONNode(node.id, decode(node.base)) for node in pangenome.pangraph.get_nodes()]
+        # todo perf # self.nodes = [JSONNode(node.id, decode(node.base)) for node in pangenome.pangraph.get_nodes()]
+        self.nodes = []
         self.edges = []
         self.sequences = [JSONSequence(pangenome.genomes_info.get_id(sequence),
-                                       [int(node_id) for node_id in pangenome.pangraph.get_sequence_nodes_ids(sequence)],
-                                       sequence)
+                                       sequence,
+                                       []
+                                       # [int(node_id)
+                                       #  for node_id in pangenome.pangraph.get_sequence_nodes_ids(sequence)]
+                          )
                           for sequence in pangenome.pangraph.get_path_names()]
         cm = pangenome.pangraph._consensusmanager
         cm_tree_nodes = pangenome.pangraph._consensusmanager.consensus_tree.nodes
-        self.consensus_tree = [JSONConsensus(id=node.consensus_id,
-                                             name=cm.get_path_name(node.consensus_id),
-                                             parent=node.parent_node_id,
-                                             children=node.children_nodes,
-                                             comp_to_all_sequences={str(seq_id): float(comp)
-                               for seq_id, comp in node.compatibilities_to_all.items()} if node.compatibilities_to_all else None,
-                                             sequences=[str(s_name) for s_name in node.sequences_names],
-                                             # TODO perf # nodes_ids=[int(node_id) for node_id in pangenome.pangraph.get_consensus_nodes_ids(cm.get_path_name(node.consensus_id))],
-                                             nodes_ids=[],
-                                             mincomp=float(node.mincomp)) for node in cm_tree_nodes]
+        pm = pangenome.pangraph._pathmanager
+        self.consensuses = [JSONConsensus(id=node.consensus_id,
+                                          name=cm.get_path_name(node.consensus_id),
+                                          parent=node.parent_node_id,
+                                          children=node.children_nodes,
+                                          comp_to_all_sequences={seq_name: float(comp)
+                                                                 for seq_name, comp in node.compatibilities_to_all.items()},
+                                          sequences_ids=[pm.get_path_id(seq_name)
+                                                         for seq_name in node.sequences_names],
+                                          # todo perf # nodes_ids = [int(node_id) for node_id in pangenome.pangraph.get_consensus_nodes_ids(cm.get_path_name(node.consensus_id))],
+                                          nodes_ids=[],
+                                          mincomp=float(node.mincomp)
+                                          )
+                            for node in cm_tree_nodes]
 
     def build_from_dict(self, dictionary):
-        self.nodes = [JSONNode(node['id'],node['nucleobase']) for node in dictionary['nodes']]
+        self.nodes = [JSONNode(node['id'], node['nucleobase']) for node in dictionary['nodes']]
         self.edges = dictionary['edges']
         self.sequences = [JSONSequence(sequence['id'],
-                                       [int(node_id) for node_id in sequence['nodes_ids']],
-                                       sequence['name'])
+                                       sequence['name'],
+                                       [int(node_id) for node_id in sequence['nodes_ids']]
+                                       )
                           for sequence in dictionary['sequences']]
-        self.consensus_tree = [JSONConsensus(n['id'],
-                                             n['name'],
-                                             n['parent'],
-                                             [c for c in n['children']],
-                                             {seqname:comp for seqname, comp in n['comp_to_all_sequences'].items()},
-                                             [s for s in n['sequences']],
-                                             [c for c in n['nodes_ids']],
-                                             n['mincomp'])
-                               for n in dictionary['consensus_tree']]
+        self.consensuses = [JSONConsensus(id=n['id'],
+                                             name=n['name'],
+                                             parent=n['parent'],
+                                             children=[c for c in n['children']],
+                                             comp_to_all_sequences={seqname: comp for seqname, comp in n['comp_to_all_sequences'].items()},
+                                             sequences_ids=[s for s in n['sequences_ids']],
+                                             nodes_ids=[c for c in n['nodes_ids']],
+                                             mincomp=n['mincomp'])
+                               for n in dictionary['consensuses']]

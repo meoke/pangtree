@@ -9,4 +9,5 @@ dash-core-components
 dash-html-components
 dash-table
 pandas
+pygraphviz
 # Mafgraph-https://github.com/anialisiecka/Mafgraph

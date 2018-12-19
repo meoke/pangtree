@@ -18,7 +18,7 @@ class TreeConsensusManager(PathManager):
         raise NoConsensus
 
     def add_node(self, node: ConsensusNode, remapped_best_path):
-        node_id = self.add_path(f"Consensus", remapped_best_path)
+        node_id = self.add_path(f"C", remapped_best_path)
         node.consensus_id = node_id
         self.consensus_tree.add_node(node)
         return node_id

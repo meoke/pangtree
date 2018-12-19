@@ -129,6 +129,7 @@ class PathManager:
 
     def keep_nodes_ids(self, nodes_ids_to_keep):
         inactive_nodes = [node_id for node_id in range(self.paths.shape[1]) if node_id not in nodes_ids_to_keep]
+        # todo perf did not work # inactive_nodes = sorted(set(range(self.paths.shape[1])) - set(nodes_ids_to_keep))
         self.paths = np.delete(self.paths, inactive_nodes, 1)
 
     def get_top_consensus(self):

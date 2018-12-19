@@ -30,31 +30,36 @@ def get_tree(jsonpangenome: JSONPangenome, clck_data, old_tree):
 
 def create_tree(jsonpangenome: JSONPangenome):
     tree_graph = nx.DiGraph()
-    for consensus in jsonpangenome.consensus_tree:
+    for consensus in jsonpangenome.consensuses:
         tree_graph.add_node(consensus.id,
                             name=consensus.name,
                             comp=consensus.comp_to_all_sequences,
-                            sequences=consensus.sequences,
+                            sequences_ids=consensus.sequences_ids,
                             show_in_table=True,
                             hidden=False,
                             children_consensuses=consensus.children,
-                            mincomp=min([comp for seq_id, comp in consensus.comp_to_all_sequences.items() if seq_id in consensus.sequences]))
+                            mincomp=consensus.mincomp)
+                            # mincomp=min([comp
+                            #              for seq_id, comp in consensus.comp_to_all_sequences.items()
+                            #              if seq_id in consensus.sequences_ids])
+                            # if consensus.comp_to_all_sequences else 0)
         if consensus.parent is not None:
-            tree_graph.add_edge(consensus.parent, consensus.id, weight=len(consensus.sequences))
+            tree_graph.add_edge(consensus.parent, consensus.id, weight=len(consensus.sequences_ids))
     return tree_graph
+
 
 def get_consensus_tree_graph(jsonpangenome: JSONPangenome, tree, sliderValue):
     # read positions
     tree.graph.setdefault('graph', {})['rankdir'] = 'LR'
     node_id_to_x_y = graphviz_layout(tree, prog='dot')
 
-
     # prepare dots todo uprościć
     dots_labels = [tree.nodes[node_id] for node_id in range(len(node_id_to_x_y))]
     dots_labels_on_hover = [f'min_comp: {tree.nodes[node_id]["mincomp"]}' for node_id in range(len(node_id_to_x_y))]
     # dots_labels_on_hover = [f'min_comp: {tree.nodes[node_id]["mincomp"]}\nsequences: {tree.nodes[node_id]["sequences"]}' for node_id in range(len(node_id_to_x_y))]
     dots_numbers = [n for n in range(len(node_id_to_x_y))]
-    dots_positions = [[tree.nodes[node_id]["mincomp"]*100, node_id_to_x_y[node_id][1]] for node_id in range(len(node_id_to_x_y))] #todo sprawdzic czy dobrze
+    dots_positions = [[tree.nodes[node_id]["mincomp"]*1000000, node_id_to_x_y[node_id][1]*10000] for node_id in range(len(node_id_to_x_y))] #todo sprawdzic czy dobrze
+    dots_positions = [[node_id_to_x_y[node_id][0], node_id_to_x_y[node_id][1]] for node_id in range(len(node_id_to_x_y))] #todo sprawdzic czy dobrze
     dots_x = [dot_x for [dot_x, _] in dots_positions] #todo czy to będzie dobrze posortowane?
     dots_y = [dot_y for [_, dot_y] in dots_positions] #todo czy to będzie dobrze posortowane?
     dots_annotations = [{'x':x_pos,
@@ -76,14 +81,14 @@ def get_consensus_tree_graph(jsonpangenome: JSONPangenome, tree, sliderValue):
                        hoverinfo='none'
                        )
     line=go.Scatter(x=[sliderValue*100, sliderValue*100],
-                    y=[0, 200],
+                    y=[0, 400],
                     mode='lines')
     dots = go.Scatter(x=dots_x,
                       y=dots_y,
                       mode='markers',
                       name='',
                       marker=dict(symbol='circle',
-                                  size=25,
+                                  size=15,
                                   color='white',
                                   line=dict(color='rgb(50,50,50)',
                                             width=1)
@@ -95,10 +100,15 @@ def get_consensus_tree_graph(jsonpangenome: JSONPangenome, tree, sliderValue):
                       )
 
     # graph settings - hide axis line, grid, ticklabels and  title
-    axis = dict(showline=False,
-                zeroline=False,
-                showgrid=False,
-                showticklabels=False,
+    # axis = dict(showline=False,
+    #             zeroline=False,
+    #             showgrid=False,
+    #             showticklabels=False,
+    #             )
+    axis = dict(showline=True,
+                zeroline=True,
+                showgrid=True,
+                showticklabels=True,
                 )
 
     #graph settings - layout
@@ -111,8 +121,9 @@ def get_consensus_tree_graph(jsonpangenome: JSONPangenome, tree, sliderValue):
                   margin=dict(l=40, r=40, b=85, t=100),
                   hovermode='closest',
                   plot_bgcolor='rgb(248,248,248)',
-                  width=1000,
-                  height=700
+                  autosize=True
+                  # width=1000,
+                  # height=700
                   )
 
     return go.Figure(

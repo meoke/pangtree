@@ -46,17 +46,17 @@ def get_table_rows(jsonified_consensuses_table_data):
             except:
                 return s
 
-    column_headers = jsonified_consensuses_table_data[0]
+    first_item = jsonified_consensuses_table_data[0]
 
     rows = []
     for row in jsonified_consensuses_table_data[1:]:
-        dict_row = {c: convert_to_number(row[i]) for i, c in enumerate(column_headers)}
+        dict_row = {v: convert_to_number(row[k]) for k, v in first_item.items()}
         rows.append(dict_row)
     return rows
 
 
 def get_table_columns(jsonified_consensuses_table_data):
-    column_headers = jsonified_consensuses_table_data[0]
+    column_headers = jsonified_consensuses_table_data.to_dict().keys()
     return [{"name": c, "id": c} for i, c in enumerate(column_headers)]
 
 
