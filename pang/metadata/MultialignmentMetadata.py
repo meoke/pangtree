@@ -10,3 +10,7 @@ class MultialignmentMetadata:
 
     def get_id(self, sequence_name: str) -> int:
         return [seq_id for seq_id, data in self.genomes_metadata.items() if data.mafname == sequence_name][0]
+
+    def get_group(self, sequence_name: str) -> str:
+        a = [data.group for seq_id, data in self.genomes_metadata.items() if data.mafname == sequence_name][0]
+        return a

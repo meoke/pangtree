@@ -6,7 +6,6 @@ import dash_core_components as dcc
 import dash_html_components as html
 import shutil
 import dash_table
-import re
 import json
 import pandas as pd
 import flask
@@ -16,14 +15,11 @@ from components import consensus_tree
 from components import consensus_table
 from components.algorithm_description import d
 
-from fileformat.json.JSONPangenome import JSONPangenome
 from pang.fileformat.json import reader as pangenomejson_reader
 from pang.fileformat.json import writer as pangenomejson_writer
 
-import numpy as np
-
-
 from networkx.readwrite import json_graph
+import jsonpickle
 
 app = dash.Dash(__name__)
 app.title = 'pang'
@@ -409,8 +405,7 @@ def call_pang(last_clicked,
                                         anti_fragmentation_value)
 
         shutil.copy(json_path, "download/pangenome.json")
-        a = pangenomejson_writer.pangenome_to_json(pangenome)
-        return str(a)
+        return pangenomejson_writer.pangenome_to_json(pangenome)
 
 @app.callback(
     dash.dependencies.Output('hidden_consensus_tree_data', 'children'),
@@ -420,14 +415,12 @@ def call_pang(last_clicked,
 def update_consensus_graph_data(jsonified_pangenome, click_data, old_jsonfied_consensus_tree):
     old_tree = None
     if old_jsonfied_consensus_tree:
-        old_tree = json_graph.tree_graph(eval(old_jsonfied_consensus_tree))
+        old_tree = json_graph.tree_graph(old_jsonfied_consensus_tree)
 
-    print(click_data)
     jsonpangenome = pangenomejson_reader.json_to_jsonpangenome(jsonified_pangenome)
     tree = consensus_tree.get_tree(jsonpangenome, click_data, old_tree)
     jsonified_tree = json_graph.tree_data(tree, root=0)
-    return str(jsonified_tree)
-
+    return jsonpickle.encode(jsonified_tree)
 
 @app.callback(
     dash.dependencies.Output('consensus_tree', 'style'),
@@ -442,31 +435,26 @@ def show_graph(_):
     [dash.dependencies.State('hidden_pang_result', 'children')]
 )
 def update_consensuses_table(jsonified_consensus_tree, slider_value, jsonified_pangenome):
-    tree = json_graph.tree_graph(eval(jsonified_consensus_tree))
+    tree = json_graph.tree_graph(jsonpickle.decode(jsonified_consensus_tree))
     jsonpangenome = pangenomejson_reader.json_to_jsonpangenome(jsonified_pangenome)
     consensus_table_data = consensus_table.get_consensus_table_data(jsonpangenome, tree, slider_value)
-    consensus_table_data_json = pd.DataFrame(consensus_table_data).to_json()
-    return str(consensus_table_data_json)
-
+    return consensus_table_data.to_json()
 
 @app.callback(
     dash.dependencies.Output('consensuses_table', 'data'),
     [dash.dependencies.Input('hidden_consensuses_table_data', 'children')]
 )
 def update_consensuses_table_rows(jsonified_consensuses_table_data):
-    b = json.loads(jsonified_consensuses_table_data)
-    b_dataframe = pd.DataFrame(b)
-    return consensus_table.get_table_rows(eval(b_dataframe.to_json(orient="records")))
+    table_data = pd.read_json(jsonified_consensuses_table_data)
+    return table_data.to_dict("rows")
 
 @app.callback(
     dash.dependencies.Output('consensuses_table', 'columns'),
     [dash.dependencies.Input('hidden_consensuses_table_data', 'children')]
 )
 def update_consensuses_table_columncs(jsonified_consensuses_table_data):
-    b = json.loads(jsonified_consensuses_table_data)
-    b_dataframe = pd.DataFrame(b)
-    return [{"name": b_dataframe[col_id][0], "id": b_dataframe[col_id][0]} for i, col_id in enumerate(b_dataframe.columns)]
-
+    table_data = pd.read_json(jsonified_consensuses_table_data)
+    return [{"name": i, "id": i} for i in table_data.columns]
 
 @app.callback(
     dash.dependencies.Output('consensus_tree_slider_value', 'children'),
@@ -475,7 +463,6 @@ def update_consensuses_table_columncs(jsonified_consensuses_table_data):
 def show_slider_value(slider_value):
     return f"Current value: {slider_value}."
 
-
 @app.callback(
     dash.dependencies.Output('consensus_tree_graph', 'figure'),
     [dash.dependencies.Input('hidden_consensus_tree_data', 'children'),
@@ -483,8 +470,7 @@ def show_slider_value(slider_value):
     [dash.dependencies.State('hidden_pang_result', 'children')])
 def update_consensus_tree_graph(jsonified_consensus_tree, slider_value,  jsonified_pangenome):
     jsonpangenome = pangenomejson_reader.json_to_jsonpangenome(jsonified_pangenome)
-
-    tree = json_graph.tree_graph(eval(jsonified_consensus_tree))
+    tree = json_graph.tree_graph(jsonpickle.decode(jsonified_consensus_tree))
     return consensus_tree.get_consensus_tree_graph(jsonpangenome, tree, slider_value)
 
 

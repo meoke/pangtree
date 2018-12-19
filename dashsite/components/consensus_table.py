@@ -1,5 +1,6 @@
 from collections import deque
-import numpy as np
+import pandas as pd
+
 
 def mark_nodes_to_show(consensus_tree, slider_value):
     nodes_to_visit = deque([0])
@@ -27,36 +28,19 @@ def hide_children(consensus_tree, parent_id):
 def get_consensus_table_data(jsonpangenome, consensus_tree, slider_value):
     consensus_tree = mark_nodes_to_show(consensus_tree, slider_value)
     consensuses_nodes_ids = [n for n in consensus_tree.nodes if consensus_tree.nodes[n]['show_in_table']]
-    consensuses_names =  [consensus_tree.nodes[node_id]['name'] for node_id in consensuses_nodes_ids]
-    data=np.array([['SequenceID', 'Name', 'Title', 'Group'] + consensuses_names])
+    consensuses_names = [consensus_tree.nodes[node_id]['name'] for node_id in consensuses_nodes_ids]
+    df = pd.DataFrame(columns=['SequenceID', 'Name', 'Title', 'Group'] + consensuses_names)
     for seq in jsonpangenome.sequences:
-        row = np.array([[seq.id, seq.name, 'title', 'grupa'] + \
-              [consensus_tree.nodes[node_id]['comp'][seq.name] for node_id in consensuses_nodes_ids]])
-        data = np.append(data, row, axis=0)
-    return data
+        row = {}
+        for node_id in consensuses_nodes_ids:
+            consensus_name = consensus_tree.nodes[node_id]['name']
+            row[consensus_name] = float(consensus_tree.nodes[node_id]['comp'][seq.name])
+        row["SequenceID"] = int(seq.id)
+        row["Name"] = seq.name
+        row["Title"] = 'title'
+        row["Group"] = seq.group
+        df = df.append(row, ignore_index=True)
+    return df
 
-
-def get_table_rows(jsonified_consensuses_table_data):
-    def convert_to_number(s):
-        try:
-            return float(s)
-        except ValueError:
-            try:
-                return int(s)
-            except:
-                return s
-
-    first_item = jsonified_consensuses_table_data[0]
-
-    rows = []
-    for row in jsonified_consensuses_table_data[1:]:
-        dict_row = {v: convert_to_number(row[k]) for k, v in first_item.items()}
-        rows.append(dict_row)
-    return rows
-
-
-def get_table_columns(jsonified_consensuses_table_data):
-    column_headers = jsonified_consensuses_table_data.to_dict().keys()
-    return [{"name": c, "id": c} for i, c in enumerate(column_headers)]
 
 

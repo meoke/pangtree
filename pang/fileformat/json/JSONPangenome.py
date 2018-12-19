@@ -1,6 +1,7 @@
 from graph.nucleotides import decode as decode
 from typing import List, Dict
 import Pangenome
+from metadata.MultialignmentMetadata import MultialignmentMetadata
 
 
 class JSONNode:
@@ -17,9 +18,10 @@ class JSONEdge:
 
 
 class JSONSequence:
-    def __init__(self, id: int, name: str, nodes_ids: List[int]):
+    def __init__(self, id: int, name: str, group: str, nodes_ids: List[int]):
         self.id = id
         self.name = name
+        self.group = group
         self.nodes_ids = nodes_ids
 
 
@@ -52,6 +54,7 @@ class JSONPangenome:
         self.edges = []
         self.sequences = [JSONSequence(pangenome.genomes_info.get_id(sequence),
                                        sequence,
+                                       pangenome.genomes_info.get_group(sequence),
                                        []
                                        # [int(node_id)
                                        #  for node_id in pangenome.pangraph.get_sequence_nodes_ids(sequence)]
