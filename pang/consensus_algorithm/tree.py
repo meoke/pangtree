@@ -190,8 +190,24 @@ def find_node_cutoff(compatibility_to_node_sequences, multiplier, mincomps=None)
         return sorted_comp[0]
     # elif len(sorted_comp) == 2:
     #     return sorted_comp[1]
-
+################################################### do wyrzucenia
+    # if mincomps:
+    #     return min(mincomps)
+    # else:
+    #     anti_granular_guard = min(mincomps) if mincomps else []
+    #
+    #     mean_distance = (sorted_comp[-1] - sorted_comp[0]) / (len(sorted_comp) - 1)
+    #     required_gap = mean_distance * multiplier
+    #     small_comps = [sc for sc in sorted_comp if sc <= anti_granular_guard]
+    #
+    #     distances = np.array([small_comps[i + 1] - small_comps[i] for i in range(len(small_comps) - 1)])
+    #     if any(distances >= required_gap):
+    #         a = np.where(distances >= required_gap)[0][0] + 1
+    #         return small_comps[a]
+    #
+    # ###################
     anti_granular_guard = min(mincomps) if mincomps else []
+
     mean_distance = (sorted_comp[-1] - sorted_comp[0])/(len(sorted_comp)-1)
     required_gap = mean_distance * multiplier
     small_comps = [sc for sc in sorted_comp if sc <= anti_granular_guard]
@@ -201,6 +217,14 @@ def find_node_cutoff(compatibility_to_node_sequences, multiplier, mincomps=None)
         a = np.where(distances >= required_gap)[0][0]+1
         return small_comps[a]
     else:
+        # try:
+        #     left_values = [c for c in sorted_comp if c < anti_granular_guard]
+        #     left_to_guard = left_values[-1]
+        #     # right_to_guard = [c for c in sorted_comp if c > anti_granular_guard][0]
+        #     return left_to_guard
+        # except:
+        #     print("ANTI GRANULAR GUARD RETURNED!!!")
+        #     return anti_granular_guard
         try:
             left_to_guard = [c for c in sorted_comp if c < anti_granular_guard][-1]
             left_to_guard_diff = anti_granular_guard - left_to_guard
