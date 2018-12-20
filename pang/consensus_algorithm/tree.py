@@ -92,9 +92,9 @@ def get_children_nodes(orig_pangraph: Pangraph, cn: ConsensusNode) -> TreeConsen
         max_c_to_node = subpangraph.get_paths_compatibility(0)
         remapped_to_orig_best_path = subpangraph.get_consensus_remapped_to_original_nodes(0)
         if ap.config.anti_granular:
-            node_cutoff = find_node_cutoff(max_c_to_node, ap.config.multiplier, local_consensus_manager.get_all_leaves_mincomps())
+            node_cutoff = find_node_cutoff(max_c_to_node, ap.config.multiplier, cn.consensus_id, local_consensus_manager.get_all_leaves_mincomps())
         else:
-            node_cutoff = find_node_cutoff_old(max_c_to_node, ap.config.multiplier)
+            node_cutoff = find_node_cutoff_old(max_c_to_node, cn.consensus_id, ap.config.multiplier)
         compatible_sources_names = get_max_compatible_sources_ids(current_paths_names, max_c_to_node, node_cutoff)
 
         node = ConsensusNode(sequences_names=list(compatible_sources_names), mincomp=node_cutoff)
@@ -165,7 +165,8 @@ def find_max_cutoff(compatibility_to_node_sequences, cutoff_search_range):
 def find_node_cutoff_old(compatibility_to_node_sequences, multiplier):
     if not compatibility_to_node_sequences:
         raise ValueError("Empty compatibilities list. Finding max cutoff.")
-    sorted_comp = sorted(set(compatibility_to_node_sequences))
+    # sorted_comp = sorted(set(compatibility_to_node_sequences))
+    sorted_comp = sorted(compatibility_to_node_sequences)
     if len(sorted_comp) == 1:
         return sorted_comp[0]
     elif len(sorted_comp) == 2:
@@ -183,7 +184,7 @@ def find_node_cutoff_old(compatibility_to_node_sequences, multiplier):
         return sorted_comp[np.where(distances >= mean_distance)[0][0]+1]
 
 
-def find_node_cutoff(compatibility_to_node_sequences, multiplier, mincomps=None):
+def find_node_cutoff(compatibility_to_node_sequences, multiplier, nodeid, mincomps=None):
     anti_granular_guard = -1
     if not mincomps:
         node_cutoff = find_node_cutoff_old(compatibility_to_node_sequences, multiplier)
@@ -197,7 +198,7 @@ def find_node_cutoff(compatibility_to_node_sequences, multiplier, mincomps=None)
         else:
             # elif len(sorted_comp) == 2:
             #     return sorted_comp[1]
-        ################################################### do wyrzucenia
+            ################################################### do wyrzucenia
             # if mincomps:
             #     return min(mincomps)
             # else:
@@ -214,21 +215,18 @@ def find_node_cutoff(compatibility_to_node_sequences, multiplier, mincomps=None)
             #
             # ###################
             anti_granular_guard = min(mincomps)
+            # sorted_comp = sorted(set(compatibility_to_node_sequences))
+            sorted_comp = sorted(compatibility_to_node_sequences)
 
-            #1 anti_granular_guard < all compatibilities
-            if all(anti_granular_guard < compatibility_to_node_sequences):
+            if all(anti_granular_guard <= compatibility_to_node_sequences):
                 reason = "1 anti_granular_guard < all compatibilities"
-                node_cutoff = anti_granular_guard
-            #2 anti_granular_guard > all compatibilities
+                node_cutoff = sorted_comp[0]
             elif all(anti_granular_guard > compatibility_to_node_sequences):
                 reason = "2 anti_granular_guard > all compatibilities"
                 node_cutoff = find_node_cutoff_old(compatibility_to_node_sequences, multiplier)
-            # 3 anti_granular_guard in between all compatibilities
             else:
-                reason = "3 anti_granular_guard in between all compatibilities"
                 compatibility_to_node_sequences.append(anti_granular_guard)
                 # sorted_comp = sorted(compatibility_to_node_sequences)
-                sorted_comp = sorted(set(compatibility_to_node_sequences))
                 mean_distance = (sorted_comp[-1] - sorted_comp[0])/(len(sorted_comp)-1)
                 required_gap = mean_distance * multiplier
                 small_comps = [sc for sc in sorted_comp if sc <= anti_granular_guard]
@@ -237,18 +235,20 @@ def find_node_cutoff(compatibility_to_node_sequences, multiplier, mincomps=None)
                 if any(distances >= required_gap):
                     a = np.where(distances >= required_gap)[0][0]+1
                     node_cutoff = small_comps[a]
+                    reason = "gap found before anti_granular_guard"
                 else:
                     # node_cutoff = max(small_comps)
                     greater_than_guard = list(set(sorted_comp) - set(small_comps))
-                    if greater_than_guard:
-                        node_cutoff = min(greater_than_guard)
-                    else:
-                        node_cutoff = max(small_comps) if small_comps else anti_granular_guard
+                    # if greater_than_guard:
+                    reason = "gap not found, take first to the right"
+                    node_cutoff = min(greater_than_guard)
+                    # else:
+                    #     node_cutoff = max(small_comps) if small_comps else anti_granular_guard
                 compatibility_to_node_sequences.pop()
 
     with open(get_child_file_path(ap.outputdir, "0_0_node_cutoff.csv"), "a") as output:
         csv_writer = csv.writer(output, delimiter=',')
-        csv_writer.writerow([str(sorted(compatibility_to_node_sequences)), anti_granular_guard, node_cutoff, reason])
+        csv_writer.writerow([nodeid, str(sorted(compatibility_to_node_sequences)), anti_granular_guard, node_cutoff, reason])
     return node_cutoff
         # try:
         #     left_values = [c for c in sorted_comp if c < anti_granular_guard]

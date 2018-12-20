@@ -43,4 +43,10 @@ def get_consensus_table_data(jsonpangenome, consensus_tree, slider_value):
     return df
 
 
+def s(df_table_data, tree):
+    df_json = df_table_data.to_dict("rows")
+    # df_json["10"]["C_0"]
+    return df_json
+
+
 
