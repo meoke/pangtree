@@ -7,12 +7,16 @@ def mark_nodes_to_show(consensus_tree, slider_value):
     while nodes_to_visit:
         current_node_id = nodes_to_visit.pop()
         current_node = consensus_tree.nodes[current_node_id]
-        if current_node['mincomp'] > slider_value:
-            current_node['show_in_table'] = True
-            consensus_tree = hide_children(consensus_tree, current_node_id)
-        else:
-            current_node['show_in_table'] = False
-            nodes_to_visit.extend(current_node['children_consensuses'])
+
+        current_node['show_in_table'] = True
+        nodes_to_visit.extend(current_node['children_consensuses'])
+
+        # if current_node['mincomp'] > slider_value:
+        #     current_node['show_in_table'] = True
+        #     consensus_tree = hide_children(consensus_tree, current_node_id)
+        # else:
+        #     current_node['show_in_table'] = False
+        #     nodes_to_visit.extend(current_node['children_consensuses'])
     return consensus_tree
 
 
@@ -26,27 +30,29 @@ def hide_children(consensus_tree, parent_id):
 
 
 def get_consensus_table_data(jsonpangenome, consensus_tree, slider_value):
+    #todo can we use only consensuses names as id?
     consensus_tree = mark_nodes_to_show(consensus_tree, slider_value)
     consensuses_nodes_ids = [n for n in consensus_tree.nodes if consensus_tree.nodes[n]['show_in_table']]
     consensuses_names = [consensus_tree.nodes[node_id]['name'] for node_id in consensuses_nodes_ids]
-    df = pd.DataFrame(columns=['SequenceID', 'Name', 'Title', 'Group'] + consensuses_names)
+    table_data = pd.DataFrame(columns=['ID', 'Genbank ID', 'Assembly ID', 'Mafname', 'Name', 'Group'] +
+                                      consensuses_names)
     for seq in jsonpangenome.sequences:
-        row = {}
+        row = {"ID": seq.id,
+               "Genbank ID": seq.genbankID,
+               "Assembly ID": seq.assemblyID,
+               "Mafname": seq.mafname,
+               "Name": seq.name,
+               "Group": seq.group}
         for node_id in consensuses_nodes_ids:
             consensus_name = consensus_tree.nodes[node_id]['name']
-            row[consensus_name] = float(consensus_tree.nodes[node_id]['comp'][seq.name])
-        row["SequenceID"] = int(seq.id)
-        row["Name"] = seq.name
-        row["Title"] = 'title'
-        row["Group"] = seq.group
-        df = df.append(row, ignore_index=True)
-    return df
+            #todo
+            row[consensus_name] = consensus_tree.nodes[node_id]['comp'][seq.mafname]
+        table_data = table_data.append(row, ignore_index=True)
+    for consensus_name in consensuses_names:
+        table_data[consensus_name] = table_data[consensus_name].map('{:,.4f}'.format)
+    return table_data
 
 
 def s(df_table_data, tree):
     df_json = df_table_data.to_dict("rows")
-    # df_json["10"]["C_0"]
     return df_json
-
-
-

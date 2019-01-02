@@ -8,10 +8,14 @@ from .Pangraph import Pangraph
 from io import StringIO
 
 
-def read(multialignment_file: Path, multialignment_metadata: MultialignmentMetadata, as_string=False) -> Pangraph:
-    if as_string:
-        multialignment_file = StringIO(multialignment_file)
-    maf = AlignIO.parse(multialignment_file, "maf")
+def read(multialignment, multialignment_metadata: MultialignmentMetadata) -> Pangraph:
+    """Reads MAF and returns its content as Pangraph.
+
+    Arguments:
+    - multialignment - file path or file content """
+    # if as_string:
+    #     multialignment_handle = StringIO(multialignment)
+    maf = AlignIO.parse(multialignment, "maf")
     return parse_mafcontent_to_graph(maf, multialignment_metadata)
 
 

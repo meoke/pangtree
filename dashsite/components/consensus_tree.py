@@ -1,6 +1,6 @@
 import plotly.graph_objs as go
 
-from pang.fileformat.json.JSONPangenome import JSONPangenome
+from pang.fileformats.json.JSONPangenome import JSONPangenome
 import networkx as nx
 from collections import deque
 from networkx.drawing.nx_agraph import graphviz_layout
@@ -55,7 +55,7 @@ def get_consensus_tree_graph(jsonpangenome: JSONPangenome, tree, sliderValue):
 
     # prepare dots todo uprościć
     dots_labels = [tree.nodes[node_id] for node_id in range(len(node_id_to_x_y))]
-    dots_labels_on_hover = [f'min_comp: {tree.nodes[node_id]["mincomp"]}' for node_id in range(len(node_id_to_x_y))]
+    dots_labels_on_hover = [f'min_comp: {tree.nodes[node_id]["mincomp"]}, {tree.nodes[node_id]["sequences_ids"]}' for node_id in range(len(node_id_to_x_y))]
     # dots_labels_on_hover = [f'min_comp: {tree.nodes[node_id]["mincomp"]}\nsequences: {tree.nodes[node_id]["sequences"]}' for node_id in range(len(node_id_to_x_y))]
     dots_numbers = [n for n in range(len(node_id_to_x_y))]
     dots_positions = [[tree.nodes[node_id]["mincomp"]*1000000, node_id_to_x_y[node_id][1]*10000] for node_id in range(len(node_id_to_x_y))] #todo sprawdzic czy dobrze

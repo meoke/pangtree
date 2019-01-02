@@ -1,6 +1,6 @@
 from pathlib import Path
 import Pangenome
-from fileformat.json.JSONPangenome import JSONPangenome
+from fileformats.json.JSONPangenome import JSONPangenome
 from userio import pathtools
 import jsonpickle
 

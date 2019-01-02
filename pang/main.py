@@ -3,15 +3,18 @@ import time
 
 from userio import cmdargs, pathtools
 from Pangenome import Pangenome
-from fileformat.json import writer as jsonwriter
+from fileformats.json import writer as jsonwriter
 
 
 def run_pang(args):
     """Creates Pangraph and runs required algorithms."""
 
-    p = Pangenome(args.multialignment, args.data, as_string=False)
+    p = Pangenome(args.multialignment,
+                  pathtools.get_file_content(args.data))
+
     if args.fasta:
         p.generate_fasta_files(pathtools.create_child_dir(args.output, 'fasta'))
+
     if args.consensus:
         p.generate_consensus(pathtools.create_child_dir(args.output, 'consensus'),
                              args.consensus,
@@ -22,8 +25,8 @@ def run_pang(args):
                              args.re_consensus,
                              args.anti_granular
                              )
-    if args.vis:
-        p.generate_visualization(pathtools.create_child_dir(args.output, 'vis'))
+    # if args.vis:
+    #     p.generate_visualization(pathtools.create_child_dir(args.output, 'vis'))
     data_path = pathtools.create_child_dir(args.output, 'data')
     jsonwriter.save(data_path, p)
 

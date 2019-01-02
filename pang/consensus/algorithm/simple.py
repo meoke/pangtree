@@ -3,7 +3,7 @@ import po.writer as powriter
 import po.reader as poreader
 import userio.pathtools as pathtools
 from pathlib import Path
-import consensus_algorithm.poa as poa
+import consensus.algorithm.poa as poa
 from metadata.MultialignmentMetadata import MultialignmentMetadata
 
 

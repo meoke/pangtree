@@ -1,4 +1,4 @@
-from consensus_data.ConsensusNode import ConsensusNode
+from consensus.data import ConsensusNode
 from graph.PathManager import PathManager
 from .ConsensusTree import ConsensusTree
 from .Errors import NoConsensus

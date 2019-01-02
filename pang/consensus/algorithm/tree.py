@@ -5,11 +5,11 @@ from metadata.MultialignmentMetadata import MultialignmentMetadata
 from userio.pathtools import get_child_file_path
 from . import simple
 import numpy as np
-from consensus_algorithm.TreeConfig import TreeConfig
+from consensus.algorithm import TreeConfig
 from .AlgorithmParams import AlgorithmParams
-from consensus_data.SubPangraph import SubPangraph
-from consensus_data.TreeConsensusManager import TreeConsensusManager
-from consensus_data.ConsensusNode import ConsensusNode
+from consensus.data.SubPangraph import SubPangraph
+from consensus.data.TreeConsensusManager import TreeConsensusManager
+from consensus.data.ConsensusNode import ConsensusNode
 from collections import deque
 import csv
 import logging
@@ -165,8 +165,8 @@ def find_max_cutoff(compatibility_to_node_sequences, cutoff_search_range):
 def find_node_cutoff_old(compatibility_to_node_sequences, multiplier):
     if not compatibility_to_node_sequences:
         raise ValueError("Empty compatibilities list. Finding max cutoff.")
-    # sorted_comp = sorted(set(compatibility_to_node_sequences))
-    sorted_comp = sorted(compatibility_to_node_sequences)
+    sorted_comp = sorted(set(compatibility_to_node_sequences))
+    # sorted_comp = sorted(compatibility_to_node_sequences)
     if len(sorted_comp) == 1:
         return sorted_comp[0]
     elif len(sorted_comp) == 2:
