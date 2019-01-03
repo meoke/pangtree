@@ -272,7 +272,6 @@ def get_layout(get_url_function):
                         html.Div(
                             dash_table.DataTable(
                                 id='consensuses_table',
-                                filtering=True,
                                 sorting=True,
                                 sorting_type="multi"
                             ),

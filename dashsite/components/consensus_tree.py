@@ -13,7 +13,6 @@ def toggle_node_with_children(old_tree, clicked_node):
         old_tree.nodes[node_id]['hidden'] = not old_tree.nodes[node_id]['hidden']
         node_children = [v for u, v in old_tree.edges if u == node_id]
         nodes_to_toggle.extend(node_children)
-
     return old_tree
 
 
@@ -39,10 +38,6 @@ def create_tree(jsonpangenome: JSONPangenome):
                             hidden=False,
                             children_consensuses=consensus.children,
                             mincomp=consensus.mincomp)
-                            # mincomp=min([comp
-                            #              for seq_id, comp in consensus.comp_to_all_sequences.items()
-                            #              if seq_id in consensus.sequences_ids])
-                            # if consensus.comp_to_all_sequences else 0)
         if consensus.parent is not None:
             tree_graph.add_edge(consensus.parent, consensus.id, weight=len(consensus.sequences_ids))
     return tree_graph
@@ -73,7 +68,6 @@ def get_consensus_tree_graph(jsonpangenome: JSONPangenome, tree, sliderValue):
     for u, v in tree.edges:
         lines_x += [dots_positions[u][0], dots_positions[v][0], None]
         lines_y += [dots_positions[u][1], dots_positions[v][1], None]
-    # < class 'list'>:
     lines = go.Scatter(x=lines_x,
                        y=lines_y,
                        mode='lines',

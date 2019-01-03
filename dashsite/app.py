@@ -161,7 +161,6 @@ def update_consensuses_table_rows(jsonified_consensuses_table_data, jsonified_co
     tree = json_graph.tree_graph(jsonpickle.decode(jsonified_consensus_tree))
     table_data = pd.read_json(jsonified_consensuses_table_data)
     return consensus_table.s(table_data, tree)
-    # return table_data.to_dict("rows")
 
 @app.callback(
     dash.dependencies.Output('consensuses_table', 'columns'),
@@ -187,6 +186,16 @@ def update_consensus_tree_graph(jsonified_consensus_tree, slider_value,  jsonifi
     jsonpangenome = pangenomejson_reader.json_to_jsonpangenome(jsonified_pangenome)
     tree = json_graph.tree_graph(jsonpickle.decode(jsonified_consensus_tree))
     return consensus_tree.get_consensus_tree_graph(jsonpangenome, tree, slider_value)
+
+@app.callback(
+    dash.dependencies.Output('consensuses_table', 'style_data_conditional'),
+    [dash.dependencies.Input('hidden_consensuses_table_data', 'children')],
+    [dash.dependencies.State('hidden_consensus_tree_data', 'children')]
+)
+def color_consensuses_table_cells(jsonified_consensuses_table_data, jsonified_consensus_tree):
+    tree = json_graph.tree_graph(jsonpickle.decode(jsonified_consensus_tree))
+    table_data = pd.read_json(jsonified_consensuses_table_data)
+    return consensus_table.get_cells_styling(tree, table_data)
 
 
 @app.server.route('/download_pangenome')
