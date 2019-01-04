@@ -43,20 +43,61 @@ def create_tree(jsonpangenome: JSONPangenome):
     return tree_graph
 
 
+def get_node_id_to_y_pos(tree):
+    node_id_to_y = {}
+    leafs_ids = []
+    for node_id in tree.nodes:
+        if not tree.nodes[node_id]['children_consensuses']:
+            leafs_ids.append(node_id)
+    leafs_count = len(leafs_ids)
+    min_y = 0
+    max_y = 100
+    leaf_distance = (max_y - min_y)/leafs_count
+    for i, leaf_id in enumerate(leafs_ids):
+        node_id_to_y[leaf_id] = leaf_distance * i
+    nodes_to_process = deque(leafs_ids)
+    while nodes_to_process:
+        processed_child_id = nodes_to_process.pop()
+        parents = [node_id for node_id in tree.nodes
+                     if processed_child_id in tree.nodes[node_id]['children_consensuses']]
+        if parents:
+            parent_id = parents[0]
+        else:
+            break
+        siblings = tree.nodes[parent_id]['children_consensuses']
+        all_siblings_set = all([s in node_id_to_y.keys() for s in siblings])
+        if all_siblings_set:
+            for s in siblings:
+                if s in nodes_to_process:
+                    nodes_to_process.remove(s)
+        else:
+            for s in siblings:
+                if s not in node_id_to_y.keys() and s not in nodes_to_process:
+                    nodes_to_process.appendleft(s)
+            nodes_to_process.appendleft(processed_child_id)
+            continue
+        siblings_positions = [y for node_id, y in node_id_to_y.items() if node_id in siblings]
+        left_child_pos = min(siblings_positions)
+        right_child_pos = max(siblings_positions)
+        node_id_to_y[parent_id] = (right_child_pos - left_child_pos) / 2
+        nodes_to_process.append(parent_id)
+    return node_id_to_y
+
 def get_consensus_tree_graph(jsonpangenome: JSONPangenome, tree, sliderValue):
+
     # read positions
     tree.graph.setdefault('graph', {})['rankdir'] = 'LR'
     node_id_to_x_y = graphviz_layout(tree, prog='dot')
-
+    node_id_to_y = get_node_id_to_y_pos(tree)
     # prepare dots todo uprościć
     dots_labels = [tree.nodes[node_id] for node_id in range(len(node_id_to_x_y))]
     dots_labels_on_hover = [f'min_comp: {tree.nodes[node_id]["mincomp"]}, {tree.nodes[node_id]["sequences_ids"]}' for node_id in range(len(node_id_to_x_y))]
     # dots_labels_on_hover = [f'min_comp: {tree.nodes[node_id]["mincomp"]}\nsequences: {tree.nodes[node_id]["sequences"]}' for node_id in range(len(node_id_to_x_y))]
     dots_numbers = [n for n in range(len(node_id_to_x_y))]
-    dots_positions = [[tree.nodes[node_id]["mincomp"]*1000000, node_id_to_x_y[node_id][1]*10000] for node_id in range(len(node_id_to_x_y))] #todo sprawdzic czy dobrze
-    dots_positions = [[node_id_to_x_y[node_id][0], node_id_to_x_y[node_id][1]] for node_id in range(len(node_id_to_x_y))] #todo sprawdzic czy dobrze
-    dots_x = [dot_x for [dot_x, _] in dots_positions] #todo czy to będzie dobrze posortowane?
-    dots_y = [dot_y for [_, dot_y] in dots_positions] #todo czy to będzie dobrze posortowane?
+    dots_positions = [[tree.nodes[node_id]["mincomp"], node_id_to_x_y[node_id][1]] for node_id in range(len(node_id_to_x_y))]
+    # dots_positions = [[tree.nodes[node_id]["mincomp"], node_id_to_y[node_id]] for node_id in range(len(node_id_to_x_y))]
+    dots_x = [dot_x for [dot_x, _] in dots_positions]
+    dots_y = [dot_y for [_, dot_y] in dots_positions]
     dots_annotations = [{'x':x_pos,
                          'y':y_pos,
                          'text':f"{i}",
@@ -74,8 +115,8 @@ def get_consensus_tree_graph(jsonpangenome: JSONPangenome, tree, sliderValue):
                        line=dict(color='rgb(210,210,210)', width=1),
                        hoverinfo='none'
                        )
-    line=go.Scatter(x=[sliderValue*100, sliderValue*100],
-                    y=[0, 400],
+    line=go.Scatter(x=[sliderValue, sliderValue],
+                    y=[0, 100],
                     mode='lines')
     dots = go.Scatter(x=dots_x,
                       y=dots_y,
@@ -110,14 +151,12 @@ def get_consensus_tree_graph(jsonpangenome: JSONPangenome, tree, sliderValue):
                   annotations=dots_annotations,
                   font=dict(size=12),
                   showlegend=False,
-                  xaxis=go.layout.XAxis(axis),
-                  yaxis=go.layout.YAxis(axis),
+                  xaxis=go.layout.XAxis(dict(range=[0,1.1],showline=False, zeroline=False, showgrid=False, showticklabels=False,)),
+                  yaxis=go.layout.YAxis(dict(range=[0,100],showline=False, zeroline=False, showgrid=False, showticklabels=False,)),
                   margin=dict(l=40, r=40, b=85, t=100),
                   hovermode='closest',
                   plot_bgcolor='rgb(248,248,248)',
-                  autosize=True
-                  # width=1000,
-                  # height=700
+                  autosize=True,
                   )
 
     return go.Figure(
