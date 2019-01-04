@@ -250,20 +250,28 @@ def get_layout(get_url_function):
                         ),
                         dcc.Graph(
                             id='consensus_tree_graph',
-                            style={'height': '600px'}
-                        ),
-                        dcc.Slider(
-                            id='consensus_tree_slider',
-                            min=0,
-                            max=1,
-                            marks={int(i) if i % 1 == 0 else i: '{}'.format(i) for i in [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1]},
-                            step=0.01,
-                            value=0.5,
-                            dots=True
+                            style={'height': '1000px', 'width': 'auto'}
                         ),
                         html.Div(
-                            id='consensus_tree_slider_value',
-                            style={'margin-top': '25px'}
+                            [html.Div(
+                                dcc.Slider(
+                                    id='consensus_tree_slider',
+                                    min=0,
+                                    max=1,
+                                    marks={int(i) if i % 1 == 0 else i: '{}'.format(i) for i in [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1]},
+                                    step=0.01,
+                                    value=0.5,
+                                    dots=True
+                                ),
+                                style={'width': 'auto',
+                                       'margin-left': '2%',
+                                       'margin-right': '11%',
+                                       'margin-top': '-3%'}
+                            ),
+                            html.P(
+                                id='consensus_tree_slider_value',
+                                style={'float': 'right', 'margin-top': '-1%'}
+                            )]
                         ),
                         html.Div(
                             id='hidden_consensuses_table_data',

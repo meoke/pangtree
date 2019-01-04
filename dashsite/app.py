@@ -175,7 +175,7 @@ def update_consensuses_table_columncs(jsonified_consensuses_table_data):
     [dash.dependencies.Input('consensus_tree_slider', 'value')]
 )
 def show_slider_value(slider_value):
-    return f"Current value: {slider_value}."
+    return f"{slider_value}."
 
 @app.callback(
     dash.dependencies.Output('consensus_tree_graph', 'figure'),

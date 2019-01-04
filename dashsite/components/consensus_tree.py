@@ -52,9 +52,9 @@ def get_node_id_to_y_pos(tree):
     leafs_count = len(leafs_ids)
     min_y = 0
     max_y = 100
-    leaf_distance = (max_y - min_y)/leafs_count
+    leaf_distance = (max_y - min_y)/(leafs_count+1)
     for i, leaf_id in enumerate(leafs_ids):
-        node_id_to_y[leaf_id] = leaf_distance * i
+        node_id_to_y[leaf_id] = leaf_distance * (i+1)
     nodes_to_process = deque(leafs_ids)
     while nodes_to_process:
         processed_child_id = nodes_to_process.pop()
@@ -79,12 +79,12 @@ def get_node_id_to_y_pos(tree):
         siblings_positions = [y for node_id, y in node_id_to_y.items() if node_id in siblings]
         left_child_pos = min(siblings_positions)
         right_child_pos = max(siblings_positions)
-        node_id_to_y[parent_id] = (right_child_pos - left_child_pos) / 2
+        node_id_to_y[parent_id] = (right_child_pos + left_child_pos) / 2
         nodes_to_process.append(parent_id)
     return node_id_to_y
 
-def get_consensus_tree_graph(jsonpangenome: JSONPangenome, tree, sliderValue):
 
+def get_consensus_tree_graph(jsonpangenome: JSONPangenome, tree, sliderValue):
     # read positions
     tree.graph.setdefault('graph', {})['rankdir'] = 'LR'
     node_id_to_x_y = graphviz_layout(tree, prog='dot')
@@ -94,8 +94,9 @@ def get_consensus_tree_graph(jsonpangenome: JSONPangenome, tree, sliderValue):
     dots_labels_on_hover = [f'min_comp: {tree.nodes[node_id]["mincomp"]}, {tree.nodes[node_id]["sequences_ids"]}' for node_id in range(len(node_id_to_x_y))]
     # dots_labels_on_hover = [f'min_comp: {tree.nodes[node_id]["mincomp"]}\nsequences: {tree.nodes[node_id]["sequences"]}' for node_id in range(len(node_id_to_x_y))]
     dots_numbers = [n for n in range(len(node_id_to_x_y))]
-    dots_positions = [[tree.nodes[node_id]["mincomp"], node_id_to_x_y[node_id][1]] for node_id in range(len(node_id_to_x_y))]
-    # dots_positions = [[tree.nodes[node_id]["mincomp"], node_id_to_y[node_id]] for node_id in range(len(node_id_to_x_y))]
+    # dots_positions = [[node_id_to_x_y[node_id][0], node_id_to_x_y[node_id][1]] for node_id in range(len(node_id_to_x_y))]
+    # dots_positions = [[tree.nodes[node_id]["mincomp"], node_id_to_x_y[node_id][1]] for node_id in range(len(node_id_to_x_y))]
+    dots_positions = [[tree.nodes[node_id]["mincomp"], node_id_to_y[node_id]] for node_id in range(len(node_id_to_x_y))]
     dots_x = [dot_x for [dot_x, _] in dots_positions]
     dots_y = [dot_y for [_, dot_y] in dots_positions]
     dots_annotations = [{'x':x_pos,
@@ -151,12 +152,15 @@ def get_consensus_tree_graph(jsonpangenome: JSONPangenome, tree, sliderValue):
                   annotations=dots_annotations,
                   font=dict(size=12),
                   showlegend=False,
-                  xaxis=go.layout.XAxis(dict(range=[0,1.1],showline=False, zeroline=False, showgrid=False, showticklabels=False,)),
-                  yaxis=go.layout.YAxis(dict(range=[0,100],showline=False, zeroline=False, showgrid=False, showticklabels=False,)),
+                  xaxis=go.layout.XAxis(dict(range=[0,1.1],showline=True, zeroline=True, showgrid=True, showticklabels=True,)),
+                  # xaxis=go.layout.XAxis(dict(range=[0,1.1],showline=False, zeroline=False, showgrid=False, showticklabels=False,)),
+                  yaxis=go.layout.YAxis(dict(range=[0,100],showline=True, zeroline=True, showgrid=True, showticklabels=True,)),
+                  # yaxis=go.layout.YAxis(dict(range=[0,200],showline=False, zeroline=False, showgrid=False, showticklabels=False,)),
                   margin=dict(l=40, r=40, b=85, t=100),
                   hovermode='closest',
                   plot_bgcolor='rgb(248,248,248)',
                   autosize=True,
+                  # height=1000
                   )
 
     return go.Figure(
