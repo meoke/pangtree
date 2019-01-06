@@ -4,6 +4,7 @@ from pang.fileformats.json.JSONPangenome import JSONPangenome
 import networkx as nx
 from collections import deque
 from networkx.drawing.nx_agraph import graphviz_layout
+from app_style import colors
 
 
 def toggle_node_with_children(old_tree, clicked_node):
@@ -91,20 +92,34 @@ def get_consensus_tree_graph(jsonpangenome: JSONPangenome, tree, sliderValue):
     node_id_to_y = get_node_id_to_y_pos(tree)
     # prepare dots todo uprościć
     dots_labels = [tree.nodes[node_id] for node_id in range(len(node_id_to_x_y))]
-    dots_labels_on_hover = [f'min_comp: {tree.nodes[node_id]["mincomp"]}, {tree.nodes[node_id]["sequences_ids"]}' for node_id in range(len(node_id_to_x_y))]
+    dots_labels_on_hover = [f'min_comp: {tree.nodes[node_id]["mincomp"]}' for node_id in range(len(node_id_to_x_y))]
     # dots_labels_on_hover = [f'min_comp: {tree.nodes[node_id]["mincomp"]}\nsequences: {tree.nodes[node_id]["sequences"]}' for node_id in range(len(node_id_to_x_y))]
-    dots_numbers = [n for n in range(len(node_id_to_x_y))]
-    # dots_positions = [[node_id_to_x_y[node_id][0], node_id_to_x_y[node_id][1]] for node_id in range(len(node_id_to_x_y))]
+    # dots_numbers = [n for n in range(len(node_id_to_x_y))]
+    dots_numbers = [get_node_label(node_id, tree) for node_id in range(len(node_id_to_x_y))]
     # dots_positions = [[tree.nodes[node_id]["mincomp"], node_id_to_x_y[node_id][1]] for node_id in range(len(node_id_to_x_y))]
     dots_positions = [[tree.nodes[node_id]["mincomp"], node_id_to_y[node_id]] for node_id in range(len(node_id_to_x_y))]
     dots_x = [dot_x for [dot_x, _] in dots_positions]
     dots_y = [dot_y for [_, dot_y] in dots_positions]
     dots_annotations = [{'x':x_pos,
                          'y':y_pos,
-                         'text':f"{i}",
+                         'text':f"{dots_numbers[i]}",
                          'showarrow':False}
                         for i, (x_pos, y_pos) in enumerate(zip(dots_x, dots_y))]
-
+    leaves_x = []
+    leaves_y = []
+    leaves_info_text = []
+    for i in range(len(dots_x)):
+        if tree.nodes[i]['children_consensuses']:
+            continue
+        leaf_x = dots_x[i] + 0.01
+        leaf_y = dots_y[i]
+        leaf_text = get_leaf_info(i, tree, jsonpangenome)
+        leaves_x.append(leaf_x)
+        leaves_y.append(leaf_y)
+        leaves_info_text.append(leaf_text)
+    # leaves_x = [x+0.03 for i, x in enumerate(dots_x) if not tree.nodes[i]['children_consensuses']]
+    # leaves_y = [y for i, y in enumerate(dots_y) if not tree.nodes[i]['children_consensuses']]
+    # leaves_info_text = [get_leaf_info(node_id, tree, jsonpangenome) for node_id in tree.nodes if not tree.nodes[node_id]['children_consensuses']]
     lines_x = []
     lines_y = []
     for u, v in tree.edges:
@@ -118,7 +133,8 @@ def get_consensus_tree_graph(jsonpangenome: JSONPangenome, tree, sliderValue):
                        )
     line=go.Scatter(x=[sliderValue, sliderValue],
                     y=[0, 100],
-                    mode='lines')
+                    mode='lines',
+                    line=dict(color=colors['light_accent']))
     dots = go.Scatter(x=dots_x,
                       y=dots_y,
                       mode='markers',
@@ -127,35 +143,34 @@ def get_consensus_tree_graph(jsonpangenome: JSONPangenome, tree, sliderValue):
                                   size=15,
                                   color='white',
                                   line=dict(color='rgb(50,50,50)',
-                                            width=1)
+                                            width=1),
                                   ),
                       text=dots_labels_on_hover,
                       hoverinfo='text',
                       opacity=0.8,
-                      customdata=dots_numbers#todo ?
+                      # customdata=dots_numbers
                       )
-
-    # graph settings - hide axis line, grid, ticklabels and  title
-    # axis = dict(showline=False,
-    #             zeroline=False,
-    #             showgrid=False,
-    #             showticklabels=False,
-    #             )
-    axis = dict(showline=True,
-                zeroline=True,
-                showgrid=True,
-                showticklabels=True,
-                )
+    leaves_info = go.Scatter(
+        x=leaves_x,
+        y=leaves_y,
+        text=leaves_info_text,
+        mode='text+markers',
+        textposition='middle right',
+        hoverinfo='none',
+        marker=dict(symbol='line-ew-open',
+                    size=10,
+                    color='black',
+                    line=dict(color='rgb(50,50,50)', width=0.7),
+                    )
+    )
 
     #graph settings - layout
     layout = dict(title='Consensuses Tree',
                   annotations=dots_annotations,
                   font=dict(size=12),
                   showlegend=False,
-                  xaxis=go.layout.XAxis(dict(range=[0,1.1],showline=True, zeroline=True, showgrid=True, showticklabels=True,)),
-                  # xaxis=go.layout.XAxis(dict(range=[0,1.1],showline=False, zeroline=False, showgrid=False, showticklabels=False,)),
-                  yaxis=go.layout.YAxis(dict(range=[0,100],showline=True, zeroline=True, showgrid=True, showticklabels=True,)),
-                  # yaxis=go.layout.YAxis(dict(range=[0,200],showline=False, zeroline=False, showgrid=False, showticklabels=False,)),
+                  xaxis=go.layout.XAxis(dict(range=[0,1.2],showline=False, zeroline=False, showgrid=False, showticklabels=False,)),
+                  yaxis=go.layout.YAxis(dict(range=[0,100],showline=False, zeroline=False, showgrid=False, showticklabels=False,)),
                   margin=dict(l=40, r=40, b=85, t=100),
                   hovermode='closest',
                   plot_bgcolor='rgb(248,248,248)',
@@ -164,6 +179,23 @@ def get_consensus_tree_graph(jsonpangenome: JSONPangenome, tree, sliderValue):
                   )
 
     return go.Figure(
-            data=[lines,dots, line],
+            data=[lines,dots, leaves_info, line],
             layout=layout
             )
+
+
+def get_node_label(node_id, tree):
+    # if not tree.nodes[node_id]['children_consensuses']:
+    #     return f"{node_id}\n {tree.nodes[node_id]['sequences_ids']}"
+    # else:
+    return f"{node_id}"
+
+
+def get_leaf_info(node_id, tree, jsonpangenome):
+    sequences_ids = tree.nodes[node_id]['sequences_ids']
+    sequences_names = (", ".join([jsonpangenome.sequences[seq_id].name for seq_id in sequences_ids]))[:-3]
+    if len(sequences_names) < 30:
+        return sequences_names
+    else:
+        return sequences_names[:27] + '(...)'
+

@@ -2,7 +2,7 @@ import dash_html_components as html
 import dash_core_components as dcc
 import dash_table
 
-from app_style import colors, external_css
+from app_style import colors
 from components.algorithm_description import d
 
 
@@ -248,30 +248,52 @@ def get_layout(get_url_function):
                             id='hidden_consensus_tree_data',
                             style={'display': 'none'}
                         ),
-                        dcc.Graph(
-                            id='consensus_tree_graph',
-                            style={'height': '1000px', 'width': 'auto'}
-                        ),
                         html.Div(
-                            [html.Div(
-                                dcc.Slider(
-                                    id='consensus_tree_slider',
-                                    min=0,
-                                    max=1,
-                                    marks={int(i) if i % 1 == 0 else i: '{}'.format(i) for i in [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1]},
-                                    step=0.01,
-                                    value=0.5,
-                                    dots=True
+                          id='tree',
+                            children=[
+                                html.Div(
+                                    id='graphics',
+                                    children=[
+                                        dcc.Graph(
+                                            id='consensus_tree_graph',
+                                            style={'height': '1000px', 'width': 'auto'}
+                                        ),
+                                        html.Div(
+                                            [html.Div(
+                                                dcc.Slider(
+                                                    id='consensus_tree_slider',
+                                                    min=0,
+                                                    max=1,
+                                                    marks={int(i) if i % 1 == 0 else i: '{}'.format(i) for i in
+                                                           [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]},
+                                                    step=0.01,
+                                                    value=0.5,
+                                                    dots=True
+                                                ),
+                                                style={'margin-top': '1%'},
+                                                className='ten columns'
+                                            ),
+                                            html.P(
+                                                id='consensus_tree_slider_value',
+                                                style={'font-size': 'large'},
+                                                className='two columns'
+                                            )],
+                                            className='row',
+                                            style={'margin-left': '3%',
+                                                   'margin-right': '2%',
+                                                   'margin-top': '-7%'}
+                                        ),
+                                    ],
+                                    className='ten columns'
                                 ),
-                                style={'width': 'auto',
-                                       'margin-left': '2%',
-                                       'margin-right': '11%',
-                                       'margin-top': '-3%'}
-                            ),
-                            html.P(
-                                id='consensus_tree_slider_value',
-                                style={'float': 'right', 'margin-top': '-1%'}
-                            )]
+                                html.Div(
+                                    id='tree_info',
+                                    children=["wykresy itp."],
+                                    style={'padding': '10%'},
+                                    className='two columns'
+                                )
+                            ],
+                            className='row'
                         ),
                         html.Div(
                             id='hidden_consensuses_table_data',

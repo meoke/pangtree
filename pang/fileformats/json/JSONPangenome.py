@@ -62,32 +62,21 @@ class JSONPangenome:
         self.edges = []
         seqeuences_metadata = [pangenome.genomes_info.genomes_metadata[seqID] for seqID in pangenome.pangraph.get_path_names()]
         self.sequences = []
+        pm = pangenome.pangraph._pathmanager
         for i, seq_metadata in enumerate(seqeuences_metadata):
-            jsonsequence = JSONSequence(i,
+            jsonsequence = JSONSequence(pm.get_path_id(seq_metadata.mafname),
                                        seq_metadata.genbankID,
                                        seq_metadata.assemblyID,
                                        seq_metadata.mafname,
                                        seq_metadata.name,
                                        seq_metadata.group,
                                        []
-                                       # [int(node_id)
-                                       #  for node_id in pangenome.pangraph.get_sequence_nodes_ids(sequence)]
                           )
             self.sequences.append(jsonsequence)
-        # self.sequences = [JSONSequence(i,
-        #                                seq_metadata.genbankID,
-        #                                seq_metadata.assemblyID,
-        #                                seq_metadata.mafname,
-        #                                seq_metadata.name,
-        #                                seq_metadata.group,
-        #                                []
-        #                                # [int(node_id)
-        #                                #  for node_id in pangenome.pangraph.get_sequence_nodes_ids(sequence)]
-        #                   )
-        #                   for i, seq_metadata in enumerate(seqeuences_metadata)]
+
         cm = pangenome.pangraph._consensusmanager
         cm_tree_nodes = pangenome.pangraph._consensusmanager.consensus_tree.nodes
-        pm = pangenome.pangraph._pathmanager
+
         self.consensuses = [JSONConsensus(id=node.consensus_id,
                                           name=cm.get_path_name(node.consensus_id),
                                           parent=node.parent_node_id,
