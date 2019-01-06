@@ -284,13 +284,30 @@ def get_layout(get_url_function):
                                                    'margin-top': '-7%'}
                                         ),
                                     ],
-                                    className='ten columns'
+                                    className='nine columns'
                                 ),
                                 html.Div(
                                     id='tree_info',
-                                    children=["wykresy itp."],
-                                    style={'padding': '10%'},
-                                    className='two columns'
+                                    children=[
+                                        html.Div(
+                                          "<Compatibility charts placeholder>"
+                                        ),
+                                        html.H5(
+                                            id='consensus_node_details_header'
+                                        ),
+                                        dash_table.DataTable(
+                                            id='consensus_node_details',
+                                            columns=[{"name": i, "id": i} for i in ["ID", "Name", "Group"]],
+                                            style_table={
+                                                'maxHeight': '800',
+                                                'overflowY': 'scroll'
+                                                },
+                                            style_cell={'textAlign': 'left'},
+                                            sorting=True
+                                        )
+                                    ],
+                                    style={'padding-top': '7%', 'padding-right': '2%'},
+                                    className='three columns'
                                 )
                             ],
                             className='row'

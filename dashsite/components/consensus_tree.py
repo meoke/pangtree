@@ -23,7 +23,7 @@ def get_tree(jsonpangenome: JSONPangenome, clck_data, old_tree):
     else:
         tree = old_tree
     if clck_data:
-        clicked_node = int(clck_data['points'][0]['customdata'])
+        clicked_node = int(clck_data['points'][0]['pointIndex'])
         return toggle_node_with_children(tree, clicked_node)
     return tree
 

@@ -2,6 +2,7 @@ from collections import deque
 import pandas as pd
 from app_style import colors
 
+
 def mark_nodes_to_show(consensus_tree, slider_value):
     nodes_to_visit = deque([0])
     while nodes_to_visit:
