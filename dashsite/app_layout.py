@@ -3,7 +3,7 @@ import dash_core_components as dcc
 import dash_table
 
 from app_style import colors
-from components.algorithm_description import d
+from components.algorithm_description import general_info, table_info_markdown
 
 
 def get_layout(get_url_function):
@@ -182,7 +182,7 @@ def get_layout(get_url_function):
                                         html.Div(
                                             id='program_info',
                                             children=[
-                                                dcc.Markdown(d)
+                                                dcc.Markdown(general_info)
                                             ],
                                             className='six columns',
                                         )
@@ -317,11 +317,25 @@ def get_layout(get_url_function):
                             style={'display': 'none'}
                         ),
                         html.Div(
+                            children=[html.Div(
+                                id='consensus_table_info',
+                                children=[
+                                    dcc.Markdown(table_info_markdown, className='ten columns'),
+                                    html.A(html.Button("Download table as csv",
+                                                       id="csv_download",
+                                                       disabled=False,
+                                                       className='form_item two columns'),
+                                           href='download_csv'),
+                                    html.Div(id='hidden_csv_generated',
+                                             style={'display': 'none'})
+                                ],
+                                style={'padding': '2%'}
+                            ),
                             dash_table.DataTable(
                                 id='consensuses_table',
                                 sorting=True,
                                 sorting_type="multi"
-                            ),
+                            )],
                             style={'margin-top': '25px'},
                         )
                     ],

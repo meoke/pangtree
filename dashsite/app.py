@@ -200,6 +200,24 @@ def color_consensuses_table_cells(jsonified_consensuses_table_data, jsonified_co
     return consensus_table.get_cells_styling(tree, table_data)
 
 
+
+@app.callback(
+    dash.dependencies.Output('hidden_csv_generated', 'children'),
+    [dash.dependencies.Input('hidden_consensus_tree_data', 'children')],
+    [dash.dependencies.State('hidden_csv_generated', 'children'),
+     dash.dependencies.State('hidden_pang_result', 'children')]
+)
+def generate_csv_file(jsonified_consensus_tree, csv_generated, jsonified_pangenome):
+    if csv_generated is None:
+        consensus_tree = json_graph.tree_graph(jsonpickle.decode(jsonified_consensus_tree))
+        jsonpangenome = pangenomejson_reader.json_to_jsonpangenome(jsonified_pangenome)
+        csv_content = consensus_table.get_consensuses_table(jsonpangenome, consensus_tree)
+        csv_content.to_csv("download/consensus.csv")
+        return json.dumps(True)
+    else:
+        return json.dumps(True)
+
+
 @app.callback(
     dash.dependencies.Output('consensus_node_details', 'data'),
     [dash.dependencies.Input('consensus_tree_graph', 'clickData')],
@@ -222,12 +240,22 @@ def update_consensus_node_details_header(tree_click_data):
     node_id = clicked_node['pointIndex']
     return f"Sequences assigned to consensus {node_id}:"
 
+
 @app.server.route('/download_pangenome')
-def download_csv():
-    return flask.send_file('download/pangenome.json',
+def download_json():
+    return flask.send_file('../download/pangenome.json',
                            mimetype='text/csv',
                            attachment_filename='pangenome.json',
                            as_attachment=True)
+
+
+@app.server.route('/download_csv')
+def download_csv():
+    return flask.send_file('../download/consensus.csv',
+                           mimetype='text/csv',
+                           attachment_filename='consensus.csv',
+                           as_attachment=True)
+
 
 
 for css in external_css:
