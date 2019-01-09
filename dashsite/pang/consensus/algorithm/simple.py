@@ -1,10 +1,10 @@
-from graph.Pangraph import Pangraph
-import po.writer as powriter
-import po.reader as poreader
-import userio.pathtools as pathtools
+from ...graph.Pangraph import Pangraph
+from ...po import writer as powriter
+from ...po import reader as poreader
+from ...userio import pathtools
 from pathlib import Path
-import consensus.algorithm.poa as poa
-from metadata.MultialignmentMetadata import MultialignmentMetadata
+from ..algorithm import poa
+from ...metadata.MultialignmentMetadata import MultialignmentMetadata
 
 
 def run(outputdir: Path, pangraph: Pangraph, hbmin: float, genomes_info: MultialignmentMetadata, filename_prefix: str) -> Pangraph:

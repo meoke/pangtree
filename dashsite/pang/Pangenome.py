@@ -1,9 +1,9 @@
-import metadata.reader as metadatareader
-from graph import mafreader
+from .metadata import reader as metadatareader
+from .graph import mafreader
 # from consensus import algorithm as consensussimple, algorithm as consensustree
-from consensus.algorithm.TreeConfig import TreeConfig
-from consensus.algorithm import tree as consensustree
-from consensus.algorithm import simple as consensussimple
+from .consensus.algorithm.TreeConfig import TreeConfig
+from .consensus.algorithm import tree as consensustree
+from .consensus.algorithm import simple as consensussimple
 
 
 class Pangenome:

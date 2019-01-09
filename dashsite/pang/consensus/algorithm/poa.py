@@ -1,5 +1,5 @@
 from pathlib import Path
-from external_runner import poa_runner
+from ...external_runner import poa_runner
 
 
 def run(input_path: Path, output_path: Path, hbmin: float) -> None:

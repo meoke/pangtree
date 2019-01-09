@@ -36,14 +36,14 @@ def run_pang(multialignment_contents,
     #     # pangenome.generate_fasta_files(pathtools.create_child_dir(args.output, 'fasta'))
     if consensus_option:
         pangenome.generate_consensus(pathtools.create_child_dir(output_dir, 'consensus'),
-                             consensus_option,
-                             hbmin,
-                             r,
-                             multiplier,
-                             stop,
-                             re_consensus,
-                             anti_fragmentation_value
-                             )
+                                     consensus_option,
+                                     hbmin,
+                                     r,
+                                     multiplier,
+                                     stop,
+                                     re_consensus,
+                                     anti_fragmentation_value
+                                     )
 
     json_path = jsonwriter.save(output_dir, pangenome)
     return pangenome, json_path

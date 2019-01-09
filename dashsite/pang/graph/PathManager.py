@@ -1,6 +1,6 @@
 import numpy as np
 from typing import List
-from graph.errors import NoPath
+from .errors import NoPath
 
 
 class PathManager:

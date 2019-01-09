@@ -1,5 +1,4 @@
 import jsonpickle
-from pang.Pangenome import Pangenome
 
 
 def json_to_jsonpangenome(pangenome_json):

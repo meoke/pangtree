@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import base64
 
 import dash
 import shutil
@@ -15,8 +14,7 @@ from components import consensus_tree
 from components import consensus_table
 from components import consensus_node
 
-from pang.fileformats.json import reader as pangenomejson_reader
-from pang.fileformats.json import writer as pangenomejson_writer
+from pang.fileformats.json import reader as pangenomejson_reader, writer as pangenomejson_writer
 
 from networkx.readwrite import json_graph
 import jsonpickle

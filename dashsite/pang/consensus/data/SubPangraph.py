@@ -1,8 +1,8 @@
 from typing import List
-from graph.Pangraph import Pangraph
-from graph.PathManager import PathManager
-from graph.Node import Node
-from graph.errors import NoPath
+from ...graph.Pangraph import Pangraph
+from ...graph.PathManager import PathManager
+from ...graph.Node import Node
+from ...graph.errors import NoPath
 import numpy as np
 import copy
 

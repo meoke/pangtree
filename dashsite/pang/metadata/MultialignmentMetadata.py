@@ -1,4 +1,4 @@
-from metadata.SequenceID import SequenceID
+from .SequenceID import SequenceID
 from .SequenceMetadata import SequenceMetadata
 from typing import Dict
 

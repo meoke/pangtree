@@ -1,11 +1,9 @@
-from pathlib import Path
 from Bio import AlignIO
-from maf.Mafgraph import Mafgraph
-from metadata.MultialignmentMetadata import MultialignmentMetadata
+from ..maf.Mafgraph import Mafgraph
+from ..metadata.MultialignmentMetadata import MultialignmentMetadata
 from .Node import Node
-from graph import nucleotides
+from . import nucleotides
 from .Pangraph import Pangraph
-from io import StringIO
 
 
 def read(multialignment, multialignment_metadata: MultialignmentMetadata) -> Pangraph:

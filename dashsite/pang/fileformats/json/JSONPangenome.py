@@ -1,5 +1,5 @@
 from typing import List, Dict
-import Pangenome
+from ...Pangenome import Pangenome
 
 
 class JSONNode:
@@ -54,7 +54,7 @@ class JSONConsensus:
 
 
 class JSONPangenome:
-    def __init__(self, pangenome: Pangenome=None):
+    def __init__(self, pangenome: Pangenome =None):
         if not pangenome:
             return
         # todo perf # self.nodes = [JSONNode(node.id, decode(node.base)) for node in pangenome.pangraph.get_nodes()]

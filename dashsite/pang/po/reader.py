@@ -1,9 +1,8 @@
 from pathlib import Path
 
-from graph.Pangraph import Pangraph
-from metadata import MultialignmentMetadata
-from graph.Pangraph import Node
-import graph.nucleotides as n
+from ..graph.Pangraph import Pangraph
+from ..graph.Pangraph import Node
+from ..graph import nucleotides as n
 
 
 def read(path: Path) -> Pangraph:

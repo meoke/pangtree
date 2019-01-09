@@ -1,15 +1,15 @@
-from graph.Pangraph import Pangraph
+from ...graph.Pangraph import Pangraph
 from pathlib import Path
 from copy import deepcopy
-from metadata.MultialignmentMetadata import MultialignmentMetadata
-from userio.pathtools import get_child_file_path
+from ...metadata.MultialignmentMetadata import MultialignmentMetadata
+from ...userio.pathtools import get_child_file_path
 from . import simple
 import numpy as np
-from consensus.algorithm import TreeConfig
+from . import TreeConfig
 from .AlgorithmParams import AlgorithmParams
-from consensus.data.SubPangraph import SubPangraph
-from consensus.data.TreeConsensusManager import TreeConsensusManager
-from consensus.data.ConsensusNode import ConsensusNode
+from ..data.SubPangraph import SubPangraph
+from ..data.TreeConsensusManager import TreeConsensusManager
+from ..data.ConsensusNode import ConsensusNode
 from collections import deque
 import csv
 import logging
