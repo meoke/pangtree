@@ -28,9 +28,7 @@ def hide_children(consensus_tree, parent_id):
 
 
 
-
-
-def s(df_table_data, tree):
+def table_to_rows_json(df_table_data):
     df_json = df_table_data.to_dict("rows")
     return df_json
 
@@ -48,7 +46,7 @@ def get_cells_styling(consensus_tree, table_data):
 def get_cell_styling_dict(consensus_name, mincomp):
     return {
         'if': {'column_id': f'{consensus_name}', 'filter': f'{consensus_name} >= "{mincomp}"'},
-        'backgroundColor': colors['light_accent']}
+        'backgroundColor': colors['warm_background']}
 
 
 def get_consensus_table_data(jsonpangenome, consensus_tree, slider_value) -> pd.DataFrame:

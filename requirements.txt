@@ -1,6 +1,5 @@
 biopython
 numpy
-networkx
 jsonpickle
 ddt
 
@@ -9,5 +8,5 @@ dash-core-components
 dash-html-components
 dash-table
 pandas
-pygraphviz
+# pygraphviz
 # Mafgraph-https://github.com/anialisiecka/Mafgraph

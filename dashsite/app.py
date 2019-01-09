@@ -155,13 +155,11 @@ def update_consensuses_table(jsonified_consensus_tree, slider_value, jsonified_p
 
 @app.callback(
     dash.dependencies.Output('consensuses_table', 'data'),
-    [dash.dependencies.Input('hidden_consensuses_table_data', 'children')],
-    [dash.dependencies.State('hidden_consensus_tree_data', 'children')]
+    [dash.dependencies.Input('hidden_consensuses_table_data', 'children')]
 )
-def update_consensuses_table_rows(jsonified_consensuses_table_data, jsonified_consensus_tree):
-    tree = json_graph.tree_graph(jsonpickle.decode(jsonified_consensus_tree))
+def update_consensuses_table_rows(jsonified_consensuses_table_data):
     table_data = pd.read_json(jsonified_consensuses_table_data)
-    return consensus_table.s(table_data, tree)
+    return consensus_table.table_to_rows_json(table_data)
 
 @app.callback(
     dash.dependencies.Output('consensuses_table', 'columns'),

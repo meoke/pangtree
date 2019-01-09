@@ -60,8 +60,7 @@ def parse_maf_block(block, previous_node_id):
     block_width = len(block.alignment[0].seq)
     block_sequences_names = [seq.id for seq in block.alignment]
 
-    # pg = Pangraph(max_nodes_count=block_width*4,
-    pg = Pangraph(max_nodes_count=block_width*10,
+    pg = Pangraph(max_nodes_count=block_width*4,
                   start_node_id=previous_node_id+1,
                   paths_names=block_sequences_names)
     current_node_id = previous_node_id

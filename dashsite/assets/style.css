@@ -39,3 +39,19 @@ body {
     margin-bottom: -3px;
 }
 
+a{
+    color: #C06014;
+}
+
+.rc-slider-disabled, .rc-slider-track{
+  background-color: #C06014;
+}
+
+.rc-slider-dot-active, .rc-slider-handle {
+    border-color: #C06014;
+}
+
+#pang_button, #load_pangenome{
+    background-color: #C06014;
+    border-color: #C06014;
+}
