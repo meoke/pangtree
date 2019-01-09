@@ -7,6 +7,9 @@
 * [Mafgraph-todo]()
 * [Unittest](https://docs.python.org/3/library/unittest.html)
 * [DDT](https://github.com/txels/ddt)
+
+graphviz
+graphviz-dev
 ## Użycie programu
 usage: pang [-h] --multialignment MULTIALIGNMENT --data DATA [--output OUTPUT]
             [-fasta] [-vis] [-consensus {simple,tree}] [-hbmin HBMIN] [-r R R]

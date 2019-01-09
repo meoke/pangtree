@@ -2,318 +2,29 @@
 import base64
 
 import dash
-import dash_core_components as dcc
-import dash_html_components as html
 import shutil
-import dash_table
-import re
+
 import json
 import pandas as pd
 import flask
-from app_style import colors, external_css
+
+from app_style import external_css
+
 from pang_run import run_pang, decode_json
 from components import consensus_tree
 from components import consensus_table
-from components.algorithm_description import d
+from components import consensus_node
 
-from fileformat.json.JSONPangenome import JSONPangenome
-from pang.fileformat.json import reader as pangenomejson_reader
-from pang.fileformat.json import writer as pangenomejson_writer
-
+from pang.fileformats.json import reader as pangenomejson_reader
+from pang.fileformats.json import writer as pangenomejson_writer
 
 from networkx.readwrite import json_graph
+import jsonpickle
+import app_layout
 
 app = dash.Dash(__name__)
 app.title = 'pang'
-app.layout = html.Div(
-    children=[
-        html.Div(
-            id="header",
-            children=[
-                html.H1(
-                    'Multiple sequence alignment analysis',
-                    id='title',
-                    className='ten columns',
-                    style={'margin': '10px'}
-                ),
-                html.Img(
-                    src=app.get_asset_url('logo.png'),
-                    className='two columns',
-                    style={'height':'60px',
-                           'width':'60px',
-                           'float':'right',
-                           'margin': '10px'}
-                )
-            ],
-            style={'backgroundColor': colors['light_shades'],
-                   'height':'80px'},
-            className='twelve columns row'
-        ),
-        html.Div(
-            id="program",
-            children=[
-                        html.H3("Analysis", style={'margin-top':'0px'}),
-                        html.Div(
-                            children=[
-                                    html.Div(
-                                    id="program_run",
-                                    children=[
-                                        html.H5("Input files"),
-                                        dcc.Upload(
-                                            id="maf_upload",
-                                            children=[
-                                                html.Img(
-                                                    src=app.get_asset_url('alignment.png'),
-                                                    className='two columns file_upload_img',
-                                                    style={'width': '50px', 'margin': '5px'}
-                                                ),
-                                                html.Div([html.A('Upload MAF file')],
-                                                         className='ten columns'
-                                                )
-                                            ],
-                                            className='file_upload'
-                                        ),
-                                        dcc.Upload(
-                                            id="metadata_upload",
-                                            children=[
-                                                html.Img(
-                                                    src=app.get_asset_url('information.png'),
-                                                    className='two columns file_upload_img',
-                                                    style={'width': '50px', 'margin': '5px'}
-                                                ),
-                                                html.Div([html.A('Upload metadata file')],
-                                                         className='ten columns'
-                                                )
-                                            ],
-                                            className='file_upload'
-                                        ),
-                                        html.H5("Algorithm version"),
-                                        dcc.Dropdown(
-                                            id='consensus_algorithm',
-                                            options=[
-                                                {'label': 'Simple', 'value': 'simple'},
-                                                {'label': 'Tree', 'value': 'tree'},],
-                                            value='tree',
-                                            className='form_item'
-                                        ),
-                                        html.H5("Consensus generation options"),
-                                        html.Div(
-                                            id="consensus_params",
-                                            children=[
-                                                html.Div(
-                                                    id='simple_consensus_params',
-                                                    children=[
-                                                        html.P("HBMIN value", className='form_item_label'),
-                                                        dcc.Input(
-                                                            id='hbmin',
-                                                            placeholder='Enter hbmin value...',
-                                                            min=0,
-                                                            max=1.0,
-                                                            type='number',
-                                                            value=0.9
-                                                        )],
-                                                    style={'display': None},
-                                                    className='form_item'
-                                                ),
-                                                html.Div(
-                                                    id='tree_consensus_params',
-                                                    children=[
-                                                        html.P("Range", className='form_item_label'),
-                                                        dcc.RangeSlider(
-                                                            id='r',
-                                                            marks={i: f'{i}' for i in range(0, 101, 5)},
-                                                            min=0,
-                                                            max=100,
-                                                            value=[0, 100],
-                                                            step=1,
-                                                            className='form_item'
-                                                        ),
-                                                        html.Div(
-                                                            children=[
-                                                                html.P("Multiplier value", className='form_item_label'),
-                                                                dcc.Input(
-                                                                   id='multiplier',
-                                                                   placeholder='Enter multiplier value...',
-                                                                   min=0,
-                                                                   type='number',
-                                                                   value=1,
-                                                                   className='form_item'
-                                                                )],
-                                                            style={'margin-top': '25px'}
-                                                        ),
-                                                        html.Div(
-                                                            children=[
-                                                                html.P("Stop value", className='form_item_label'),
-                                                                dcc.Input(
-                                                                    id='stop',
-                                                                    placeholder='Enter stop value...',
-                                                                    min=0,
-                                                                    max=1.0,
-                                                                    type='number',
-                                                                    value=0.99,
-                                                                className='form_item'
-                                                                )]
-                                                            ),
-                                                            dcc.Checklist(
-                                                                id='tree_consensus_options',
-                                                                options=[
-                                                                    {'label': 'Use re consensus', 'value': 're_consensus'},
-                                                                    {'label': 'Anti fragmentatin node cutoff', 'value': 'anti_fragmentation'}
-                                                                ],
-                                                                values=['re_consensus', 'anti_fragmentation'],
-                                                                className='form_item'
-                                                            ),
-                                                    ],
-                                                    style={'display': None}
-                                                )]
-                                            ),
-                                            html.H5("Additional options:"),
-                                            dcc.Checklist(
-                                                id='pang_options',
-                                                options=[{'label': 'Generate fasta files', 'value': 'FASTA'}],
-                                                values=[],
-                                                                className='form_item'
-                                            ),
-                                            html.Div(
-                                                [html.Button("Run pang",
-                                                     id="pang_button",
-                                                     className='button-primary form_item',
-                                                ),
-                                                html.A(html.Button("Download result as json",
-                                                               id="json_download",
-                                                               disabled=True,
-                                                                   className='form_item'),
-                                                    href='download_pangenome')],
-                                                style={'margin': '10px'}
-                                            ),
-                                            html.Div(
-                                                id='hidden_pang_result',
-                                                style={'display': 'none'}
-                                            ),
-                                            html.Div(
-                                                id='hidden_last_clicked',
-                                                style={'display': 'none'}
-                                            )
-                                        ],
-                                    className='six columns'
-                                        ),
-                                        html.Div(
-                                            id='program_info',
-                                            children=[
-                                                dcc.Markdown(d)
-                                            ],
-                                            className='six columns',
-                                        )
-                            ],
-                        className='row'
-                        )
-
-            ],
-            className='row'
-        ),
-        html.Div(
-            id='visualisation',
-            children=[
-                html.H3("Visualisation"),
-                html.Div(
-                    id='data_upload',
-                    children=[
-                        dcc.Upload(
-                                id='pangenome_upload',
-                                children=html.Div([
-                                    'Drag and Drop or ',
-                                    html.A('Select Files')
-                                ]),
-                                style={
-                                    # 'width': '100%',
-                                    # 'height': '40px',
-                                    'lineHeight': '40px',
-                                    'borderWidth': '1px',
-                                    'borderStyle': 'dashed',
-                                    'borderRadius': '5px',
-                                    'textAlign': 'center',
-                                    'margin': '10px'
-                                },
-                                # Allow multiple files to be uploaded
-                                multiple=True,
-                                className='five columns'
-                            ),
-                        html.Div("or load example data: ",
-                                 style={'textAlign':'center', 'lineHeight':'60px'},
-                                 className='two columns'),
-                        dcc.Dropdown(
-                            options=[
-                                {'label': 'Ebola', 'value': 'NYC'},
-                                {'label': 'Mycoplasma', 'value': 'MTL'},
-                                {'label': 'Proteins family', 'value': 'SF'}
-                            ],
-                            value='MTL',
-                            style={
-                                   'margin': '10px'},
-                            className='five columns'
-                        ),
-                        html.Button("Load pangenome",
-                                    id="load_pangenome",
-                                    className='button-primary form_item',
-                                    )
-                    ],
-                    style={}
-                ),
-                html.Div(
-                    id='consensus_tree',
-                    children=[
-                        html.Div(
-                            id='hidden_consensus_tree_data',
-                            style={'display': 'none'}
-                        ),
-                        dcc.Graph(
-                            id='consensus_tree_graph'
-                        ),
-                        dcc.Slider(
-                            id='consensus_tree_slider',
-                            min=0,
-                            max=1,
-                            marks={int(i) if i % 1 == 0 else i: '{}'.format(i) for i in [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1]},
-                            step=0.01,
-                            value=0.5,
-                            dots=True
-                        ),
-                        html.Div(
-                            id='consensus_tree_slider_value',
-                            style={'margin-top': '25px'}
-                        ),
-                        html.Div(
-                            id='hidden_consensuses_table_data',
-                            style={'display': 'none'}
-                        ),
-                        html.Div(
-                            dash_table.DataTable(
-                                id='consensuses_table',
-                                filtering=True,
-                                sorting=True,
-                                sorting_type="multi"
-                            ),
-                            style={'margin-top': '25px'},
-                        )
-                    ],
-                    style={'display': 'none'}
-
-                ),
-                html.Div(
-                    id='consensus_table',
-                    children=[
-
-                    ]
-                ),
-                html.Div(
-                    id='blocks_graph'
-                )
-            ],
-            className='row'
-        )
-    ],
-style={'margin':'0px',
-       'padding':'0px'})
+app.layout = app_layout.get_layout(app.get_asset_url)
 
 @app.callback(
     dash.dependencies.Output('hidden_last_clicked', 'children'),
@@ -337,7 +48,7 @@ def trigger_pangenome_reload(run_pang_n_clicks, load_pangenome_n_clicks, last_cl
 
 @app.callback(
     dash.dependencies.Output('simple_consensus_params', 'style'),
-    [dash.dependencies.Input('consensus_algorithm', 'value')])
+    [dash.dependencies.Input('algorithm', 'value')])
 def show_simple_consensus_algorithm_options(consensus_algorithm):
     if consensus_algorithm == 'simple':
         return {'display': 'block'}
@@ -347,7 +58,7 @@ def show_simple_consensus_algorithm_options(consensus_algorithm):
 
 @app.callback(
     dash.dependencies.Output('tree_consensus_params', 'style'),
-    [dash.dependencies.Input('consensus_algorithm', 'value')])
+    [dash.dependencies.Input('algorithm', 'value')])
 def show_tree_consensus_algorithm_options(consensus_algorithm):
     if consensus_algorithm == 'tree':
         return {'display': 'block'}
@@ -369,7 +80,7 @@ def download_json_button(_):
      dash.dependencies.State('maf_upload', 'contents'),
      dash.dependencies.State('metadata_upload', 'contents'),
      dash.dependencies.State('pang_options', 'values'),
-     dash.dependencies.State('consensus_algorithm', 'value'),
+     dash.dependencies.State('algorithm', 'value'),
      dash.dependencies.State('hbmin', 'value'),
      dash.dependencies.State('r', 'value'),
      dash.dependencies.State('multiplier', 'value'),
@@ -389,11 +100,7 @@ def call_pang(last_clicked,
               tree_consensus_options_values):
     last_clicked = json.loads(last_clicked)
     if last_clicked[2] == 'load_pangenome':
-        jsonpangenome_dict = pangenomejson_reader.json_to_jsonpangenome(decode_json(pangenome_contents[0]))
-        jsonpangenome = JSONPangenome()
-        jsonpangenome.build_from_dict(jsonpangenome_dict)
-        a = pangenomejson_writer.jsonpangenome_to_json(jsonpangenome)
-        return str(a)
+        return decode_json(pangenome_contents[0])
     else:
         fasta_option = True if 'FASTA' in pang_options_values else False
         re_consensus_value = True if 're_consensus' in tree_consensus_options_values else False
@@ -410,8 +117,7 @@ def call_pang(last_clicked,
                                         anti_fragmentation_value)
 
         shutil.copy(json_path, "download/pangenome.json")
-        a = pangenomejson_writer.pangenome_to_json(pangenome)
-        return str(a)
+        return pangenomejson_writer.pangenome_to_json(pangenome)
 
 @app.callback(
     dash.dependencies.Output('hidden_consensus_tree_data', 'children'),
@@ -421,14 +127,12 @@ def call_pang(last_clicked,
 def update_consensus_graph_data(jsonified_pangenome, click_data, old_jsonfied_consensus_tree):
     old_tree = None
     if old_jsonfied_consensus_tree:
-        old_tree = json_graph.tree_graph(eval(old_jsonfied_consensus_tree))
+        old_tree = json_graph.tree_graph(jsonpickle.decode(old_jsonfied_consensus_tree))
 
-    print(click_data)
     jsonpangenome = pangenomejson_reader.json_to_jsonpangenome(jsonified_pangenome)
     tree = consensus_tree.get_tree(jsonpangenome, click_data, old_tree)
     jsonified_tree = json_graph.tree_data(tree, root=0)
-    return str(jsonified_tree)
-
+    return jsonpickle.encode(jsonified_tree)
 
 @app.callback(
     dash.dependencies.Output('consensus_tree', 'style'),
@@ -443,34 +147,34 @@ def show_graph(_):
     [dash.dependencies.State('hidden_pang_result', 'children')]
 )
 def update_consensuses_table(jsonified_consensus_tree, slider_value, jsonified_pangenome):
-    tree = json_graph.tree_graph(eval(jsonified_consensus_tree))
+    tree = json_graph.tree_graph(jsonpickle.decode(jsonified_consensus_tree))
     jsonpangenome = pangenomejson_reader.json_to_jsonpangenome(jsonified_pangenome)
-    return str(consensus_table.get_consensus_table_data(jsonpangenome, tree, slider_value))
-
+    consensus_table_data = consensus_table.get_consensus_table_data(jsonpangenome, tree, slider_value)
+    consensus_table_data.to_csv('tabela.csv')
+    return consensus_table_data.to_json()
 
 @app.callback(
     dash.dependencies.Output('consensuses_table', 'data'),
     [dash.dependencies.Input('hidden_consensuses_table_data', 'children')]
 )
 def update_consensuses_table_rows(jsonified_consensuses_table_data):
-    a = re.sub("\s+", ",", jsonified_consensuses_table_data.strip())
-    return consensus_table.get_table_rows(eval(a))
+    table_data = pd.read_json(jsonified_consensuses_table_data)
+    return consensus_table.table_to_rows_json(table_data)
 
 @app.callback(
     dash.dependencies.Output('consensuses_table', 'columns'),
     [dash.dependencies.Input('hidden_consensuses_table_data', 'children')]
 )
 def update_consensuses_table_columncs(jsonified_consensuses_table_data):
-    a = re.sub("\s+", ",", jsonified_consensuses_table_data.strip())
-    return consensus_table.get_table_columns(eval(a))
+    table_data = pd.read_json(jsonified_consensuses_table_data)
+    return [{"name": i, "id": i} for i in table_data.columns]
 
 @app.callback(
     dash.dependencies.Output('consensus_tree_slider_value', 'children'),
     [dash.dependencies.Input('consensus_tree_slider', 'value')]
 )
 def show_slider_value(slider_value):
-    return f"Current value: {slider_value}."
-
+    return f"Slider value: \n{slider_value}."
 
 @app.callback(
     dash.dependencies.Output('consensus_tree_graph', 'figure'),
@@ -479,17 +183,77 @@ def show_slider_value(slider_value):
     [dash.dependencies.State('hidden_pang_result', 'children')])
 def update_consensus_tree_graph(jsonified_consensus_tree, slider_value,  jsonified_pangenome):
     jsonpangenome = pangenomejson_reader.json_to_jsonpangenome(jsonified_pangenome)
-
-    tree = json_graph.tree_graph(eval(jsonified_consensus_tree))
+    tree = json_graph.tree_graph(jsonpickle.decode(jsonified_consensus_tree))
     return consensus_tree.get_consensus_tree_graph(jsonpangenome, tree, slider_value)
 
 
+@app.callback(
+    dash.dependencies.Output('consensuses_table', 'style_data_conditional'),
+    [dash.dependencies.Input('hidden_consensuses_table_data', 'children')],
+    [dash.dependencies.State('hidden_consensus_tree_data', 'children')]
+)
+def color_consensuses_table_cells(jsonified_consensuses_table_data, jsonified_consensus_tree):
+    tree = json_graph.tree_graph(jsonpickle.decode(jsonified_consensus_tree))
+    table_data = pd.read_json(jsonified_consensuses_table_data)
+    return consensus_table.get_cells_styling(tree, table_data)
+
+
+
+@app.callback(
+    dash.dependencies.Output('hidden_csv_generated', 'children'),
+    [dash.dependencies.Input('hidden_consensus_tree_data', 'children')],
+    [dash.dependencies.State('hidden_csv_generated', 'children'),
+     dash.dependencies.State('hidden_pang_result', 'children')]
+)
+def generate_csv_file(jsonified_consensus_tree, csv_generated, jsonified_pangenome):
+    if csv_generated is None:
+        consensus_tree = json_graph.tree_graph(jsonpickle.decode(jsonified_consensus_tree))
+        jsonpangenome = pangenomejson_reader.json_to_jsonpangenome(jsonified_pangenome)
+        csv_content = consensus_table.get_consensuses_table(jsonpangenome, consensus_tree)
+        csv_content.to_csv("download/consensus.csv")
+        return json.dumps(True)
+    else:
+        return json.dumps(True)
+
+
+@app.callback(
+    dash.dependencies.Output('consensus_node_details', 'data'),
+    [dash.dependencies.Input('consensus_tree_graph', 'clickData')],
+    [dash.dependencies.State('hidden_consensus_tree_data', 'children'),
+    dash.dependencies.State('hidden_pang_result', 'children')]
+)
+def update_consensus_node_details(tree_click_data, jsonified_tree, jsonified_pangenome):
+    tree = json_graph.tree_graph(jsonpickle.decode(jsonified_tree))
+    jsonpangenome = pangenomejson_reader.json_to_jsonpangenome(jsonified_pangenome)
+    dash_table_data = consensus_node.get_details(tree_click_data, tree, jsonpangenome)
+    return dash_table_data
+
+
+@app.callback(
+    dash.dependencies.Output('consensus_node_details_header', 'children'),
+    [dash.dependencies.Input('consensus_tree_graph', 'clickData')]
+)
+def update_consensus_node_details_header(tree_click_data):
+    clicked_node = tree_click_data['points'][0]
+    node_id = clicked_node['pointIndex']
+    return f"Sequences assigned to consensus {node_id}:"
+
+
 @app.server.route('/download_pangenome')
-def download_csv():
-    return flask.send_file('download/pangenome.json',
+def download_json():
+    return flask.send_file('../download/pangenome.json',
                            mimetype='text/csv',
                            attachment_filename='pangenome.json',
                            as_attachment=True)
+
+
+@app.server.route('/download_csv')
+def download_csv():
+    return flask.send_file('../download/consensus.csv',
+                           mimetype='text/csv',
+                           attachment_filename='consensus.csv',
+                           as_attachment=True)
+
 
 
 for css in external_css:

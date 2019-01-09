@@ -3,19 +3,18 @@ from .SequenceMetadata import SequenceMetadata
 from .MultialignmentMetadata import MultialignmentMetadata
 
 
-def read(gen_info_file, as_string=False):
-    """Parse genomes metadata file to Metadata object."""
+def read(metadata_json: str) -> MultialignmentMetadata:
+    """Parse genomes metadata json to MultialignmentMetadata object."""
 
-    if as_string == False:
-        with open(gen_info_file) as p:
-            metadata = json.load(p)
-    else:
-        metadata = json.loads(gen_info_file)
-    genome_metadata = {seq['id']: SequenceMetadata(name=seq['name'],
-                                                       genbankID=seq['genbankID'],
-                                                       assemblyID=seq['assemblyID'],
-                                                       mafname=seq['mafname'],
-                                                       group=seq['group'])for seq in metadata['data']}
-    return MultialignmentMetadata(title=metadata['title'],
-                                      version=metadata['source'],
-                                      genomes_metadata=genome_metadata)
+    metadata_json = json.loads(metadata_json)
+    genome_metadata = {seq['mafname']: SequenceMetadata(name=seq['name'],
+                                                     genbankID=seq['genbankID'],
+                                                     assemblyID=seq['assemblyID'],
+                                                     mafname=seq['mafname'],
+                                                     group=seq['group'])
+                       for seq in metadata_json['data']}
+
+    return MultialignmentMetadata(title=metadata_json['title'],
+                                  version=metadata_json['source'],
+                                  genomes_metadata=genome_metadata)
+

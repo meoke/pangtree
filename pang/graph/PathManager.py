@@ -28,7 +28,10 @@ class PathManager:
 
     def mark(self, path_name, node_id):
         array_id = self.path_names_to_array_id[path_name]
-        self.paths[array_id, node_id-self.start_node_id] = True
+        try:
+            self.paths[array_id, node_id-self.start_node_id] = True
+        except:
+            print("")
 
     def update(self, pathmanager, start):
         for path_name, array_id in pathmanager.path_names_to_array_id.items():
@@ -129,6 +132,7 @@ class PathManager:
 
     def keep_nodes_ids(self, nodes_ids_to_keep):
         inactive_nodes = [node_id for node_id in range(self.paths.shape[1]) if node_id not in nodes_ids_to_keep]
+        # todo perf did not work # inactive_nodes = sorted(set(range(self.paths.shape[1])) - set(nodes_ids_to_keep))
         self.paths = np.delete(self.paths, inactive_nodes, 1)
 
     def get_top_consensus(self):

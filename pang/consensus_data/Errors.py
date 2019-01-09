@@ -1,2 +1,0 @@
-class NoConsensus(Exception):
-    pass

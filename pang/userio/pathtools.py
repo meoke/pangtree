@@ -49,3 +49,11 @@ def get_child_file_path(directory: Path, file_name: str) -> Path:
 
 def _get_current_time() -> str:
     return datetime.now().strftime('%m_%d__%H_%M_%S')
+
+
+def get_file_content(path: Path) -> str:
+    """Returns file content."""
+
+    with open(path) as input_file:
+        return input_file.read()
+
