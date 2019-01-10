@@ -1,7 +1,0 @@
-0,"[0.056, 0.111, 0.833, 0.944, 1.0]",-1,0.833,first child
-0,"[0.778, 1.0]",0.833,1.0,"gap not found, take first to the right"
-0,[1.0],-1,1.0,single comp
-1,"[0.833, 0.944, 1.0]",-1,0.944,first child
-1,[1.0],-1,1.0,single comp
-4,"[0.944, 1.0]",-1,1.0,first child
-4,[1.0],-1,1.0,single comp
