@@ -174,7 +174,7 @@ def get_consensus_tree_graph(jsonpangenome: JSONPangenome, tree, sliderValue):
 
 def get_leaf_info(node_id, tree, jsonpangenome):
     sequences_ids = tree.nodes[node_id]['sequences_ids']
-    sequences_names = (", ".join([jsonpangenome.sequences[seq_id].name for seq_id in sequences_ids]))[:-3]
+    sequences_names = (", ".join([jsonpangenome.sequences[seq_id].name for seq_id in sequences_ids]))
     if len(sequences_names) < 30:
         return sequences_names
     else:
