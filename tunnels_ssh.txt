@@ -1,5 +1,0 @@
-ssh -L 8050:localhost:8050 students.mimuw.edu.pl -l pdziadkiewicz
-
-ssh -L 8050:localhost:4567 tiki
-
-Vagrantfile: z 8050 na 4567
