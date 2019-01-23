@@ -1,5 +1,5 @@
 from . import ConsensusNode
-from ...graph.PathManager import PathManager
+from graph.PathManager import PathManager
 from .ConsensusTree import ConsensusTree
 from .Errors import NoConsensus
 

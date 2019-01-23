@@ -1,5 +1,5 @@
 from typing import List, Dict
-from ...Pangenome import Pangenome
+from Pangenome import Pangenome
 
 
 class JSONNode:
