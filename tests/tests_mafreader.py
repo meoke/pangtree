@@ -1,11 +1,13 @@
 import unittest
 from ddt import ddt, data
 
-from context import mafreader
+# from context import mafreader
 from context import metadatareader
 from context import Node
 from context import nucleotides as n
 from context import Pangraph
+
+from graph.Pangraph import PangraphBuilderFromDAG
 
 
 @ddt
@@ -37,9 +39,9 @@ class MafreaderTest(unittest.TestCase):
             "testseq2": [3, 4, 6, 8]
         }
         expected_pangraph = Pangraph()
-        expected_pangraph.update_nodes(expected_nodes)
+        expected_pangraph._nodes = expected_nodes
         expected_pangraph.set_paths(len(expected_nodes), expected_pats)
-        pangraph = mafreader.read(maf_path, self.test1_metadata)
+        pangraph = PangraphBuilderFromDAG.build(maf_path, self.test1_metadata)
         self.compare_pangraphs(actual_pangraph=pangraph, expected_pangraph=expected_pangraph)
 
     @data("Files/test2.maf")

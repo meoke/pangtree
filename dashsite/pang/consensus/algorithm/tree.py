@@ -41,7 +41,7 @@ def get_root_node(pangraph: Pangraph):
 
 
 def produce_tree(pangraph: Pangraph) -> TreeConsensusManager:
-    cm = TreeConsensusManager(max_nodes_count=pangraph.get_nodes_count())
+    cm = TreeConsensusManager(nodes_count=pangraph.get_nodes_count())
     root_node, root_consensus = get_root_node(pangraph)
     cm.add_node(root_node, root_consensus)
     nodes_to_process = deque([root_node])
@@ -73,7 +73,7 @@ def get_children_nodes(orig_pangraph: Pangraph, cn: ConsensusNode) -> TreeConsen
     current_paths_names = cn.sequences_names
     op = deepcopy(orig_pangraph)
     subpangraph = SubPangraph(op, cn.sequences_names)
-    local_consensus_manager = TreeConsensusManager(max_nodes_count=subpangraph.orig_nodes_count)
+    local_consensus_manager = TreeConsensusManager(nodes_count=subpangraph.orig_nodes_count)
     logging.info(f"Searching children for id: {cn.consensus_id}, len: {len(cn.sequences_names)}, names: {cn.sequences_names}")
     loop_counter = 1
     while current_paths_names:

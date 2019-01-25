@@ -1,15 +1,22 @@
 from metadata import reader as metadatareader
 from graph import mafreader
-# from consensus import algorithm as consensussimple, algorithm as consensustree
 from consensus.algorithm.TreeConfig import TreeConfig
 from consensus.algorithm import tree as consensustree
 from consensus.algorithm import simple as consensussimple
+from fileformats.maf.reader import maf_to_dagmaf
+from graph.Pangraph import Pangraph
 
 
 class Pangenome:
-    def __init__(self, multialignment, metadata):
+    def __init__(self, metadata):
         self.genomes_info = self._build_genomes_info(metadata)
-        self.pangraph = self._build_pangraph(multialignment)
+        self.dagmaf = None
+        self.pangraph = Pangraph()
+
+    def build_from_maf(self, mafcontent):
+        self.dagmaf = maf_to_dagmaf(mafcontent)
+        self.genomes_info.feed_with_dagmaf_data(mafcontent)
+        self.pangraph.build(self.dagmaf, self.genomes_info)
 
     def generate_fasta_files(self, output_dir):
         pass
@@ -33,5 +40,11 @@ class Pangenome:
         #todo check if metadata given else generate
         return metadatareader.read(genomes_metadata)
 
-    def _build_pangraph(self, multialignment):
-        return mafreader.read(multialignment, self.genomes_info)
+    # def _build_pangraph(self, multialignment):
+    #     #todo it should be built based on blocks not raw multialignment
+    #     return mafreader.read(multialignment, self.genomes_info)
+
+    # def _build_pangraph(self):
+    #     #todo it should be built based on blocks not raw multialignment
+    #     # return mafreader.read(self.dagmaf, self.genomes_info)
+    #     return dagmaf_to_pangraph(self.dagmaf, self.genomes_info)

@@ -17,3 +17,10 @@ class MultialignmentMetadata:
     #
     # def get_title(self, sequence_name: str) -> str:
     #     return [data.title for seq_id, data in self.genomes_metadata.items() if data.mafname == sequence_name][0]
+
+    def get_all_mafnames(self):
+        return [data.mafname for seq_id, data in self.genomes_metadata.items()]
+
+    def feed_with_dagmaf_data(self, mafcontent):
+        #todo
+        pass

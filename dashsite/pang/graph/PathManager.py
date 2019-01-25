@@ -4,16 +4,20 @@ from .errors import NoPath
 
 
 class PathManager:
-    def __init__(self, start_node_id: int = 0, max_nodes_count: object = 0, paths_names: object = None) -> object:
-        paths_names = [] if not paths_names else paths_names
-        self.paths = np.zeros(shape=(len(paths_names), max_nodes_count), dtype=bool)
+    def __init__(self) -> object:
+        self.paths = None
+        self.path_names_to_array_id = None
+        # paths_names = [] if not paths_names else paths_names
+        # self.paths = np.zeros(shape=(len(paths_names), max_nodes_count), dtype=bool)
+        # self.path_names_to_array_id = {path_name: i for i, path_name in enumerate(sorted(paths_names))}
+
+    def init_paths(self, paths_names, nodes_count):
+        self.paths = np.zeros(shape=(len(paths_names), nodes_count), dtype=bool)
         self.path_names_to_array_id = {path_name: i for i, path_name in enumerate(sorted(paths_names))}
-        self.start_node_id = start_node_id
 
     def init_from_dict(self, max_nodes_count, paths_to_node_ids):
         if not paths_to_node_ids.keys():
             return
-        self.start_node_id = 0
         self.paths = np.zeros(shape=(len(paths_to_node_ids.keys()), max_nodes_count), dtype=bool)
         self.path_names_to_array_id = {path_name: array_id
                                        for array_id, path_name in enumerate(sorted(paths_to_node_ids.keys()))}
@@ -23,13 +27,12 @@ class PathManager:
 
     def __eq__(self, other):
         return (np.array_equal(self.paths, other.paths)
-                and self.path_names_to_array_id == other.path_names_to_array_id
-                and self.start_node_id == other.start_node_id)
+                and self.path_names_to_array_id == other.path_names_to_array_id)
 
     def mark(self, path_name, node_id):
         array_id = self.path_names_to_array_id[path_name]
         try:
-            self.paths[array_id, node_id-self.start_node_id] = True
+            self.paths[array_id, node_id] = True
         except:
             print("")
 

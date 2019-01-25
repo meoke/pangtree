@@ -18,8 +18,8 @@ def read(multialignment, multialignment_metadata: MultialignmentMetadata) -> Pan
 
 
 def parse_mafcontent_to_graph(maf: str, metadata: MultialignmentMetadata) -> Pangraph:
-    mafgraph = get_sorted_mafgraph(maf)
-    max_nodes_count = get_max_count_nodes(mafgraph)
+    mafgraph = get_sorted_mafgraph(maf)##
+    max_nodes_count = get_max_count_nodes(mafgraph)##
     pangraph = Pangraph(max_nodes_count=max_nodes_count,
                         start_node_id=0,
                         paths_names=[seq.mafname for seq in metadata.genomes_metadata.values()])
@@ -56,7 +56,7 @@ def get_next_aligned_node_id(current_column_i, column_nodes_ids):
 
 def parse_maf_block(block, previous_node_id):
     block_width = len(block.alignment[0].seq)
-    block_sequences_names = [seq.id for seq in block.alignment]
+    block_sequences_names = [seq.id for seq  in block.alignment]
 
     pg = Pangraph(max_nodes_count=block_width*4,
                   start_node_id=previous_node_id+1,

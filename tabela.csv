@@ -1,0 +1,6 @@
+,ID,Genbank ID,Assembly ID,Mafname,Name,Group,Leaf assignment,C_1,C_2,C_3
+0,0,,,testseq0,testseq0,A,6,1.0000,0.0560,0.1110
+1,1,,,testseq1,testseq1,A,7,0.9440,0.0560,0.1110
+2,2,,,testseq2,testseq2,A,5,0.8330,0.0560,0.1110
+3,3,,,testseq3,testseq3,B,2,0.0560,1.0000,0.7780
+4,4,,,testseq4,testseq4,B,3,0.1110,0.7780,1.0000
