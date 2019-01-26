@@ -1,0 +1,16 @@
+##maf version=1
+
+a degree=2
+s testseq1 0 3 + 8 ACT
+s testseq2 0 3 + 9 ACT
+s testseq3 0 2 + 8 A-T
+
+a degree=2
+s testseq1 3 2 - 8 GA
+s testseq2 4 2 - 9 GG
+s testseq3 4 2 - 8 GG
+
+a degree=2
+s testseq1 5 3 + 8 C-TG
+s testseq2 5 4 + 9 CATG
+s testseq3 4 4 + 8 CATG

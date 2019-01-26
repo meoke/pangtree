@@ -48,8 +48,9 @@ class PangraphBuilderFromDAG(PangraphBuilder):
             for edge in block.out_edges:
                 if edge.edge_type == (1, -1):
                     continue
-                for seq_id, seq_start in edge.sequences:
-                    sequence_name_to_last_node_id[seq_id] = None
+                for seq_info, seq_start in edge.sequences:
+                    sequence_name_to_last_node_id[seq_info.seq_id] = None
+        pangraph._pathmanager.remove_empty_paths()
 
     @staticmethod
     def get_nodes_count(dagmaf: DAGMaf) -> int:
