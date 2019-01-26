@@ -1,5 +1,5 @@
 ##maf version=1
-
+## some edges are inactive after transforming to DAG
 a degree=2
 s testseq1 0 3 + 11 ACT
 s testseq2 0 3 + 13 ACT
