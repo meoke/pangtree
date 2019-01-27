@@ -6,12 +6,32 @@ from .Node import Node
 from .PathManager import PathManager
 import numpy as np
 from . import nucleotides
-
+from collections import deque
 
 class PangraphBuilder(abc.ABC):
     @abc.abstractmethod
     def build(self, input, pangraph, genomes_info):
         pass
+
+class OpenNode:
+    def __init__(self, node_id, seq_pos, active):
+        self.node_id = node_id
+        self.seq_pos = seq_pos
+        self.active = active
+
+    def __str__(self):
+        return f"Node id: {self.node_id}, Seq pos: {self.seq_pos}, Active: {self.active}"
+
+class SeqAttributes:
+    def __init__(self, start, size):
+        self.start = start
+        self.size = size
+
+    def get_last_pos(self):
+        return self.start + self.size - 1
+
+    def __str__(self):
+        return f"Start: {self.start}, Size: {self.size}"
 
 
 class PangraphBuilderFromDAG(PangraphBuilder):
@@ -22,12 +42,21 @@ class PangraphBuilderFromDAG(PangraphBuilder):
         pangraph._nodes = [None] * nodes_count
         pangraph._pathmanager.init_paths(sequences_names, nodes_count)
         current_node_id = -1
-        sequence_name_to_last_node_id = {seq_name: None for seq_name in sequences_names}
-        for block in input.dagmafnodes:
+
+        sequence_name_to_open_nodes = {seq_name: [] for seq_name in sequences_names}
+        blocks_deque = deque([0]) #todo czy pierwszy jest rzeczywiście pierwszy?
+        processed_blocks = []
+        while blocks_deque:
+            block_id = blocks_deque.popleft()
+            block = input.dagmafnodes[block_id]
             block_width = len(block.alignment[0].seq)
+            #tutaj połączenia z jakimikolwiek poprzednimi blokami
+            # block_sequence_name_last_node_id = {seq_name: None for seq_name in sequences_names} #ostatni węzeł tej sekwencji w tym bloku
+            sequence_name_to_parameters = {seq.id: SeqAttributes(seq.annotations["start"], seq.annotations["size"]) for seq in block.alignment} #ogólnie parametry sekwencji w tym bloku
+            piesel = {seq.id : PangraphBuilderFromDAG.get_open_node(sequence_name_to_open_nodes[seq.id], seq.annotations["start"], seq.annotations["size"]) for seq in block.alignment}
             for col in range(block_width):
                 sequence_name_to_nucleotide = {seq.id: seq[col] for seq in block.alignment}
-                nodes_codes = sorted([*(set(sequence_name_to_nucleotide.values())).difference(set(['-']))])
+                nodes_codes = sorted([*(set([nucleotide for nucleotide in sequence_name_to_nucleotide.values()])).difference(set(['-']))])
                 column_nodes_ids = [current_node_id + i + 1 for i, _ in enumerate(nodes_codes)]
 
                 for i, nucl in enumerate(nodes_codes):
@@ -40,17 +69,60 @@ class PangraphBuilderFromDAG(PangraphBuilder):
                     for sequence, nucleotide in sequence_name_to_nucleotide.items():
                         if nucleotide == nucl:
                             pangraph.add_path_to_node(path_name=sequence, node_id=current_node_id)
-                            if sequence_name_to_last_node_id[sequence] != None:
-                                node.in_nodes.add(sequence_name_to_last_node_id[sequence])
-                            sequence_name_to_last_node_id[sequence] = current_node_id
+                            # find previous node
+                            last_node_id = piesel[sequence]
+                            if last_node_id is not None:
+                                node.in_nodes.add(last_node_id)
+
+                            # add this node as open if the edge
+                            piesel[sequence] = current_node_id
+                            # sequence_name_to_open_nodes[sequence].append(OpenNode(current_node_id, sequenceAttributes.start + sequenceAttributes.size, is_active)
                     node.in_nodes = list(node.in_nodes)
                     pangraph._nodes[current_node_id] = node
-            for edge in block.out_edges:
-                if edge.edge_type == (1, -1):
-                    continue
-                for seq_info, seq_start in edge.sequences:
-                    sequence_name_to_last_node_id[seq_info.seq_id] = None
+
+            # tutaj wstawić otwarte połączenia
+            processed_blocks.append(block.id)
+            for seq_id, last_node_id in piesel.items():
+                #sprawdzic w krawedziach wychodzacych z tego bloku, czy w ogóle trzeba dokładać tutaj tą krawędź
+                next_block = PangraphBuilderFromDAG.check_if_active(block.out_edges, seq_id)
+                if next_block not in processed_blocks and next_block is not None and next_block not in blocks_deque:
+                    blocks_deque.append(next_block)
+                if next_block is not None:
+                    is_active = True
+                else:
+                    is_active = False
+                sequence_name_to_open_nodes[seq_id].append(OpenNode(last_node_id, sequence_name_to_parameters[seq_id].get_last_pos(), is_active))
+
         pangraph._pathmanager.remove_empty_paths()
+
+    @staticmethod
+    def check_if_active(out_edges, seq_id):
+        for edge in out_edges:
+            for seq_info, seq_start in edge.sequences:
+                if seq_info.seq_id == seq_id:
+                    if edge.edge_type == (1,-1):
+                        return edge.to
+                    else:
+                        return None
+        return False
+
+    # @staticmethod
+    # def get_sequence_edge(block_out_edges, sequence_id):
+    #     out_edges = [edge for edge in block_out_edges]
+    #     for seq_info, seq_start in out_edges:
+    #         if seq_info.seq_id == sequence_id:
+    #             #zwrocic odpowiednia krawedz, jesli jest
+
+    @staticmethod
+    def get_open_node(sequence_open_nodes, sequence_start_pos, expected_distance):
+        for i, open_node in enumerate(sequence_open_nodes):
+            if open_node.seq_pos + 1 == sequence_start_pos:
+                if open_node.active:
+                    del sequence_open_nodes[i]
+                    return open_node.node_id
+                else:
+                    return None
+        return None
 
     @staticmethod
     def get_nodes_count(dagmaf: DAGMaf) -> int:

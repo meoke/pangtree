@@ -1,0 +1,17 @@
+##maf version=1
+## parallel blocks
+a degree=2
+s testseq1 0 5 + 20 ACTGG
+s testseq2 0 5 + 20 ACTGG
+
+a degree=2
+s testseq1 5 5 + 20 ACTGG
+s testseq2 10 5 + 20 ACTGG
+
+a degree=2
+s testseq1 10 5 + 20 ACTGG
+s testseq2 5 5 + 20 ACTGG
+
+a degree=2
+s testseq1 15 5 + 20 ACTGG
+s testseq2 15 5 + 20 ACTGG

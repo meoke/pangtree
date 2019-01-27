@@ -20,6 +20,53 @@ class MafreaderTest(unittest.TestCase):
         self.ebola_metadata = metadatareader.read(pathtools.get_file_content("Files/Ebola/ebola_metadata.json"))
         self.mycoplasma_metadata = metadatareader.read(pathtools.get_file_content("Files/Mycoplasma/mycoplasma_metadata.json"))
 
+    @data("Files/test0.maf")
+    def test_read_maf0(self, maf_path):
+        expected_nodes = [
+            Node(id=0, base=n.code('A'), in_nodes=[], aligned_to=None),
+            Node(id=1, base=n.code('C'), in_nodes=[0], aligned_to=None),
+            Node(id=2, base=n.code('T'), in_nodes=[1], aligned_to=None),
+            Node(id=3, base=n.code('G'), in_nodes=[2], aligned_to=None),
+            Node(id=4, base=n.code('A'), in_nodes=[3], aligned_to=None),
+            Node(id=5, base=n.code('C'), in_nodes=[4], aligned_to=None),
+            Node(id=6, base=n.code('T'), in_nodes=[5], aligned_to=None),
+            Node(id=7, base=n.code('G'), in_nodes=[6], aligned_to=None),
+            Node(id=8, base=n.code('A'), in_nodes=[7], aligned_to=None),
+            Node(id=9, base=n.code('A'), in_nodes=[8], aligned_to=None),
+        ]
+
+        expected_pats = {
+            "testseq0": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+            "testseq1": [0, 1, 2, 3, 4, 5, 6, 7, 8],
+        }
+        expected_pangraph = self.setup_pangraph(expected_nodes, expected_pats)
+        actual_pangraph = self.setup_pangraph_from_maf(maf_path)
+        self.compare_pangraphs(actual_pangraph=actual_pangraph, expected_pangraph=expected_pangraph)
+
+    @data("Files/test0_1.maf")
+    def test_read_maf0_1(self, maf_path):
+        expected_nodes = [
+            Node(id=0, base=n.code('A'), in_nodes=[], aligned_to=1),
+            Node(id=1, base=n.code('G'), in_nodes=[], aligned_to=0),
+            Node(id=2, base=n.code('C'), in_nodes=[0], aligned_to=3),
+            Node(id=3, base=n.code('T'), in_nodes=[1], aligned_to=2),
+
+            Node(id=4, base=n.code('G'), in_nodes=[2], aligned_to=5),
+            Node(id=5, base=n.code('T'), in_nodes=[], aligned_to=4),
+            Node(id=6, base=n.code('A'), in_nodes=[5], aligned_to=7),
+            Node(id=7, base=n.code('C'), in_nodes=[4], aligned_to=6),
+            Node(id=8, base=n.code('C'), in_nodes=[7], aligned_to=None),
+
+        ]
+
+        expected_pats = {
+            "testseq0": [0, 2, 4, 7, 8],
+            "testseq1": [1, 3, 5, 6]
+        }
+        expected_pangraph = self.setup_pangraph(expected_nodes, expected_pats)
+        actual_pangraph = self.setup_pangraph_from_maf(maf_path)
+        self.compare_pangraphs(actual_pangraph=actual_pangraph, expected_pangraph=expected_pangraph)
+
     @data("Files/test1.maf")
     # @unittest.skip("simple1")
     def test_read_maf1(self, maf_path):
@@ -40,12 +87,8 @@ class MafreaderTest(unittest.TestCase):
             "testseq1": [0, 5, 7],
             "testseq2": [3, 4, 6, 8]
         }
-        expected_pangraph = Pangraph()
-        expected_pangraph._nodes = expected_nodes
-        expected_pangraph.set_paths(len(expected_nodes), expected_pats)
-        dagmaf = maf_to_dagmaf(maf_path)
-        actual_pangraph = Pangraph()
-        PangraphBuilderFromDAG.build(dagmaf, actual_pangraph, self.test1_metadata)
+        expected_pangraph = self.setup_pangraph(expected_nodes, expected_pats)
+        actual_pangraph = self.setup_pangraph_from_maf(maf_path)
         self.compare_pangraphs(actual_pangraph=actual_pangraph, expected_pangraph=expected_pangraph)
 
     @data("Files/test2.maf")
@@ -115,35 +158,6 @@ class MafreaderTest(unittest.TestCase):
         self.compare_pangraphs(actual_pangraph=actual_pangraph, expected_pangraph=expected_pangraph)
 
 
-    @data("Files/test5.maf")
-    # @unittest.skip("simple5")
-    def test_read_maf5(self, maf_path):
-        expected_nodes = [
-                            Node(id=0, base=n.code('C'), in_nodes=[], aligned_to=None),
-                            Node(id=1, base=n.code('T'), in_nodes=[], aligned_to=None),
-                            Node(id=2, base=n.code('G'), in_nodes=[1], aligned_to=None),
-                            Node(id=3, base=n.code('T'), in_nodes=[2], aligned_to=None),
-                            Node(id=4, base=n.code('G'), in_nodes=[3], aligned_to=5),
-                            Node(id=5, base=n.code('T'), in_nodes=[0], aligned_to=4),
-                            Node(id=6, base=n.code('A'), in_nodes=[4], aligned_to=None),
-                            Node(id=7, base=n.code('A'), in_nodes=[5], aligned_to=None),
-                            Node(id=8, base=n.code('C'), in_nodes=[6], aligned_to=None)]
-
-        expected_pats = {
-            "testseq0": [1, 2, 3],
-            "testseq1": [0, 5, 7],
-            "testseq2": [3, 4, 6, 8]
-        }
-
-        expected_pangraph = Pangraph()
-        expected_pangraph._nodes = expected_nodes
-        expected_pangraph.set_paths(len(expected_nodes), expected_pats)
-        dagmaf = maf_to_dagmaf(maf_path)
-        actual_pangraph = Pangraph()
-        PangraphBuilderFromDAG.build(dagmaf, actual_pangraph, self.test1_metadata)
-        self.compare_pangraphs(actual_pangraph=actual_pangraph, expected_pangraph=expected_pangraph)
-
-
     @data("Files/test6.maf")
     def test_read_maf6(self, maf_path):
         expected_nodes = [
@@ -200,6 +214,44 @@ class MafreaderTest(unittest.TestCase):
         expected_pangraph = self.setup_pangraph(expected_nodes, expected_pats)
         actual_pangraph = self.setup_pangraph_from_maf(maf_path)
         self.compare_pangraphs(actual_pangraph=actual_pangraph, expected_pangraph=expected_pangraph)
+
+    @data("Files/test8.maf")
+    def test_read_maf8(self, maf_path):
+        expected_nodes = [
+            Node(id=0, base=n.code('A'), in_nodes=[], aligned_to=None),
+            Node(id=1, base=n.code('C'), in_nodes=[0], aligned_to=None),
+            Node(id=2, base=n.code('T'), in_nodes=[1], aligned_to=None),
+            Node(id=3, base=n.code('G'), in_nodes=[2], aligned_to=None),
+            Node(id=4, base=n.code('G'), in_nodes=[3], aligned_to=None),
+
+            Node(id=5, base=n.code('A'), in_nodes=[4, 14], aligned_to=None),
+            Node(id=6, base=n.code('C'), in_nodes=[5], aligned_to=None),
+            Node(id=7, base=n.code('T'), in_nodes=[6], aligned_to=None),
+            Node(id=8, base=n.code('G'), in_nodes=[7], aligned_to=None),
+            Node(id=9, base=n.code('G'), in_nodes=[8], aligned_to=None),
+
+            Node(id=10, base=n.code('A'), in_nodes=[4, 9], aligned_to=None),
+            Node(id=11, base=n.code('C'), in_nodes=[10], aligned_to=None),
+            Node(id=12, base=n.code('T'), in_nodes=[11], aligned_to=None),
+            Node(id=13, base=n.code('G'), in_nodes=[12], aligned_to=None),
+            Node(id=14, base=n.code('G'), in_nodes=[13], aligned_to=None),
+
+            Node(id=15, base=n.code('A'), in_nodes=[8, 13], aligned_to=None),
+            Node(id=16, base=n.code('C'), in_nodes=[15], aligned_to=None),
+            Node(id=17, base=n.code('T'), in_nodes=[16], aligned_to=None),
+            Node(id=18, base=n.code('G'), in_nodes=[17], aligned_to=None),
+            Node(id=19, base=n.code('G'), in_nodes=[18], aligned_to=None)
+        ]
+
+        expected_pats = {
+            "testseq1": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+            "testseq2": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+        }
+
+        expected_pangraph = self.setup_pangraph(expected_nodes, expected_pats)
+        actual_pangraph = self.setup_pangraph_from_maf(maf_path)
+        self.compare_pangraphs(actual_pangraph=actual_pangraph, expected_pangraph=expected_pangraph)
+
 
     def setup_pangraph(self, expected_nodes, expected_paths):
         pangraph = Pangraph()
