@@ -157,6 +157,29 @@ class MafreaderTest(unittest.TestCase):
         PangraphBuilderFromDAG.build(dagmaf, actual_pangraph, self.test1_metadata)
         self.compare_pangraphs(actual_pangraph=actual_pangraph, expected_pangraph=expected_pangraph)
 
+    @data("Files/test5.maf")
+    def test_read_maf5(self, maf_path):
+        expected_nodes = [Node(id=0, base=n.code('A'), in_nodes=[], aligned_to=1),
+                          Node(id=1, base=n.code('C'), in_nodes=[], aligned_to=2),
+                          Node(id=2, base=n.code('G'), in_nodes=[], aligned_to=0),
+                          Node(id=3, base=n.code('C'), in_nodes=[0], aligned_to=None),
+                          Node(id=4, base=n.code('A'), in_nodes=[3], aligned_to=5),
+                          Node(id=5, base=n.code('T'), in_nodes=[3], aligned_to=4),
+                          Node(id=6, base=n.code('C'), in_nodes=[4], aligned_to=7),
+                          Node(id=7, base=n.code('G'), in_nodes=[10], aligned_to=8),
+                          Node(id=8, base=n.code('T'), in_nodes=[5], aligned_to=6),
+                          Node(id=9, base=n.code('G'), in_nodes=[5], aligned_to=None),
+                          Node(id=10, base=n.code('G'), in_nodes=[9], aligned_to=None)]
+
+        expected_paths = {
+            "testseq0": [0, 3, 4, 6],
+            "testseq1": [1, 3, 5, 7, 9, 10],
+            "testseq2": [2, 3, 5, 8]
+        }
+
+        expected_pangraph = self.setup_pangraph(expected_nodes, expected_paths)
+        actual_pangraph = self.setup_pangraph_from_maf(maf_path)
+        self.compare_pangraphs(actual_pangraph=actual_pangraph, expected_pangraph=expected_pangraph)
 
     @data("Files/test6.maf")
     def test_read_maf6(self, maf_path):

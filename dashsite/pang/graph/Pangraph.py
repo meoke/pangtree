@@ -13,6 +13,22 @@ class PangraphBuilder(abc.ABC):
     def build(self, input, pangraph, genomes_info):
         pass
 
+
+class FreeEdge:
+    def __init__(self, from_block, node_id, to_block, seq_id, seq_pos, type):
+        self.from_block = from_block
+        self.node_id = node_id
+        self.to_block = to_block
+        self.seq_id = seq_id
+        self.seq_pos = seq_pos
+        self.type = type
+
+    def __str__(self):
+        return f"From: {self.from_block}, To: {self.to_block}, " \
+            f"Type: {self.type}, Node_id: {self.node_id}, " \
+            f"Seq_id: {self.seq_id}, Seq pos: {self.seq_pos}, Type: {self.type}"
+
+
 class OpenNode:
     def __init__(self, node_id, seq_pos, active):
         self.node_id = node_id
@@ -21,6 +37,7 @@ class OpenNode:
 
     def __str__(self):
         return f"Node id: {self.node_id}, Seq pos: {self.seq_pos}, Active: {self.active}"
+
 
 class SeqAttributes:
     def __init__(self, start, size):
@@ -33,6 +50,13 @@ class SeqAttributes:
     def __str__(self):
         return f"Start: {self.start}, Size: {self.size}"
 
+class SetDeque(deque):
+    def __init__(self, iterable):
+        super(SetDeque, self).__init__(iterable)
+
+    def append(self, element):
+        if element not in self:
+            super(SetDeque, self).append(element)
 
 class PangraphBuilderFromDAG(PangraphBuilder):
     @staticmethod
@@ -43,9 +67,9 @@ class PangraphBuilderFromDAG(PangraphBuilder):
         pangraph._pathmanager.init_paths(sequences_names, nodes_count)
         current_node_id = -1
 
-        sequence_name_to_open_nodes = {seq_name: [] for seq_name in sequences_names}
-        blocks_deque = deque([0]) #todo czy pierwszy jest rzeczywiście pierwszy?
-        processed_blocks = []
+        open_edges = []
+        # sequence_name_to_open_nodes = {seq_name: [] for seq_name in sequences_names}
+        blocks_deque = SetDeque([0]) #todo czy pierwszy jest rzeczywiście pierwszy?
         while blocks_deque:
             block_id = blocks_deque.popleft()
             block = input.dagmafnodes[block_id]
@@ -53,7 +77,8 @@ class PangraphBuilderFromDAG(PangraphBuilder):
             #tutaj połączenia z jakimikolwiek poprzednimi blokami
             # block_sequence_name_last_node_id = {seq_name: None for seq_name in sequences_names} #ostatni węzeł tej sekwencji w tym bloku
             sequence_name_to_parameters = {seq.id: SeqAttributes(seq.annotations["start"], seq.annotations["size"]) for seq in block.alignment} #ogólnie parametry sekwencji w tym bloku
-            piesel = {seq.id : PangraphBuilderFromDAG.get_open_node(sequence_name_to_open_nodes[seq.id], seq.annotations["start"], seq.annotations["size"]) for seq in block.alignment}
+            # piesel = {seq.id : PangraphBuilderFromDAG.get_open_node(sequence_name_to_open_nodes[seq.id], seq.annotations["start"], seq.annotations["size"]) for seq in block.alignment}
+            local_edges = {seq.id : PangraphBuilderFromDAG.get_free_edge(open_edges, seq.id, block_id) for seq in block.alignment}
             for col in range(block_width):
                 sequence_name_to_nucleotide = {seq.id: seq[col] for seq in block.alignment}
                 nodes_codes = sorted([*(set([nucleotide for nucleotide in sequence_name_to_nucleotide.values()])).difference(set(['-']))])
@@ -70,28 +95,39 @@ class PangraphBuilderFromDAG(PangraphBuilder):
                         if nucleotide == nucl:
                             pangraph.add_path_to_node(path_name=sequence, node_id=current_node_id)
                             # find previous node
-                            last_node_id = piesel[sequence]
+                            last_node_id = local_edges[sequence]
                             if last_node_id is not None:
                                 node.in_nodes.add(last_node_id)
 
                             # add this node as open if the edge
-                            piesel[sequence] = current_node_id
+                            local_edges[sequence] = current_node_id
                             # sequence_name_to_open_nodes[sequence].append(OpenNode(current_node_id, sequenceAttributes.start + sequenceAttributes.size, is_active)
                     node.in_nodes = list(node.in_nodes)
                     pangraph._nodes[current_node_id] = node
 
             # tutaj wstawić otwarte połączenia
-            processed_blocks.append(block.id)
-            for seq_id, last_node_id in piesel.items():
-                #sprawdzic w krawedziach wychodzacych z tego bloku, czy w ogóle trzeba dokładać tutaj tą krawędź
-                next_block = PangraphBuilderFromDAG.check_if_active(block.out_edges, seq_id)
-                if next_block not in processed_blocks and next_block is not None and next_block not in blocks_deque:
-                    blocks_deque.append(next_block)
-                if next_block is not None:
-                    is_active = True
-                else:
-                    is_active = False
-                sequence_name_to_open_nodes[seq_id].append(OpenNode(last_node_id, sequence_name_to_parameters[seq_id].get_last_pos(), is_active))
+            # processed_blocks.append(block.id)
+            for edge in block.out_edges:
+                if edge.edge_type == (1,-1):
+                    blocks_deque.append(edge.to)
+                # if edge.edge_type == (1,-1):
+                for seq in edge.sequences:
+                    seq_end = seq[1]
+                    seq_id = seq_end.seq_id
+                    open_edges.append(FreeEdge(block_id, local_edges[seq_id], edge.to, seq_id, sequence_name_to_parameters[seq_id].get_last_pos(), edge.edge_type))
+
+
+            # for seq_id, last_node_id in local_edges.items():
+            #     open_edges.append(FreeEdge(block_id, last_node_id, ''))
+            #     #sprawdzic w krawedziach wychodzacych z tego bloku, czy w ogóle trzeba dokładać tutaj tą krawędź
+            #     next_block = PangraphBuilderFromDAG.check_if_active(block.out_edges, seq_id)
+            #     if next_block not in processed_blocks and next_block is not None and next_block not in blocks_deque:
+            #         blocks_deque.append(next_block)
+            #     if next_block is not None:
+            #         is_active = True
+            #     else:
+            #         is_active = False
+            #     sequence_name_to_open_nodes[seq_id].append(OpenNode(last_node_id, sequence_name_to_parameters[seq_id].get_last_pos(), is_active))
 
         pangraph._pathmanager.remove_empty_paths()
 
@@ -143,7 +179,18 @@ class PangraphBuilderFromDAG(PangraphBuilder):
     # @staticmethod
     # def get_in_nodes(, node_id, first_node_in_block_id):
     #     return self._pathmanager.get_in_nodes2(node_id, first_node_in_block_id)
-
+    @staticmethod
+    def get_free_edge(open_edges, seq_id, to_block_id):
+        edge_id = None
+        edge = None
+        for i, freeEdge in enumerate(open_edges):
+            if freeEdge.seq_id == seq_id and freeEdge.type == (1,-1) and freeEdge.to_block == to_block_id:
+                edge_id = i
+                edge = freeEdge
+        if edge_id is not None:
+            del open_edges[i]
+            return edge.node_id
+        return None
 
 class Pangraph():
     def __init__(self):
