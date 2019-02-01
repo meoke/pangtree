@@ -16,5 +16,5 @@ class DAGMaf:
                        alignment=b.alignment,
                        orient=b.orient,
                        out_edges=b.out_edges)
-            for b in sorted_blocks
+            for b in sorted(sorted_blocks, key=lambda x : x.id)
         ]

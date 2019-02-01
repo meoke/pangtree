@@ -162,7 +162,7 @@ class MafreaderTest(unittest.TestCase):
         expected_nodes = [Node(id=0, base=n.code('A'), in_nodes=[], aligned_to=1),
                           Node(id=1, base=n.code('C'), in_nodes=[], aligned_to=2),
                           Node(id=2, base=n.code('G'), in_nodes=[], aligned_to=0),
-                          Node(id=3, base=n.code('C'), in_nodes=[0], aligned_to=None),
+                          Node(id=3, base=n.code('C'), in_nodes=[0, 1, 2], aligned_to=None),
                           Node(id=4, base=n.code('A'), in_nodes=[3], aligned_to=5),
                           Node(id=5, base=n.code('T'), in_nodes=[3], aligned_to=4),
                           Node(id=6, base=n.code('C'), in_nodes=[4], aligned_to=7),
