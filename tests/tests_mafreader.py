@@ -110,12 +110,8 @@ class MafreaderTest(unittest.TestCase):
             "testseq2": [0, 1, 2, 3, 5],
         }
 
-        expected_pangraph = Pangraph()
-        expected_pangraph._nodes = expected_nodes
-        expected_pangraph.set_paths(len(expected_nodes), expected_pats)
-        dagmaf = maf_to_dagmaf(maf_path)
-        actual_pangraph = Pangraph()
-        PangraphBuilderFromDAG.build(dagmaf, actual_pangraph, self.test1_metadata)
+        actual_pangraph = self.setup_pangraph_from_maf(maf_path)
+        expected_pangraph = self.setup_pangraph(expected_nodes, expected_pats)
         self.compare_pangraphs(actual_pangraph=actual_pangraph, expected_pangraph=expected_pangraph)
 
 
@@ -129,12 +125,8 @@ class MafreaderTest(unittest.TestCase):
             "testseq1": []
         }
 
-        expected_pangraph = Pangraph()
-        expected_pangraph._nodes = expected_nodes
-        expected_pangraph.set_paths(len(expected_nodes), expected_pats)
-        dagmaf = maf_to_dagmaf(maf_path)
-        actual_pangraph = Pangraph()
-        PangraphBuilderFromDAG.build(dagmaf, actual_pangraph, self.test1_metadata)
+        actual_pangraph = self.setup_pangraph_from_maf(maf_path)
+        expected_pangraph = self.setup_pangraph(expected_nodes, expected_pats)
         self.compare_pangraphs(actual_pangraph=actual_pangraph, expected_pangraph=expected_pangraph)
 
     @data("Files/test4.maf")
@@ -149,12 +141,8 @@ class MafreaderTest(unittest.TestCase):
             "testseq3": [0]
         }
 
-        expected_pangraph = Pangraph()
-        expected_pangraph._nodes = expected_nodes
-        expected_pangraph.set_paths(len(expected_nodes), expected_paths)
-        dagmaf = maf_to_dagmaf(maf_path)
-        actual_pangraph = Pangraph()
-        PangraphBuilderFromDAG.build(dagmaf, actual_pangraph, self.test1_metadata)
+        actual_pangraph = self.setup_pangraph_from_maf(maf_path)
+        expected_pangraph = self.setup_pangraph(expected_nodes, expected_paths)
         self.compare_pangraphs(actual_pangraph=actual_pangraph, expected_pangraph=expected_pangraph)
 
     @data("Files/test5.maf")
@@ -285,7 +273,8 @@ class MafreaderTest(unittest.TestCase):
     def setup_pangraph_from_maf(self, maf_path):
         dagmaf = maf_to_dagmaf(maf_path)
         pangraph = Pangraph()
-        PangraphBuilderFromDAG.build(dagmaf, pangraph, self.test1_metadata)
+        builder_from_maf = PangraphBuilderFromDAG(self.test1_metadata)
+        builder_from_maf.build(dagmaf, pangraph)
         return pangraph
 
     @data("Files/Ebola/ebola.maf")

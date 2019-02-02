@@ -1,3 +1,4 @@
+import sys
 from typing import List, Dict
 import abc
 from fileformats.maf.DAGMaf import DAGMaf
@@ -6,12 +7,15 @@ from .Node import Node
 from .PathManager import PathManager
 import numpy as np
 from . import nucleotides
-from collections import deque
+from collections import deque, namedtuple
 
 
 class PangraphBuilder(abc.ABC):
+    def __init__(self, genomes_info: MultialignmentMetadata):
+        self.sequences_names = genomes_info.get_all_mafnames()
+
     @abc.abstractmethod
-    def build(self, input, pangraph, genomes_info):
+    def build(self, input, pangraph):
         pass
 
 
@@ -77,15 +81,59 @@ class VisitOnlyOnceDeque():
 
 
 class PangraphBuilderFromDAG(PangraphBuilder):
-    @staticmethod
-    def build(input, pangraph, genomes_info: MultialignmentMetadata, fasta_source: type):
-        sequences_names = genomes_info.get_all_mafnames()
+    def __init__(self, genomes_info: MultialignmentMetadata, fasta_source_type: type):
+        super().__init__(genomes_info)
+        self.full_sequences = self.get_sequences(fasta_source_type)
+
+    def get_sequences(self, fasta_source_type):
+        fasta_src = fasta_source_type()
+        return {
+            seq_id : fasta_src.get_source(seq_id)
+            for seq_id in self.sequences_names
+        }
+
+    def init_out_edges(self, dagmaf, pangraph):
+        PosInfo = namedtuple("PosInfo", ['start', 'block_id'])
+        seq_id_to_first_pos = {seq_id: PosInfo(sys.maxsize, None) for seq_id in self.sequences_names}
+        for n in dagmaf.dagmafnodes:
+            for s in n.alignment:
+                if s.annotations["start"] < seq_id_to_first_pos[s.id].start:
+                    seq_id_to_first_pos[s.id] = PosInfo(s.annotations["start"], n.id)
+
+        current_node_id = -1
+        out_edges = []
+        for seq_id, pos_info in seq_id_to_first_pos.items():
+            in_node = []
+            if pos_info.start == 0 or pos_info.start == sys.maxsize:
+                continue
+            else:
+                for i in range(pos_info.start):
+                    nucleotide = self.full_sequences[seq_id][i]
+                    current_node_id += 1
+                    pangraph._nodes[current_node_id] = Node(id=current_node_id,
+                                                        base=nucleotides.code(nucleotide),
+                                                        in_nodes=in_node,
+                                                        aligned_to=None)
+                    pangraph.add_path_to_node(path_name=seq_id, node_id=current_node_id)
+                    in_node = [current_node_id]
+
+                out_edges.append(EmptyOut(from_block=None,
+                                          node_id=current_node_id,
+                                          to_block=pos_info.block_id,
+                                          seq_id=seq_id,
+                                          seq_pos=pos_info.start-1,
+                                          type=(1,-1),))
+        return out_edges
+
+    def build(self, input, pangraph):
         nodes_count = PangraphBuilderFromDAG.get_nodes_count(input)
         pangraph._nodes = [None] * nodes_count
-        pangraph._pathmanager.init_paths(sequences_names, nodes_count)
-        current_node_id = -1
+        pangraph._pathmanager.init_paths(self.sequences_names, nodes_count)
 
-        out_edges = []#to zbudować węzły, jeśli początku sekwencji nie ma w mafie (przejrzeć dag, znaleźć najmniejszy start i jeśłi jest większy niż 0 tzn że trzeba dociagac)
+
+        out_edges = self.init_out_edges(input, pangraph)
+        current_node_id = max([node.id for node in pangraph._nodes if node is not None])
+        #to zbudować węzły, jeśli początku sekwencji nie ma w mafie (przejrzeć dag, znaleźć najmniejszy start i jeśłi jest większy niż 0 tzn że trzeba dociagac)
         #jesli byly budowane to dac id ostatniego do out edges, jesli nie to None
         in_edges = []
         blocks_deque = VisitOnlyOnceDeque([0]) #todo czy pierwszy jest rzeczywiście pierwszy?
@@ -159,12 +207,27 @@ class PangraphBuilderFromDAG(PangraphBuilder):
     @staticmethod
     def get_nodes_count(dagmaf: DAGMaf) -> int:
         nodes_count = 0
+        SeqMafInfo = namedtuple('SeqMafInfo', ['maf_pos_count', 'srcSize'])
+        seq_id_to_seqmafinfo = {}
+
         for n in dagmaf.dagmafnodes:
+            # update seq_info
+            for s in n.alignment:
+                if s.id in seq_id_to_seqmafinfo:
+                    s_info = seq_id_to_seqmafinfo[s.id]
+                    seq_id_to_seqmafinfo[s.id] = SeqMafInfo(maf_pos_count=s.annotations["size"] + s_info.maf_pos_count,
+                                                            srcSize=s_info.srcSize)
+                else:
+                    seq_id_to_seqmafinfo[s.id] = SeqMafInfo(maf_pos_count=s.annotations["size"],
+                                                            srcSize=s.annotations["srcSize"])
+            #sum number of current nodes
             number_of_columns = len(n.alignment[0].seq)
             for col_id in range(number_of_columns):
                 letters_in_columns = set([n.alignment[i].seq[col_id] for i in range(len(n.alignment))]).difference(set('-'))
                 nodes_count += len(letters_in_columns)
-        return nodes_count
+
+        nodes_to_complement_count = sum([info.srcSize - info.maf_pos_count for s, info in seq_id_to_seqmafinfo.items()])
+        return nodes_count + nodes_to_complement_count
 
     @staticmethod
     def get_next_aligned_node_id(current_column_i, column_nodes_ids):
@@ -189,6 +252,7 @@ class PangraphBuilderFromDAG(PangraphBuilder):
             return edge.node_id
         return None
 
+
 class Pangraph():
     def __init__(self):
         self._nodes = []
@@ -207,8 +271,8 @@ class Pangraph():
 
     def build(self, input, genomes_info):
         if isinstance(input, DAGMaf):
-            builder: PangraphBuilder = PangraphBuilderFromDAG()
-        builder.build(input, self, genomes_info)
+            builder: PangraphBuilder = PangraphBuilderFromDAG(genomes_info)
+        builder.build(input, self)
 
     def update(self, pangraph, start_node):
         self.update_nodes(pangraph._nodes)

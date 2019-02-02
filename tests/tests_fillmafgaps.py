@@ -17,29 +17,37 @@ from graph.Pangraph import PangraphBuilderFromDAG
 class FillMafGapsTest(unittest.TestCase):
     class FakeFastaSource(FastaSource):
         def __init__(self):
+            self.testseq0 = ""
             self.testseq1 = "ACTAGGT"
             self.testseq2 = "GGTCAGT"
+            self.testseq3 = ""
+            self.testseq4 = ""
 
-        def get_source(self, id: str, start: int, end: int) -> str:
-            if id == "testseq1":
+        def get_source(self, id: str, start: int = None, end: int = None) -> str:
+            if id == "testseq0":
+                return self.testseq0[start: end]
+            elif id == "testseq1":
                 return self.testseq1[start: end]
             elif id == "testseq2":
                 return self.testseq2[start: end]
+            elif id == "testseq3":
+                return self.testseq3[start: end]
+            elif id == "testseq4":
+                return self.testseq4[start: end]
             else:
                 raise Exception("No record found with given id!")
 
     def setUp(self):
         self.test_metadata = metadatareader.read(pathtools.get_file_content("Files/test1_metadata.json"))
-        # self.ncbi_metadata = metadatareader.read(pathtools.get_file_content("Files/maf_gaps/ncbi_metadata.json"))
         self.fasta_source = FillMafGapsTest.FakeFastaSource()
 
     @data("Files/maf_gaps/test_1_left.maf")
     def test_maf_gap_1_left(self, maf_path):
         expected_nodes = [
             Node(id=0, base=n.code('A'), in_nodes=[], aligned_to=None),
-            Node(id=1, base=n.code('C'), in_nodes=[1], aligned_to=None),
-            Node(id=2, base=n.code('T'), in_nodes=[2], aligned_to=None),
-            Node(id=3, base=n.code('A'), in_nodes=[3], aligned_to=4),
+            Node(id=1, base=n.code('C'), in_nodes=[0], aligned_to=None),
+            Node(id=2, base=n.code('T'), in_nodes=[1], aligned_to=None),
+            Node(id=3, base=n.code('A'), in_nodes=[2], aligned_to=4),
             Node(id=4, base=n.code('G'), in_nodes=[], aligned_to=3),
             Node(id=5, base=n.code('G'), in_nodes=[3, 4], aligned_to=None),
             Node(id=6, base=n.code('G'), in_nodes=[5], aligned_to=7),
@@ -47,12 +55,12 @@ class FillMafGapsTest(unittest.TestCase):
             Node(id=8, base=n.code('C'), in_nodes=[7], aligned_to=None),
             Node(id=9, base=n.code('A'), in_nodes=[8], aligned_to=None),
             Node(id=10, base=n.code('G'), in_nodes=[9], aligned_to=None),
-            Node(id=11, base=n.code('T'), in_nodes=[8, 10], aligned_to=None),
+            Node(id=11, base=n.code('T'), in_nodes=[6, 10], aligned_to=None),
         ]
 
         expected_pats = {
-            "testseq0": [0, 1, 2, 3, 5, 6, 11],
-            "testseq1": [4, 5, 7, 8, 9, 10, 11]
+            "testseq1": [0, 1, 2, 3, 5, 6, 11],
+            "testseq2": [4, 5, 7, 8, 9, 10, 11]
         }
         expected_pangraph = self.setup_pangraph(expected_nodes, expected_pats)
         actual_pangraph = self.setup_pangraph_from_maf(maf_path)
@@ -68,7 +76,8 @@ class FillMafGapsTest(unittest.TestCase):
     def setup_pangraph_from_maf(self, maf_path):
         dagmaf = maf_to_dagmaf(maf_path)
         pangraph = Pangraph()
-        PangraphBuilderFromDAG.build(dagmaf, pangraph, self.test_metadata, FillMafGapsTest.FakeFastaSource)
+        builder = PangraphBuilderFromDAG(self.test_metadata, FillMafGapsTest.FakeFastaSource)
+        builder.build(dagmaf, pangraph)
         return pangraph
 
     def compare_graphs(self, actual_graph, expected_graph):
