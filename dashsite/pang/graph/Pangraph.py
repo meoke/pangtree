@@ -93,6 +93,7 @@ class PangraphBuilderFromDAG(PangraphBuilder):
         }
 
     def init_out_edges(self, dagmaf, pangraph):
+        # todo it works for + strain only!
         PosInfo = namedtuple("PosInfo", ['start', 'block_id'])
         seq_id_to_first_pos = {seq_id: PosInfo(sys.maxsize, None) for seq_id in self.sequences_names}
         for n in dagmaf.dagmafnodes:
@@ -125,6 +126,11 @@ class PangraphBuilderFromDAG(PangraphBuilder):
                                           type=(1,-1),))
         return out_edges
 
+    @staticmethod
+    def get_max_node_id(pangraph):
+        current_nodes_ids = [node.id for node in pangraph._nodes if node is not None]
+        return max(current_nodes_ids) if current_nodes_ids else None
+
     def build(self, input, pangraph):
         nodes_count = PangraphBuilderFromDAG.get_nodes_count(input)
         pangraph._nodes = [None] * nodes_count
@@ -132,7 +138,8 @@ class PangraphBuilderFromDAG(PangraphBuilder):
 
 
         out_edges = self.init_out_edges(input, pangraph)
-        current_node_id = max([node.id for node in pangraph._nodes if node is not None])
+        max_node_id = PangraphBuilderFromDAG.get_max_node_id(pangraph)
+        current_node_id = max_node_id if max_node_id is not None else -1
         #to zbudować węzły, jeśli początku sekwencji nie ma w mafie (przejrzeć dag, znaleźć najmniejszy start i jeśłi jest większy niż 0 tzn że trzeba dociagac)
         #jesli byly budowane to dac id ostatniego do out edges, jesli nie to None
         in_edges = []
@@ -167,12 +174,10 @@ class PangraphBuilderFromDAG(PangraphBuilder):
                             elif sequence_name_to_parameters[sequence].start != 0:
                                 in_edges.append(EmptyIn(block_id, current_node_id, sequence, sequence_name_to_parameters[sequence].start))
 
-                            # add this node as open if the edge
                             local_edges[sequence] = current_node_id
                     node.in_nodes = list(node.in_nodes)
                     pangraph._nodes[current_node_id] = node
 
-            # tutaj wstawić otwarte połączenia
             for edge in block.out_edges:
                 if edge.edge_type == (1,-1):
                     blocks_deque.append(edge.to)
@@ -181,28 +186,83 @@ class PangraphBuilderFromDAG(PangraphBuilder):
                     seq_id = seq_end.seq_id
                     out_edges.append(EmptyOut(block_id, local_edges[seq_id], edge.to, seq_id, sequence_name_to_parameters[seq_id].get_last_pos(), edge.edge_type))
 
-        in_node_to_remove = []
-        out_node_to_remove = []
-        for j, open_edge in enumerate(out_edges):
-            for i, in_edge in enumerate(in_edges):
-                if open_edge.seq_id == in_edge.seq_id and open_edge.to_block == in_edge.to_block and open_edge.seq_pos == in_edge.seq_pos -1:
-                    pangraph._nodes[in_edge.node_id].in_nodes.append(open_edge.node_id)
-                    pangraph._nodes[in_edge.node_id].in_nodes = sorted(pangraph._nodes[in_edge.node_id].in_nodes)
-                    in_node_to_remove.append(i)
-                    out_node_to_remove.append(j)
-                    break
+            for seq in block.alignment:
+                add_out_edge = True
+                for edge in block.out_edges:
+                    edge_sequences_ids = [edge_seq[0].seq_id for edge_seq in edge.sequences]
+                    if seq.id in edge_sequences_ids:
+                        add_out_edge = False
+                        break
+                if add_out_edge:
+                    out_edges.append(EmptyOut(block_id, local_edges[seq_id], None, seq.id, sequence_name_to_parameters[seq.id].get_last_pos(), (1,-1)))
+
+
         # do koncowek dociagnac wezly
-        for index in sorted(in_node_to_remove, reverse=True):
-            del in_edges[index]
-        for index in sorted(out_node_to_remove, reverse=True):
-            del out_edges[index]
-        with open("a.txt", 'w') as o:
-            for i in in_edges:
-                o.write(f"{i}\n")
-            for i in out_edges:
-                o.write(f"{i}\n")
+        self.complement_endings(input, pangraph, in_edges)
+
+        #todo krawędzie in-out możnaby od razu jakoś parować
+        in_edge_to_remove = []
+        out_edge_to_remove = []
+        for i, out_edge in enumerate(out_edges):
+            for j, in_edge in enumerate(in_edges):
+                if out_edge.seq_pos == in_edge.seq_pos -1\
+                        and out_edge.type == (1,-1): # todo it works for + strain only!
+                    pangraph._nodes[in_edge.node_id].in_nodes.append(out_edge.node_id)
+                    pangraph._nodes[in_edge.node_id].in_nodes = sorted(pangraph._nodes[in_edge.node_id].in_nodes)
+                    in_edge_to_remove.append(j)
+                    out_edge_to_remove.append(i)
+                elif out_edge.seq_id == in_edge.seq_id and \
+                        out_edge.to_block == in_edge.to_block and \
+                        out_edge.type == (1,-1):
+                    self.complement_nodes(pangraph, out_edge, in_edge)
+                    out_edge_to_remove.append(i)
+                    in_edge_to_remove.append(j)
+
+        in_edges = [in_edge for i, in_edge in enumerate(in_edges) if i not in in_edge_to_remove]
+        out_edges = [out_edge for i, out_edge in enumerate(out_edges) if i not in out_edge_to_remove]
+
+        # for index in sorted(in_edge_to_remove, reverse=True):
+        #     del in_edges[index]
+        #
+        # for index in sorted(out_edge_to_remove, reverse=True):
+        #     del out_edges[index]
+        # with open("a.txt", 'w') as o:
+        #     for i in in_edges:
+        #         o.write(f"{i}\n")
+        #     for i in out_edges:
+        #         o.write(f"{i}\n")
 
         pangraph._pathmanager.remove_empty_paths()
+
+
+    def complement_endings(self, dagmaf, pangraph, in_edges):
+        # todo it works for + strain only!
+        PosInfo = namedtuple("PosInfo", ['start', 'size', 'srcSize', 'block_id'])
+        seq_id_to_last_pos = {seq_id: PosInfo(-1, None, None, None) for seq_id in self.sequences_names}
+        for n in dagmaf.dagmafnodes:
+            for s in n.alignment:
+                if s.annotations["start"] > seq_id_to_last_pos[s.id].start:
+                    seq_id_to_last_pos[s.id] = PosInfo(s.annotations["start"], s.annotations["size"], s.annotations["srcSize"], n.id)
+
+        current_node_id = PangraphBuilderFromDAG.get_max_node_id(pangraph) + 1
+        for seq_id, pos_info in seq_id_to_last_pos.items():
+            if pos_info.start == -1 or pos_info.start + pos_info.size == pos_info.srcSize:
+                continue
+            else:
+                in_node=[]
+                in_edges.append(EmptyIn(None, current_node_id, seq_id, pos_info.start+pos_info.size))
+                for i in range(pos_info.start + pos_info.size, pos_info.srcSize):
+                    nucleotide = self.full_sequences[seq_id][i]
+                    pangraph._nodes[current_node_id] = Node(id=current_node_id,
+                                                                base=nucleotides.code(nucleotide),
+                                                                in_nodes=in_node,
+                                                                aligned_to=None)
+                    pangraph.add_path_to_node(path_name=seq_id, node_id=current_node_id)
+                    in_node = [current_node_id]
+                    current_node_id += 1
+
+    def complement_nodes(self, pangraph, out_edge, in_edge):
+        pass
 
     @staticmethod
     def get_nodes_count(dagmaf: DAGMaf) -> int:
