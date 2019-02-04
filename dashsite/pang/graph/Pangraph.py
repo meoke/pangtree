@@ -8,6 +8,7 @@ from .PathManager import PathManager
 import numpy as np
 from . import nucleotides
 from collections import deque, namedtuple
+from .FastaSource import EntrezFastaSource
 
 
 class PangraphBuilder(abc.ABC):
@@ -48,12 +49,17 @@ class EmptyOut:
 
 
 class SeqAttributes:
-    def __init__(self, start, size):
+    def __init__(self, start, size, strand, srcSize):
         self.start = start
         self.size = size
+        self.strand = strand
+        self.srcSize = srcSize
 
     def get_last_pos(self):
-        return self.start + self.size - 1
+        if self.strand == 1:
+            return self.start + self.size - 1
+        else:
+            return self.srcSize - self.size + 1
 
     def __str__(self):
         return f"Start: {self.start}, Size: {self.size}"
@@ -148,8 +154,8 @@ class PangraphBuilderFromDAG(PangraphBuilder):
             block_id = blocks_deque.popleft()
             block = input.dagmafnodes[block_id]
             block_width = len(block.alignment[0].seq)
-            sequence_name_to_parameters = {seq.id: SeqAttributes(seq.annotations["start"], seq.annotations["size"]) for seq in block.alignment}
-            local_edges = {seq.id : PangraphBuilderFromDAG.get_matching_connection(out_edges, seq.id, block_id, in_edges) for seq in block.alignment}
+            sequence_name_to_parameters = {seq.id: SeqAttributes(seq.annotations["start"], seq.annotations["size"], seq.annotations["strand"], seq.annotations["srcSize"]) for seq in block.alignment}
+            local_edges = {seq.id : PangraphBuilderFromDAG.get_matching_connection(out_edges, seq.id, block_id, in_edges, sequence_name_to_parameters[seq.id]) for seq in block.alignment}
             #sprawdzac pozycje - jesli sie nie zgadzaja to robic dobudowki śródblokowe
 
             for col in range(block_width):
@@ -173,7 +179,6 @@ class PangraphBuilderFromDAG(PangraphBuilder):
                                 node.in_nodes.add(last_node_id)
                             elif sequence_name_to_parameters[sequence].start != 0:
                                 in_edges.append(EmptyIn(block_id, current_node_id, sequence, sequence_name_to_parameters[sequence].start))
-
                             local_edges[sequence] = current_node_id
                     node.in_nodes = list(node.in_nodes)
                     pangraph._nodes[current_node_id] = node
@@ -187,14 +192,15 @@ class PangraphBuilderFromDAG(PangraphBuilder):
                     out_edges.append(EmptyOut(block_id, local_edges[seq_id], edge.to, seq_id, sequence_name_to_parameters[seq_id].get_last_pos(), edge.edge_type))
 
             for seq in block.alignment:
-                add_out_edge = True
+                if sequence_name_to_parameters[seq.id].get_last_pos() != sequence_name_to_parameters[seq.id].srcSize:
+                    add_out_edge = True
                 for edge in block.out_edges:
                     edge_sequences_ids = [edge_seq[0].seq_id for edge_seq in edge.sequences]
                     if seq.id in edge_sequences_ids:
                         add_out_edge = False
                         break
                 if add_out_edge:
-                    out_edges.append(EmptyOut(block_id, local_edges[seq_id], None, seq.id, sequence_name_to_parameters[seq.id].get_last_pos(), (1,-1)))
+                    out_edges.append(EmptyOut(block_id, local_edges[seq.id], None, seq.id, sequence_name_to_parameters[seq.id].get_last_pos(), (1,-1)))
 
 
         # do koncowek dociagnac wezly
@@ -262,7 +268,24 @@ class PangraphBuilderFromDAG(PangraphBuilder):
                     current_node_id += 1
 
     def complement_nodes(self, pangraph, out_edge, in_edge):
-        pass
+        start_seq_pos = out_edge.seq_pos + 1
+        end_seq_pos = in_edge.seq_pos
+        current_node_id = PangraphBuilderFromDAG.get_max_node_id(pangraph) + 1
+        seq_id = out_edge.seq_id
+        in_node = [out_edge.node_id]
+        for seq_pos in range(start_seq_pos, end_seq_pos):
+            nucleotide = self.full_sequences[seq_id][seq_pos]
+            pangraph._nodes[current_node_id] = Node(id=current_node_id,
+                                                    base=nucleotides.code(nucleotide),
+                                                    in_nodes=in_node,
+                                                    aligned_to=None)
+            pangraph.add_path_to_node(path_name=seq_id, node_id=current_node_id)
+            in_node = [current_node_id]
+            current_node_id += 1
+        in_edge_in_nodes = pangraph._nodes[in_edge.node_id].in_nodes
+        in_edge_in_nodes.append(current_node_id-1)
+        pangraph._nodes[in_edge.node_id].in_nodes = sorted(in_edge_in_nodes)
+
 
     @staticmethod
     def get_nodes_count(dagmaf: DAGMaf) -> int:
@@ -296,19 +319,26 @@ class PangraphBuilderFromDAG(PangraphBuilder):
         return None
 
     @staticmethod
-    def get_matching_connection(out_edges, seq_id, to_block_id, in_edges):
-        edge_id = None
+    def get_matching_connection(out_edges, seq_id, to_block_id, in_edges, sequence_params):
+        out_edge_id = None
+        in_edge_id = None
         edge = None
-        for i, freeEdge in enumerate(out_edges):
-            if freeEdge.seq_id == seq_id and freeEdge.type == (1,-1) and freeEdge.to_block == to_block_id:
-                for j, e in enumerate(in_edges):
-                    if e.to_block == to_block_id and e.seq_id == seq_id:
-                        del in_edges[j]
-                edge_id = i
-                edge = freeEdge
-                break
-        if edge_id is not None:
-            del out_edges[edge_id]
+        for i, out_edge in enumerate(out_edges):
+            if out_edge.seq_id == seq_id \
+                    and out_edge.type == (1, -1) \
+                    and out_edge.to_block == to_block_id \
+                    and out_edge.seq_pos == sequence_params.start -1:
+                out_edge_id = i
+                edge = out_edge
+                for j, in_edge in enumerate(in_edges):
+                    if seq_id == in_edge.seq_id \
+                            and to_block_id == in_edge.to_block \
+                            and out_edge.seq_pos == in_edge.seq_pos - 1:
+                        in_edge_id = j
+        if in_edge_id is not None:
+            del in_edges[in_edge_id]
+        if out_edge_id is not None:
+            del out_edges[out_edge_id]
             return edge.node_id
         return None
 
@@ -331,7 +361,7 @@ class Pangraph():
 
     def build(self, input, genomes_info):
         if isinstance(input, DAGMaf):
-            builder: PangraphBuilder = PangraphBuilderFromDAG(genomes_info)
+            builder: PangraphBuilder = PangraphBuilderFromDAG(genomes_info, EntrezFastaSource)
         builder.build(input, self)
 
     def update(self, pangraph, start_node):
