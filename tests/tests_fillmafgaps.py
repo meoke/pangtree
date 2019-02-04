@@ -92,8 +92,8 @@ class FillMafGapsTest(unittest.TestCase):
         actual_pangraph = self.setup_pangraph_from_maf(maf_path)
         self.compare_pangraphs(actual_pangraph=actual_pangraph, expected_pangraph=expected_pangraph)
 
-    @data("Files/maf_gaps/test_3_middle_both.maf")
-    def test_maf_gap_3_middle_both(self, maf_path):
+    @data("Files/maf_gaps/test_3_middle_1.maf")
+    def test_maf_gap_3_middle_1(self, maf_path):
         expected_nodes = [
             Node(id=0, base=n.code('A'), in_nodes=[], aligned_to=1),
             Node(id=1, base=n.code('G'), in_nodes=[], aligned_to=0),
@@ -120,6 +120,33 @@ class FillMafGapsTest(unittest.TestCase):
         actual_pangraph = self.setup_pangraph_from_maf(maf_path)
         self.compare_pangraphs(actual_pangraph=actual_pangraph, expected_pangraph=expected_pangraph)
 
+
+    @data("Files/maf_gaps/test_4_middle_2.maf")
+    def test_maf_gap_4_middle_2(self, maf_path):
+        expected_nodes = [
+            Node(id=0, base=n.code('A'), in_nodes=[], aligned_to=1),
+            Node(id=1, base=n.code('G'), in_nodes=[], aligned_to=0),
+            Node(id=2, base=n.code('C'), in_nodes=[0], aligned_to=None),
+            Node(id=3, base=n.code('T'), in_nodes=[2], aligned_to=None),
+            Node(id=4, base=n.code('A'), in_nodes=[3], aligned_to=5),
+            Node(id=5, base=n.code('G'), in_nodes=[1], aligned_to=4),
+
+            Node(id=6, base=n.code('A'), in_nodes=[11], aligned_to=7),
+            Node(id=7, base=n.code('G'), in_nodes=[4], aligned_to=6),
+            Node(id=8, base=n.code('G'), in_nodes=[6, 7], aligned_to=None),
+            Node(id=9, base=n.code('T'), in_nodes=[8], aligned_to=None),
+
+            Node(id=10, base=n.code('T'), in_nodes=[5], aligned_to=None),
+            Node(id=11, base=n.code('C'), in_nodes=[10], aligned_to=None)
+        ]
+
+        expected_pats = {
+            "testseq1": [*sorted([0, 2, 3, 4, 7, 8, 9])],
+            "testseq2": [*sorted([1, 5, 10, 11, 6, 8, 9])]
+        }
+        expected_pangraph = self.setup_pangraph(expected_nodes, expected_pats)
+        actual_pangraph = self.setup_pangraph_from_maf(maf_path)
+        self.compare_pangraphs(actual_pangraph=actual_pangraph, expected_pangraph=expected_pangraph)
 
     def setup_pangraph(self, expected_nodes, expected_paths):
         pangraph = Pangraph()
