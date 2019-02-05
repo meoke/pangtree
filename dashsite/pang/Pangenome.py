@@ -13,10 +13,10 @@ class Pangenome:
         self.dagmaf = None
         self.pangraph = Pangraph()
 
-    def build_from_maf(self, mafcontent):
+    def build_from_maf(self, mafcontent, fasta_complementation):
         self.dagmaf = maf_to_dagmaf(mafcontent)
         self.genomes_info.feed_with_dagmaf_data(mafcontent)
-        self.pangraph.build(self.dagmaf, self.genomes_info)
+        self.pangraph.build(self.dagmaf, self.genomes_info, fasta_complementation)
 
     def generate_fasta_files(self, output_dir):
         pass

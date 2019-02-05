@@ -9,3 +9,4 @@ from dashsite.pang.graph.Pangraph import Pangraph
 from dashsite.pang.userio import pathtools
 from dashsite.pang.fileformats.maf.reader import maf_to_dagmaf
 from dashsite.pang.graph.FastaSource import FastaSource
+from dashsite.pang.graph.FastaSource import FastaFileSystemSource

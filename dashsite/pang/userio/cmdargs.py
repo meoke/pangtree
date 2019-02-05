@@ -108,6 +108,16 @@ def _get_parser():
                    default=True,
                    help='Tree POA algorithm parameter.'
                         'Set if consensuses tree should be processed in a way to avoid fragmentation.')
+    p.add_argument('-fasta_complementation',
+                   nargs='*',
+                   help='Maf file usually contains not full sequences but only parts of them, aligned to each other. '
+                        'To build an exact pangraph the full sequences must be retrieved from: '
+                        'ncbi or local file system. '
+                        'Don\'t use this argument if you want the pangraph to be build without full sequences.'
+                        'Use it without additional argument if you want to download the lacking fragments from ncbi'
+                        '(then make sure that sequence identifiers used in maf match the ncbi accession identifiers) '
+                        'Use it with additional argument (path to the directory with fasta files) if you want '
+                        'to use fasta from local file system (make sure sequence identifiers in maf match file names')
     return p
 
 
@@ -119,3 +129,15 @@ def get_validated_args():
         return parser.parse_args()
     except Exception as e:
         raise parser.error(e)
+
+
+def get_fasta_complementation_option(fasta_complementation):
+    if fasta_complementation is None:
+        return None
+    elif fasta_complementation == []:
+        return 'ncbi'
+    elif fasta_complementation[0]:
+        dir_path = Path(fasta_complementation[0])
+        if not dir_path.exists():
+            raise Exception("Fasta directory does not exist.")
+        return dir_path

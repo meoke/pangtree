@@ -275,7 +275,7 @@ class MafreaderTest(unittest.TestCase):
     def setup_pangraph_from_maf(self, maf_path):
         dagmaf = maf_to_dagmaf(maf_path)
         pangraph = Pangraph()
-        builder_from_maf = PangraphBuilderFromDAG(self.test1_metadata, FillMafGapsTest.FakeFastaSource)
+        builder_from_maf = PangraphBuilderFromDAG(self.test1_metadata, FillMafGapsTest.FakeFastaSource())
         builder_from_maf.build(dagmaf, pangraph)
         return pangraph
 

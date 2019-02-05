@@ -7,6 +7,9 @@ class PathManager:
     def __init__(self) -> object:
         self.paths = None
         self.path_names_to_array_id = None
+        self.path_names_to_nodes_ids_order = None
+        self.path_names_to_first_node_id = None
+        self.edges = []
         # paths_names = [] if not paths_names else paths_names
         # self.paths = np.zeros(shape=(len(paths_names), max_nodes_count), dtype=bool)
         # self.path_names_to_array_id = {path_name: i for i, path_name in enumerate(sorted(paths_names))}
@@ -14,11 +17,13 @@ class PathManager:
     def init_paths(self, paths_names, nodes_count):
         self.paths = np.zeros(shape=(len(paths_names), nodes_count), dtype=bool)
         self.path_names_to_array_id = {path_name: i for i, path_name in enumerate(sorted(paths_names))}
+        self.path_names_to_nodes_ids_order = {path_name: [] for path_name in sorted(paths_names)}
 
     def init_from_dict(self, max_nodes_count, paths_to_node_ids):
         if not paths_to_node_ids.keys():
             return
         self.paths = np.zeros(shape=(len(paths_to_node_ids.keys()), max_nodes_count), dtype=bool)
+        self.path_names_to_nodes_ids_order = paths_to_node_ids
         self.path_names_to_array_id = {path_name: array_id
                                        for array_id, path_name in enumerate(sorted(paths_to_node_ids.keys()))}
         for path, node_ids in paths_to_node_ids.items():
@@ -27,23 +32,25 @@ class PathManager:
 
     def __eq__(self, other):
         return (np.array_equal(self.paths, other.paths)
-                and self.path_names_to_array_id == other.path_names_to_array_id)
+                and self.path_names_to_array_id == other.path_names_to_array_id
+                and self.path_names_to_nodes_ids_order == other.path_names_to_nodes_ids_order)
 
-    def mark(self, path_name, node_id):
+    def mark_and_add(self, path_name, node_id):
         array_id = self.path_names_to_array_id[path_name]
         try:
             self.paths[array_id, node_id] = True
+            self.path_names_to_nodes_ids_order[path_name].append(node_id)
         except:
             print("")
+    #
+    # def update(self, pathmanager, start):
+    #     for path_name, array_id in pathmanager.path_names_to_array_id.items():
+    #         current_array_id = self.path_names_to_array_id[path_name]
+    #         end = start+np.shape(pathmanager.paths)[1]
+    #         self.paths[current_array_id, start:end] = pathmanager.paths[array_id, :]
 
-    def update(self, pathmanager, start):
-        for path_name, array_id in pathmanager.path_names_to_array_id.items():
-            current_array_id = self.path_names_to_array_id[path_name]
-            end = start+np.shape(pathmanager.paths)[1]
-            self.paths[current_array_id, start:end] = pathmanager.paths[array_id, :]
-
-    def trim(self, nodes_count):
-        self.paths = np.delete(self.paths, np.s_[nodes_count:], 1)
+    # def trim(self, nodes_count):
+    #     self.paths = np.delete(self.paths, np.s_[nodes_count:], 1)
 
     def get_in_nodes(self, node_id):
         in_nodes = []
@@ -60,7 +67,8 @@ class PathManager:
         return self.paths.shape[0]
 
     def get_start_node_id(self, pathname):
-        return self.get_nodes_ids(pathname)[0]
+        return self.path_names_to_nodes_ids_order[pathname][0]
+        # return self.get_nodes_ids(pathname)[0]
 
     def get_sources_weights_dict(self):
         unweighted_sources_weights = {}

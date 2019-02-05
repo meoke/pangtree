@@ -10,7 +10,8 @@ def run_pang(args):
     """Creates Pangraph and runs required algorithms."""
 
     p = Pangenome(pathtools.get_file_content(args.data))
-    p.build_from_maf(args.multialignment)
+    fasta_complementation_option = get_fasta_complementation_option(args.fasta_complementation)
+    p.build_from_maf(args.multialignment, fasta_complementation_option)
     if args.fasta:
         p.generate_fasta_files(pathtools.create_child_dir(args.output, 'fasta'))
 
