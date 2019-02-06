@@ -1,0 +1,11 @@
+##maf version=1
+## two blocks not connected
+## no sequences complementation needed
+a degree=2
+s seq0 0 5 + 5 ACTGG
+s seq1 0 5 + 5 ACTGG
+
+a degree=2
+s seq2 0 5 + 5 GTACC
+s seq3 0 5 + 5 TTAGC
+

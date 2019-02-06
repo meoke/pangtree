@@ -108,7 +108,7 @@ class PathManager:
         return list(self.path_names_to_array_id.values())
 
     def keep_paths_ids(self, sequences_ids: List[int]):
-        """Removes unnecessary paths info and return ids of still necessary nodes."""
+        """Removes unnecessary paths info."""
         path_names_to_delete = []
         path_ids_to_delete = []
         d_copy = self.path_names_to_array_id.copy()
@@ -123,6 +123,8 @@ class PathManager:
         self.paths = np.delete(self.paths, path_ids_to_delete, 0)
         for path_name in path_names_to_delete:
             del self.path_names_to_array_id[path_name]
+            del self.path_names_to_nodes_ids_order[path_name]
+
 
     def keep_paths_names(self, sequences_names: List[str]):
         """Removes unnecessary paths info and return ids of still necessary nodes."""

@@ -3,6 +3,7 @@ from collections import deque, namedtuple
 
 from fileformats.maf.DAGMaf import DAGMaf
 from graph import nucleotides
+from graph.FastaSource import FastaSource
 from graph.Node import Node
 from graph.PangraphBuilder import PangraphBuilder
 from metadata.MultialignmentMetadata import MultialignmentMetadata
@@ -77,11 +78,15 @@ class VisitOnlyOnceDeque():
 class PangraphBuilderFromDAG(PangraphBuilder):
     def __init__(self, genomes_info: MultialignmentMetadata, fasta_source: FastaSource):
         super().__init__(genomes_info)
-        self.full_sequences = self.get_sequences(fasta_source)
+        if fasta_source is not None:
+            self.full_sequences = self.get_sequences(fasta_source)
+            self.complement_sequences = True
+        else:
+            self.complement_sequences = False
 
     def get_sequences(self, fasta_source):
         return {
-            seq_id : fasta_source.get_source(seq_id)
+            seq_id: fasta_source.get_source(id=seq_id)
             for seq_id in self.sequences_names
         }
 
@@ -125,7 +130,7 @@ class PangraphBuilderFromDAG(PangraphBuilder):
         return max(current_nodes_ids) if current_nodes_ids else None
 
     def build(self, input, pangraph):
-        sources_maf_info = self.get_sources_maf_info()
+        sources_maf_info = self.get_sources_maf_info(input)
         nodes_count = PangraphBuilderFromDAG.get_nodes_count(input)
         pangraph._nodes = [None] * nodes_count
         pangraph._pathmanager.init_paths(self.sequences_names, nodes_count)
@@ -137,7 +142,7 @@ class PangraphBuilderFromDAG(PangraphBuilder):
         #to zbudować węzły, jeśli początku sekwencji nie ma w mafie (przejrzeć dag, znaleźć najmniejszy start i jeśłi jest większy niż 0 tzn że trzeba dociagac)
         #jesli byly budowane to dac id ostatniego do out edges, jesli nie to None
         in_edges = []
-        blocks_deque = VisitOnlyOnceDeque([0]) #todo czy pierwszy jest rzeczywiście pierwszy?
+        blocks_deque = VisitOnlyOnceDeque(PangraphBuilderFromDAG.get_starting_blocks(input)) #todo czy pierwszy jest rzeczywiście pierwszy?
         while blocks_deque.not_empty():
             block_id = blocks_deque.popleft()
             block = input.dagmafnodes[block_id]
@@ -334,6 +339,10 @@ class PangraphBuilderFromDAG(PangraphBuilder):
         first_blocks = self.get_starting_blocks(dagmaf)
         dd = VisitOnlyOnceDeque
 
-    def get_starting_blocks(self, dagmaf):
-        return dagmaf.dagmafnodes[0]
+    @staticmethod
+    def get_starting_blocks(dagmaf):
+        blocks_ids = [node.id for node in dagmaf.dagmafnodes]
+        blocks_targeted_by_any_edge = [edge.to for node in dagmaf.dagmafnodes for edge in node.out_edges]
+        starting_blocks_ids = set(blocks_ids)-set(blocks_targeted_by_any_edge)
+        return list(starting_blocks_ids)
 

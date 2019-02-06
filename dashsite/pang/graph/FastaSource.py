@@ -1,4 +1,6 @@
 import abc
+from pathlib import Path
+
 from Bio import Entrez
 
 from userio.pathtools import get_child_file_path
@@ -17,10 +19,10 @@ class FastaSource(abc.ABC):
 class FastaFileSystemSource(FastaSource):
     def __init__(self, fastas_dictionary):
         super().__init__()
-        self.fastas_dictionary = fastas_dictionary
+        self.fastas_dictionary = Path(fastas_dictionary)
 
     def get_source(self, id: str, start: int = None, end: int = None):
-        fasta_path = get_child_file_path(self.fastas_dictionarym, f"{id}.fasta")
+        fasta_path = get_child_file_path(self.fastas_dictionary, f"{id}.fasta")
         with open(fasta_path) as fasta:
             fasta_content = self.get_raw_sequence_from_fasta(fasta)
             return fasta_content[start:end]

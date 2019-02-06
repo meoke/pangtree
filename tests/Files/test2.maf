@@ -1,8 +1,0 @@
-#maf version=1 scoring=roast.v3.3'
-a score=1.0
-s testseq2 0 3 + 5 ACT
-s testseq1 0 2 + 6 AC-
-
-a score=2.0
-s testseq1 2 4 + 6 GGTC
-s testseq2 3 2 + 5 G-A-

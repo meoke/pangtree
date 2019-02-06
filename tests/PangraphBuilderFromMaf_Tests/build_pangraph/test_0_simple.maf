@@ -1,0 +1,8 @@
+#maf version=1 scoring=roast.v3.3
+a score=1
+s seq0 0 4 + 10 ACTG
+s seq1 0 4 + 9 ACTG
+
+a score=1
+s seq0 4 6 + 10 ACTGAA
+s seq1 4 5 + 9 ACTGA-
