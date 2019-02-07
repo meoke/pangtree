@@ -1,3 +1,5 @@
+from io import StringIO
+
 from metadata import reader as metadatareader
 from graph import mafreader
 from consensus.algorithm.TreeConfig import TreeConfig
@@ -10,13 +12,16 @@ from graph.Pangraph import Pangraph
 class Pangenome:
     def __init__(self, metadata):
         self.genomes_info = self._build_genomes_info(metadata)
-        self.dagmaf = None
         self.pangraph = Pangraph()
 
-    def build_from_maf(self, mafcontent, fasta_complementation):
-        self.dagmaf = maf_to_dagmaf(mafcontent)
-        self.genomes_info.feed_with_dagmaf_data(mafcontent)
-        self.pangraph.build(self.dagmaf, self.genomes_info, fasta_complementation)
+    def build_from_maf_firstly_converted_to_dag(self, mafcontent: StringIO, fasta_complementation_option):
+        dagmaf = maf_to_dagmaf(mafcontent)
+        self.genomes_info.feed_with_maf_data(mafcontent)
+        self.pangraph.build_from_dag(dagmaf, fasta_complementation_option, self.genomes_info)
+
+    def build_from_maf(self, mafcontent: StringIO):
+        self.genomes_info.feed_with_maf_data(mafcontent)
+        self.pangraph.build_from_maf(mafcontent, self.genomes_info)
 
     def generate_fasta_files(self, output_dir):
         pass

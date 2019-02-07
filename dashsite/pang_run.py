@@ -29,7 +29,7 @@ def run_pang(multialignment_contents,
     output_dir = pathtools.create_default_output_dir(Path(getcwd()))
 
     pangenome = Pangenome(metadata=metadata_str)
-    pangenome.build_from_maf(mafcontent=StringIO(maf_str))
+    pangenome.build_from_maf_converted_to_dag(mafcontent=StringIO(maf_str))
     # if fasta_option:
     #     pass
     #     # get fasta zip?

@@ -21,6 +21,6 @@ class MultialignmentMetadata:
     def get_all_mafnames(self):
         return [data.mafname for seq_id, data in self.genomes_metadata.items()]
 
-    def feed_with_dagmaf_data(self, mafcontent):
+    def feed_with_maf_data(self, mafcontent):
         #todo
         pass

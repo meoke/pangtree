@@ -1,0 +1,19 @@
+# maf version=1 scoring=roast.v3.3
+# seq0 has no ending
+# seq1 has no start
+# seq1 is not in 2nd block
+# all sequences are not always + strand
+
+a score=1
+s seq0 5 3 + 10 -ATC
+s seq1 1 3 - 9  -CTC
+s seq2 0 3 + 9  AC-G
+
+a score=1
+s seq0 3 2 - 10 A-G
+s seq2 3 2 + 9  AC-
+
+a score=1
+s seq0 0 3 + 10 CTC--
+s seq1 4 5 + 9  GTCCA
+s seq2 0 4 - 9  GTC-A

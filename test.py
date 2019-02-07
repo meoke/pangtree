@@ -5,6 +5,9 @@
 
 from Bio import AlignIO
 ebola_path = 'examples/Ebola/ebola.maf'
+path = "/home/meoke/PycharmProjects/pang/tests/PangraphBuilder_Tests/PangraphBuilderFromMAF_Tests/files_build_pangraph/test_1_messy_sequences.maf"
+a = AlignIO.parse(path, "maf")
+pass
 # size = 0
 # d = {}
 # for multiple_alignment in AlignIO.parse(ebola_path, "maf"):
@@ -29,7 +32,7 @@ id2 = "NC_001608v3.NC_001608v3"
 # ??? To: 47 Node_id: 1611, Seq_id: NC_024781v1.NC_024781v1, Seq pos: 153
 # ??? To: 47 Node_id: 1611, Seq_id: NC_001608v3.NC_001608v3, Seq pos: 153
 
-for i, multiple_alignment in enumerate(AlignIO.parse(ebola_path, "maf")):
+for i, multiple_alignment in enumerate(a):
     for seqrec in multiple_alignment:
         if seqrec.id == id2:
             print("%s starts at %s on the %s strand of a sequence %s in length, and runs for %s bp" % \

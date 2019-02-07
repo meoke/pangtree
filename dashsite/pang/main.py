@@ -1,9 +1,12 @@
 import logging.config
 import time
+from io import StringIO
 
 from userio import cmdargs, pathtools
 from Pangenome import Pangenome
 from fileformats.json import writer as jsonwriter
+from userio.cmdargs import get_fasta_complementation_option
+from userio.pathtools import get_file_content
 
 
 def run_pang(args):
@@ -11,7 +14,8 @@ def run_pang(args):
 
     p = Pangenome(pathtools.get_file_content(args.data))
     fasta_complementation_option = get_fasta_complementation_option(args.fasta_complementation)
-    p.build_from_maf(args.multialignment, fasta_complementation_option)
+    multialignment = StringIO(get_file_content(args.multialignment))
+    p.build_from_maf_converted_to_dag(multialignment, fasta_complementation_option)
     if args.fasta:
         p.generate_fasta_files(pathtools.create_child_dir(args.output, 'fasta'))
 

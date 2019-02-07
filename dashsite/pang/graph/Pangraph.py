@@ -1,19 +1,17 @@
-import sys
+from io import StringIO
+from pathlib import Path
 from typing import List, Dict
-import abc
 from fileformats.maf.DAGMaf import DAGMaf
-from graph.PangraphBuilder import PangraphBuilder
-from graph.PangraphBuilderFromDAG import PangraphBuilderFromDAG
-from metadata.MultialignmentMetadata import MultialignmentMetadata
+from graph.PangraphBuilder.PangraphBuilderBase import PangraphBuilderBase
+from graph.PangraphBuilder.PangraphBuilderFromDAG import PangraphBuilderFromDAG
+from graph.PangraphBuilder.PangraphBuilderFromMAF import PangraphBuilderFromMAF
 from .Node import Node
 from .PathManager import PathManager
 import numpy as np
-from . import nucleotides
-from collections import deque, namedtuple
 from .FastaSource import EntrezFastaSource, FastaFileSystemSource
 
 
-class Pangraph():
+class Pangraph:
     def __init__(self):
         self._nodes = []
         self._pathmanager = PathManager()
@@ -29,16 +27,23 @@ class Pangraph():
                 self._pathmanager == other._pathmanager and
                 self._consensusmanager == other._consensusmanager)
 
-    def build(self, input, genomes_info, fasta_complementation):
-        if isinstance(input, DAGMaf):
-            if fasta_complementation is None:
-                fasta_source = None
-            elif fasta_complementation == 'ncbi':
-                fasta_source = EntrezFastaSource
-            else:
-                fasta_source = FastaFileSystemSource(fasta_complementation)
-            builder: PangraphBuilder = PangraphBuilderFromDAG(genomes_info, fasta_source)
-        builder.build(input, self)
+    def build_from_maf_firstly_converted_to_dag(self, mafcontent: StringIO, fasta_complementation, genomes_info):
+        if not fasta_complementation:
+            fasta_source = None
+        elif fasta_complementation == 'ncbi':
+            fasta_source = EntrezFastaSource
+        elif isinstance(fasta_complementation, Path):
+            fasta_source = FastaFileSystemSource(fasta_complementation)
+
+        builder: PangraphBuilderBase = PangraphBuilderFromDAG(genomes_info, fasta_source)
+        self._build(builder, mafcontent)
+
+    def build_from_maf(self, mafcontent, genomes_info):
+        builder: PangraphBuilderBase = PangraphBuilderFromMAF(genomes_info)
+        self._build(builder, mafcontent)
+
+    def _build(self, builder, build_input):
+        builder.build(build_input, self)
 
     # def update(self, pangraph, start_node):
     #     self.update_nodes(pangraph._nodes)

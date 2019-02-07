@@ -5,7 +5,7 @@ from fileformats.maf.DAGMaf import DAGMaf
 from graph import nucleotides
 from graph.FastaSource import FastaSource
 from graph.Node import Node
-from graph.PangraphBuilder import PangraphBuilder
+from graph.PangraphBuilder.PangraphBuilderBase import PangraphBuilderBase
 from metadata.MultialignmentMetadata import MultialignmentMetadata
 
 
@@ -75,7 +75,7 @@ class VisitOnlyOnceDeque():
         return False
 
 
-class PangraphBuilderFromDAG(PangraphBuilder):
+class PangraphBuilderFromDAG(PangraphBuilderBase):
     def __init__(self, genomes_info: MultialignmentMetadata, fasta_source: FastaSource):
         super().__init__(genomes_info)
         if fasta_source is not None:

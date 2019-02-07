@@ -17,9 +17,9 @@ class FastaSource(abc.ABC):
 
 
 class FastaFileSystemSource(FastaSource):
-    def __init__(self, fastas_dictionary):
+    def __init__(self, fastas_dictionary: Path):
         super().__init__()
-        self.fastas_dictionary = Path(fastas_dictionary)
+        self.fastas_dictionary = fastas_dictionary
 
     def get_source(self, id: str, start: int = None, end: int = None):
         fasta_path = get_child_file_path(self.fastas_dictionary, f"{id}.fasta")
