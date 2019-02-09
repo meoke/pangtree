@@ -1,6 +1,8 @@
 import sys
 from collections import namedtuple
 
+from Bio import AlignIO
+
 from graph import nucleotides
 from graph.Node import Node
 from graph.PangraphBuilder.PangraphBuilderBase import PangraphBuilderBase
@@ -12,6 +14,7 @@ class PangraphBuilderFromMAF(PangraphBuilderBase):
         super().__init__(genomes_info)
 
     def build(self, input, pangraph):
+        input = [*AlignIO.parse(input, "maf")]
         nodes_count = PangraphBuilderFromMAF.get_nodes_count(input)
         pangraph._nodes = [None] * nodes_count
         pangraph._pathmanager.init_paths(self.sequences_names, nodes_count)

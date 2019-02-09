@@ -12,7 +12,7 @@ class PangraphBuilderFromMAFTest_HelpMethods(PangraphBuilderTests):
           ("PangraphBuilder_Tests/PangraphBuilderFromMAF_Tests/files_help_methods/test_2_spaces_in_blocks.maf", 18))
     @unpack
     def test_calc_nodes(self, maf_path, expected_nodes_count):
-        mafalignment = PangraphBuilderTests.read_maf(maf_path)
+        mafalignment = [*PangraphBuilderTests.read_maf(maf_path)]
         actual_nodes_count = PangraphBuilderFromMAF.get_nodes_count(mafalignment)
         self.assertEqual(expected_nodes_count, actual_nodes_count)
 

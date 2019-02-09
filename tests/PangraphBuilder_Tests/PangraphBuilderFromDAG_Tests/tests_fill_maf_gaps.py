@@ -23,7 +23,7 @@ class PangraphBuilderFromDAGTest_FillMafGaps(PangraphBuilderTests):
 
         def get_source(self, id: str, start: int = None, end: int = None) -> str:
             try:
-                self.sources[id][start:end]
+                return self.sources[id][start:end]
             except KeyError:
                 raise Exception("No record found with given id!")
 
@@ -50,8 +50,8 @@ class PangraphBuilderFromDAGTest_FillMafGaps(PangraphBuilderTests):
         ]
 
         expected_paths = {
-            "testseq1": [0, 1, 2, 3, 5, 6, 11],
-            "testseq2": [4, 5, 7, 8, 9, 10, 11]
+            "seq1": [0, 1, 2, 3, 5, 6, 11],
+            "seq2": [4, 5, 7, 8, 9, 10, 11]
         }
         expected_pangraph = PangraphBuilderTests.setup_pangraph(expected_nodes, expected_paths)
         actual_pangraph = PangraphBuilderTests.setup_pangraph_from_maf_firstly_converted_to_dag(maf_path, self.seq_metadata, self.fasta_source)
@@ -76,8 +76,8 @@ class PangraphBuilderFromDAGTest_FillMafGaps(PangraphBuilderTests):
         ]
 
         expected_paths = {
-            "testseq1": [0, 2, 4, 5, 8, 9, 10],
-            "testseq2": [1, 3, 4, 6, 7, 11, 12]
+            "seq1": [0, 2, 4, 5, 8, 9, 10],
+            "seq2": [1, 3, 4, 6, 7, 11, 12]
         }
         expected_pangraph = PangraphBuilderTests.setup_pangraph(expected_nodes, expected_paths)
         actual_pangraph = PangraphBuilderTests.setup_pangraph_from_maf_firstly_converted_to_dag(maf_path, self.seq_metadata, self.fasta_source)
@@ -104,16 +104,16 @@ class PangraphBuilderFromDAGTest_FillMafGaps(PangraphBuilderTests):
         ]
 
         expected_paths = {
-            "testseq1": [*sorted([0, 2, 8, 9, 4, 6, 7])],
-            "testseq2": [*sorted([1, 10, 11, 3, 5, 6, 7])]
+            "seq1": [*sorted([0, 2, 8, 9, 4, 6, 7])],
+            "seq2": [*sorted([1, 10, 11, 3, 5, 6, 7])]
         }
         expected_pangraph = PangraphBuilderTests.setup_pangraph(expected_nodes, expected_paths)
         actual_pangraph = PangraphBuilderTests.setup_pangraph_from_maf_firstly_converted_to_dag(maf_path, self.seq_metadata, self.fasta_source)
         self.compare_pangraphs(actual_pangraph=actual_pangraph, expected_pangraph=expected_pangraph)
 
-
     def test_4_missing_one_sequence_middle(self):
-        maf_path = "PangraphBuilder_Tests/PangraphBuilderFromDAG_Tests/files_fill_maf_gaps/test_4_missing_one_sequence_middle"
+        maf_path = "PangraphBuilder_Tests/PangraphBuilderFromDAG_Tests/files_fill_maf_gaps/" \
+                   "test_4_missing_one_sequence_middle.maf"
         expected_nodes = [
             Node(id=0, base=n.code('A'), in_nodes=[], aligned_to=1),
             Node(id=1, base=n.code('G'), in_nodes=[], aligned_to=0),
@@ -132,8 +132,8 @@ class PangraphBuilderFromDAGTest_FillMafGaps(PangraphBuilderTests):
         ]
 
         expected_paths = {
-            "testseq1": [*sorted([0, 2, 3, 4, 7, 8, 9])],
-            "testseq2": [*sorted([1, 5, 10, 11, 6, 8, 9])]
+            "seq1": [*sorted([0, 2, 3, 4, 7, 8, 9])],
+            "seq2": [*sorted([1, 5, 10, 11, 6, 8, 9])]
         }
         expected_pangraph = PangraphBuilderTests.setup_pangraph(expected_nodes, expected_paths)
         actual_pangraph = PangraphBuilderTests.setup_pangraph_from_maf_firstly_converted_to_dag(maf_path, self.seq_metadata, self.fasta_source)

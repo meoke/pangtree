@@ -220,7 +220,8 @@ class PangraphBuilderFromDAGTest_BuildPangraph(PangraphBuilderTests):
         self.compare_pangraphs(actual_pangraph=actual_pangraph, expected_pangraph=expected_pangraph)
 
     def test_9_inactive_edges_but_all_strands_plus(self):
-        maf_path = "PangraphBuilder_Tests/PangraphBuilderFromDAG_Tests/build_pangraph/test_9_inactive_edges_but_all_strands_plus.maf"
+        maf_path = "PangraphBuilder_Tests/PangraphBuilderFromDAG_Tests/build_pangraph/" \
+                   "test_9_inactive_edges_but_all_strands_plus.maf"
         expected_nodes = [
             Node(id=0, base=n.code('A'), in_nodes=[], aligned_to=None),
             Node(id=1, base=n.code('C'), in_nodes=[0], aligned_to=None),
@@ -228,7 +229,7 @@ class PangraphBuilderFromDAGTest_BuildPangraph(PangraphBuilderTests):
             Node(id=3, base=n.code('G'), in_nodes=[2], aligned_to=None),
             Node(id=4, base=n.code('G'), in_nodes=[3], aligned_to=None),
 
-            Node(id=5, base=n.code('A'), in_nodes=[4, 14], aligned_to=None),
+            Node(id=5, base=n.code('A'), in_nodes=[4], aligned_to=None),
             Node(id=6, base=n.code('C'), in_nodes=[5], aligned_to=None),
             Node(id=7, base=n.code('T'), in_nodes=[6], aligned_to=None),
             Node(id=8, base=n.code('G'), in_nodes=[7], aligned_to=None),
@@ -240,7 +241,7 @@ class PangraphBuilderFromDAGTest_BuildPangraph(PangraphBuilderTests):
             Node(id=13, base=n.code('G'), in_nodes=[12], aligned_to=None),
             Node(id=14, base=n.code('G'), in_nodes=[13], aligned_to=None),
 
-            Node(id=15, base=n.code('A'), in_nodes=[8, 13], aligned_to=None),
+            Node(id=15, base=n.code('A'), in_nodes=[9, 14], aligned_to=None),
             Node(id=16, base=n.code('C'), in_nodes=[15], aligned_to=None),
             Node(id=17, base=n.code('T'), in_nodes=[16], aligned_to=None),
             Node(id=18, base=n.code('G'), in_nodes=[17], aligned_to=None),

@@ -108,9 +108,17 @@ def _get_parser():
                    default=True,
                    help='Tree POA algorithm parameter.'
                         'Set if consensuses tree should be processed in a way to avoid fragmentation.')
+    p.add_argument('-not_dag',
+                   action='store_true',
+                   default=False,
+                   help='Pangraph building from maf file parameter.'
+                        'Set if the maf content must not be transformed to DAG when building pangraph. '
+                        'Pangraph that was build in this way provides consensuses tree the consensuses do not '
+                        'reflect the real life sequences.')
     p.add_argument('-fasta_complementation',
                    nargs='*',
-                   help='Maf file usually contains not full sequences but only parts of them, aligned to each other. '
+                   help='Pangraph building from maf file parameter. Ignored when -not_dag parameter is set.'
+                        'Maf file usually contains not full sequences but only parts of them, aligned to each other. '
                         'To build an exact pangraph the full sequences must be retrieved from: '
                         'ncbi or local file system. '
                         'Don\'t use this argument if you want the pangraph to be build without full sequences.'

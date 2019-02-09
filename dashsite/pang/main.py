@@ -6,16 +6,22 @@ from userio import cmdargs, pathtools
 from Pangenome import Pangenome
 from fileformats.json import writer as jsonwriter
 from userio.cmdargs import get_fasta_complementation_option
-from userio.pathtools import get_file_content
+from userio.pathtools import get_file_content_as_stringio
 
 
 def run_pang(args):
     """Creates Pangraph and runs required algorithms."""
 
     p = Pangenome(pathtools.get_file_content(args.data))
-    fasta_complementation_option = get_fasta_complementation_option(args.fasta_complementation)
-    multialignment = StringIO(get_file_content(args.multialignment))
-    p.build_from_maf_converted_to_dag(multialignment, fasta_complementation_option)
+
+    multialignment = get_file_content_as_stringio(args.multialignment)
+
+    if args.not_dag:
+        p.build_from_maf(multialignment)
+    else:
+        fasta_complementation_option = get_fasta_complementation_option(args.fasta_complementation)
+        p.build_from_maf_converted_to_dag(multialignment, fasta_complementation_option)
+
     if args.fasta:
         p.generate_fasta_files(pathtools.create_child_dir(args.output, 'fasta'))
 

@@ -22,7 +22,7 @@ class PangraphBuilderTests(unittest.TestCase):
 
     @staticmethod
     def setup_pangraph_from_maf(maf_path, metadata):
-        mafalignment = PangraphBuilderTests.read_maf(maf_path)
+        mafalignment = PangraphBuilderTests.get_file_content(maf_path)
         pangraph = Pangraph()
         builder = PangraphBuilderFromMAF(metadata)
         builder.build(mafalignment, pangraph)
@@ -45,6 +45,7 @@ class PangraphBuilderTests(unittest.TestCase):
     @staticmethod
     def read_maf(path: Path):
         """Returns file content as BioPython AlignIO object."""
+
         return [*AlignIO.parse(path, "maf")]
 
     def compare_pangraphs(self, actual_pangraph, expected_pangraph):

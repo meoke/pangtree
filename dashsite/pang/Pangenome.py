@@ -1,5 +1,7 @@
 from io import StringIO
+from pathlib import Path
 
+from graph.FastaSource import EntrezFastaSource, FastaFileSystemSource
 from metadata import reader as metadatareader
 from graph import mafreader
 from consensus.algorithm.TreeConfig import TreeConfig
@@ -12,12 +14,22 @@ from graph.Pangraph import Pangraph
 class Pangenome:
     def __init__(self, metadata):
         self.genomes_info = self._build_genomes_info(metadata)
+        self.dagmaf = None
         self.pangraph = Pangraph()
 
     def build_from_maf_firstly_converted_to_dag(self, mafcontent: StringIO, fasta_complementation_option):
-        dagmaf = maf_to_dagmaf(mafcontent)
+        if not fasta_complementation_option:
+            fasta_source = None
+        elif fasta_complementation_option == 'ncbi':
+            fasta_source = EntrezFastaSource
+        elif isinstance(fasta_complementation_option, Path):
+            fasta_source = FastaFileSystemSource(fasta_complementation_option)
+        else:
+            raise Exception("Not known fasta complementation option. Should be none, 'ncbi' or path to fasta directory.")
+
+        self.dagmaf = maf_to_dagmaf(mafcontent)
         self.genomes_info.feed_with_maf_data(mafcontent)
-        self.pangraph.build_from_dag(dagmaf, fasta_complementation_option, self.genomes_info)
+        self.pangraph.build_from_dag(self.dagmaf, fasta_source, self.genomes_info)
 
     def build_from_maf(self, mafcontent: StringIO):
         self.genomes_info.feed_with_maf_data(mafcontent)

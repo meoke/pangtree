@@ -104,10 +104,13 @@ class JSONPangenome:
                                           mincomp=float(node.mincomp)
                                           )
                             for node in cm_tree_nodes]
-        self.dagmaf = [JSONMAFNode(id=n.id,
+        if pangenome.dagmaf:
+            self.dagmaf = [JSONMAFNode(id=n.id,
                                    orient=n.orient,
                                    out_edges=n.out_edges)
-                       for n in pangenome.dagmaf.dagmafnodes]
+                        for n in pangenome.dagmaf.dagmafnodes]
+        else:
+            self.dagmaf = []
 
     # def build_from_dict(self, dictionary):
     #     self.nodes = [JSONNode(node['id'], node['nucleobase']) for node in dictionary['nodes']]

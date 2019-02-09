@@ -27,14 +27,7 @@ class Pangraph:
                 self._pathmanager == other._pathmanager and
                 self._consensusmanager == other._consensusmanager)
 
-    def build_from_maf_firstly_converted_to_dag(self, mafcontent: StringIO, fasta_complementation, genomes_info):
-        if not fasta_complementation:
-            fasta_source = None
-        elif fasta_complementation == 'ncbi':
-            fasta_source = EntrezFastaSource
-        elif isinstance(fasta_complementation, Path):
-            fasta_source = FastaFileSystemSource(fasta_complementation)
-
+    def build_from_maf_firstly_converted_to_dag(self, mafcontent: StringIO, fasta_source, genomes_info):
         builder: PangraphBuilderBase = PangraphBuilderFromDAG(genomes_info, fasta_source)
         self._build(builder, mafcontent)
 
