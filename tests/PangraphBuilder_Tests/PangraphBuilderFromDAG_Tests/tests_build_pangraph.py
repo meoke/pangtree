@@ -257,6 +257,47 @@ class PangraphBuilderFromDAGTest_BuildPangraph(PangraphBuilderTests):
         actual_pangraph = PangraphBuilderTests.setup_pangraph_from_maf_firstly_converted_to_dag(maf_path, self.seq_metadata, self.fasta_source)
         self.compare_pangraphs(actual_pangraph=actual_pangraph, expected_pangraph=expected_pangraph)
 
+    def test_10_parallel_blocks_1st_and_2nd_merge_into_3rd(self):
+        maf_path = "PangraphBuilder_Tests/PangraphBuilderFromDAG_Tests/build_pangraph/"\
+                "test_10_parallel_blocks_1st_and_2nd_merge_into_3rd.maf"
+
+        expected_nodes = [
+            # Node(id=0, base=n.code('A'), in_nodes=[], aligned_to=None),
+            # Node(id=1, base=n.code('C'), in_nodes=[0], aligned_to=None),
+            # Node(id=2, base=n.code('T'), in_nodes=[1], aligned_to=None),
+            # Node(id=3, base=n.code('G'), in_nodes=[2], aligned_to=None),
+            # Node(id=4, base=n.code('G'), in_nodes=[3], aligned_to=None),
+            #
+            # Node(id=5, base=n.code('A'), in_nodes=[4], aligned_to=None),
+            # Node(id=6, base=n.code('C'), in_nodes=[5], aligned_to=None),
+            # Node(id=7, base=n.code('T'), in_nodes=[6], aligned_to=None),
+            # Node(id=8, base=n.code('G'), in_nodes=[7], aligned_to=None),
+            # Node(id=9, base=n.code('G'), in_nodes=[8], aligned_to=None),
+            #
+            # Node(id=10, base=n.code('A'), in_nodes=[4, 9], aligned_to=None),
+            # Node(id=11, base=n.code('C'), in_nodes=[10], aligned_to=None),
+            # Node(id=12, base=n.code('T'), in_nodes=[11], aligned_to=None),
+            # Node(id=13, base=n.code('G'), in_nodes=[12], aligned_to=None),
+            # Node(id=14, base=n.code('G'), in_nodes=[13], aligned_to=None),
+            #
+            # Node(id=15, base=n.code('A'), in_nodes=[9, 14], aligned_to=None),
+            # Node(id=16, base=n.code('C'), in_nodes=[15], aligned_to=None),
+            # Node(id=17, base=n.code('T'), in_nodes=[16], aligned_to=None),
+            # Node(id=18, base=n.code('G'), in_nodes=[17], aligned_to=None),
+            # Node(id=19, base=n.code('G'), in_nodes=[18], aligned_to=None)
+        ]
+
+        expected_paths = {
+            # "seq1": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+            # "seq2": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+        }
+
+        expected_pangraph = PangraphBuilderTests.setup_pangraph(expected_nodes, expected_paths)
+        actual_pangraph = PangraphBuilderTests.setup_pangraph_from_maf_firstly_converted_to_dag(maf_path,
+                                                                                                self.seq_metadata,
+                                                                                                self.fasta_source)
+        self.compare_pangraphs(actual_pangraph=actual_pangraph, expected_pangraph=expected_pangraph)
+
 
 if __name__ == '__main__':
     unittest.main()

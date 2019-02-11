@@ -1,0 +1,16 @@
+##maf version=1
+## parallel first blocks
+## no sequences complementation needed
+a degree=2
+s seq0 0 5 + 10 ACTGG
+s seq1 0 5 + 10 ACTGG
+
+a degree=2
+s seq2 0 5 + 10 GTACC
+s seq3 0 5 + 10 TTAGC
+
+a degree=2
+s seq0 5 5 + 10 CGTAC
+s seq1 5 5 + 10 CGTAC
+s seq2 5 5 + 10 GTACC
+s seq3 5 5 + 10 GCACG
