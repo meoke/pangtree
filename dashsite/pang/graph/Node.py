@@ -16,7 +16,7 @@ class Node:
     def __eq__(self, other):
         return (self.id == other.id
             and self.base == other.base
-            and self.in_nodes == other.in_nodes
+            and sorted(self.in_nodes) == sorted(other.in_nodes)
             and self.aligned_to == other.aligned_to)
 
     def __str__(self):

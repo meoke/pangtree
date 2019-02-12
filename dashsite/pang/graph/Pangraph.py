@@ -1,23 +1,46 @@
+from io import StringIO
+from pathlib import Path
 from typing import List, Dict
+from fileformats.maf.DAGMaf import DAGMaf
+from graph.PangraphBuilder.PangraphBuilderBase import PangraphBuilderBase
+from graph.PangraphBuilder.PangraphBuilderFromDAG import PangraphBuilderFromDAG
+from graph.PangraphBuilder.PangraphBuilderFromMAF import PangraphBuilderFromMAF
 from .Node import Node
 from .PathManager import PathManager
 import numpy as np
+from .FastaSource import EntrezFastaSource, FastaFileSystemSource
 
 
-class Pangraph():
-    def __init__(self, max_nodes_count: int=0, start_node_id: int=0, paths_names: List[str]=None):
-        self._nodes = [None] * max_nodes_count
-        self._pathmanager = PathManager(start_node_id, max_nodes_count, paths_names)
+class Pangraph:
+    def __init__(self):
+        self._nodes = []
+        self._pathmanager = PathManager()
         self._consensusmanager = PathManager()
+
+    # def __init__(self, max_nodes_count: int=0, start_node_id: int=0, paths_names: List[str]=None):
+    #     self._nodes = [None] * max_nodes_count
+    #     self._pathmanager = PathManager(start_node_id, max_nodes_count, paths_names)
+    #     self._consensusmanager = PathManager()
 
     def __eq__(self, other):
         return (self._nodes == other._nodes and
                 self._pathmanager == other._pathmanager and
                 self._consensusmanager == other._consensusmanager)
 
-    def update(self, pangraph, start_node):
-        self.update_nodes(pangraph._nodes)
-        self._pathmanager.update(pangraph._pathmanager, start=start_node)
+    def build_from_maf_firstly_converted_to_dag(self, mafcontent: StringIO, fasta_source, genomes_info):
+        builder: PangraphBuilderBase = PangraphBuilderFromDAG(genomes_info, fasta_source)
+        self._build(builder, mafcontent)
+
+    def build_from_maf(self, mafcontent, genomes_info):
+        builder: PangraphBuilderBase = PangraphBuilderFromMAF(genomes_info)
+        self._build(builder, mafcontent)
+
+    def _build(self, builder, build_input):
+        builder.build(build_input, self)
+
+    # def update(self, pangraph, start_node):
+    #     self.update_nodes(pangraph._nodes)
+    #     self._pathmanager.update(pangraph._pathmanager, start=start_node)
 
     def update_nodes(self, new_nodes: List[Node]):
         #todo something to control new_nodes correctness
@@ -34,22 +57,22 @@ class Pangraph():
     def get_nodes(self):
         return self._nodes
 
-    def trim_nodes(self, nodes_count: int):
-        del self._nodes[nodes_count:]
-        self._pathmanager.trim(nodes_count)
+    # def trim_nodes(self, nodes_count: int):
+    #     del self._nodes[nodes_count:]
+    #     self._pathmanager.trim(nodes_count)
 
     def set_paths(self, max_nodes_count: int, paths_to_node_ids: Dict[str, List[int]] = None):
         # todo something to control paths correctness
         self._pathmanager.init_from_dict(max_nodes_count, paths_to_node_ids)
 
     def add_path_to_node(self, path_name, node_id):
-        self._pathmanager.mark(path_name, node_id)
+        self._pathmanager.mark_and_add(path_name, node_id)
 
     def get_in_nodes(self, node_id):
         return self._pathmanager.get_in_nodes(node_id)
 
-    def add_node(self, node: Node, node_id: str):
-        self._nodes[node_id] = node
+    # def add_node(self, node: Node, node_id: str):
+    #     self._nodes[node_id] = node
 
     def fill_in_nodes(self):
         for node in self._nodes:
@@ -96,6 +119,16 @@ class Pangraph():
 
     def remove_empty_paths(self):
         self._pathmanager.remove_empty_paths()
+
+    def remove_empty_nodes(self):
+        nodes_to_remove = []
+        for i, node in enumerate(self._nodes):
+            if node is None:
+                nodes_to_remove.append(i)
+        for i in sorted(nodes_to_remove, reverse=True):
+            del self._nodes[i]
+        if nodes_to_remove:
+            self._pathmanager.remove_nodes_greater_then(min(nodes_to_remove))
 
     def get_paths(self):
         return self._pathmanager.get_paths()

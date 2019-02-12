@@ -1,12 +1,13 @@
 from . import ConsensusNode
-from ...graph.PathManager import PathManager
+from graph.PathManager import PathManager
 from .ConsensusTree import ConsensusTree
 from .Errors import NoConsensus
 
 
 class TreeConsensusManager(PathManager):
-    def __init__(self, max_nodes_count):
-        PathManager.__init__(self, max_nodes_count=max_nodes_count)
+    def __init__(self, nodes_count):
+        PathManager.__init__(self)
+        self.init_paths(paths_names=[], nodes_count=nodes_count)
         self.consensus_tree = ConsensusTree()
 
     def get_root_node(self):

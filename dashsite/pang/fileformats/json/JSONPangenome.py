@@ -1,5 +1,8 @@
 from typing import List, Dict
-from ...Pangenome import Pangenome
+
+import mafgraph
+
+from Pangenome import Pangenome
 
 
 class JSONNode:
@@ -53,6 +56,17 @@ class JSONConsensus:
         self.mincomp = mincomp
 
 
+class JSONMAFNode:
+    def __init__(self,
+                 id: int,
+                 orient: int,
+                 out_edges
+                 ):
+        self.id = id
+        self.orient = orient
+        self.out_edges = out_edges
+
+
 class JSONPangenome:
     def __init__(self, pangenome: Pangenome =None):
         if not pangenome:
@@ -90,6 +104,13 @@ class JSONPangenome:
                                           mincomp=float(node.mincomp)
                                           )
                             for node in cm_tree_nodes]
+        if pangenome.dagmaf:
+            self.dagmaf = [JSONMAFNode(id=n.id,
+                                   orient=n.orient,
+                                   out_edges=n.out_edges)
+                        for n in pangenome.dagmaf.dagmafnodes]
+        else:
+            self.dagmaf = []
 
     # def build_from_dict(self, dictionary):
     #     self.nodes = [JSONNode(node['id'], node['nucleobase']) for node in dictionary['nodes']]

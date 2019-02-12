@@ -1,0 +1,15 @@
+##maf version=1
+# this maf should be converted into pangraph with 18 nodes if build with no complementings
+a degree=2
+s seq0 0 5 + 10 ACTG-
+s seq1 0 5 + 10 ---GG
+
+a degree=2
+s seq2 0 5 + 10 G-ACC
+s seq3 0 5 + 10 -TA-C
+
+a degree=2
+s seq0 5 5 + 10 -GT-C
+s seq1 5 5 + 10 -GT-C
+s seq2 5 5 + 10 GTA-C
+s seq3 5 5 + 10 GCA-G

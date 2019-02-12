@@ -1,3 +1,4 @@
+from io import StringIO
 from pathlib import Path
 import shutil
 
@@ -56,4 +57,9 @@ def get_file_content(path: Path) -> str:
 
     with open(path) as input_file:
         return input_file.read()
+
+def get_file_content_as_stringio(path: Path) -> StringIO:
+    """Returns file content."""
+
+    return StringIO(get_file_content(path))
 

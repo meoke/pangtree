@@ -1,0 +1,249 @@
+To: 1 Node_id: 1, Seq_id: AB050936v1.AB050936v1, Seq pos: 1
+To: 46 Node_id: 829, Seq_id: FJ217162v1.FJ217162v1, Seq pos: 427
+To: 46 Node_id: 829, Seq_id: NC_014372v1.NC_014372v1, Seq pos: 427
+To: 46 Node_id: 831, Seq_id: EU338380v1.EU338380v1, Seq pos: 400
+To: 46 Node_id: 831, Seq_id: KC242783v2.KC242783v2, Seq pos: 400
+To: 46 Node_id: 831, Seq_id: FJ968794v1.FJ968794v1, Seq pos: 400
+To: 46 Node_id: 831, Seq_id: KC545389v1.KC545389v1, Seq pos: 400
+To: 46 Node_id: 831, Seq_id: KC545390v1.KC545390v1, Seq pos: 400
+To: 46 Node_id: 831, Seq_id: KC545391v1.KC545391v1, Seq pos: 400
+To: 46 Node_id: 831, Seq_id: KC545392v1.KC545392v1, Seq pos: 400
+To: 47 Node_id: 1611, Seq_id: NC_024781v1.NC_024781v1, Seq pos: 153
+To: 47 Node_id: 1611, Seq_id: NC_001608v3.NC_001608v3, Seq pos: 153
+To: 51 Node_id: 5844, Seq_id: EU338380v1.EU338380v1, Seq pos: 2084
+To: 51 Node_id: 5844, Seq_id: KC589025v1.KC589025v1, Seq pos: 2083
+To: 51 Node_id: 5844, Seq_id: FJ968794v1.FJ968794v1, Seq pos: 2084
+To: 51 Node_id: 5844, Seq_id: AY729654v1.AY729654v1, Seq pos: 2083
+To: 51 Node_id: 5844, Seq_id: NC_006432v1.NC_006432v1, Seq pos: 2083
+To: 51 Node_id: 5844, Seq_id: KC545389v1.KC545389v1, Seq pos: 2083
+To: 51 Node_id: 5844, Seq_id: KC545390v1.KC545390v1, Seq pos: 2083
+To: 51 Node_id: 5844, Seq_id: KC545391v1.KC545391v1, Seq pos: 2083
+To: 51 Node_id: 5844, Seq_id: KC545392v1.KC545392v1, Seq pos: 2083
+To: 51 Node_id: 5859, Seq_id: KC242783v2.KC242783v2, Seq pos: 2090
+To: 54 Node_id: 7349, Seq_id: FJ217161v1.FJ217161v1, Seq pos: 2335
+To: 54 Node_id: 7349, Seq_id: NC_014373v1.NC_014373v1, Seq pos: 2335
+To: 54 Node_id: 7349, Seq_id: KC545395v1.KC545395v1, Seq pos: 2335
+To: 54 Node_id: 7349, Seq_id: KC545394v1.KC545394v1, Seq pos: 2335
+To: 54 Node_id: 7349, Seq_id: KC545393v1.KC545393v1, Seq pos: 2335
+To: 54 Node_id: 7349, Seq_id: KC545396v1.KC545396v1, Seq pos: 2335
+To: 54 Node_id: 7349, Seq_id: FJ621585v1.FJ621585v1, Seq pos: 2308
+To: 54 Node_id: 7349, Seq_id: JX477166v1.JX477166v1, Seq pos: 2347
+To: 54 Node_id: 7349, Seq_id: AY769362v1.AY769362v1, Seq pos: 2347
+To: 54 Node_id: 7349, Seq_id: AB050936v1.AB050936v1, Seq pos: 2345
+To: 54 Node_id: 7349, Seq_id: JX477165v1.JX477165v1, Seq pos: 2347
+To: 54 Node_id: 7349, Seq_id: AF522874v1.AF522874v1, Seq pos: 2347
+To: 54 Node_id: 7349, Seq_id: NC_004161v1.NC_004161v1, Seq pos: 2347
+To: 54 Node_id: 7349, Seq_id: FJ621583v1.FJ621583v1, Seq pos: 2347
+To: 54 Node_id: 7358, Seq_id: EU338380v1.EU338380v1, Seq pos: 2332
+To: 54 Node_id: 7358, Seq_id: KC242783v2.KC242783v2, Seq pos: 2332
+To: 63 Node_id: 11151, Seq_id: FJ621585v1.FJ621585v1, Seq pos: 2950
+To: 63 Node_id: 11151, Seq_id: FJ621584v1.FJ621584v1, Seq pos: 2989
+To: 63 Node_id: 11151, Seq_id: AY769362v1.AY769362v1, Seq pos: 2989
+To: 63 Node_id: 11151, Seq_id: JX477165v1.JX477165v1, Seq pos: 2989
+To: 63 Node_id: 11151, Seq_id: AF522874v1.AF522874v1, Seq pos: 2989
+To: 63 Node_id: 11151, Seq_id: NC_004161v1.NC_004161v1, Seq pos: 2989
+To: 63 Node_id: 11151, Seq_id: FJ621583v1.FJ621583v1, Seq pos: 2989
+To: 96 Node_id: 11813, Seq_id: NC_024781v1.NC_024781v1, Seq pos: 5939
+To: 61 Node_id: 13302, Seq_id: FJ217161v1.FJ217161v1, Seq pos: 2858
+To: 61 Node_id: 13302, Seq_id: NC_014373v1.NC_014373v1, Seq pos: 2858
+To: 94 Node_id: 14165, Seq_id: FJ217161v1.FJ217161v1, Seq pos: 5864
+To: 94 Node_id: 14165, Seq_id: NC_014373v1.NC_014373v1, Seq pos: 5864
+To: 94 Node_id: 14165, Seq_id: EU338380v1.EU338380v1, Seq pos: 5864
+To: 94 Node_id: 14165, Seq_id: KC242783v2.KC242783v2, Seq pos: 5864
+To: 94 Node_id: 14165, Seq_id: FJ968794v1.FJ968794v1, Seq pos: 5864
+To: 94 Node_id: 14167, Seq_id: KC589025v1.KC589025v1, Seq pos: 5865
+To: 94 Node_id: 14167, Seq_id: AY729654v1.AY729654v1, Seq pos: 5865
+To: 94 Node_id: 14167, Seq_id: NC_006432v1.NC_006432v1, Seq pos: 5865
+To: 94 Node_id: 14167, Seq_id: KC545389v1.KC545389v1, Seq pos: 5865
+To: 94 Node_id: 14167, Seq_id: KC545390v1.KC545390v1, Seq pos: 5865
+To: 94 Node_id: 14167, Seq_id: KC545391v1.KC545391v1, Seq pos: 5865
+To: 94 Node_id: 14167, Seq_id: KC545392v1.KC545392v1, Seq pos: 5865
+To: 94 Node_id: 14167, Seq_id: JN638998v1.JN638998v1, Seq pos: 5865
+To: 91 Node_id: 17593, Seq_id: FJ621585v1.FJ621585v1, Seq pos: 5799
+To: 78 Node_id: 17862, Seq_id: FJ621585v1.FJ621585v1, Seq pos: 5543
+To: 78 Node_id: 17862, Seq_id: FJ621584v1.FJ621584v1, Seq pos: 5582
+To: 78 Node_id: 17862, Seq_id: JX477166v1.JX477166v1, Seq pos: 5582
+To: 78 Node_id: 17862, Seq_id: AY769362v1.AY769362v1, Seq pos: 5582
+To: 78 Node_id: 17862, Seq_id: AB050936v1.AB050936v1, Seq pos: 5580
+To: 78 Node_id: 17862, Seq_id: EU338380v1.EU338380v1, Seq pos: 5619
+To: 78 Node_id: 17862, Seq_id: AF522874v1.AF522874v1, Seq pos: 5582
+To: 78 Node_id: 17862, Seq_id: NC_004161v1.NC_004161v1, Seq pos: 5582
+To: 78 Node_id: 17862, Seq_id: FJ621583v1.FJ621583v1, Seq pos: 5582
+To: 78 Node_id: 17863, Seq_id: KC589025v1.KC589025v1, Seq pos: 5621
+To: 78 Node_id: 17863, Seq_id: AY729654v1.AY729654v1, Seq pos: 5621
+To: 78 Node_id: 17863, Seq_id: NC_006432v1.NC_006432v1, Seq pos: 5621
+To: 78 Node_id: 17863, Seq_id: KC545389v1.KC545389v1, Seq pos: 5621
+To: 78 Node_id: 17863, Seq_id: KC545390v1.KC545390v1, Seq pos: 5621
+To: 78 Node_id: 17863, Seq_id: KC545391v1.KC545391v1, Seq pos: 5621
+To: 78 Node_id: 17863, Seq_id: KC545392v1.KC545392v1, Seq pos: 5621
+To: 78 Node_id: 17869, Seq_id: KC242783v2.KC242783v2, Seq pos: 5619
+To: 78 Node_id: 17869, Seq_id: FJ968794v1.FJ968794v1, Seq pos: 5619
+To: 92 Node_id: 19145, Seq_id: KC589025v1.KC589025v1, Seq pos: 5845
+To: 92 Node_id: 19145, Seq_id: JN638998v1.JN638998v1, Seq pos: 5845
+To: 88 Node_id: 19268, Seq_id: FJ621584v1.FJ621584v1, Seq pos: 5817
+To: 88 Node_id: 19268, Seq_id: AY769362v1.AY769362v1, Seq pos: 5817
+To: 88 Node_id: 19268, Seq_id: AF522874v1.AF522874v1, Seq pos: 5817
+To: 88 Node_id: 19268, Seq_id: NC_004161v1.NC_004161v1, Seq pos: 5817
+To: 88 Node_id: 19278, Seq_id: AY729654v1.AY729654v1, Seq pos: 5806
+To: 93 Node_id: 20015, Seq_id: KC545395v1.KC545395v1, Seq pos: 5856
+To: 93 Node_id: 20015, Seq_id: KC545394v1.KC545394v1, Seq pos: 5856
+To: 93 Node_id: 20015, Seq_id: KC545393v1.KC545393v1, Seq pos: 5856
+To: 93 Node_id: 20015, Seq_id: KC545396v1.KC545396v1, Seq pos: 5856
+To: 87 Node_id: 20036, Seq_id: JX477165v1.JX477165v1, Seq pos: 5814
+To: 89 Node_id: 20099, Seq_id: KC545389v1.KC545389v1, Seq pos: 5809
+To: 89 Node_id: 20099, Seq_id: KC545390v1.KC545390v1, Seq pos: 5809
+To: 89 Node_id: 20099, Seq_id: KC545391v1.KC545391v1, Seq pos: 5809
+To: 89 Node_id: 20099, Seq_id: KC545392v1.KC545392v1, Seq pos: 5809
+To: 106 Node_id: 20238, Seq_id: KC545395v1.KC545395v1, Seq pos: 8260
+To: 106 Node_id: 20238, Seq_id: KC545393v1.KC545393v1, Seq pos: 8260
+To: 106 Node_id: 20238, Seq_id: KC545396v1.KC545396v1, Seq pos: 8260
+To: 110 Node_id: 25569, Seq_id: FJ621585v1.FJ621585v1, Seq pos: 8438
+To: 110 Node_id: 25569, Seq_id: JX477166v1.JX477166v1, Seq pos: 8477
+To: 110 Node_id: 25569, Seq_id: AB050936v1.AB050936v1, Seq pos: 8475
+To: 110 Node_id: 25569, Seq_id: EU338380v1.EU338380v1, Seq pos: 8434
+To: 110 Node_id: 25569, Seq_id: KC242783v2.KC242783v2, Seq pos: 8434
+To: 110 Node_id: 25569, Seq_id: KC589025v1.KC589025v1, Seq pos: 8434
+To: 110 Node_id: 25569, Seq_id: FJ968794v1.FJ968794v1, Seq pos: 8434
+To: 110 Node_id: 25569, Seq_id: AY729654v1.AY729654v1, Seq pos: 8434
+To: 110 Node_id: 25569, Seq_id: NC_006432v1.NC_006432v1, Seq pos: 8434
+To: 110 Node_id: 25569, Seq_id: KC545389v1.KC545389v1, Seq pos: 8434
+To: 110 Node_id: 25569, Seq_id: KC545390v1.KC545390v1, Seq pos: 8434
+To: 110 Node_id: 25569, Seq_id: KC545391v1.KC545391v1, Seq pos: 8434
+To: 110 Node_id: 25569, Seq_id: KC545392v1.KC545392v1, Seq pos: 8434
+To: 125 Node_id: 27168, Seq_id: AY769362v1.AY769362v1, Seq pos: 11271
+To: 125 Node_id: 27168, Seq_id: EU338380v1.EU338380v1, Seq pos: 11244
+To: 125 Node_id: 27168, Seq_id: KC242783v2.KC242783v2, Seq pos: 11244
+To: 125 Node_id: 27168, Seq_id: JX477165v1.JX477165v1, Seq pos: 11267
+To: 125 Node_id: 27168, Seq_id: AF522874v1.AF522874v1, Seq pos: 11271
+To: 125 Node_id: 27168, Seq_id: NC_004161v1.NC_004161v1, Seq pos: 11271
+To: 125 Node_id: 27168, Seq_id: FJ621583v1.FJ621583v1, Seq pos: 11267
+To: 125 Node_id: 27168, Seq_id: FJ968794v1.FJ968794v1, Seq pos: 11244
+To: 125 Node_id: 27169, Seq_id: NC_024781v1.NC_024781v1, Seq pos: 11099
+To: 119 Node_id: 27538, Seq_id: FJ621585v1.FJ621585v1, Seq pos: 9959
+To: 119 Node_id: 27538, Seq_id: AB050936v1.AB050936v1, Seq pos: 9996
+To: 119 Node_id: 27548, Seq_id: KC545394v1.KC545394v1, Seq pos: 10050
+To: 119 Node_id: 27548, Seq_id: KC545393v1.KC545393v1, Seq pos: 10050
+To: 119 Node_id: 27548, Seq_id: KC545396v1.KC545396v1, Seq pos: 10050
+From: 45, To: 46, Type: (1, -1), Node_id: 1609, Seq_id: EU338380v1.EU338380v1, Seq pos: 393
+From: 45, To: 46, Type: (1, -1), Node_id: 1608, Seq_id: FJ217162v1.FJ217162v1, Seq pos: 424
+From: 45, To: 46, Type: (1, -1), Node_id: 1605, Seq_id: FJ968794v1.FJ968794v1, Seq pos: 392
+From: 45, To: 46, Type: (1, -1), Node_id: 1609, Seq_id: KC242783v2.KC242783v2, Seq pos: 393
+From: 45, To: 46, Type: (1, -1), Node_id: 1536, Seq_id: KC545389v1.KC545389v1, Seq pos: 398
+From: 45, To: 46, Type: (1, -1), Node_id: 1536, Seq_id: KC545390v1.KC545390v1, Seq pos: 398
+From: 45, To: 46, Type: (1, -1), Node_id: 1536, Seq_id: KC545391v1.KC545391v1, Seq pos: 398
+From: 45, To: 46, Type: (1, -1), Node_id: 1536, Seq_id: KC545392v1.KC545392v1, Seq pos: 398
+From: 45, To: 46, Type: (1, -1), Node_id: 1608, Seq_id: NC_014372v1.NC_014372v1, Seq pos: 424
+From: 50, To: 51, Type: (1, -1), Node_id: 6275, Seq_id: AY729654v1.AY729654v1, Seq pos: 2081
+From: 50, To: 51, Type: (1, -1), Node_id: 6275, Seq_id: EU338380v1.EU338380v1, Seq pos: 2081
+From: 50, To: 51, Type: (1, -1), Node_id: 6275, Seq_id: FJ968794v1.FJ968794v1, Seq pos: 2081
+From: 50, To: 51, Type: (1, -1), Node_id: 6275, Seq_id: KC242783v2.KC242783v2, Seq pos: 2081
+From: 50, To: 51, Type: (1, -1), Node_id: 6275, Seq_id: KC545389v1.KC545389v1, Seq pos: 2081
+From: 50, To: 51, Type: (1, -1), Node_id: 6275, Seq_id: KC545390v1.KC545390v1, Seq pos: 2081
+From: 50, To: 51, Type: (1, -1), Node_id: 6275, Seq_id: KC545391v1.KC545391v1, Seq pos: 2081
+From: 50, To: 51, Type: (1, -1), Node_id: 6275, Seq_id: KC545392v1.KC545392v1, Seq pos: 2081
+From: 50, To: 51, Type: (1, -1), Node_id: 6275, Seq_id: KC589025v1.KC589025v1, Seq pos: 2081
+From: 50, To: 51, Type: (1, -1), Node_id: 6275, Seq_id: NC_006432v1.NC_006432v1, Seq pos: 2081
+From: 53, To: 54, Type: (1, -1), Node_id: 7611, Seq_id: AB050936v1.AB050936v1, Seq pos: 2342
+From: 53, To: 54, Type: (1, -1), Node_id: 7611, Seq_id: AF522874v1.AF522874v1, Seq pos: 2344
+From: 53, To: 54, Type: (1, -1), Node_id: 7611, Seq_id: AY769362v1.AY769362v1, Seq pos: 2344
+From: 53, To: 54, Type: (1, -1), Node_id: 7616, Seq_id: EU338380v1.EU338380v1, Seq pos: 2329
+From: 53, To: 54, Type: (1, -1), Node_id: 7617, Seq_id: FJ217161v1.FJ217161v1, Seq pos: 2333
+From: 53, To: 54, Type: (1, -1), Node_id: 7611, Seq_id: FJ621583v1.FJ621583v1, Seq pos: 2344
+From: 53, To: 54, Type: (1, -1), Node_id: 7618, Seq_id: FJ621585v1.FJ621585v1, Seq pos: 2305
+From: 53, To: 54, Type: (1, -1), Node_id: 7611, Seq_id: JX477165v1.JX477165v1, Seq pos: 2344
+From: 53, To: 54, Type: (1, -1), Node_id: 7611, Seq_id: JX477166v1.JX477166v1, Seq pos: 2344
+From: 53, To: 54, Type: (1, -1), Node_id: 7616, Seq_id: KC242783v2.KC242783v2, Seq pos: 2329
+From: 53, To: 54, Type: (1, -1), Node_id: 7617, Seq_id: KC545393v1.KC545393v1, Seq pos: 2333
+From: 53, To: 54, Type: (1, -1), Node_id: 7617, Seq_id: KC545394v1.KC545394v1, Seq pos: 2333
+From: 53, To: 54, Type: (1, -1), Node_id: 7617, Seq_id: KC545395v1.KC545395v1, Seq pos: 2333
+From: 53, To: 54, Type: (1, -1), Node_id: 7617, Seq_id: KC545396v1.KC545396v1, Seq pos: 2333
+From: 53, To: 54, Type: (1, -1), Node_id: 7611, Seq_id: NC_004161v1.NC_004161v1, Seq pos: 2344
+From: 53, To: 54, Type: (1, -1), Node_id: 7617, Seq_id: NC_014373v1.NC_014373v1, Seq pos: 2333
+From: 58, To: 61, Type: (1, -1), Node_id: 13647, Seq_id: FJ217161v1.FJ217161v1, Seq pos: 2700
+From: 58, To: 61, Type: (1, -1), Node_id: 13647, Seq_id: NC_014373v1.NC_014373v1, Seq pos: 2700
+From: 94, To: 96, Type: (1, -1), Node_id: 14540, Seq_id: NC_024781v1.NC_024781v1, Seq pos: 5891
+From: 62, To: 63, Type: (1, -1), Node_id: 17709, Seq_id: AF522874v1.AF522874v1, Seq pos: 2987
+From: 62, To: 63, Type: (1, -1), Node_id: 17709, Seq_id: AY769362v1.AY769362v1, Seq pos: 2987
+From: 62, To: 63, Type: (1, -1), Node_id: 17709, Seq_id: FJ621583v1.FJ621583v1, Seq pos: 2987
+From: 62, To: 63, Type: (1, -1), Node_id: 17709, Seq_id: FJ621584v1.FJ621584v1, Seq pos: 2987
+From: 62, To: 63, Type: (1, -1), Node_id: 17709, Seq_id: FJ621585v1.FJ621585v1, Seq pos: 2948
+From: 62, To: 63, Type: (1, -1), Node_id: 17709, Seq_id: JX477165v1.JX477165v1, Seq pos: 2987
+From: 62, To: 63, Type: (1, -1), Node_id: 17709, Seq_id: NC_004161v1.NC_004161v1, Seq pos: 2987
+From: 77, To: 78, Type: (1, -1), Node_id: 18570, Seq_id: AB050936v1.AB050936v1, Seq pos: 5573
+From: 77, To: 78, Type: (1, -1), Node_id: 18570, Seq_id: AF522874v1.AF522874v1, Seq pos: 5575
+From: 77, To: 78, Type: (1, -1), Node_id: 18570, Seq_id: AY729654v1.AY729654v1, Seq pos: 5618
+From: 77, To: 78, Type: (1, -1), Node_id: 18570, Seq_id: AY769362v1.AY769362v1, Seq pos: 5575
+From: 77, To: 78, Type: (1, -1), Node_id: 18571, Seq_id: EU338380v1.EU338380v1, Seq pos: 5613
+From: 77, To: 78, Type: (1, -1), Node_id: 18570, Seq_id: FJ621583v1.FJ621583v1, Seq pos: 5575
+From: 77, To: 78, Type: (1, -1), Node_id: 18571, Seq_id: FJ621584v1.FJ621584v1, Seq pos: 5575
+From: 77, To: 78, Type: (1, -1), Node_id: 18570, Seq_id: FJ621585v1.FJ621585v1, Seq pos: 5536
+From: 77, To: 78, Type: (1, -1), Node_id: 18571, Seq_id: FJ968794v1.FJ968794v1, Seq pos: 5613
+From: 77, To: 78, Type: (1, -1), Node_id: 18570, Seq_id: JX477166v1.JX477166v1, Seq pos: 5575
+From: 77, To: 78, Type: (1, -1), Node_id: 18571, Seq_id: KC242783v2.KC242783v2, Seq pos: 5613
+From: 77, To: 78, Type: (1, -1), Node_id: 18570, Seq_id: KC545389v1.KC545389v1, Seq pos: 5618
+From: 77, To: 78, Type: (1, -1), Node_id: 18570, Seq_id: KC545390v1.KC545390v1, Seq pos: 5618
+From: 77, To: 78, Type: (1, -1), Node_id: 18570, Seq_id: KC545391v1.KC545391v1, Seq pos: 5618
+From: 77, To: 78, Type: (1, -1), Node_id: 18570, Seq_id: KC545392v1.KC545392v1, Seq pos: 5618
+From: 77, To: 78, Type: (1, -1), Node_id: 18570, Seq_id: KC589025v1.KC589025v1, Seq pos: 5618
+From: 77, To: 78, Type: (1, -1), Node_id: 18570, Seq_id: NC_004161v1.NC_004161v1, Seq pos: 5575
+From: 77, To: 78, Type: (1, -1), Node_id: 18570, Seq_id: NC_006432v1.NC_006432v1, Seq pos: 5618
+From: 79, To: 91, Type: (1, -1), Node_id: 19256, Seq_id: FJ621585v1.FJ621585v1, Seq pos: 5655
+From: 93, To: 94, Type: (1, -1), Node_id: 20033, Seq_id: AY729654v1.AY729654v1, Seq pos: 5861
+From: 93, To: 94, Type: (1, -1), Node_id: 20033, Seq_id: EU338380v1.EU338380v1, Seq pos: 5853
+From: 93, To: 94, Type: (1, -1), Node_id: 20033, Seq_id: FJ217161v1.FJ217161v1, Seq pos: 5854
+From: 93, To: 94, Type: (1, -1), Node_id: 20033, Seq_id: FJ968794v1.FJ968794v1, Seq pos: 5853
+From: 93, To: 94, Type: (1, -1), Node_id: 20033, Seq_id: JN638998v1.JN638998v1, Seq pos: 5861
+From: 93, To: 94, Type: (1, -1), Node_id: 20033, Seq_id: KC242783v2.KC242783v2, Seq pos: 5853
+From: 93, To: 94, Type: (1, -1), Node_id: 20033, Seq_id: KC545389v1.KC545389v1, Seq pos: 5861
+From: 93, To: 94, Type: (1, -1), Node_id: 20033, Seq_id: KC545390v1.KC545390v1, Seq pos: 5861
+From: 93, To: 94, Type: (1, -1), Node_id: 20033, Seq_id: KC545391v1.KC545391v1, Seq pos: 5861
+From: 93, To: 94, Type: (1, -1), Node_id: 20033, Seq_id: KC545392v1.KC545392v1, Seq pos: 5861
+From: 93, To: 94, Type: (1, -1), Node_id: 20033, Seq_id: KC589025v1.KC589025v1, Seq pos: 5861
+From: 93, To: 94, Type: (1, -1), Node_id: 20033, Seq_id: NC_006432v1.NC_006432v1, Seq pos: 5861
+From: 93, To: 94, Type: (1, -1), Node_id: 20033, Seq_id: NC_014373v1.NC_014373v1, Seq pos: 5854
+From: 87, To: 88, Type: (1, -1), Node_id: 20043, Seq_id: AY729654v1.AY729654v1, Seq pos: 5804
+From: 80, To: 92, Type: (1, -1), Node_id: 20046, Seq_id: KC589025v1.KC589025v1, Seq pos: 5723
+From: 81, To: 88, Type: (1, -1), Node_id: 20098, Seq_id: AF522874v1.AF522874v1, Seq pos: 5711
+From: 81, To: 88, Type: (1, -1), Node_id: 20098, Seq_id: AY769362v1.AY769362v1, Seq pos: 5711
+From: 81, To: 88, Type: (1, -1), Node_id: 20098, Seq_id: FJ621584v1.FJ621584v1, Seq pos: 5711
+From: 81, To: 88, Type: (1, -1), Node_id: 20098, Seq_id: NC_004161v1.NC_004161v1, Seq pos: 5711
+From: 82, To: 87, Type: (1, -1), Node_id: 21677, Seq_id: JX477165v1.JX477165v1, Seq pos: 5745
+From: 105, To: 106, Type: (1, -1), Node_id: 21843, Seq_id: KC545393v1.KC545393v1, Seq pos: 8246
+From: 105, To: 106, Type: (1, -1), Node_id: 21843, Seq_id: KC545395v1.KC545395v1, Seq pos: 8246
+From: 105, To: 106, Type: (1, -1), Node_id: 21843, Seq_id: KC545396v1.KC545396v1, Seq pos: 8246
+From: 83, To: 89, Type: (1, -1), Node_id: 25194, Seq_id: KC545389v1.KC545389v1, Seq pos: 5784
+From: 83, To: 89, Type: (1, -1), Node_id: 25194, Seq_id: KC545390v1.KC545390v1, Seq pos: 5784
+From: 83, To: 89, Type: (1, -1), Node_id: 25194, Seq_id: KC545391v1.KC545391v1, Seq pos: 5784
+From: 83, To: 89, Type: (1, -1), Node_id: 25194, Seq_id: KC545392v1.KC545392v1, Seq pos: 5784
+From: 84, To: 92, Type: (1, -1), Node_id: 27256, Seq_id: JN638998v1.JN638998v1, Seq pos: 5776
+From: 109, To: 110, Type: (1, -1), Node_id: 27475, Seq_id: AB050936v1.AB050936v1, Seq pos: 8470
+From: 109, To: 110, Type: (1, -1), Node_id: 27476, Seq_id: AY729654v1.AY729654v1, Seq pos: 8430
+From: 109, To: 110, Type: (1, -1), Node_id: 27476, Seq_id: EU338380v1.EU338380v1, Seq pos: 8430
+From: 109, To: 110, Type: (1, -1), Node_id: 27475, Seq_id: FJ621585v1.FJ621585v1, Seq pos: 8433
+From: 109, To: 110, Type: (1, -1), Node_id: 27476, Seq_id: FJ968794v1.FJ968794v1, Seq pos: 8430
+From: 109, To: 110, Type: (1, -1), Node_id: 27475, Seq_id: JX477166v1.JX477166v1, Seq pos: 8472
+From: 109, To: 110, Type: (1, -1), Node_id: 27476, Seq_id: KC242783v2.KC242783v2, Seq pos: 8430
+From: 109, To: 110, Type: (1, -1), Node_id: 27476, Seq_id: KC545389v1.KC545389v1, Seq pos: 8430
+From: 109, To: 110, Type: (1, -1), Node_id: 27476, Seq_id: KC545390v1.KC545390v1, Seq pos: 8430
+From: 109, To: 110, Type: (1, -1), Node_id: 27476, Seq_id: KC545391v1.KC545391v1, Seq pos: 8430
+From: 109, To: 110, Type: (1, -1), Node_id: 27476, Seq_id: KC545392v1.KC545392v1, Seq pos: 8430
+From: 109, To: 110, Type: (1, -1), Node_id: 27476, Seq_id: KC589025v1.KC589025v1, Seq pos: 8430
+From: 109, To: 110, Type: (1, -1), Node_id: 27476, Seq_id: NC_006432v1.NC_006432v1, Seq pos: 8430
+From: 118, To: 119, Type: (1, -1), Node_id: 27588, Seq_id: AB050936v1.AB050936v1, Seq pos: 9994
+From: 118, To: 119, Type: (1, -1), Node_id: 27588, Seq_id: FJ621585v1.FJ621585v1, Seq pos: 9957
+From: 118, To: 119, Type: (1, -1), Node_id: 27593, Seq_id: KC545393v1.KC545393v1, Seq pos: 10047
+From: 118, To: 119, Type: (1, -1), Node_id: 27593, Seq_id: KC545394v1.KC545394v1, Seq pos: 10047
+From: 118, To: 119, Type: (1, -1), Node_id: 27593, Seq_id: KC545396v1.KC545396v1, Seq pos: 10047
+From: 124, To: 125, Type: (1, -1), Node_id: 27622, Seq_id: AF522874v1.AF522874v1, Seq pos: 11268
+From: 124, To: 125, Type: (1, -1), Node_id: 27622, Seq_id: AY769362v1.AY769362v1, Seq pos: 11268
+From: 124, To: 125, Type: (1, -1), Node_id: 27596, Seq_id: EU338380v1.EU338380v1, Seq pos: 11240
+From: 124, To: 125, Type: (1, -1), Node_id: 27622, Seq_id: FJ621583v1.FJ621583v1, Seq pos: 11264
+From: 124, To: 125, Type: (1, -1), Node_id: 27622, Seq_id: FJ968794v1.FJ968794v1, Seq pos: 11236
+From: 124, To: 125, Type: (1, -1), Node_id: 27622, Seq_id: JX477165v1.JX477165v1, Seq pos: 11264
+From: 124, To: 125, Type: (1, -1), Node_id: 27622, Seq_id: KC242783v2.KC242783v2, Seq pos: 11236
+From: 124, To: 125, Type: (1, -1), Node_id: 27622, Seq_id: NC_004161v1.NC_004161v1, Seq pos: 11268
+From: 124, To: 125, Type: (1, -1), Node_id: 27622, Seq_id: NC_024781v1.NC_024781v1, Seq pos: 11096
+From: 85, To: 93, Type: (1, -1), Node_id: 27721, Seq_id: KC545393v1.KC545393v1, Seq pos: 5773
+From: 85, To: 93, Type: (1, -1), Node_id: 27721, Seq_id: KC545394v1.KC545394v1, Seq pos: 5773
+From: 85, To: 93, Type: (1, -1), Node_id: 27721, Seq_id: KC545395v1.KC545395v1, Seq pos: 5773
+From: 85, To: 93, Type: (1, -1), Node_id: 27721, Seq_id: KC545396v1.KC545396v1, Seq pos: 5773

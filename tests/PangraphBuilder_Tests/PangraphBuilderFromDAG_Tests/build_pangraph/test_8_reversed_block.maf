@@ -1,0 +1,16 @@
+##maf version=1
+## the middle block is reversed while trasforming to DAG
+a degree=2
+s seq1 0 3 + 8 ACT
+s seq2 0 3 + 9 ACT
+s seq3 0 2 + 8 A-T
+
+a degree=2
+s seq1 3 2 - 8 GA
+s seq2 4 2 - 9 GG
+s seq3 4 2 - 8 GG
+
+a degree=2
+s seq1 5 3 + 8 C-TG
+s seq2 5 4 + 9 CATG
+s seq3 4 4 + 8 CATG
