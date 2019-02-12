@@ -31,6 +31,7 @@ class PangraphBuilderTests(unittest.TestCase):
     @staticmethod
     def setup_pangraph(expected_nodes, expected_paths):
         pangraph = Pangraph()
+        pangraph._pathmanager.init_paths([],0)
         pangraph._nodes = expected_nodes
         pangraph.set_paths(len(expected_nodes), expected_paths)
         return pangraph
