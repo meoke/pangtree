@@ -120,6 +120,16 @@ class Pangraph:
     def remove_empty_paths(self):
         self._pathmanager.remove_empty_paths()
 
+    def remove_empty_nodes(self):
+        nodes_to_remove = []
+        for i, node in enumerate(self._nodes):
+            if node is None:
+                nodes_to_remove.append(i)
+        for i in sorted(nodes_to_remove, reverse=True):
+            del self._nodes[i]
+        if nodes_to_remove:
+            self._pathmanager.remove_nodes_greater_then(min(nodes_to_remove))
+
     def get_paths(self):
         return self._pathmanager.get_paths()
 

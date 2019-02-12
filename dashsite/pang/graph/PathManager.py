@@ -42,6 +42,9 @@ class PathManager:
             self.path_names_to_nodes_ids_order[path_name].append(node_id)
         except:
             print("")
+
+    def remove_nodes_greater_then(self, first_node_to_remove):
+        self.paths = self.paths[:, 0:first_node_to_remove]
     #
     # def update(self, pathmanager, start):
     #     for path_name, array_id in pathmanager.path_names_to_array_id.items():

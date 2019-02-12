@@ -4,6 +4,7 @@ from collections import deque, namedtuple
 from mafgraph.graph import Block
 
 from fileformats.maf.DAGMaf import DAGMaf
+from fileformats.maf.reader import maf_to_dagmaf
 from graph import nucleotides
 from graph.FastaSource import FastaSource
 from graph.Node import Node
@@ -51,7 +52,7 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
     Edge = namedtuple('Edge', ['seq_id', 'from_block_id', 'last_node_id', 'to_block_id'])
 
     def build(self, input, pangraph):
-        self.dagmaf = input
+        self.dagmaf = maf_to_dagmaf(input)
         self.pangraph = pangraph
         self.init_pangraph()
 
@@ -61,8 +62,9 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
         self.complement_starting_nodes()
         for mafnode in self.dagmaf.dagmafnodes:
             self.process_block(mafnode)
-        self.complement_ending_nodes()
+        # self.complement_ending_nodes()
         self.pangraph.remove_empty_paths()
+        self.pangraph.remove_empty_nodes()
 
     def set_seqs_info(self):
         self.seqs_info = {seq_id: [] for seq_id in self.sequences_names}
@@ -130,7 +132,9 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
         current_node_id = self.get_max_node_id()
         in_nodes = [last_edge.last_node_id]
         last_block_sinfo = self.get_sinfo(seq_id, last_edge.from_block_id)
-        for i in range(last_block_sinfo.start + last_block_sinfo.size, 0):
+        # if last_block_sinfo.from_block_id == last_edge.from_block_id: # czy może być inaczej?
+
+        for i in range(last_block_sinfo.start + last_block_sinfo.size, last_block_sinfo.srcSize):
             current_node_id += 1
             missing_nucleotide = self.full_sequences[seq_id][i]
             self.add_node(seqs_id=[seq_id],
@@ -142,7 +146,7 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
 
     def add_node(self, seqs_id, id, base, in_nodes, aligned_to):
         self.pangraph._nodes[id] = Node(id=id,
-                                        base=base,
+                                        base=nucleotides.code(base),
                                         in_nodes=in_nodes,
                                         aligned_to=aligned_to)
         for seq_id in seqs_id:
@@ -209,6 +213,35 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
         return current_node_id
 
     def add_block_out_edges_to_free_edges(self, block_in_nodes, block: Block):
+        # for edge in block.out_edges:
+        #     # if edge.edge_type != (1, -1):
+        #     #     continue
+        #     for seq in edge.sequences:
+        #         seq_id = seq[0].seq_id
+        #         left_block_sinfo, right_block_sinfo = self.get_edge_sinfos(from_block_id=block.id, edge=edge, seq_id=seq_id)
+        #
+        #         if not PangraphBuilderFromDAG.continuous_sequence(left_block_sinfo, right_block_sinfo):
+        #             last_node_id = self.complement_sequence_middle_nodes(seq_id=seq_id,
+        #                                                                  last_pos=left_block_sinfo.start + left_block_sinfo.size-1,
+        #                                                                  next_pos=right_block_sinfo.start,
+        #                                                                  in_node_id=block_in_nodes[seq_id])
+        #         else:
+        #             last_node_id = block_in_nodes[seq_id]
+        #             if edge.edge_type != (1, -1):
+        #                 continue
+        #
+        #         if edge.edge_type != (1, -1):
+        #             from_block_id = None
+        #         else:
+        #             from_block_id = block.id
+        #
+        #         self.free_edges[seq_id].append(
+        #             PangraphBuilderFromDAG.Edge(
+        #                 seq_id=seq_id,
+        #                 from_block_id=from_block_id,
+        #                 last_node_id=last_node_id,
+        #                 to_block_id=edge.to))
+
         for edge in block.out_edges:
             if edge.edge_type != (1, -1):
                 continue
@@ -217,7 +250,7 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
                 left_block_sinfo, right_block_sinfo = self.get_edge_sinfos(from_block_id=block.id, edge=edge, seq_id=seq_id)
                 if not PangraphBuilderFromDAG.continuous_sequence(left_block_sinfo, right_block_sinfo):
                     last_node_id = self.complement_sequence_middle_nodes(seq_id=seq_id,
-                                                                         last_pos=left_block_sinfo.start + left_block_sinfo.size,
+                                                                         last_pos=left_block_sinfo.start + left_block_sinfo.size-1,
                                                                          next_pos=right_block_sinfo.start,
                                                                          in_node_id=block_in_nodes[seq_id])
                 else:
@@ -244,7 +277,7 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
             block_sinfo: PangraphBuilderFromDAG.SInfo = self.get_sinfo(seq_id, block.id)
             if self.sequence_not_complete(block_sinfo):
                 last_node_id = self.complement_sequence_middle_nodes(seq_id=seq_id,
-                                                                     last_pos=block_sinfo.start + block_sinfo.size,
+                                                                     last_pos=block_sinfo.start + block_sinfo.size-1,
                                                                      next_pos=block_sinfo.srcSize,
                                                                      in_node_id=block_in_nodes[seq_id])
             else:
@@ -277,7 +310,7 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
                 in_nodes = self.get_in_nodes(block_in_nodes, seqs_id)
                 self.add_node(seqs_id=seqs_id,
                               id=current_node_id,
-                              base=nucleotides.code(nucl),
+                              base=nucl,
                               in_nodes=in_nodes,
                               aligned_to=PangraphBuilderFromDAG.get_next_aligned_node_id(i, column_nodes_ids))
                 PangraphBuilderFromDAG.update_block_in_nodes(block_in_nodes, seqs_id, current_node_id)

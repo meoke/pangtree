@@ -20,7 +20,7 @@ def run_pang(args):
         p.build_from_maf(multialignment)
     else:
         fasta_complementation_option = get_fasta_complementation_option(args.fasta_complementation)
-        p.build_from_maf_converted_to_dag(multialignment, fasta_complementation_option)
+        p.build_from_maf_firstly_converted_to_dag(multialignment, fasta_complementation_option)
 
     if args.fasta:
         p.generate_fasta_files(pathtools.create_child_dir(args.output, 'fasta'))

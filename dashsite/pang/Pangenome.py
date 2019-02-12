@@ -21,15 +21,15 @@ class Pangenome:
         if not fasta_complementation_option:
             fasta_source = None
         elif fasta_complementation_option == 'ncbi':
-            fasta_source = EntrezFastaSource
+            fasta_source = EntrezFastaSource()
         elif isinstance(fasta_complementation_option, Path):
             fasta_source = FastaFileSystemSource(fasta_complementation_option)
         else:
             raise Exception("Not known fasta complementation option. Should be none, 'ncbi' or path to fasta directory.")
 
-        self.dagmaf = maf_to_dagmaf(mafcontent)
+        # self.dagmaf = maf_to_dagmaf(mafcontent)
         self.genomes_info.feed_with_maf_data(mafcontent)
-        self.pangraph.build_from_dag(self.dagmaf, fasta_source, self.genomes_info)
+        self.pangraph.build_from_maf_firstly_converted_to_dag(mafcontent, fasta_source, self.genomes_info)
 
     def build_from_maf(self, mafcontent: StringIO):
         self.genomes_info.feed_with_maf_data(mafcontent)

@@ -14,10 +14,10 @@ class PangraphBuilderTests(unittest.TestCase):
     @staticmethod
     def setup_pangraph_from_maf_firstly_converted_to_dag(maf_path, metadata, fasta_source):
         mafcontent = PangraphBuilderTests.get_file_content(maf_path)
-        dagmaf = maf_to_dagmaf(mafcontent)
+        # dagmaf = maf_to_dagmaf(mafcontent)
         pangraph = Pangraph()
         builder = PangraphBuilderFromDAG(metadata, fasta_source)
-        builder.build(dagmaf, pangraph)
+        builder.build(mafcontent, pangraph)
         return pangraph
 
     @staticmethod
@@ -31,7 +31,7 @@ class PangraphBuilderTests(unittest.TestCase):
     @staticmethod
     def setup_pangraph(expected_nodes, expected_paths):
         pangraph = Pangraph()
-        pangraph._pathmanager.init_paths([],0)
+        pangraph._pathmanager.init_paths([], 0)
         pangraph._nodes = expected_nodes
         pangraph.set_paths(len(expected_nodes), expected_paths)
         return pangraph
