@@ -3,11 +3,9 @@ from pathlib import Path
 
 from graph.FastaSource import EntrezFastaSource, FastaFileSystemSource
 from metadata import reader as metadatareader
-from graph import mafreader
 from consensus.algorithm.TreeConfig import TreeConfig
 from consensus.algorithm import tree as consensustree
 from consensus.algorithm import simple as consensussimple
-from fileformats.maf.reader import maf_to_dagmaf
 from graph.Pangraph import Pangraph
 
 
@@ -27,7 +25,6 @@ class Pangenome:
         else:
             raise Exception("Not known fasta complementation option. Should be none, 'ncbi' or path to fasta directory.")
 
-        # self.dagmaf = maf_to_dagmaf(mafcontent)
         self.genomes_info.feed_with_maf_data(mafcontent)
         self.pangraph.build_from_maf_firstly_converted_to_dag(mafcontent, fasta_source, self.genomes_info)
 
@@ -56,12 +53,3 @@ class Pangenome:
     def _build_genomes_info(self, genomes_metadata):
         #todo check if metadata given else generate
         return metadatareader.read(genomes_metadata)
-
-    # def _build_pangraph(self, multialignment):
-    #     #todo it should be built based on blocks not raw multialignment
-    #     return mafreader.read(multialignment, self.genomes_info)
-
-    # def _build_pangraph(self):
-    #     #todo it should be built based on blocks not raw multialignment
-    #     # return mafreader.read(self.dagmaf, self.genomes_info)
-    #     return dagmaf_to_pangraph(self.dagmaf, self.genomes_info)
