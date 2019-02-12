@@ -14,7 +14,6 @@ class PangraphBuilderTests(unittest.TestCase):
     @staticmethod
     def setup_pangraph_from_maf_firstly_converted_to_dag(maf_path, metadata, fasta_source):
         mafcontent = PangraphBuilderTests.get_file_content(maf_path)
-        # dagmaf = maf_to_dagmaf(mafcontent)
         pangraph = Pangraph()
         builder = PangraphBuilderFromDAG(metadata, fasta_source)
         builder.build(mafcontent, pangraph)
