@@ -3,7 +3,29 @@ from typing import List, Dict
 import mafgraph
 
 from Pangenome import Pangenome
+from userio.ProgramParameters import ProgramParameters, FastaComplementationOption
 
+
+class JSONProgramParameters:
+    def __init__(self, program_parameters: ProgramParameters):
+        self.multialignment_file_path: str = str(program_parameters.multialignment_file_path)
+        self.metadata_file_path: str = str(program_parameters.metadata_file_path)
+        self.output_path: str = str(program_parameters.output_path)
+        self.generate_fasta: bool = program_parameters.generate_fasta
+        self.consensus_type: str = str(program_parameters.consensus_type)
+        self.hbmin: float = program_parameters.hbmin
+        self.r: float = program_parameters.r
+        self.multiplier: float = program_parameters.multiplier
+        self.stop: float = program_parameters.stop
+        self.re_consensus: bool = program_parameters.re_consensus
+        self.anti_granular: bool = program_parameters.anti_granular
+        self.not_dag: bool = program_parameters.not_dag
+        self.fasta_complementation: FastaComplementationOption = str(program_parameters.fasta_complementation)
+        self.local_fasta_dirpath: str = str(program_parameters.local_fasta_dirpath)
+
+    def __str__(self):
+        return f"Multialignment file: {self.multialignment_file_path},\n" \
+            f"MEtadata file: {self.metadata_file_path},\n" \
 
 class JSONNode:
     def __init__(self, id: int, nucleobase: str):
@@ -68,9 +90,11 @@ class JSONMAFNode:
 
 
 class JSONPangenome:
-    def __init__(self, pangenome: Pangenome =None):
+    def __init__(self, pangenome: Pangenome = None, program_parameters: ProgramParameters=None):
         if not pangenome:
             return
+        if program_parameters:
+            self.program_parameters = JSONProgramParameters(program_parameters)
         # todo perf # self.nodes = [JSONNode(node.id, decode(node.base)) for node in pangenome.pangraph.get_nodes()]
         self.nodes = []
         self.edges = []

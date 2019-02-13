@@ -48,7 +48,7 @@ def extract_pangraph(po_lines):
     nodes = [None] * nodes_count
     for i in range(nodes_count):
         node_line = next(po_lines_iterator)
-        base = node_line[0].upper() #todo upper?
+        base = node_line[0].upper()
         in_nodes, sequences_IDs, aligned_to = _extract_node_parameters(node_line)
         nodes[i] = Node(id=i,
                         base=n.code(base),

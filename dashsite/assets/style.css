@@ -9,7 +9,7 @@ body {
     margin-top: 10px;
 }
 
-#program_info{
+#program_info, #program_parameters{
     border: 1px black;
     border-radius: 5px;
     background-color: #F2F0F2;

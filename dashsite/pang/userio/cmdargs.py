@@ -3,6 +3,7 @@ from os import getcwd
 from pathlib import Path
 from typing import Union, Dict
 
+from userio.ProgramParameters import FastaComplementationOption, ProgramParameters, ConsensusAlgorithm
 from .pathtools import create_default_output_dir
 
 ArgType = Union[str, float, str, Path]
@@ -129,23 +130,56 @@ def _get_parser():
     return p
 
 
-def get_validated_args():
+def get_validated_args() -> ProgramParameters:
     """Parse and validate command line arguments"""
 
     parser = _get_parser()
     try:
-        return parser.parse_args()
+        args = parser.parse_args()
+        program_params = ProgramParameters()
+        program_params.multialignment_file_path = args.multialignment
+        program_params.metadata_file_path = args.data
+        program_params.output_path = args.output
+        program_params.generate_fasta = args.fasta
+        program_params.consensus_type = get_consensus_algorithm_option(args.consensus)
+        program_params.hbmin = args.hbmin
+        program_params.r = args.r
+        program_params.multiplier = args.multiplier
+        program_params.stop = args.stop
+        program_params.re_consensus = args.re_consensus
+        program_params.anti_granular = args.anti_granular
+        program_params.not_dag = args.not_dag
+        program_params.fasta_complementation = get_fasta_complementation_option(args.fasta_complementation)
+        if program_params.fasta_complementation == FastaComplementationOption.LocalFasta:
+            program_params.local_fasta_dirpath = get_fasta_dir(args.fasta_complementation[0])
+        return program_params
     except Exception as e:
         raise parser.error(e)
 
 
-def get_fasta_complementation_option(fasta_complementation):
+def get_fasta_dir(args_fasta_dir):
+    dir_path = Path(args_fasta_dir)
+    if not dir_path.exists():
+        raise Exception("Fasta directory does not exist.")
+    return dir_path
+
+
+def get_fasta_complementation_option(fasta_complementation) -> FastaComplementationOption:
     if fasta_complementation is None:
-        return None
+        return FastaComplementationOption.No
     elif fasta_complementation == []:
-        return 'ncbi'
+        return FastaComplementationOption.NCBI
     elif fasta_complementation[0]:
-        dir_path = Path(fasta_complementation[0])
-        if not dir_path.exists():
-            raise Exception("Fasta directory does not exist.")
-        return dir_path
+        return FastaComplementationOption.LocalFasta
+
+
+def get_consensus_algorithm_option(consensus_type) -> ConsensusAlgorithm:
+    if consensus_type is None:
+        return ConsensusAlgorithm.No
+    elif consensus_type == "simple":
+        return ConsensusAlgorithm.Simple
+    elif consensus_type == "tree":
+        return ConsensusAlgorithm.Tree
+    else:
+        raise Exception("Unknown consensus algorithm type")
+

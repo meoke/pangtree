@@ -8,6 +8,7 @@ import pandas as pd
 import flask
 
 from app_style import external_css
+from fileformats.json.JSONPangenome import JSONProgramParameters
 
 from pang_run import run_pang, decode_json
 from components import consensus_tree
@@ -19,6 +20,7 @@ from pang.fileformats.json import reader as pangenomejson_reader, writer as pang
 from networkx.readwrite import json_graph
 import jsonpickle
 import app_layout
+import dash_html_components as html
 
 app = dash.Dash(__name__)
 app.title = 'pang'
@@ -116,6 +118,30 @@ def call_pang(last_clicked,
 
         shutil.copy(json_path, "download/pangenome.json")
         return pangenomejson_writer.pangenome_to_json(pangenome)
+
+@app.callback(
+    dash.dependencies.Output('program_parameters_display', 'children'),
+    [dash.dependencies.Input('hidden_pang_result', 'children')]
+)
+def update_program_parameters(jsonified_pangenome):
+    jsonpangenome = pangenomejson_reader.json_to_jsonpangenome(jsonified_pangenome)
+    if jsonpangenome.program_parameters:
+        params: JSONProgramParameters = jsonpangenome.program_parameters
+        return [html.P(f"Multialignment path: {params.multialignment_file_path}"),
+                html.P(f"Metadata path: {params.metadata_file_path}"),
+                html.P(f"Generate fasta: {params.generate_fasta}"),
+                html.P(f"Consensus type: {params.consensus_type}"),
+                html.P(f"Hbmin: {params.hbmin}"),
+                html.P(f"R: {params.r}"),
+                html.P(f"Multiplier: {params.multiplier}"),
+                html.P(f"Stop: {params.stop}"),
+                html.P(f"Re_consensus: {params.re_consensus}"),
+                html.P(f"Anti granular: {params.anti_granular}"),
+                html.P(f"Not dag: {params.not_dag}"),
+                html.P(f"Fasta_complementation: {params.fasta_complementation}"),
+                html.P(f"Local fasta dir: {params.local_fasta_dirpath}")
+                ]
+        # return str(jsonpangenome.program_parameters)
 
 @app.callback(
     dash.dependencies.Output('hidden_consensus_tree_data', 'children'),

@@ -63,7 +63,7 @@ def get_sources(pangraph: Pangraph) -> List[str]:
 
 
 def get_node_code(node):
-    return n.decode(node.base)
+    return n.decode(node.base).lower()
 
 
 def get_nodes(pangraph: Pangraph) -> List[str]:

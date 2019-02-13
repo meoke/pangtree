@@ -21,9 +21,9 @@ def get_layout(get_url_function):
                 html.Img(
                     src=get_url_function('logo.png'),
                     className='two columns',
-                    style={'height':'60px',
-                           'width':'60px',
-                           'float':'right',
+                    style={'height': '60px',
+                           'width': '60px',
+                           'float': 'right',
                            'margin': '10px'}
                 )
             ],
@@ -248,6 +248,19 @@ def get_layout(get_url_function):
                                             )
                             ],
                             style={}
+                        ),
+                        html.Div(
+                            id='program_parameters',
+                            children=[
+                                html.Div(
+                                    id='hidden_program_parameters',
+                                    style={'display': 'none'}
+                                ),
+                                html.Div(
+                                    id='program_parameters_display'
+                                )
+                            ],
+                            style={'width': '100%'}
                         ),
                         html.Div(
                             id='consensus_tree',
