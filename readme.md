@@ -177,7 +177,8 @@ przypisanych sekwencji (wg *poa*) jako **C**.
     - Strategia NODE1 (oryginalna)
         - policz średnią odległość między compatibilities
         - uporządkuj compatibilities rosnąco
-        - znajdź takie **Ci**, **Cj**, pomiędzy którymi odległość jest większa niż średnia odległość * *multiplier*
+        - znajdź pierwsze takie **Ci**, **Cj**, pomiędzy którymi odległość jest większa niż
+         średnia odległość * *multiplier*. Jeśli nie istnieją, ponów wyszukiwanie dla multiplier = 1. 
         - **P2** = **Cj**
     - Strategia NODE2 (z level guardem)
         - IF lista **level_guards** jest pusta:
@@ -190,9 +191,9 @@ przypisanych sekwencji (wg *poa*) jako **C**.
                 - użyj NODE1
             - ELSE
                 - dodaj guard do compatibilities 
-                - policz średnią odległość między compatibilities
                 - uporządkuj compatibilities rosnąco
-                - na przedziale [0, guard] znajdź takie **Ci**, **Cj**, pomiędzy którymi odległość 
+                - policz średnią odległość między compatibilities
+                - na przedziale [0, guard] znajdź pierwsze takie **Ci**, **Cj**, pomiędzy którymi odległość 
                 jest większa niż średnia odległość * *multiplier*
                 - jeśli nie ma takich **Ci**, **Cj**:
                     - **P2** = pierwsze compatibility większe niż guard
@@ -204,8 +205,8 @@ przypisanych sekwencji (wg *poa*) jako **C**.
             - IF guard <= wszystkie compatibilities:
                 - **P2** = min(compatibilities)
             - ELSE
-                - search_boundary = pierwsze compatibility większe niż guard 
-                albo guard (gdy guard > wszystkie compatibilities)
+                - search_boundary = indeks pierwszego compatibility większego niż guard 
+                albo guarda (gdy guard > wszystkie compatibilities)
                 - użyj strategii MAX2 na przedziale [0, search_boundary]
     - Strategia NODE4 (bardzo uproszczona)
         - użyj strategii MAX2
