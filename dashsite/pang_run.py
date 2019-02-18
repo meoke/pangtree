@@ -1,5 +1,3 @@
-from io import StringIO
-
 from pang.Pangenome import Pangenome
 from pang.userio import pathtools
 from pang.fileformats.json import writer as jsonwriter
@@ -7,6 +5,9 @@ from pathlib import Path
 from os import getcwd
 
 from base64 import b64decode
+
+from userio.PangenomeParameters import PangenomeParameters
+
 
 def run_pang(multialignment_contents,
              metadata_contents,
@@ -17,7 +18,8 @@ def run_pang(multialignment_contents,
              multiplier,
              stop,
              re_consensus,
-             anti_fragmentation_value):
+             anti_fragmentation_value,
+             no_multiplier_anti_granular):
     #maf
     content_type, content_string = multialignment_contents.split(',')
     maf_str = b64decode(content_string).decode('ascii')
@@ -27,9 +29,11 @@ def run_pang(multialignment_contents,
     metadata_str = b64decode(content_string).decode('ascii')
 
     output_dir = pathtools.create_default_output_dir(Path(getcwd()))
-
-    pangenome = Pangenome(metadata=metadata_str)
-    pangenome.build_from_maf_converted_to_dag(mafcontent=StringIO(maf_str))
+    pangenome_parameters: PangenomeParameters = PangenomeParameters()
+    pangenome = Pangenome(pangenome_parameters)
+    pangenome.run()
+    # pangenome = Pangenome(metadata=metadata_str)
+    # pangenome.build_from_maf_converted_to_dag(mafcontent=StringIO(maf_str))
     # if fasta_option:
     #     pass
     #     # get fasta zip?
@@ -42,10 +46,11 @@ def run_pang(multialignment_contents,
                                      multiplier,
                                      stop,
                                      re_consensus,
-                                     anti_fragmentation_value
+                                     anti_fragmentation_value,
+                                     no_multiplier_anti_granular
                                      )
 
-    json_path = jsonwriter.save(output_dir, pangenome)
+    json_path = jsonwriter.save_to_file(output_dir, pangenome)
     return pangenome, json_path
 
 

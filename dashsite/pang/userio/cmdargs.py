@@ -3,7 +3,9 @@ from os import getcwd
 from pathlib import Path
 from typing import Union, Dict
 
-from userio.ProgramParameters import FastaComplementationOption, ProgramParameters, ConsensusAlgorithm
+from userio import pathtools
+from userio.PangenomeParameters import FastaComplementationOption, PangenomeParameters, ConsensusAlgorithm, MaxCutoffOption, \
+    NodeCutoffOption
 from .pathtools import create_default_output_dir
 
 ArgType = Union[str, float, str, Path]
@@ -40,6 +42,53 @@ def _float_0_1(arg: str) -> float:
     return v
 
 
+def get_fasta_dir(args_fasta_dir: str):
+    """Check if directory given as argument exists."""
+
+    dir_path = Path(args_fasta_dir)
+    if not dir_path.exists():
+        raise argparse.ArgumentError("Fasta directory does not exist.")
+    return dir_path
+
+
+def _fasta_complementation_option(arg_fasta_complementation) -> FastaComplementationOption:
+    """Converts command line argument to FastaComplementationOption"""
+
+    if arg_fasta_complementation is None:
+        return FastaComplementationOption.No
+    elif arg_fasta_complementation == []:
+        return FastaComplementationOption.NCBI
+    elif arg_fasta_complementation[0]:
+        return FastaComplementationOption.LocalFasta
+
+
+def _max_cutoff_option(max_cutoff_option) -> MaxCutoffOption:
+    """Converts command line argument to MaxCutoffOption"""
+
+    try:
+        return MaxCutoffOption[max_cutoff_option.upper()]
+    except KeyError:
+        raise argparse.ArgumentError()
+
+
+def _consensus_algorithm_option(arg_consensus_option) -> ConsensusAlgorithm:
+    """Converts command line argument to ConsensusOption"""
+
+    try:
+        return ConsensusAlgorithm[arg_consensus_option.upper()]
+    except KeyError:
+        raise argparse.ArgumentError()
+
+
+def _node_cutoff_option(node_cutoff_option) -> NodeCutoffOption:
+    """Converts command line argument to NodeCutoffOption"""
+
+    try:
+        return NodeCutoffOption[node_cutoff_option.upper()]
+    except KeyError:
+        raise argparse.ArgumentError()
+
+
 class _RangeArgAction(argparse.Action):
     """Command line argument \'range\' (\'-r\') validation"""
 
@@ -53,7 +102,7 @@ def _get_parser():
     """Create ArgumentParser for pang module."""
 
     p = argparse.ArgumentParser(prog='pang',
-                                description='Consensus generation and visulization of Pangenome',
+                                description='Build pangraph and generate consensuses',
                                 epilog='For more information check github.com/meoke/pang')
     p.add_argument('--multialignment', '-m',
                    type=_file_arg,
@@ -69,18 +118,16 @@ def _get_parser():
                    help='Output directory path.')
     p.add_argument('-fasta',
                    action='store_true',
-                   help='Set if fasta files must be produced.')
-    p.add_argument('-vis',
-                   action='store_true',
-                   help='Set if visualization must be produced.')
+                   help='Set if fasta files for consensuses must be produced.')
     p.add_argument('-consensus',
-                   choices=['simple', 'tree'],
-                   help='Set if consensus must be generated. Algorithms to choose: \'simple\' or \'tree\'.')
+                   type=_consensus_algorithm_option,
+                   default=ConsensusAlgorithm.NO,
+                   help='Set if consensus must be generated. Values to choose: \'simple\' or \'tree\'.')
     p.add_argument('-hbmin',
                    type=_float_0_1,
                    default=0.6,
                    help='Simple POA algorithm parameter. '
-                        'The minimum value of sequence compatibility to generated consensus')
+                        'The minimum value of sequence compatibility to generated consensus.')
     p.add_argument('-r',
                    nargs=2,
                    type=_float_0_1,
@@ -104,11 +151,6 @@ def _get_parser():
                    help='Tree POA algorithm parameter.'
                         'Set if after producing children nodes, sequences should be moved to'
                         ' siblings nodes if compatibility to its consensus is higher.')
-    p.add_argument('-anti_granular',
-                   action='store_true',
-                   default=True,
-                   help='Tree POA algorithm parameter.'
-                        'Set if consensuses tree should be processed in a way to avoid fragmentation.')
     p.add_argument('-not_dag',
                    action='store_true',
                    default=False,
@@ -118,6 +160,7 @@ def _get_parser():
                         'reflect the real life sequences.')
     p.add_argument('-fasta_complementation',
                    nargs='*',
+                   type=_fasta_complementation_option,
                    help='Pangraph building from maf file parameter. Ignored when -not_dag parameter is set.'
                         'Maf file usually contains not full sequences but only parts of them, aligned to each other. '
                         'To build an exact pangraph the full sequences must be retrieved from: '
@@ -127,59 +170,54 @@ def _get_parser():
                         '(then make sure that sequence identifiers used in maf match the ncbi accession identifiers) '
                         'Use it with additional argument (path to the directory with fasta files) if you want '
                         'to use fasta from local file system (make sure sequence identifiers in maf match file names')
+    p.add_argument('-p',
+                   type=float,
+                   default=1,
+                   help='Tree consensus algorithm parameter.'
+                        'When finding compatibilities cutoff, their values are raised to the power o p.')
+    p.add_argument('-max',
+                   default=MaxCutoffOption.MAX2,
+                   type=_max_cutoff_option,
+                   help='Specify which strategy - MAX1 or MAX2 use '
+                        'for finding max cutoff (see details in README.md)')
+    p.add_argument('-node',
+                   default=NodeCutoffOption.NODE3,
+                   type=_node_cutoff_option,
+                   help='Specify which strategy - NODE1 (1), NODE2 (2), NODE3 (3) or NODE4 (4) use '
+                        'for finding max cutoff (see details in README.md)')
     return p
 
 
-def get_validated_args() -> ProgramParameters:
+def create_pangenome_parameters() -> PangenomeParameters:
     """Parse and validate command line arguments"""
 
     parser = _get_parser()
     try:
         args = parser.parse_args()
-        program_params = ProgramParameters()
-        program_params.multialignment_file_path = args.multialignment
-        program_params.metadata_file_path = args.data
+
+        program_params = PangenomeParameters()
+        program_params.metadata_file_content = pathtools.get_file_content(args.data)
+        program_params.multialignment_file_content = pathtools.get_file_content_as_stringio(args.multialignment)
+
+
         program_params.output_path = args.output
         program_params.generate_fasta = args.fasta
-        program_params.consensus_type = get_consensus_algorithm_option(args.consensus)
+        program_params.consensus_type = args.consensus
         program_params.hbmin = args.hbmin
-        program_params.r = args.r
+        program_params.range = args.r
         program_params.multiplier = args.multiplier
         program_params.stop = args.stop
         program_params.re_consensus = args.re_consensus
         program_params.anti_granular = args.anti_granular
         program_params.not_dag = args.not_dag
-        program_params.fasta_complementation = get_fasta_complementation_option(args.fasta_complementation)
+        program_params.fasta_complementation = args.fasta_complementation
+        program_params.p = args.p
+        program_params.max_cutoff_option = args.max
+        program_params.node_cutoff_option = args.node
         if program_params.fasta_complementation == FastaComplementationOption.LocalFasta:
             program_params.local_fasta_dirpath = get_fasta_dir(args.fasta_complementation[0])
         return program_params
     except Exception as e:
         raise parser.error(e)
 
-
-def get_fasta_dir(args_fasta_dir):
-    dir_path = Path(args_fasta_dir)
-    if not dir_path.exists():
-        raise Exception("Fasta directory does not exist.")
-    return dir_path
-
-
-def get_fasta_complementation_option(fasta_complementation) -> FastaComplementationOption:
-    if fasta_complementation is None:
-        return FastaComplementationOption.No
-    elif fasta_complementation == []:
-        return FastaComplementationOption.NCBI
-    elif fasta_complementation[0]:
-        return FastaComplementationOption.LocalFasta
-
-
-def get_consensus_algorithm_option(consensus_type) -> ConsensusAlgorithm:
-    if consensus_type is None:
-        return ConsensusAlgorithm.No
-    elif consensus_type == "simple":
-        return ConsensusAlgorithm.Simple
-    elif consensus_type == "tree":
-        return ConsensusAlgorithm.Tree
-    else:
-        raise Exception("Unknown consensus algorithm type")
 

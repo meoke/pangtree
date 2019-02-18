@@ -1,7 +1,4 @@
 from mafgraph.sorter import sort_mafblocks
-from mafgraph.mafreader import read_maf
-
-from mafgraph.graph.Block import Block
 
 
 class DAGMafNode:

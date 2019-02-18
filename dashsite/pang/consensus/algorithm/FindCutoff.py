@@ -20,14 +20,12 @@ class FindCutoff(ABC):
 
 
 class FindMaxCutoff(FindCutoff):
-    @classmethod
-    def find_max_cutoff(cls, compatibilities: List[float]) -> float:
+    def find_max_cutoff(self, compatibilities: List[float]) -> float:
         pass
 
 
 class FindNodeCutoff(FindCutoff):
-    @classmethod
-    def find_node_cutoff(cls, compatibilities: List[float], so_far_cutoffs: List[float]) -> float:
+    def find_node_cutoff(self, compatibilities: List[float], so_far_cutoffs: List[float]) -> float:
         pass
 
     @staticmethod
@@ -37,19 +35,17 @@ class FindNodeCutoff(FindCutoff):
 
 
 class MAX1(FindMaxCutoff):
-    @classmethod
-    def __init__(cls, cutoff_search_range: List[float]):
+    def __init__(self, cutoff_search_range: List[float]):
         if len(cutoff_search_range) != 2:
             raise ValueError("Cutoff search range must have length 2.")
         elif cutoff_search_range[1] < cutoff_search_range[0]:
             raise ValueError("For cutoff search range [x, y] x must be <= y.")
-        cls.cutoff_search_range = cutoff_search_range
+        self.cutoff_search_range = cutoff_search_range
 
-    @classmethod
-    def find_max_cutoff(cls, compatibilities: List[float]) -> float:
+    def find_max_cutoff(self, compatibilities: List[float]) -> float:
         FindCutoff.check_if_not_empty(compatibilities)
-        min_search_pos = round((len(compatibilities) - 1) * cls.cutoff_search_range[0])
-        max_search_pos = round((len(compatibilities) - 1) * cls.cutoff_search_range[1])
+        min_search_pos = round((len(compatibilities) - 1) * self.cutoff_search_range[0])
+        max_search_pos = round((len(compatibilities) - 1) * self.cutoff_search_range[1])
         sorted_comp = sorted(compatibilities)
         if min_search_pos == max_search_pos:
             return sorted_comp[min_search_pos]
@@ -60,19 +56,17 @@ class MAX1(FindMaxCutoff):
 
 
 class MAX2(FindMaxCutoff):
-    @classmethod
-    def find_max_cutoff(cls, compatibilities: List[float]) -> float:
+    def find_max_cutoff(self, compatibilities: List[float]) -> float:
         FindCutoff.check_if_not_empty(compatibilities)
         return FindCutoff.sort_and_get_value_following_max_distance(compatibilities)
 
 
 class NODE1(FindNodeCutoff):
-    @classmethod
-    def __init__(cls, multiplier):
-        cls.multiplier = multiplier
+    def __init__(self, multiplier):
+        self.multiplier = multiplier
 
-    @classmethod
-    def find_node_cutoff(cls, compatibilities: List[float], so_far_cutoffs: List[float]) -> float:
+
+    def find_node_cutoff(self, compatibilities: List[float], so_far_cutoffs: List[float]) -> float:
         FindCutoff.check_if_not_empty(compatibilities)
 
         if len(compatibilities) == 1:
@@ -80,7 +74,7 @@ class NODE1(FindNodeCutoff):
 
         sorted_comp = sorted(compatibilities)
         mean_distance = (sorted_comp[-1] - sorted_comp[0]) / (len(sorted_comp) - 1)
-        required_gap = mean_distance * cls.multiplier
+        required_gap = mean_distance * self.multiplier
         cutoff = NODE1.get_value_following_first_gap_greater_than_required_gap(sorted_comp, required_gap)
         if cutoff is None:
             cutoff = NODE1.get_value_following_first_gap_greater_than_required_gap(sorted_comp, mean_distance)
@@ -98,25 +92,23 @@ class NODE1(FindNodeCutoff):
 
 
 class NODE2(FindNodeCutoff):
-    @classmethod
-    def __init__(cls, multiplier):
-        cls.multiplier = multiplier
+    def __init__(self, multiplier):
+        self.multiplier = multiplier
 
-    @classmethod
-    def find_node_cutoff(cls, compatibilities: List[float], so_far_cutoffs: List[float]) -> float:
+    def find_node_cutoff(self, compatibilities: List[float], so_far_cutoffs: List[float]) -> float:
         if not so_far_cutoffs:
-            return cls.use_node1(compatibilities)
+            return self.use_node1(compatibilities)
 
         guard = min(so_far_cutoffs)
         sorted_comp = sorted(compatibilities)
         if guard <= sorted_comp[0]:
             return sorted_comp[0]
         elif guard > sorted_comp[-1]:
-            return cls.use_node1(compatibilities)
+            return self.use_node1(compatibilities)
         else:
             sorted_comp = sorted(sorted_comp + [guard])
             mean_distance = (sorted_comp[-1] - sorted_comp[0]) / (len(sorted_comp) - 1)
-            required_gap = mean_distance * cls.multiplier
+            required_gap = mean_distance * self.multiplier
             if sorted_comp.count(guard) > 1:
                 cutoff_search_area = [c for c in sorted_comp if c <= guard]
             else:
@@ -127,32 +119,29 @@ class NODE2(FindNodeCutoff):
                 cutoff = min(comp_greater_than_guard)
             return cutoff
 
-    @classmethod
-    def use_node1(cls, compatibilities):
-        strategy = NODE1(cls.multiplier)
+    def use_node1(self, compatibilities):
+        strategy = NODE1(self.multiplier)
         return strategy.find_node_cutoff(compatibilities, [])
 
 
 class NODE3(FindNodeCutoff):
-    @classmethod
-    def find_node_cutoff(cls, compatibilities: List[float], so_far_cutoffs: List[float]) -> float:
+    def find_node_cutoff(self, compatibilities: List[float], so_far_cutoffs: List[float]) -> float:
         if not so_far_cutoffs:
-            return cls.use_max2(compatibilities)
+            return self.use_max2(compatibilities)
 
         guard = min(so_far_cutoffs)
         sorted_comp = sorted(compatibilities)
         if guard <= sorted_comp[0]:
             return sorted_comp[0]
         elif guard >= sorted_comp[-1]:
-            return cls.use_max2(compatibilities)
+            return self.use_max2(compatibilities)
         else:
             first_comp_greater_than_guard_index = [i for i, c in enumerate(sorted_comp) if c > guard][0]
-            return cls.use_max2(sorted_comp[0:first_comp_greater_than_guard_index + 1])
+            return self.use_max2(sorted_comp[0:first_comp_greater_than_guard_index + 1])
 
 
 class NODE4(FindNodeCutoff):
-    @classmethod
-    def find_node_cutoff(cls, compatibilities: List[float], so_far_cutoffs: List[float]):
-        return cls.use_max2(compatibilities)
+    def find_node_cutoff(self, compatibilities: List[float], so_far_cutoffs: List[float]):
+        return self.use_max2(compatibilities)
 
 

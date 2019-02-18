@@ -40,8 +40,9 @@ class PathManager:
         try:
             self.paths[array_id, node_id] = True
             self.path_names_to_nodes_ids_order[path_name].append(node_id)
-        except:
-            print("")
+        except IndexError as ex:
+            print("Incorrect indexes for adding new node to Path Manager.")
+            raise ex
 
     def remove_nodes_greater_then(self, first_node_to_remove):
         self.paths = self.paths[:, 0:first_node_to_remove]
