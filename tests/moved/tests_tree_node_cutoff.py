@@ -11,8 +11,9 @@ class TreeTestNodeCutoff(unittest.TestCase):
         pass
 
     def test_get_node_cutoff_no_compatibilities(self):
+        #moved
         with self.assertRaises(ValueError) as err:
-            actual_cutoff = tree.find_node_cutoff([], [0, 1])
+            actual_cutoff = tree.find_node_cutoff([], 0, [0, 1])
             self.assertEqual(str(err.exception), f"Empty compatibilities list. Finding max cutoff is not possible.")
 
     @data((0.5, [0.5], [], 1),
@@ -20,7 +21,7 @@ class TreeTestNodeCutoff(unittest.TestCase):
           (0.5, [0.5], [], 0.5))
     @unpack
     def test_get_node_cutoff_single_comp_value(self, expected_cutoff, compatibilities, old_comps, multiplier):
-
+        #moved
         actual_cutoff = tree.find_node_cutoff(compatibilities, multiplier, old_comps)
         self.assertEqual(actual_cutoff, expected_cutoff)
 
@@ -29,6 +30,7 @@ class TreeTestNodeCutoff(unittest.TestCase):
           (0.9, [0.9, 0.5], [], 0.4))
     @unpack
     def test_get_node_cutoff_two_comp_values(self, expected_cutoff, compatibilities, old_comps, multiplier):
+        # moved
         actual_cutoff = tree.find_node_cutoff(compatibilities, multiplier, old_comps)
         self.assertEqual(actual_cutoff, expected_cutoff)
 
@@ -41,6 +43,7 @@ class TreeTestNodeCutoff(unittest.TestCase):
           (0.8333, [1.0, 0.9444, 0.8333, 0.0556, 0.1111], [], 1))
     @unpack
     def test_get_node_cutoff_multiplier_1(self, expected_cutoff, compatibilities, old_comps, multiplier):
+        #moved
         actual_cutoff = tree.find_node_cutoff(compatibilities, multiplier, old_comps)
         self.assertEqual(actual_cutoff, expected_cutoff)
 
@@ -48,6 +51,7 @@ class TreeTestNodeCutoff(unittest.TestCase):
           (0.32, [0.31, 0.32, 0.91, 0.92, 0.93, 0.97], [], 0.01))
     @unpack
     def test_get_node_cutoff_multiplier_ok(self, expected_cutoff, compatibilities, old_comps, multiplier):
+        # moved
         actual_cutoff = tree.find_node_cutoff(compatibilities, multiplier, old_comps)
         self.assertEqual(actual_cutoff, expected_cutoff)
 
@@ -55,5 +59,6 @@ class TreeTestNodeCutoff(unittest.TestCase):
           (0.91, [0.31, 0.32, 0.91, 0.92, 0.93, 0.97], [], 10))
     @unpack
     def test_get_node_cutoff_multiplier_too_big(self, expected_cutoff, compatibilities, old_comps, multiplier):
+        # moved
         actual_cutoff = tree.find_node_cutoff(compatibilities, multiplier, old_comps)
         self.assertEqual(actual_cutoff, expected_cutoff)

@@ -1,14 +1,11 @@
 from io import StringIO
-from pathlib import Path
 from typing import List, Dict
-from fileformats.maf.DAGMaf import DAGMaf
 from graph.PangraphBuilder.PangraphBuilderBase import PangraphBuilderBase
 from graph.PangraphBuilder.PangraphBuilderFromDAG import PangraphBuilderFromDAG
 from graph.PangraphBuilder.PangraphBuilderFromMAF import PangraphBuilderFromMAF
 from .Node import Node
 from .PathManager import PathManager
 import numpy as np
-from .FastaSource import EntrezFastaSource, FastaFileSystemSource
 
 
 class Pangraph:

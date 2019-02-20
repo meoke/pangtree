@@ -105,6 +105,7 @@ def call_pang(last_clicked,
         fasta_option = True if 'FASTA' in pang_options_values else False
         re_consensus_value = True if 're_consensus' in tree_consensus_options_values else False
         anti_fragmentation_value = True if 'anti_fragmentation' in tree_consensus_options_values else False
+        no_multiplier_anti_granular = True #todo
         pangenome, json_path = run_pang(maf_contents,
                                         metadata_contents,
                                         fasta_option,
@@ -114,7 +115,8 @@ def call_pang(last_clicked,
                                         multiplier_value,
                                         stop_value,
                                         re_consensus_value,
-                                        anti_fragmentation_value)
+                                        anti_fragmentation_value,
+                                        no_multiplier_anti_granular)
 
         shutil.copy(json_path, "download/pangenome.json")
         return pangenomejson_writer.pangenome_to_json(pangenome)

@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union, Set
 from .nucleotides import decode
 
 
@@ -6,7 +6,7 @@ class Node:
     def __init__(self,
                  id: int,
                  base: int,
-                 in_nodes: List[int],
+                 in_nodes: Union[Set[int], List[int]],
                  aligned_to: List[int]):
         self.id = id
         self.base = base

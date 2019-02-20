@@ -1,8 +1,4 @@
-import sys
-from collections import namedtuple
-
 from Bio import AlignIO
-
 from graph import nucleotides
 from graph.Node import Node
 from graph.PangraphBuilder.PangraphBuilderBase import PangraphBuilderBase
@@ -27,7 +23,7 @@ class PangraphBuilderFromMAF(PangraphBuilderBase):
             for col in range(block_width):
                 sequence_name_to_nucleotide = {seq.id: seq[col] for seq in block}
                 nodes_codes = sorted([*(
-                    set([nucleotide for nucleotide in sequence_name_to_nucleotide.values()])).difference(set(['-']))])
+                    set([nucleotide for nucleotide in sequence_name_to_nucleotide.values()])).difference({'-'})])
                 column_nodes_ids = [current_node_id + i + 1 for i, _ in enumerate(nodes_codes)]
 
                 for i, nucl in enumerate(nodes_codes):

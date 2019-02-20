@@ -120,7 +120,7 @@ def get_consensus_tree_graph(jsonpangenome: JSONPangenome, tree, sliderValue):
                        line=dict(color='rgb(210,210,210)', width=1),
                        hoverinfo='none'
                        )
-    line=go.Scatter(x=[sliderValue, sliderValue],
+    line = go.Scatter(x=[sliderValue, sliderValue],
                     y=[0, 100],
                     mode='lines',
                     line=dict(color=colors['accent']))

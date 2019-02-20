@@ -1,6 +1,6 @@
 from pathlib import Path
 from Pangenome import Pangenome
-from userio.ProgramParameters import ProgramParameters
+from userio.PangenomeParameters import PangenomeParameters
 from .JSONPangenome import JSONPangenome
 from userio import pathtools
 import jsonpickle
@@ -15,7 +15,7 @@ def pangenome_to_json(pangenome: Pangenome):
     return jsonpickle.encode(jsonpangenome)
 
 
-def save(output_dir: Path, pangenome: Pangenome, program_parameters: ProgramParameters):
+def save_to_file(output_dir: Path, pangenome: Pangenome, program_parameters: PangenomeParameters):
     jsonpoagraph = JSONPangenome(pangenome, program_parameters)
     json_path = pathtools.get_child_file_path(output_dir, "pangenome.json")
     jsonpickle.set_encoder_options('simplejson', indent=4)

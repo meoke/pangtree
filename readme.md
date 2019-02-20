@@ -153,25 +153,75 @@ def find_node_cutoff(compatibilites):
     return c2
 ```
 
-Słowny opis podziału węzła (odpowiada get_children):
+Słowny opis podziału węzła **N** (odpowiada get_children, uruchamiane tylko gdy w węźle istnieje sekwencja 
+o compatibility do consensusu w tym węźle o wartości niższej niż **STOP** ):
 
-
-1. Uruchom *poa* na wszystkich sekwencjach w tym węźle, weź consensus o największej liczbie przypisanych sekwencji jako **C**.
-2. Policz compatibility **C** z wszystkimi sekwencjami w tym węźle.
-3. Znajdź próg odcięcia **P1** wśród compatibilities policzonych w 2.:
-    - weź compatibilities z przedziału *cutoff_search_range*
-    - znajdź największą różnicę występującą pomiędzy dwoma kolejnymi compatibility **Ci**, **Cj**
-    - **P1** = **Cj**
-4. **max_sequences** - sekwencje, których compatibility do **C** przekracza **P1**
-5. Uruchom *poa* na **max_sequences**, weź consensus o największej liczbie przypisanych sekwencji jako **C_MAX**.
-6. Policz compatibility **C_MAX** z wszystkimi sekwencjami w tym węźle.
-7. Znajdź próg odcięcia **P2** wśród posortowanych compatibilities policzonych w 6.:
-    - policz średnią odległość między compatibilities
-    - znajdź takie **Ci**, **Cj** pomiędzy odległość jest większa niż średnia odległość * *multiplier*
-    - **P2** = **Cj**
-8. **node_sequences** - sekwencje, których compatibility do **C_MAX** (policzone w 6.) przekracza **P2**
-9. Parametry uzyskanego węzła:
+1. **level_guards** - pusta lista
+2. Uruchom *poa* na wszystkich sekwencjach w węźle, weź consensus z o największej liczbie 
+przypisanych sekwencji (wg *poa*) jako **C**.
+3. Policz compatibility **C** z wszystkimi sekwencjami w tym węźle i podnieś wartości do potęgi **p**. 
+4. Znajdź próg odcięcia **P1** wśród compatibilities policzonych w 3.:
+    - Strategia MAX1 *(oryginalna)* [parametry: cutoff_search_range]
+        - uporządkuj rosnąco compatibilities
+        - znajdź największą różnicę występującą pomiędzy dwoma kolejnymi compatibility **Ci**, **Cj** na przedziale
+         *cutoff_search_range*, gdzie przedział określa indeksy na uporządkowanej liście compatibilities
+        - **P1** = **Cj**
+    - Strategia MAX2 *(usunięcie *cutoff_search_range*, bo jego działanie jest tożsame z parametrem *stop*)* [brak parametrów]
+        - uporządkuj rosnąco compatibilities
+        - znajdź największą różnicę występującą pomiędzy dwoma kolejnymi compatibility **Ci**, **Cj**
+        - **P1** = **Cj**
+5. **max_sequences** - sekwencje, których compatibility do **C** przekracza **P1**
+6. Uruchom *poa* na **max_sequences**, weź consensus o największej liczbie przypisanych sekwencji jako **C_MAX**.
+7. Policz compatibility **C_MAX** z wszystkimi sekwencjami w tym węźle.
+8. Znajdź próg odcięcia **P2** wśród posortowanych compatibilities policzonych w 7.:
+    - Strategia NODE1 (oryginalna) [parametry: multiplier]
+        - policz średnią odległość między compatibilities
+        - uporządkuj compatibilities rosnąco
+        - znajdź pierwsze takie **Ci**, **Cj**, pomiędzy którymi odległość jest większa niż
+         średnia odległość * *multiplier*. Jeśli nie istnieją, ponów wyszukiwanie dla multiplier = 1. 
+        - **P2** = **Cj**
+    - Strategia NODE2 (z level guardem) [parametry: level_guards, multiplier]
+        - IF lista **level_guards** jest pusta:
+            - użyj NODE1
+        - ELSE
+            - guard = min(**level_guards**)
+            - IF guard <= wszystkie compatibilities:
+                - **P2** = min(compatibilities)
+            - ELIF guard > wszystkie compatibilities:
+                - użyj NODE1
+            - ELSE
+                - dodaj guard do compatibilities 
+                - uporządkuj compatibilities rosnąco
+                - policz średnią odległość między compatibilities
+                - usuń guard z compatibilities (nie ma sensu zwracać go jako wynik, 
+                jeśli nie było go oryginalnie wśród compatibilities)
+                - wśród compatibilities nie większych niż guard znajdź pierwsze takie **Ci**, **Cj**, pomiędzy którymi odległość 
+                jest większa niż średnia odległość * *multiplier*
+                - jeśli nie ma takich **Ci**, **Cj**:
+                    - **P2** = pierwsze compatibility większe niż guard
+    - Strategia NODE3 (z level guardem, uproszczona) [parametry: level_guards]
+        - IF lista **level_guards** jest pusta:
+            - użyj strategii MAX2
+        - ELSE
+            - guard = min(**level_guards**)
+            - IF guard <= wszystkie compatibilities:
+                - **P2** = min(compatibilities)
+            - ELSE
+                - search_boundary = indeks pierwszego compatibility większego niż guard 
+                albo max(compatibilities) (gdy guard > wszystkie compatibilities)
+                - użyj strategii MAX2 na przedziale [0, search_boundary]
+    - Strategia NODE4 (bardzo uproszczona) [brak parametrów]
+        - użyj strategii MAX2
+9. **node_sequences** - sekwencje, których compatibility do **C_MAX** (policzone w 7.) przekracza **P2**
+10. Parametry uzyskanego węzła consensusowego (dziecka **N**):
     - ID consensusu **C_MAX**
     - sekwencje **node_sequences**
     - minimalne compatibility wśród compatibilities **node_sequences** do **C_MAX**
-
+11. Z węzła **N** usuń **node_sequences**
+12. Zapisz **P2** do **level_guards**
+13. Jeśli pozostały jakieś sekwencje w węźle **N** - idź do 2.
+14. Jeśli **re_consensus**:
+    - Dla każdej sekwencji, która należała początkowo do **N**, sprawdź, czy spośród wartości compatibilities 
+    do consensusów utworzonych przy podziale **N**, najwyższa jest ta, która jest związana z consensusem, 
+    do którego ta sekwencja została przyporządkowana. 
+    Jeśli nie, przyporządkuj tę sekwencję do consensusu, do którego comptibility jest najwyższe.

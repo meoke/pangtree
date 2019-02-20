@@ -3,6 +3,8 @@ numpy
 jsonpickle
 ddt
 
+plotly
+flask
 dash
 dash-core-components
 dash-html-components

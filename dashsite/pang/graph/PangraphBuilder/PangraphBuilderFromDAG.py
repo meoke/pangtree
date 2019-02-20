@@ -1,8 +1,5 @@
-import sys
-from collections import deque, namedtuple
-
+from collections import namedtuple
 from mafgraph.graph import Block
-
 from fileformats.maf.DAGMaf import DAGMaf
 from fileformats.maf.reader import maf_to_dagmaf
 from graph import nucleotides
@@ -91,11 +88,15 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
                 return sinfo
 
     def get_edge_sinfos(self, from_block_id, edge, seq_id):
+        left_seq_info, right_seq_info = None, None
         for sinfo in self.seqs_info[seq_id]:
             if sinfo.block_id == from_block_id:
                 left_seq_info = sinfo
             if sinfo.block_id == edge.to:
                 right_seq_info = sinfo
+        if left_seq_info is None or right_seq_info is None:
+            raise Exception(f"Sinfos for edge cannot be None. "
+                            f"Left block is {left_seq_info}, right block is {right_seq_info}.")
         return left_seq_info, right_seq_info
 
     def complement_starting_nodes(self):
@@ -165,11 +166,11 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
     @staticmethod
     def get_column_nucleotides_codes(sequence_name_to_nucleotide):
         return sorted(
-                [*(set(
+                set(
                     [nucleotide
                      for nucleotide
-                     in sequence_name_to_nucleotide.values()])).
-                    difference(set(['-']))])
+                     in sequence_name_to_nucleotide.values()
+                     if nucleotide is not '-']))
 
     @staticmethod
     def get_in_nodes(block_in_nodes, seqs_id):

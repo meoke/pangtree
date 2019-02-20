@@ -12,3 +12,4 @@ from dashsite.pang.graph.FastaSource import FastaSource
 from dashsite.pang.graph.FastaSource import FastaFileSystemSource
 from dashsite.pang.graph.PangraphBuilder.PangraphBuilderFromDAG import PangraphBuilderFromDAG
 from dashsite.pang.graph.PangraphBuilder.PangraphBuilderFromMAF import PangraphBuilderFromMAF
+from dashsite.pang.consensus.algorithm.FindCutoff import MAX1, MAX2, NODE1, NODE2, NODE3, NODE4
