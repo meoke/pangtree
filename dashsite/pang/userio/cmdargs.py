@@ -42,24 +42,13 @@ def _float_0_1(arg: str) -> float:
     return v
 
 
-def get_fasta_dir(args_fasta_dir: str):
-    """Check if directory given as argument exists."""
-
-    dir_path = Path(args_fasta_dir)
-    if not dir_path.exists():
-        raise argparse.ArgumentError("Fasta directory does not exist.")
-    return dir_path
-
-
 def _fasta_complementation_option(arg_fasta_complementation) -> FastaComplementationOption:
     """Converts command line argument to FastaComplementationOption"""
 
-    if arg_fasta_complementation is None:
-        return FastaComplementationOption.No
-    elif arg_fasta_complementation == []:
-        return FastaComplementationOption.NCBI
-    elif arg_fasta_complementation[0]:
-        return FastaComplementationOption.LocalFasta
+    try:
+        return FastaComplementationOption[arg_fasta_complementation.upper()]
+    except KeyError:
+        raise argparse.ArgumentError("Incorrect FASTA_COMPLEMENTATION argument.")
 
 
 def _max_cutoff_option(max_cutoff_option) -> MaxCutoffOption:
@@ -159,17 +148,18 @@ def _get_parser():
                         'Pangraph that was build in this way provides consensuses tree the consensuses do not '
                         'reflect the real life sequences.')
     p.add_argument('-fasta_complementation',
-                   nargs='*',
+                   default=FastaComplementationOption.NCBI,
                    type=_fasta_complementation_option,
                    help='Pangraph building from maf file parameter. Ignored when -not_dag parameter is set.'
                         'Maf file usually contains not full sequences but only parts of them, aligned to each other. '
                         'To build an exact pangraph the full sequences must be retrieved from: '
                         'ncbi or local file system. '
                         'Don\'t use this argument if you want the pangraph to be build without full sequences.'
-                        'Use it without additional argument if you want to download the lacking fragments from ncbi'
-                        '(then make sure that sequence identifiers used in maf match the ncbi accession identifiers) '
-                        'Use it with additional argument (path to the directory with fasta files) if you want '
-                        'to use fasta from local file system (make sure sequence identifiers in maf match file names')
+                        'Pass "ncbi" if you want to download the lacking fragments from ncbi'
+                        'Pass "local" if you want to use fasta from local file system.')
+    p.add_argument('-fasta_dir',
+                   type=_dir_arg,
+                   help='Local directory with fasta files used to complement missing parts of sequences in maf file.')
     p.add_argument('-p',
                    type=float,
                    default=1,
@@ -192,32 +182,26 @@ def create_pangenome_parameters() -> PangenomeParameters:
     """Parse and validate command line arguments"""
 
     parser = _get_parser()
-    try:
-        args = parser.parse_args()
+    args = parser.parse_args()
+    return PangenomeParameters(
+            multialignment_file_content=pathtools.get_file_content_as_stringio(args.multialignment),
+            multialignment_file_path=args.multialignment,
+            metadata_file_content=pathtools.get_file_content(args.data),
+            metadata_file_path=args.data,
+            output_path=args.output,
+            generate_fasta=args.fasta,
+            consensus_type=args.consensus,
+            hbmin=args.hbmin,
+            range=args.r,
+            multiplier=args.multiplier,
+            stop=args.stop,
+            re_consensus=args.re_consensus,
+            not_dag=args.not_dag,
+            fasta_complementation_option=args.fasta_complementation,
+            local_fasta_dirpath=args.fasta_dir,
+            max_cutoff_option=args.max,
+            node_cutoff_option=args.node
+        )
 
-        program_params = PangenomeParameters()
-        program_params.metadata_file_content = pathtools.get_file_content(args.data)
-        program_params.multialignment_file_content = pathtools.get_file_content_as_stringio(args.multialignment)
-
-
-        program_params.output_path = args.output
-        program_params.generate_fasta = args.fasta
-        program_params.consensus_type = args.consensus
-        program_params.hbmin = args.hbmin
-        program_params.range = args.r
-        program_params.multiplier = args.multiplier
-        program_params.stop = args.stop
-        program_params.re_consensus = args.re_consensus
-        program_params.anti_granular = args.anti_granular
-        program_params.not_dag = args.not_dag
-        program_params.fasta_complementation = args.fasta_complementation
-        program_params.p = args.p
-        program_params.max_cutoff_option = args.max
-        program_params.node_cutoff_option = args.node
-        if program_params.fasta_complementation == FastaComplementationOption.LocalFasta:
-            program_params.local_fasta_dirpath = get_fasta_dir(args.fasta_complementation[0])
-        return program_params
-    except Exception as e:
-        raise parser.error(e)
 
 

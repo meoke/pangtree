@@ -136,8 +136,8 @@ class Pangraph:
     def get_path_compatibility(self, path, consensus):
         common_nodes_count = np.sum(path & consensus)
         source_nodes_count = np.sum(path)
-        return round(common_nodes_count / source_nodes_count, 3)
-        # return common_nodes_count / source_nodes_count
+        # return round(common_nodes_count / source_nodes_count, 3)
+        return common_nodes_count / source_nodes_count
 
     def get_paths_compatibility(self, consensus_id):
         consensus = self._consensusmanager.paths[consensus_id]

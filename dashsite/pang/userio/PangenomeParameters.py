@@ -12,9 +12,9 @@ class ConsensusAlgorithm(Enum):
 
 
 class FastaComplementationOption(Enum):
-    No = 0
+    NO = 0
     NCBI = 1
-    LocalFasta = 2
+    LOCAL = 2
 
 
 class MaxCutoffOption(Enum):
@@ -32,7 +32,9 @@ class NodeCutoffOption(Enum):
 class PangenomeParameters:
     def __init__(self,
                  multialignment_file_content: StringIO,
+                 multialignment_file_path: Path,
                  metadata_file_content: Optional[str],
+                 metadata_file_path: Path,
                  output_path: Path,
                  generate_fasta: bool,
                  consensus_type: ConsensusAlgorithm,
@@ -48,7 +50,9 @@ class PangenomeParameters:
                  node_cutoff_option: Optional[NodeCutoffOption]
                  ):
         self.multialignment_file_content = multialignment_file_content
+        self.multialignment_file_path = multialignment_file_path
         self.metadata_file_content = metadata_file_content
+        self.metadata_file_path = metadata_file_path
         self.output_path = output_path
 
         self.not_dag = not_dag
@@ -77,7 +81,7 @@ class PangenomeParameters:
         if self.output_path is None:
             raise Exception("Unspecified output path.")
 
-        if self.fasta_complementation_option is FastaComplementationOption.LocalFasta and self.local_fasta_dirpath is None:
+        if self.fasta_complementation_option is FastaComplementationOption.LOCAL and self.local_fasta_dirpath is None:
             raise Exception("Unspecified path to direction with fasta files, "
                             "while FastaComplementationOption.LocalFasta was chosen. "
                             "Use FastaComplementationOption.No or FastaComplementationOption.NCBI instead.")
