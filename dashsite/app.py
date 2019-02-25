@@ -26,6 +26,7 @@ app = dash.Dash(__name__)
 app.title = 'pang'
 app.layout = app_layout.get_layout(app.get_asset_url)
 
+
 @app.callback(
     dash.dependencies.Output('hidden_last_clicked', 'children'),
     [dash.dependencies.Input('pang_button', 'n_clicks'),
@@ -45,6 +46,7 @@ def trigger_pangenome_reload(run_pang_n_clicks, load_pangenome_n_clicks, last_cl
     if load_pangenome_n_clicks and last_clicked[1] == load_pangenome_n_clicks - 1:
         return json.dumps([last_clicked[0], last_clicked[1]+1, 'load_pangenome'])
     return json.dumps([0,0, ''])
+
 
 @app.callback(
     dash.dependencies.Output('simple_consensus_params', 'style'),
@@ -131,16 +133,18 @@ def update_program_parameters(jsonified_pangenome):
         params: JSONProgramParameters = jsonpangenome.program_parameters
         return [html.P(f"Multialignment path: {params.multialignment_file_path}"),
                 html.P(f"Metadata path: {params.metadata_file_path}"),
+                html.P(f"Not dag: {params.not_dag}"),
                 html.P(f"Generate fasta: {params.generate_fasta}"),
                 html.P(f"Consensus type: {params.consensus_type}"),
-                html.P(f"Hbmin: {params.hbmin}"),
-                html.P(f"R: {params.r}"),
-                html.P(f"Multiplier: {params.multiplier}"),
-                html.P(f"Stop: {params.stop}"),
-                html.P(f"Re_consensus: {params.re_consensus}"),
-                html.P(f"Anti granular: {params.anti_granular}"),
-                html.P(f"Not dag: {params.not_dag}"),
-                html.P(f"Fasta_complementation: {params.fasta_complementation}"),
+                html.P(f"(Simple consensus) HBMIN: {params.hbmin}"),
+                html.P(f"(Tree consensus) Max cutoff strategy: {params.max_cutoff_strategy}"),
+                html.P(f"(Tree consensus) Node cutoff strategy: {params.node_cutoff_strategy}"),
+                html.P(f"(Tree consensus, MAX1) Range: {params.r}"),
+                html.P(f"(Tree consensus, NODE1, NODE2) Multiplier: {params.multiplier}"),
+                html.P(f"(Tree consensus) Stop: {params.stop}"),
+                html.P(f"(Tree consensus) Re_consensus: {params.re_consensus}"),
+
+                html.P(f"Fasta_complementation: {params.fasta_complementation_option}"),
                 html.P(f"Local fasta dir: {params.local_fasta_dirpath}")
                 ]
         # return str(jsonpangenome.program_parameters)

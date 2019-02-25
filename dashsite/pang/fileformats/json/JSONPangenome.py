@@ -5,11 +5,13 @@ from userio.PangenomeParameters import PangenomeParameters, FastaComplementation
 
 class JSONProgramParameters:
     def __init__(self, program_parameters: PangenomeParameters):
-        self.multialignment_file_path: str = str(program_parameters.multialignment_file_content)
-        self.metadata_file_path: str = str(program_parameters.metadata_file_content)
+        self.multialignment_file_path: str = str(program_parameters.multialignment_file_path)
+        self.metadata_file_path: str = str(program_parameters.metadata_file_path)
         self.output_path: str = str(program_parameters.output_path)
         self.generate_fasta: bool = program_parameters.generate_fasta
         self.consensus_type: str = str(program_parameters.consensus_type)
+        self.max_cutoff_strategy = program_parameters.max_cutoff_option
+        self.node_cutoff_strategy = program_parameters.node_cutoff_option
         self.hbmin: float = program_parameters.hbmin
         self.r: float = program_parameters.range
         self.multiplier: float = program_parameters.multiplier
@@ -19,9 +21,6 @@ class JSONProgramParameters:
         self.fasta_complementation_option: FastaComplementationOption = str(program_parameters.fasta_complementation_option)
         self.local_fasta_dirpath: str = str(program_parameters.local_fasta_dirpath)
 
-    def __str__(self):
-        return f"Multialignment file: {self.multialignment_file_path},\n" \
-            f"MEtadata file: {self.metadata_file_path},\n" \
 
 class JSONNode:
     def __init__(self, id: int, nucleobase: str):
