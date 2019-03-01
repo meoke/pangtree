@@ -53,7 +53,9 @@ def extract_pangraph(po_lines):
         nodes[i] = Node(id=i,
                         base=n.code(base),
                         in_nodes=in_nodes,
-                        aligned_to=aligned_to)
+                        aligned_to=aligned_to,
+                        column_id=-1,#TODO
+                        block_id=0)
         for sequence_id in sequences_IDs:
             pathname = path_ids_to_pathnames[sequence_id]
             if sequence_id < len(seqnames_to_nodes_ids.keys()):

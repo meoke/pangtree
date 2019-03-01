@@ -371,6 +371,25 @@ def get_layout(get_url_function):
                         ),
                         html.Div(
                             id='blocks_graph'
+                        ),
+                        html.Div(
+                            id='pangraph',
+                            children=[
+                                html.Div(
+                                    id='hidden_pangraph',
+                                    style={'display': 'none'}
+                                ),
+                                html.Div(
+                                    id='pangraph_display',
+                                    children=[
+                                        dcc.Graph(
+                                            id='pangraph_graph',
+                                            style={'height': '1000px', 'width': 'auto'}
+                                        )
+                                    ],
+                                    style={'display': 'none'}
+                                )
+                            ]
                         )
                     ],
                     className='row'

@@ -17,10 +17,12 @@ class PangraphBuilderFromMAF(PangraphBuilderBase):
 
         sequence_last_node_id = {seq_id: None for seq_id in self.sequences_names}
         current_node_id = -1
-        for block in input:
+        column_id = -1
+        for block_id, block in enumerate(input):
             block_width = len(block[0].seq)
 
             for col in range(block_width):
+                column_id += 1
                 sequence_name_to_nucleotide = {seq.id: seq[col] for seq in block}
                 nodes_codes = sorted([*(
                     set([nucleotide for nucleotide in sequence_name_to_nucleotide.values()])).difference({'-'})])
@@ -31,7 +33,9 @@ class PangraphBuilderFromMAF(PangraphBuilderBase):
                     node = Node(id=current_node_id,
                                 base=nucleotides.code(nucl),
                                 in_nodes=set(),
-                                aligned_to=PangraphBuilderFromMAF.get_next_aligned_node_id(i, column_nodes_ids))
+                                aligned_to=PangraphBuilderFromMAF.get_next_aligned_node_id(i, column_nodes_ids),
+                                column_id=column_id,
+                                block_id=block_id)
 
                     for sequence, nucleotide in sequence_name_to_nucleotide.items():
                         if nucleotide == nucl:

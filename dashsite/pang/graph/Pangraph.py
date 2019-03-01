@@ -65,15 +65,15 @@ class Pangraph:
     def add_path_to_node(self, path_name, node_id):
         self._pathmanager.mark_and_add(path_name, node_id)
 
-    def get_in_nodes(self, node_id):
-        return self._pathmanager.get_in_nodes(node_id)
+    # def get_in_nodes(self, node_id):
+    #     return self._pathmanager.get_in_nodes(node_id)
 
     # def add_node(self, node: Node, node_id: str):
     #     self._nodes[node_id] = node
 
-    def fill_in_nodes(self):
-        for node in self._nodes:
-            node.in_nodes = self.get_in_nodes(node.id)
+    # def fill_in_nodes(self):
+    #     for node in self._nodes:
+    #         node.in_nodes = self.get_in_nodes(node.id)
 
     def get_paths_count(self):
         return self._pathmanager.get_paths_count()

@@ -1,6 +1,7 @@
 from typing import List, Dict
 from Pangenome import Pangenome
 from userio.PangenomeParameters import PangenomeParameters, FastaComplementationOption
+import graph.nucleotides as n
 
 
 class JSONProgramParameters:
@@ -23,9 +24,10 @@ class JSONProgramParameters:
 
 
 class JSONNode:
-    def __init__(self, id: int, nucleobase: str):
+    def __init__(self, id: int, nucleobase: str, column_id: int):
         self.id = id
         self.nucleobase = nucleobase
+        self.column_id = column_id
 
 
 class JSONEdge:
@@ -90,8 +92,8 @@ class JSONPangenome:
             return
         if program_parameters:
             self.program_parameters = JSONProgramParameters(program_parameters)
-        # todo perf # self.nodes = [JSONNode(node.id, decode(node.base)) for node in pangenome.pangraph.get_nodes()]
-        self.nodes = []
+        self.nodes = [JSONNode(node.id, n.decode(node.base), node.column_id) for node in pangenome.pangraph.get_nodes()]
+        # self.nodes = []
         self.edges = []
         seqeuences_metadata = [pangenome.genomes_info.genomes_metadata[seqID] for seqID in pangenome.pangraph.get_path_names()]
         self.sequences = []
@@ -103,7 +105,7 @@ class JSONPangenome:
                                        seq_metadata.mafname,
                                        seq_metadata.name,
                                        seq_metadata.group,
-                                       []
+                                       [*(range(10))]
                           )
             self.sequences.append(jsonsequence)
 

@@ -47,7 +47,7 @@ class SubPangraph(object):
                     aligned_to = next_node_id
                     break
                 next_node_id = pangraph.get_node(next_node_id).aligned_to
-            new_nodes[i] = Node(id=i, base=node.base, in_nodes=in_nodes, aligned_to=aligned_to)
+            new_nodes[i] = Node(id=i, base=node.base, in_nodes=in_nodes, aligned_to=aligned_to, column_id=node.column_id, block_id=node.block_id)
 
             new_to_old_mapping[i] = node_id
             old_to_new_mapping[node_id] = i

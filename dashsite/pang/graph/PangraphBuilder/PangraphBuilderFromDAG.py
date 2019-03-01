@@ -18,6 +18,7 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
         self.blocks_info = None
         self.free_edges = None
         self.seqs_info = None
+        self.column_id = None
 
         if fasta_source is not None:
             self.full_sequences = self.get_sequences(fasta_source)
@@ -34,6 +35,10 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
     def get_max_node_id(self):
         current_nodes_ids = [node.id for node in self.pangraph._nodes if node is not None]
         return max(current_nodes_ids) if current_nodes_ids else -1
+
+    def get_max_column_id(self):
+        current_columns_ids = [node.column_id for node in self.pangraph._nodes if node is not None]
+        return max(current_columns_ids) if current_columns_ids else -1
 
     def init_pangraph(self):
         nodes_count = PangraphBuilderFromDAG.get_nodes_count(self.dagmaf)
@@ -54,6 +59,7 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
         self.init_pangraph()
 
         self.free_edges = {seq_id: [] for seq_id in self.sequences_names}
+        self.column_id = -1
         self.set_seqs_info()
 
         self.complement_starting_nodes()
@@ -105,16 +111,17 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
             if first_block_sinfo.start != 0:
                 self.complement_sequence_starting_nodes(seq_id, first_block_sinfo)
 
-    def complement_ending_nodes(self):
-        for seq_id, edges in self.free_edges.items():
-            for edge in edges:
-                if edge.to_block_id is None:
-                    self.complement_sequence_ending_nodes(seq_id, edge)
-                continue
+    # def complement_ending_nodes(self):
+    #     for seq_id, edges in self.free_edges.items():
+    #         for edge in edges:
+    #             if edge.to_block_id is None:
+    #                 self.complement_sequence_ending_nodes(seq_id, edge)
+    #             continue
 
     def complement_sequence_starting_nodes(self, seq_id, first_block_sinfo):
         current_node_id = self.get_max_node_id()
         in_nodes = []
+        column_id = -first_block_sinfo.start
         for i in range(first_block_sinfo.start):
             current_node_id += 1
             missing_nucleotide = self.full_sequences[seq_id][i]
@@ -122,34 +129,39 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
                           id=current_node_id,
                           base=missing_nucleotide,
                           in_nodes=in_nodes,
-                          aligned_to=None)
+                          aligned_to=None,
+                          column_id=column_id,
+                          block_id=None)
             in_nodes = [current_node_id]
+            column_id += 1
         self.free_edges[seq_id].append(PangraphBuilderFromDAG.Edge(seq_id=seq_id,
                                                                    from_block_id=None,
                                                                    last_node_id=current_node_id,
                                                                    to_block_id=first_block_sinfo.block_id))
 
-    def complement_sequence_ending_nodes(self, seq_id, last_edge: Edge):
-        current_node_id = self.get_max_node_id()
-        in_nodes = [last_edge.last_node_id]
-        last_block_sinfo = self.get_sinfo(seq_id, last_edge.from_block_id)
-        # if last_block_sinfo.from_block_id == last_edge.from_block_id: # czy może być inaczej?
+    # def complement_sequence_ending_nodes(self, seq_id, last_edge: Edge):
+    #     current_node_id = self.get_max_node_id()
+    #     in_nodes = [last_edge.last_node_id]
+    #     last_block_sinfo = self.get_sinfo(seq_id, last_edge.from_block_id)
+    #     # if last_block_sinfo.from_block_id == last_edge.from_block_id: # czy może być inaczej?
+    #
+    #     for i in range(last_block_sinfo.start + last_block_sinfo.size, last_block_sinfo.srcSize):
+    #         current_node_id += 1
+    #         missing_nucleotide = self.full_sequences[seq_id][i]
+    #         self.add_node(seqs_id=[seq_id],
+    #                       id=current_node_id,
+    #                       base=missing_nucleotide,
+    #                       in_nodes=in_nodes,
+    #                       aligned_to=None)
+    #         in_nodes = [current_node_id]
 
-        for i in range(last_block_sinfo.start + last_block_sinfo.size, last_block_sinfo.srcSize):
-            current_node_id += 1
-            missing_nucleotide = self.full_sequences[seq_id][i]
-            self.add_node(seqs_id=[seq_id],
-                          id=current_node_id,
-                          base=missing_nucleotide,
-                          in_nodes=in_nodes,
-                          aligned_to=None)
-            in_nodes = [current_node_id]
-
-    def add_node(self, seqs_id, id, base, in_nodes, aligned_to):
+    def add_node(self, seqs_id, id, base, in_nodes, aligned_to, column_id, block_id):
         self.pangraph._nodes[id] = Node(id=id,
                                         base=nucleotides.code(base),
                                         in_nodes=in_nodes,
-                                        aligned_to=aligned_to)
+                                        aligned_to=aligned_to,
+                                        column_id=column_id,
+                                        block_id=block_id)
         for seq_id in seqs_id:
             self.pangraph.add_path_to_node(path_name=seq_id, node_id=id)
 
@@ -202,47 +214,22 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
     def complement_sequence_middle_nodes(self, seq_id, last_pos, next_pos, in_node_id) -> int:
         current_node_id = self.get_max_node_id()
         in_nodes = [in_node_id]
+        column_id = self.column_id
         for i in range(last_pos+1, next_pos):
+            column_id += 1
             current_node_id += 1
             missing_nucleotide = self.full_sequences[seq_id][i]
             self.add_node(seqs_id=[seq_id],
                           id=current_node_id,
                           base=missing_nucleotide,
                           in_nodes=in_nodes,
-                          aligned_to=None)
+                          aligned_to=None,
+                          column_id=column_id,
+                          block_id=None)
             in_nodes = [current_node_id]
         return current_node_id
 
     def add_block_out_edges_to_free_edges(self, block_in_nodes, block: Block):
-        # for edge in block.out_edges:
-        #     # if edge.edge_type != (1, -1):
-        #     #     continue
-        #     for seq in edge.sequences:
-        #         seq_id = seq[0].seq_id
-        #         left_block_sinfo, right_block_sinfo = self.get_edge_sinfos(from_block_id=block.id, edge=edge, seq_id=seq_id)
-        #
-        #         if not PangraphBuilderFromDAG.continuous_sequence(left_block_sinfo, right_block_sinfo):
-        #             last_node_id = self.complement_sequence_middle_nodes(seq_id=seq_id,
-        #                                                                  last_pos=left_block_sinfo.start + left_block_sinfo.size-1,
-        #                                                                  next_pos=right_block_sinfo.start,
-        #                                                                  in_node_id=block_in_nodes[seq_id])
-        #         else:
-        #             last_node_id = block_in_nodes[seq_id]
-        #             if edge.edge_type != (1, -1):
-        #                 continue
-        #
-        #         if edge.edge_type != (1, -1):
-        #             from_block_id = None
-        #         else:
-        #             from_block_id = block.id
-        #
-        #         self.free_edges[seq_id].append(
-        #             PangraphBuilderFromDAG.Edge(
-        #                 seq_id=seq_id,
-        #                 from_block_id=from_block_id,
-        #                 last_node_id=last_node_id,
-        #                 to_block_id=edge.to))
-
         for edge in block.out_edges:
             if edge.edge_type != (1, -1):
                 continue
@@ -300,8 +287,9 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
         current_node_id = self.get_max_node_id()
         block_width = len(block.alignment[0].seq)
         block_in_nodes = self.get_block_in_nodes(block)
-
+        self.column_id = self.get_max_column_id()
         for col in range(block_width):
+            self.column_id += 1
             sequence_name_to_nucleotide = {seq.id: seq[col] for seq in block.alignment}
             nodes_codes = PangraphBuilderFromDAG.get_column_nucleotides_codes(sequence_name_to_nucleotide)
             column_nodes_ids = [current_node_id + i + 1 for i, _ in enumerate(nodes_codes)]
@@ -313,7 +301,9 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
                               id=current_node_id,
                               base=nucl,
                               in_nodes=in_nodes,
-                              aligned_to=PangraphBuilderFromDAG.get_next_aligned_node_id(i, column_nodes_ids))
+                              aligned_to=PangraphBuilderFromDAG.get_next_aligned_node_id(i, column_nodes_ids),
+                              column_id=self.column_id,
+                              block_id=block.id)
                 PangraphBuilderFromDAG.update_block_in_nodes(block_in_nodes, seqs_id, current_node_id)
 
         self.add_block_out_edges_to_free_edges(block_in_nodes, block)
