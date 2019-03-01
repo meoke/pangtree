@@ -1,6 +1,6 @@
 import unittest
 from ddt import ddt, data, unpack
-
+import numpy as np
 from context import SubPangraph
 from context import Pangraph
 from context import Node
@@ -64,7 +64,7 @@ class SubPangraphTest(unittest.TestCase):
         expected_subpangraph.nodes_ids_mapping = expected_nodes_ids_mapping
 
         actual_subpangraph = SubPangraph(self.pangraph, ['testseq0', 'testseq1'])
-        self.assertEqual(actual_subpangraph, expected_subpangraph)
+        self.compare_subpangraphs(expected_subpangraph, actual_subpangraph)
 
     def test_subpangraph_construction_from_pangraph_keep_seq3(self):
         expected_nodes = [Node(id=0, base=n.code('G'), in_nodes=[], aligned_to=None),
@@ -90,7 +90,8 @@ class SubPangraphTest(unittest.TestCase):
         expected_subpangraph.nodes_ids_mapping = expected_nodes_ids_mapping
 
         actual_subpangraph = SubPangraph(self.pangraph, ['testseq3'])
-        self.assertEqual(actual_subpangraph, expected_subpangraph)
+        self.compare_subpangraphs(expected_subpangraph, actual_subpangraph)
+
 
     def test_subsubpangraph_construction(self):
         expected_nodes = [Node(id=0, base=n.code('A'), in_nodes=[], aligned_to=None),
@@ -115,7 +116,7 @@ class SubPangraphTest(unittest.TestCase):
 
         actual_subpangraph = SubPangraph(self.pangraph, ['testseq0', 'testseq1'])
         actual_subpangraph = actual_subpangraph.keep_sources_ids(['testseq1'])  # tu pewnie musi być wg names
-        self.assertEqual(actual_subpangraph, expected_subpangraph)
+        self.compare_subpangraphs(expected_subpangraph, actual_subpangraph)
 
     def test_subsubpangraph_construction_2(self):
         expected_nodes = [Node(id=0, base=n.code('A'), in_nodes=[], aligned_to=None),
@@ -140,4 +141,77 @@ class SubPangraphTest(unittest.TestCase):
 
         actual_subpangraph = SubPangraph(self.pangraph, ['testseq0', 'testseq1'])
         actual_subpangraph = actual_subpangraph.keep_sources_ids(['testseq1'])  # tu pewnie musi być wg names
-        self.assertEqual(actual_subpangraph, expected_subpangraph)
+        self.compare_subpangraphs(expected_subpangraph, actual_subpangraph)
+
+    def test_subpangraph_should_omit_edges_1(self):
+        pangraph_nodes = [Node(id=0,base=n.code('A'), in_nodes=[], aligned_to=None),
+                          Node(id=1,base=n.code('C'), in_nodes=[0], aligned_to=None),
+                          Node(id=2,base=n.code('C'), in_nodes=[0, 1], aligned_to=None)]
+        pangraph_paths_to_nodes_ids = {
+            'seq1': [0, 2],
+            'seq2': [0, 1, 2]
+        }
+        pangraph = Pangraph()
+        pangraph.update_nodes(pangraph_nodes)
+        pangraph.set_paths(len(pangraph_nodes), pangraph_paths_to_nodes_ids)
+
+        # remove seq1
+        expected_nodes = [
+            Node(id=0, base=n.code('A'), in_nodes=[], aligned_to=None),
+            Node(id=1, base=n.code('C'), in_nodes=[0], aligned_to=None),
+            Node(id=2, base=n.code('C'), in_nodes=[1], aligned_to=None)
+        ]
+        expected_paths_to_nodes_ids = {
+            'seq2': [0, 1, 2]
+        }
+        expected_nodes_ids_mapping = {0: 0, 1: 1, 2: 2}
+
+        expected_pangraph = Pangraph()
+        expected_pangraph.update_nodes(expected_nodes)
+        expected_pangraph.set_paths(len(expected_nodes), expected_paths_to_nodes_ids)
+
+        expected_subpangraph = SubPangraph(Pangraph(), [])
+        expected_subpangraph.pangraph = expected_pangraph
+        expected_subpangraph.nodes_ids_mapping = expected_nodes_ids_mapping
+
+        actual_subpangraph = SubPangraph(pangraph, ['seq2'])
+        self.compare_subpangraphs(expected_subpangraph, actual_subpangraph)
+
+
+    def test_subpangraph_should_omit_edges_2(self):
+        pangraph_nodes = [Node(id=0,base=n.code('A'), in_nodes=[], aligned_to=None),
+                          Node(id=1,base=n.code('C'), in_nodes=[0], aligned_to=None),
+                          Node(id=2,base=n.code('C'), in_nodes=[0, 1], aligned_to=None)]
+        pangraph_paths_to_nodes_ids = {
+            'seq1': [0, 2],
+            'seq2': [0, 1, 2]
+        }
+        pangraph = Pangraph()
+        pangraph.update_nodes(pangraph_nodes)
+        pangraph.set_paths(len(pangraph_nodes), pangraph_paths_to_nodes_ids)
+
+        # remove seq2
+        expected_nodes = [
+            Node(id=0, base=n.code('A'), in_nodes=[], aligned_to=None),
+            Node(id=1, base=n.code('C'), in_nodes=[0], aligned_to=None),
+        ]
+        expected_paths_to_nodes_ids = {
+            'seq1': [0, 1]
+        }
+        expected_nodes_ids_mapping = {0: 0, 1: 2}
+
+        expected_pangraph = Pangraph()
+        expected_pangraph.update_nodes(expected_nodes)
+        expected_pangraph.set_paths(len(expected_nodes), expected_paths_to_nodes_ids)
+
+        expected_subpangraph = SubPangraph(Pangraph(), [])
+        expected_subpangraph.pangraph = expected_pangraph
+        expected_subpangraph.nodes_ids_mapping = expected_nodes_ids_mapping
+
+        actual_subpangraph = SubPangraph(pangraph, ['seq1'])
+        self.compare_subpangraphs(expected_subpangraph, actual_subpangraph)
+
+    def compare_subpangraphs(self, expected_subpangraph, actual_subpangraph):
+        self.assertEqual(expected_subpangraph.pangraph._nodes, actual_subpangraph.pangraph._nodes)
+        self.assertTrue(np.array_equal(expected_subpangraph.pangraph._pathmanager.paths, actual_subpangraph.pangraph._pathmanager.paths))
+        self.assertEqual(expected_subpangraph.nodes_ids_mapping, actual_subpangraph.nodes_ids_mapping)

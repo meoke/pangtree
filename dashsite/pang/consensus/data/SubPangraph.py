@@ -28,12 +28,15 @@ class SubPangraph(object):
             self.pangraph._consensusmanager = PathManager()
 
     def build_nodes(self, pangraph: Pangraph, nodes_ids_to_keep: List[int]):
+        def is_active_edge(pangraph: Pangraph , node_id: int, in_node: int):
+            return True
         new_nodes = [None] * len(nodes_ids_to_keep)
         new_to_old_mapping = {}
         old_to_new_mapping = {}
         for i, node_id in enumerate(nodes_ids_to_keep):
             node = pangraph.get_node(node_id)
             in_nodes = [in_node for in_node in node.in_nodes if in_node in nodes_ids_to_keep]
+            in_nodes = [in_node for in_node in in_nodes if is_active_edge(pangraph, node_id, in_node)]
             # todo perf did not work # in_nodes = sorted(set(node.in_nodes) & set(nodes_ids_to_keep))
             next_node_id = node.aligned_to
             while True:

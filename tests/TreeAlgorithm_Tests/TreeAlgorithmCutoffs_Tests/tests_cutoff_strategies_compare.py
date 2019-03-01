@@ -9,7 +9,7 @@ class CutoffStrategiesComparisonTests(unittest.TestCase):
 
     @data(
         (0.5, [0.5]),
-        (0.2, [0.1, 0.2, 0.3, 0.4]),
+        (0.4, [0.1, 0.2, 0.3, 0.4]),
         (0.1, [0.1, 0.1, 0.1, 0.1]),
         (0.998, [0.997, 0.998, 0.999]),
         (2, [1, 2, 3, 4])
@@ -22,8 +22,6 @@ class CutoffStrategiesComparisonTests(unittest.TestCase):
         max2_cutoff = max2_strategy.find_max_cutoff(compatibilites,  False)
         # self.assertEqual(max1_cutoff, max2_cutoff)
         self.assertEqual(expected_cutoff, max1_cutoff)
-
-
 
 
 if __name__ == '__main__':
