@@ -24,10 +24,12 @@ class JSONProgramParameters:
 
 
 class JSONNode:
-    def __init__(self, id: int, nucleobase: str, column_id: int):
+    def __init__(self, id: int, nucleobase: str, column_id: int, block_id: int, aligned_to: int):
         self.id = id
         self.nucleobase = nucleobase
         self.column_id = column_id
+        self.block_id = block_id
+        self.aligned_to = aligned_to
 
 
 class JSONEdge:
@@ -92,9 +94,11 @@ class JSONPangenome:
             return
         if program_parameters:
             self.program_parameters = JSONProgramParameters(program_parameters)
-        self.nodes = [JSONNode(node.id, n.decode(node.base), node.column_id) for node in pangenome.pangraph.get_nodes()]
-        # self.nodes = []
-        self.edges = []
+        self.nodes = [JSONNode(node.id,
+                               n.decode(node.base),
+                               node.column_id,
+                               node.block_id,
+                               node.aligned_to) for node in pangenome.pangraph.get_nodes()]
         seqeuences_metadata = [pangenome.genomes_info.genomes_metadata[seqID] for seqID in pangenome.pangraph.get_path_names()]
         self.sequences = []
         pm = pangenome.pangraph._pathmanager
@@ -105,14 +109,15 @@ class JSONPangenome:
                                        seq_metadata.mafname,
                                        seq_metadata.name,
                                        seq_metadata.group,
-                                       [*(range(10))]
+                                       pm.get_ordered_nodes_ids(seq_metadata.mafname)
                           )
             self.sequences.append(jsonsequence)
 
         cm = pangenome.pangraph._consensusmanager
-        cm_tree_nodes = pangenome.pangraph._consensusmanager.consensus_tree.nodes
+        if pangenome.pangraph._consensusmanager.paths:
+            cm_tree_nodes = pangenome.pangraph._consensusmanager.consensus_tree.nodes
 
-        self.consensuses = [JSONConsensus(id=node.consensus_id,
+            self.consensuses = [JSONConsensus(id=node.consensus_id,
                                           name=cm.get_path_name(node.consensus_id),
                                           parent=node.parent_node_id,
                                           children=node.children_nodes,
@@ -125,6 +130,8 @@ class JSONPangenome:
                                           mincomp=float(node.mincomp)
                                           )
                             for node in cm_tree_nodes]
+        else:
+            self.consensuses = []
         if pangenome.dagmaf:
             self.dagmaf = [JSONMAFNode(id=n.id,
                                    orient=n.orient,

@@ -270,22 +270,34 @@ def update_consensus_node_details_header(tree_click_data):
     return f"Sequences assigned to consensus {node_id}:"
 
 @app.callback(
-    dash.dependencies.Output('hidden_pangraph', 'children'),
+    dash.dependencies.Output('hidden_pangraph_points', 'children'),
     [dash.dependencies.Input('hidden_pang_result', 'children')]
 )
-def update_pangraph_data(jsonified_pangenome):
+def update_pangraph_data_points(jsonified_pangenome):
     jsonpangenome = pangenomejson_reader.json_to_jsonpangenome(jsonified_pangenome)
     if jsonpangenome.nodes:
-        pangraph_data = pangraph.get_data(jsonified_pangenome)
-        return pangraph_data.to_json()
+        pangraph_nodes_data = pangraph.get_nodes_data(jsonpangenome)
+        return pangraph_nodes_data.to_json()
+
+@app.callback(
+    dash.dependencies.Output('hidden_pangraph_traces', 'children'),
+    [dash.dependencies.Input('hidden_pang_result', 'children')]
+)
+def update_pangraph_traces(jsonified_pangenome):
+    jsonpangenome = pangenomejson_reader.json_to_jsonpangenome(jsonified_pangenome)
+    if jsonpangenome.nodes:
+        pangraph_traces_data = pangraph.get_traces_data(jsonpangenome)
+        return json.dumps(pangraph_traces_data)
 
 @app.callback(
     dash.dependencies.Output('pangraph_graph', 'figure'),
-    [dash.dependencies.Input('hidden_pangraph', 'children')]
+    [dash.dependencies.Input('hidden_pangraph_points', 'children'),
+    dash.dependencies.Input('hidden_pangraph_traces', 'children')]
 )
-def update_pangraph_data(jsonified_pangraph):
-    pangraph_data = pd.read_json(jsonified_pangraph)
-    return pangraph.get_graph(pangraph_data)
+def update_pangraph_data(jsonified_pangraph_points, jsonified_pangraph_traces):
+    pangraph_nodes_data = pd.read_json(jsonified_pangraph_points)
+    pangraph_traces_data = json.loads(jsonified_pangraph_traces)
+    return pangraph.get_graph(pangraph_nodes_data, pangraph_traces_data)
 
 @app.callback(
     dash.dependencies.Output('pangraph_display', 'style'),

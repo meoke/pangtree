@@ -376,7 +376,11 @@ def get_layout(get_url_function):
                             id='pangraph',
                             children=[
                                 html.Div(
-                                    id='hidden_pangraph',
+                                    id='hidden_pangraph_points',
+                                    style={'display': 'none'}
+                                ),
+                                html.Div(
+                                    id='hidden_pangraph_traces',
                                     style={'display': 'none'}
                                 ),
                                 html.Div(
@@ -384,7 +388,7 @@ def get_layout(get_url_function):
                                     children=[
                                         dcc.Graph(
                                             id='pangraph_graph',
-                                            style={'height': '1000px', 'width': 'auto'}
+                                            style={'height': '300px', 'width': 'auto'}
                                         )
                                     ],
                                     style={'display': 'none'}
