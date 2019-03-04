@@ -10,7 +10,7 @@ from context import nucleotides as n
 class SubPangraphTest(unittest.TestCase):
 
     def setUp(self):
-        nodes = [Node(id=0, base=n.code('T'), in_nodes=[], aligned_to=None),
+        nodes = [Node(id=0, base=n.code('T'), in_nodes=[], aligned_to=None,),
                  Node(id=1, base=n.code('A'), in_nodes=[0], aligned_to=2),
                  Node(id=2, base=n.code('G'), in_nodes=[], aligned_to=1),
                  Node(id=3, base=n.code('A'), in_nodes=[1], aligned_to=4),
@@ -210,6 +210,43 @@ class SubPangraphTest(unittest.TestCase):
 
         actual_subpangraph = SubPangraph(pangraph, ['seq1'])
         self.compare_subpangraphs(expected_subpangraph, actual_subpangraph)
+
+    def test_subpangraph_should_omit_in_nodes_and_aligned_nodes(self):
+        #original pangraph
+        pangraph_nodes = [Node(id=0,base=n.code('A'), in_nodes=[], aligned_to=None),
+                          Node(id=1,base=n.code('C'), in_nodes=[0], aligned_to=2),
+                          Node(id=2,base=n.code('T'), in_nodes=[0], aligned_to=1),
+                          Node(id=3,base=n.code('G'), in_nodes=[1, 2], aligned_to=None)]
+        pangraph_paths_to_nodes_ids = {
+            'seq1': [0, 1, 3],
+            'seq2': [0, 2, 3]
+        }
+        pangraph = Pangraph()
+        pangraph.update_nodes(pangraph_nodes)
+        pangraph.set_paths(len(pangraph_nodes), pangraph_paths_to_nodes_ids)
+
+        # remove seq1
+        expected_nodes = [
+            Node(id=0, base=n.code('A'), in_nodes=[], aligned_to=None),
+            Node(id=1, base=n.code('T'), in_nodes=[0], aligned_to=None),
+            Node(id=2, base=n.code('G'), in_nodes=[1], aligned_to=None)
+        ]
+        expected_paths_to_nodes_ids = {
+            'seq2': [0, 1, 2]
+        }
+        expected_nodes_ids_mapping = {0: 0, 1: 2, 2: 3}
+
+        expected_pangraph = Pangraph()
+        expected_pangraph.update_nodes(expected_nodes)
+        expected_pangraph.set_paths(len(expected_nodes), expected_paths_to_nodes_ids)
+
+        expected_subpangraph = SubPangraph(Pangraph(), [])
+        expected_subpangraph.pangraph = expected_pangraph
+        expected_subpangraph.nodes_ids_mapping = expected_nodes_ids_mapping
+
+        actual_subpangraph = SubPangraph(pangraph, ['seq2'])
+        self.compare_subpangraphs(expected_subpangraph, actual_subpangraph)
+
 
     def compare_subpangraphs(self, expected_subpangraph, actual_subpangraph):
         self.assertEqual(expected_subpangraph.pangraph._nodes, actual_subpangraph.pangraph._nodes)
