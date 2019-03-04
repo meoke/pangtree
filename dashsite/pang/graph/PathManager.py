@@ -56,16 +56,16 @@ class PathManager:
     # def trim(self, nodes_count):
     #     self.paths = np.delete(self.paths, np.s_[nodes_count:], 1)
 
-    def get_in_nodes(self, node_id):
-        in_nodes = []
-        node_ids_to_check = range(node_id-1, -1, -1)
-        for seq in self.paths:
-            if seq[node_id]:
-                for col_id in node_ids_to_check:
-                    if seq[col_id]:
-                        in_nodes.append(col_id)
-                        break
-        return list(set(in_nodes))
+    # def get_in_nodes(self, node_id):
+    #     in_nodes = []
+    #     node_ids_to_check = range(node_id-1, -1, -1)
+    #     for seq in self.paths:
+    #         if seq[node_id]:
+    #             for col_id in node_ids_to_check:
+    #                 if seq[col_id]:
+    #                     in_nodes.append(col_id)
+    #                     break
+    #     return list(set(in_nodes))
 
     def get_paths_count(self):
         return self.paths.shape[0]
@@ -102,11 +102,16 @@ class PathManager:
         source_id = self.path_names_to_array_id[pathname]
         return np.where(self.paths[source_id, :])[0]
 
+    def get_ordered_nodes_ids(self, pathname):
+        return self.path_names_to_nodes_ids_order[pathname]
+
     def get_path_nodes_count(self, pathname):
         return len(self.get_nodes_ids(pathname))
 
     def get_path_names(self):
-        return list(self.path_names_to_array_id.keys())
+        if self.path_names_to_array_id:
+            return list(self.path_names_to_array_id.keys())
+        return []
 
     def get_path_ids(self):
         return list(self.path_names_to_array_id.values())

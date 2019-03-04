@@ -388,12 +388,18 @@ def get_layout(get_url_function):
                                     children=[
                                         dcc.Graph(
                                             id='pangraph_graph',
-                                            style={'height': '300px', 'width': 'auto'}
+                                            style={
+                                                'height': '500px',
+                                                   'width': '30000px'
+                                                   },
                                         )
                                     ],
                                     style={'display': 'none'}
+
                                 )
-                            ]
+                            ],
+                            style={'overflow-y': 'scroll' },
+                            className = 'twelve columns'
                         )
                     ],
                     className='row'
