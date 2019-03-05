@@ -1,6 +1,5 @@
 from graph.Pangraph import Pangraph
-from po import writer as powriter
-from po import reader as poreader
+from fileformats.po import reader as poreader, writer as powriter
 from userio import pathtools
 from pathlib import Path
 from . import poa
