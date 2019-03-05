@@ -1,9 +1,9 @@
 from consensus.algorithm.FindCutoff import MAX1, MAX2, FindMaxCutoff, FindNodeCutoff, NODE1, NODE2, NODE3, NODE4
-from graph.FastaSource import EntrezFastaSource, FastaFileSystemSource
+from graph2.FastaSource import EntrezFastaSource, FastaFileSystemSource
 from metadata import reader as metadatareader
 from consensus.algorithm import tree as consensustree
 from consensus.algorithm import simple as consensussimple
-from graph.Pangraph import Pangraph
+from graph2.Pangraph import Pangraph
 from userio import pathtools
 from userio.PangenomeParameters import ConsensusAlgorithm, FastaComplementationOption, MaxCutoffOption, \
     NodeCutoffOption, PangenomeParameters
