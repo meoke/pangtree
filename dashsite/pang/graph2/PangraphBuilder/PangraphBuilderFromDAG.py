@@ -10,7 +10,6 @@ from fileformats.maf.reader import maf_to_dagmaf
 from graph2 import nucleotides
 from graph2.FastaSource import FastaSource
 from graph2.Node import Node
-from graph2.Pangraph import Pangraph
 from graph2.PangraphBuilder.PangraphBuilderBase import PangraphBuilderBase
 from graph2.custom_exceptions import NoSequenceInfo, PathBuildingException
 from graph2.custom_types import ColumnID, SequenceID, NodeID, BlockID, Sequence, Nucleobase
@@ -32,7 +31,7 @@ Edge = namedtuple('Edge', ['seq_id',
 class PangraphBuilderFromDAG(PangraphBuilderBase):
     def __init__(self, genomes_info: MultialignmentMetadata, fasta_source: FastaSource):
         super().__init__(genomes_info)
-        self.pangraph: Pangraph = None
+        self.pangraph = None
         self.dagmaf: DAGMaf = None
         self.free_edges: Dict[SequenceID, Edge] = None
         self.seqs_info: Dict[SequenceID, SequenceInfo] = None
@@ -48,7 +47,7 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
             for seq_id in self.sequences_names
         }
 
-    def build(self, maf: StringIO, pangraph: Pangraph) -> None:
+    def build(self, maf: StringIO, pangraph) -> None:
         self.dagmaf = maf_to_dagmaf(maf)
         self.pangraph = pangraph
         self.init_pangraph()
@@ -134,6 +133,7 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
             raise PathBuildingException("Cannot find path with specified last node id.")
 
     def process_block(self, block: Block) -> None:
+        print(f"Process block {block.id}")
         current_node_id = self.get_max_node_id()
         block_width = len(block.alignment[0].seq)
         paths_join_info = self.get_paths_join_info(block)

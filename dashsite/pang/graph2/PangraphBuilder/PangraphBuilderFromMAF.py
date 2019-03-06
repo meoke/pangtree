@@ -1,23 +1,23 @@
 from Bio import AlignIO
-from graph import nucleotides
-from graph.Node import Node
-from graph.PangraphBuilder.PangraphBuilderBase import PangraphBuilderBase
+from io import StringIO
+from graph2 import nucleotides
+from graph2.Node import Node
+from graph2.PangraphBuilder.PangraphBuilderBase import PangraphBuilderBase
 from metadata.MultialignmentMetadata import MultialignmentMetadata
+from graph2.custom_types import NodeID, SequenceID, Nucleobase, ColumnID, BlockID
 
 
 class PangraphBuilderFromMAF(PangraphBuilderBase):
     def __init__(self, genomes_info: MultialignmentMetadata):
         super().__init__(genomes_info)
+        self.pangraph = None
 
-    def build(self, input, pangraph):
+    def build(self, input: StringIO, pangraph):
         input = [*AlignIO.parse(input, "maf")]
-        nodes_count = PangraphBuilderFromMAF.get_nodes_count(input)
-        pangraph._nodes = [None] * nodes_count
-        pangraph._pathmanager.init_paths(self.sequences_names, nodes_count)
+        self.init_pangraph(pangraph)
 
-        sequence_last_node_id = {seq_id: None for seq_id in self.sequences_names}
-        current_node_id = -1
-        column_id = -1
+        current_node_id = NodeID(-1)
+        column_id = ColumnID(-1)
         for block_id, block in enumerate(input):
             block_width = len(block[0].seq)
 
@@ -30,23 +30,43 @@ class PangraphBuilderFromMAF(PangraphBuilderBase):
 
                 for i, nucl in enumerate(nodes_codes):
                     current_node_id += 1
-                    node = Node(id=current_node_id,
-                                base=nucleotides.code(nucl),
-                                in_nodes=set(),
-                                aligned_to=PangraphBuilderFromMAF.get_next_aligned_node_id(i, column_nodes_ids),
-                                column_id=column_id,
-                                block_id=block_id)
+                    self.add_node(id=current_node_id,
+                                  base=nucl,
+                                  aligned_to=self.get_next_aligned_node_id(i, column_nodes_ids),
+                                  column_id=column_id,
+                                  block_id=block_id)
 
                     for sequence, nucleotide in sequence_name_to_nucleotide.items():
                         if nucleotide == nucl:
-                            pangraph.add_path_to_node(path_name=sequence, node_id=current_node_id)
-                            last_node_id = sequence_last_node_id[sequence]
-                            if last_node_id is not None:
-                                node.in_nodes.add(last_node_id)
-                            sequence_last_node_id[sequence] = current_node_id
-                    node.in_nodes = list(node.in_nodes)
-                    pangraph._nodes[current_node_id] = node
-        pangraph.remove_empty_paths()
+                            self.add_node_do_sequence(seqID=sequence, node_id=current_node_id)
+
+    def init_pangraph(self, pangraph):
+        pangraph.nodes = []
+        pangraph.paths = {seq_id : [] for seq_id in self.sequences_names}
+        self.pangraph = pangraph
+
+    def add_node_do_sequence(self, seqID: SequenceID, node_id: NodeID):
+        if self.pangraph.paths[seqID]:
+            self.pangraph.paths[seqID][-1].append(node_id)
+        else:
+            self.pangraph.paths[seqID].append([node_id])
+
+    def add_node(self,
+                 id: NodeID,
+                 base: Nucleobase,
+                 aligned_to: NodeID,
+                 column_id: ColumnID,
+                 block_id: BlockID) -> None:
+        self.pangraph.nodes.append(Node(id=id,
+                                        base=nucleotides.code(base),
+                                        aligned_to=aligned_to,
+                                        column_id=column_id,
+                                        block_id=block_id))
+
+    def get_next_aligned_node_id(self, current_column_i, column_nodes_ids):
+        if len(column_nodes_ids) > 1:
+            return column_nodes_ids[(current_column_i + 1) % len(column_nodes_ids)]
+        return None
 
     @staticmethod
     def get_nodes_count(mafalignment) -> int:
@@ -60,8 +80,4 @@ class PangraphBuilderFromMAF(PangraphBuilderBase):
 
         return nodes_count
 
-    @staticmethod
-    def get_next_aligned_node_id(current_column_i, column_nodes_ids):
-        if len(column_nodes_ids) > 1:
-            return column_nodes_ids[(current_column_i + 1) % len(column_nodes_ids)]
-        return None
+
