@@ -34,10 +34,10 @@ def table_to_rows_json(df_table_data):
 
 
 def get_cells_styling(consensus_tree, table_data):
-    consensuses_names = [header for header in list(table_data) if header[0:2] == 'C_']
+    consensuses_names = [header for header in list(table_data) if header[0:9] == 'CONSENSUS']
     styling_conditions = []
     for c in consensuses_names:
-        consensus_id = int(c[2:])
+        consensus_id = int(c[9:])
         consensus_mincomp = consensus_tree.nodes[consensus_id]['mincomp']
         styling_conditions.append(get_cell_styling_dict(c, consensus_mincomp))
     return styling_conditions

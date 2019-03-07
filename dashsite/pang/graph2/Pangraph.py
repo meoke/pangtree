@@ -1,20 +1,20 @@
 from io import StringIO
 from typing import List, Dict
-from graph.PangraphBuilder.PangraphBuilderBase import PangraphBuilderBase
-from graph.PangraphBuilder.PangraphBuilderFromDAG import PangraphBuilderFromDAG
-from graph.PangraphBuilder.PangraphBuilderFromMAF import PangraphBuilderFromMAF
+import numpy as np
+
+from graph2.PangraphBuilder.PangraphBuilderBase import PangraphBuilderBase
+from graph2.PangraphBuilder.PangraphBuilderFromDAG import PangraphBuilderFromDAG
+from graph2.PangraphBuilder.PangraphBuilderFromMAF import PangraphBuilderFromMAF
 from graph2.FastaSource import FastaSource
 from metadata.MultialignmentMetadata import MultialignmentMetadata
 from .Node import Node
-from .PathManager import PathManager
-import numpy as np
-from .custom_types import NodeID
+from .custom_types import NodeID, SequenceID
 
 
 class Pangraph:
     def __init__(self):
         self.nodes: List[Node] = []
-        self.paths: Dict[str, List[NodeID]] = {}
+        self.paths: Dict[SequenceID, List[NodeID]] = {}
 
     def __eq__(self, other):
         return (self.nodes == other.nodes and
@@ -30,6 +30,48 @@ class Pangraph:
 
     def _build(self, builder: PangraphBuilderBase, build_input):
         builder.build(build_input, self)
+
+    def get_compatibilities(self, sequences_ids: List[SequenceID], consensus: List[NodeID]):
+        compatibilities = dict()
+        for seq_id in sequences_ids:
+            try:
+                paths = self.paths[seq_id]
+            except KeyError:
+                raise Exception("No sequence with given ID in pangraph.")
+            if len(paths) == 1:
+                path = paths[0]
+            else:
+                path = [node_id for path in paths for node_id in path]
+            compatibilities[seq_id] = len(set(path).intersection(set(consensus)))/len(path)
+        return compatibilities
+
+    def get_sequence_nodes_count(self, seq_id):
+        if seq_id not in self.paths:
+            raise Exception("No sequence with given ID in pangraph.")
+        return sum([len(path) for path in self.paths[seq_id]])
+
+    def get_sequences_weights(self, sequences_ids):
+        if not sequences_ids:
+            return dict()
+
+        a = np.zeros(len(self.nodes), dtype=np.int)
+        unweighted_sources_weights = {}
+        for seq_id in sequences_ids:
+            for path in self.paths[seq_id]:
+                a[path] += 1
+
+        for seq_id in sequences_ids:
+            sequence_nodes_ids = [node_id for path in self.paths[seq_id] for node_id in path]
+            unweighted_sources_weights[seq_id] = np.mean(a[sequence_nodes_ids])
+
+        max_weight = max(unweighted_sources_weights.values())
+        min_weight = min(unweighted_sources_weights.values())
+        diff_weight = max_weight - min_weight
+        if diff_weight == 0:
+            normalized_sources_weights_dict = {path_key: 100 for path_key in unweighted_sources_weights.keys()}
+        else:
+            normalized_sources_weights_dict = {path: int((weight - min_weight)/diff_weight*100) for path, weight in unweighted_sources_weights.items()}
+        return normalized_sources_weights_dict
 
     # def update_nodes(self, new_nodes: List[Node]):
     #     #todo something to control new_nodes correctness

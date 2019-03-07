@@ -7,6 +7,7 @@ from graph2.Pangraph import Pangraph
 from userio import pathtools
 from userio.PangenomeParameters import ConsensusAlgorithm, FastaComplementationOption, MaxCutoffOption, \
     NodeCutoffOption, PangenomeParameters
+from consensus.TreeConsensusGenerator import TreeConsensusGenerator
 
 
 class Pangenome:
@@ -14,8 +15,9 @@ class Pangenome:
         self.params: PangenomeParameters = pangenome_parameters
 
         self.genomes_info = self._build_genomes_info()
-        self.dagmaf = None
         self.pangraph = Pangraph()
+        self.dagmaf = None
+        self.consensuses_tree = None
 
     def build_from_maf_firstly_converted_to_dag(self):
         if self.params.fasta_complementation_option is FastaComplementationOption.NO:
@@ -25,7 +27,8 @@ class Pangenome:
         elif self.params.fasta_complementation_option is FastaComplementationOption.LOCAL:
             fasta_source = FastaFileSystemSource(self.params.local_fasta_dirpath)
         else:
-            raise Exception("Not known fasta complementation option. Should be of type FastaComplementationOption."
+            raise Exception("Not known fasta complementation option. "
+                            "Should be of type FastaComplementationOption."
                             "Cannot build pangraph.")
 
         self.genomes_info.feed_with_maf_data(self.params.multialignment_file_content)
@@ -52,17 +55,18 @@ class Pangenome:
                                                 filename_prefix="simple")
         elif self.params.consensus_type == ConsensusAlgorithm.TREE:
             cutoffs_log_path = self._create_cutoffs_log_path(output_dir)
-            max_cutoff_strategy = self._get_max_cutoff_strategy(cutoffs_log_path)
-            node_cutoff_strategy = self._get_node_cutoff_strategy(cutoffs_log_path)
-            self.pangraph = consensustree.run(outputdir=output_dir,
-                                              cutoffs_log_path=cutoffs_log_path,
-                                              pangraph=self.pangraph,
-                                              genomes_info=self.genomes_info,
-                                              max_node_strategy=max_cutoff_strategy,
-                                              node_cutoff_strategy=node_cutoff_strategy,
-                                              stop=self.params.stop,
-                                              re_consensus=self.params.re_consensus
-                                              )
+            consensus_generator = TreeConsensusGenerator(
+                max_node_strategy=self._get_max_cutoff_strategy(cutoffs_log_path),
+                node_cutoff_strategy=self._get_node_cutoff_strategy(cutoffs_log_path),
+                stop=self.params.stop,
+                re_consensus=self.params.stop
+            )
+            self.consensuses_tree = consensus_generator.get_consensuses_tree(
+                pangraph=self.pangraph,
+                genomes_info=self.genomes_info,
+                output_dir=output_dir,
+            )
+
 
     def _create_cutoffs_log_path(self, consensus_output_dir):
         return pathtools.get_child_file_path(consensus_output_dir, "cutoffs_log.csv")

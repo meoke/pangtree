@@ -1,7 +1,9 @@
+import itertools
 from typing import List, Dict
 from Pangenome import Pangenome
 from userio.PangenomeParameters import PangenomeParameters, FastaComplementationOption
-import graph.nucleotides as n
+import graph2.nucleotides as n
+
 
 
 class JSONProgramParameters:
@@ -30,13 +32,6 @@ class JSONNode:
         self.column_id = column_id
         self.block_id = block_id
         self.aligned_to = aligned_to
-
-
-class JSONEdge:
-    def __init__(self, source: int, target: int, type: str):
-        self.source = source
-        self.target = target
-        self.type = type
 
 
 class JSONSequence:
@@ -89,49 +84,17 @@ class JSONMAFNode:
 
 
 class JSONPangenome:
+    program_parameters: JSONProgramParameters
+    consensuses_tree: List[JSONConsensus]
+    sequences: List[JSONSequence]
+    nodes: List[JSONNode]
+
     def __init__(self, pangenome: Pangenome = None, program_parameters: PangenomeParameters=None):
-        if not pangenome:
-            return
         if program_parameters:
             self.program_parameters = JSONProgramParameters(program_parameters)
-        self.nodes = [JSONNode(node.id,
-                               n.decode(node.base),
-                               node.column_id,
-                               node.block_id,
-                               node.aligned_to) for node in pangenome.pangraph.get_nodes()]
-        seqeuences_metadata = [pangenome.genomes_info.genomes_metadata[seqID] for seqID in pangenome.pangraph.get_path_names()]
-        self.sequences = []
-        pm = pangenome.pangraph._pathmanager
-        for i, seq_metadata in enumerate(seqeuences_metadata):
-            jsonsequence = JSONSequence(pm.get_path_id(seq_metadata.mafname),
-                                       seq_metadata.genbankID,
-                                       seq_metadata.assemblyID,
-                                       seq_metadata.mafname,
-                                       seq_metadata.name,
-                                       seq_metadata.group,
-                                       pm.get_ordered_nodes_ids(seq_metadata.mafname)
-                          )
-            self.sequences.append(jsonsequence)
-
-        cm = pangenome.pangraph._consensusmanager
-        if pangenome.pangraph._consensusmanager.paths:
-            cm_tree_nodes = pangenome.pangraph._consensusmanager.consensus_tree.nodes
-
-            self.consensuses = [JSONConsensus(id=node.consensus_id,
-                                          name=cm.get_path_name(node.consensus_id),
-                                          parent=node.parent_node_id,
-                                          children=node.children_nodes,
-                                          comp_to_all_sequences={seq_name: float(comp)
-                                                                 for seq_name, comp in node.compatibilities_to_all.items()},
-                                          sequences_ids=[pm.get_path_id(seq_name)
-                                                         for seq_name in node.sequences_names],
-                                          # todo perf # nodes_ids = [int(node_id) for node_id in pangenome.pangraph.get_consensus_nodes_ids(cm.get_path_name(node.consensus_id))],
-                                          nodes_ids=[],
-                                          mincomp=float(node.mincomp)
-                                          )
-                            for node in cm_tree_nodes]
         else:
-            self.consensuses = []
+            self.program_parameters = None
+
         if pangenome.dagmaf:
             self.dagmaf = [JSONMAFNode(id=n.id,
                                    orient=n.orient,
@@ -140,21 +103,43 @@ class JSONPangenome:
         else:
             self.dagmaf = []
 
-    # def build_from_dict(self, dictionary):
-    #     self.nodes = [JSONNode(node['id'], node['nucleobase']) for node in dictionary['nodes']]
-    #     self.edges = dictionary['edges']
-    #     self.sequences = [JSONSequence(sequence['id'],
-    #                                    sequence['name'],
-    #                                    sequence['title'],
-    #                                    [int(node_id) for node_id in sequence['nodes_ids']]
-    #                                    )
-    #                       for sequence in dictionary['sequences']]
-    #     self.consensuses = [JSONConsensus(id=n['id'],
-    #                                          name=n['name'],
-    #                                          parent=n['parent'],
-    #                                          children=[c for c in n['children']],
-    #                                          comp_to_all_sequences={seqname: comp for seqname, comp in n['comp_to_all_sequences'].items()},
-    #                                          sequences_ids=[s for s in n['sequences_ids']],
-    #                                          nodes_ids=[c for c in n['nodes_ids']],
-    #                                          mincomp=n['mincomp'])
-    #                            for n in dictionary['consensuses']]
+        if pangenome.pangraph.nodes:
+            self.nodes = [JSONNode(id=node.id,
+                                   nucleobase=n.decode(node.base),
+                                   column_id=node.column_id,
+                                   block_id=node.block_id,
+                                   aligned_to=node.aligned_to)
+                          for node in pangenome.pangraph.nodes]
+        else:
+            self.nodes = None
+
+        paths_str_id_to_int_id = {seq_id: i for i, seq_id in enumerate(sorted(pangenome.pangraph.paths.keys()))}
+        if pangenome.pangraph.paths:
+            seqeuences_metadata = [pangenome.genomes_info.genomes_metadata[seqID] for seqID in pangenome.pangraph.paths.keys()]
+
+            self.sequences = [JSONSequence(id=paths_str_id_to_int_id[seq_metadata.mafname],  # todo to musi być główne ID!!!
+                                           genbankID=seq_metadata.genbankID,
+                                           assemblyID=seq_metadata.assemblyID,
+                                           mafname=seq_metadata.mafname,
+                                           name=seq_metadata.name,
+                                           group=seq_metadata.group,
+                                           nodes_ids=list(itertools.chain.from_iterable(pangenome.pangraph.paths[seq_metadata.mafname])))
+                              for i, seq_metadata in enumerate(seqeuences_metadata)]
+        else:
+            self.sequences = None
+
+        if pangenome.consensuses_tree:
+            self.consensuses = [JSONConsensus(id=consensus_node.consensus_id,
+                                              name=f"CONSENSUS{consensus_node.consensus_id}",
+                                              parent=consensus_node.parent_node_id,
+                                              children=consensus_node.children_nodes_ids,
+                                              comp_to_all_sequences=consensus_node.compatibilities_to_all,
+                                              sequences_ids=[paths_str_id_to_int_id[seq_id]
+                                                             for seq_id in consensus_node.sequences_ids],
+                                              nodes_ids=consensus_node.consensus_path,
+                                              mincomp=consensus_node.mincomp)
+                                for consensus_node in pangenome.consensuses_tree.nodes]
+        else:
+            self.consensuses = []
+
+

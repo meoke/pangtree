@@ -1,11 +1,23 @@
-class ConsensusNode(object):
-    def __init__(self, parent_node_id=None, children_nodes=None, sequences_names=None, consensus_id=-1, mincomp=None):
-        self.children_nodes = children_nodes if children_nodes else []
-        self.sequences_names = sequences_names if sequences_names else []
-        self.consensus_id = consensus_id
-        self.parent_node_id = parent_node_id
-        self.compatibilities_to_all = None
-        self.mincomp = mincomp
+from typing import List, Dict
+from graph2.custom_types import SequenceID, Sequence
 
-    def get_compatibilities_to_own_sources(self):
-        return [self.compatibilities_to_all[seqname] for seqname in self.sequences_names]
+
+class ConsensusNode(object):
+    def __init__(self,
+                 parent_node_id: int = None,
+                 children_nodes_ids: List[int] = None,
+                 sequences_ids: List[SequenceID] = None,
+                 consensus_id: int = None,
+                 mincomp=None,
+                 compatibilities_to_all: Dict[SequenceID, float] = None,
+                 consensus_path: Sequence = None):
+        self.parent_node_id = parent_node_id
+        self.children_nodes_ids = children_nodes_ids if children_nodes_ids else []
+        self.sequences_ids = sequences_ids if sequences_ids else []
+        self.consensus_id = consensus_id
+        self.mincomp = mincomp
+        self.compatibilities_to_all = compatibilities_to_all
+        self.consensus_path = consensus_path
+
+    # def get_compatibilities_to_own_sources(self):
+    #     return [self.compatibilities_to_all[seq_id] for seq_id in self.sequences_ids]
