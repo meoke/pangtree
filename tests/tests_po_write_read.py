@@ -3,15 +3,15 @@ from ddt import ddt, data, unpack
 from pathlib import Path
 from typing import List
 
-from context import Pangraph
-from context import Node
-from context import nucleotides as n
-from context import powriter
-from context import poreader
-from context import pathtools
-from context import MultialignmentMetadata
-from context import SequenceMetadata
-import helper_show_diffs as diff
+from tests.context import Pangraph
+from tests.context import Node
+from tests.context import nucleotides as n
+from tests.context import powriter
+from tests.context import poreader
+from tests.context import pathtools
+from tests.context import MultialignmentMetadata
+from tests.context import SequenceMetadata
+import tests.helper_show_diffs as diff
 
 
 def get_pangraph1() -> (Pangraph, List[str]):

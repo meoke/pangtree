@@ -159,16 +159,6 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
         self.add_block_out_edges_to_free_edges(block, paths_join_info)
         self.manage_endings(block, paths_join_info)
 
-    # def get_block_in_nodes(self, block: Block) -> Dict[SequenceID, NodeID]:
-    #     # todo właściwie wystarczy tutaj wiedzieć po jakich sekwencjach będzie kontynuacja, a nie konkretne ID
-    #     block_in_nodes: Dict[SequenceID, NodeID] = dict()
-    #     for seq in block.alignment:
-    #         block_in_nodes[seq.id] = None
-    #         for i, edge in enumerate(self.free_edges[seq.id]):
-    #             if edge.to_block_id == block.id:
-    #                 block_in_nodes[seq.id] = edge.last_node_id
-    #                 continue
-    #     return block_in_nodes
     def get_paths_join_info(self, block: Block) -> Dict[SequenceID, NodeID]:
         paths_join_info: Dict[SequenceID, NodeID] = dict()
         for seq in block.alignment:
@@ -219,16 +209,6 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
                                                 from_block_id=block.id,
                                                 to_block_id=None,
                                                 last_node_id=last_node_id))
-    # @staticmethod
-    # def get_in_nodes(block_in_nodes, seqs_id):
-    #     return list(set([node_id for seq_id, node_id in block_in_nodes.items() if seq_id in seqs_id and node_id is not None]))
-
-
-
-    # def get_left_sinfo(self, edge: Edge, seq_id: SequenceID) -> SequenceInfo:
-    #     for sinfo in self.seqs_info[seq_id]:
-    #         if sinfo.block_id == edge.from_block_id:
-    #             return sinfo
 
     def get_edge_sinfos(self, from_block_id: BlockID, edge: Arc, seq_id: SequenceID) -> \
             Tuple[SequenceInfo, SequenceInfo]:
@@ -250,12 +230,6 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
                      for nucleotide
                      in seq_to_nucl.values()
                      if nucleotide is not '-']))
-
-
-    # @staticmethod
-    # def update_block_in_nodes(block_in_nodes, seqs_id, current_node_id):
-    #     for seq_id in seqs_id:
-    #         block_in_nodes[seq_id] = current_node_id
 
     def get_sinfo(self, seq_id, block_id):
         for sinfo in self.seqs_info[seq_id]:
@@ -307,44 +281,8 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
         else:
             raise Exception("Unecpected strand value")
 
-
-
-    # @staticmethod
-    # def get_nodes_count(dagmaf: DAGMaf) -> int:
-    #     nodes_count = 0
-    #     SeqMafInfo = namedtuple('SeqMafInfo', ['maf_pos_count', 'srcSize'])
-    #     seq_id_to_seqmafinfo = {}
-    #
-    #     for n in dagmaf.dagmafnodes:
-    #         # update seq_info
-    #         for s in n.alignment:
-    #             if s.id in seq_id_to_seqmafinfo:
-    #                 s_info = seq_id_to_seqmafinfo[s.id]
-    #                 seq_id_to_seqmafinfo[s.id] = SeqMafInfo(maf_pos_count=s.annotations["size"] + s_info.maf_pos_count,
-    #                                                         srcSize=s_info.srcSize)
-    #             else:
-    #                 seq_id_to_seqmafinfo[s.id] = SeqMafInfo(maf_pos_count=s.annotations["size"],
-    #                                                         srcSize=s.annotations["srcSize"])
-    #         # sum number of current nodes
-    #         number_of_columns = len(n.alignment[0].seq)
-    #         for col_id in range(number_of_columns):
-    #             letters_in_columns = set([n.alignment[i].seq[col_id] for i in range(len(n.alignment))]).difference(set('-'))
-    #             nodes_count += len(letters_in_columns)
-    #
-    #     nodes_to_complement_count = sum([info.srcSize - info.maf_pos_count for s, info in seq_id_to_seqmafinfo.items()])
-    #     return nodes_count + nodes_to_complement_count
-
     def get_next_aligned_node_id(self, current_column_i, column_nodes_ids):
         if len(column_nodes_ids) > 1:
             return column_nodes_ids[(current_column_i + 1) % len(column_nodes_ids)]
         return None
-
-    # @staticmethod
-    # def get_starting_blocks(dagmaf):
-    #     blocks_ids = [node.id for node in dagmaf.dagmafnodes]
-    #     blocks_targeted_by_any_edge = [edge.to for node in dagmaf.dagmafnodes for edge in node.out_edges]
-    #     starting_blocks_ids = set(blocks_ids)-set(blocks_targeted_by_any_edge)
-    #     return list(starting_blocks_ids)
-
-
 

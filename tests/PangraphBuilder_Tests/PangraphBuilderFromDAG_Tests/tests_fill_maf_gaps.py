@@ -1,11 +1,11 @@
 import unittest
 from ddt import ddt
 
-from context import metadatareader
-from context import Node
-from context import nucleotides as n
-from context import pathtools
-from context import FastaSource
+from tests.context import metadatareader
+from tests.context import Node
+from tests.context import nucleotides as n
+from tests.context import pathtools
+from tests.context import FastaSource
 
 from tests.PangraphBuilder_Tests.PangraphBuilder_Tests import PangraphBuilderTests
 

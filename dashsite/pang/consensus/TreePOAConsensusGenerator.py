@@ -23,17 +23,14 @@ class TreePOAConsensusGenerator:
         self.stop: Compatibility= stop
         self.re_consensus: bool= re_consensus
         self.pangraph: Pangraph= None
-        self.genomes_info: MultialignmentMetadata= None
         self.output_dir: Path = None
         self.consensuses_tree: ConsensusesTree = None
 
     def get_consensuses_tree(self,
                              pangraph: Pangraph,
-                             genomes_info: MultialignmentMetadata,
                              output_dir: Path
                              ) -> ConsensusesTree:
         self.pangraph = pangraph
-        self.genomes_info = genomes_info
         self.output_dir = output_dir
 
         self.break_if_pangraph_is_invalid()

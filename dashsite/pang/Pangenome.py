@@ -65,7 +65,6 @@ class Pangenome:
             )
             self.consensuses_tree = consensus_generator.get_consensuses_tree(
                 pangraph=self.pangraph,
-                genomes_info=self.genomes_info,
                 output_dir=output_dir,
             )
         else:

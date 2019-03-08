@@ -24,15 +24,16 @@ class FindCutoff(ABC):
 
     def log_cutoff_search(self, compatibilities: List[Compatibility], cutoff, reason, params) -> None:
         self.log_counter += 1
-        with open(self.cutoffs_log_file_path, 'a') as output:
-            csv_writer = csv.writer(output, delimiter=',')
-            csv_writer.writerow([self.log_counter,
-                                 self.__class__.__name__,
-                                 compatibilities,
-                                 params,
-                                 cutoff,
-                                 reason
-                                 ])
+        if self.cutoffs_log_file_path:
+            with open(self.cutoffs_log_file_path, 'a') as output:
+                csv_writer = csv.writer(output, delimiter=',')
+                csv_writer.writerow([self.log_counter,
+                                     self.__class__.__name__,
+                                     compatibilities,
+                                     params,
+                                     cutoff,
+                                     reason
+                                     ])
 
     @staticmethod
     def break_if_empty(compatibilities: List[Compatibility]) -> None:

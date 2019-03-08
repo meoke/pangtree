@@ -8,7 +8,7 @@ class NodePO:
                  base: int,
                  aligned_to: NodeID,
                  in_nodes: List[NodeID],
-                 sequences_ids: List[SequenceID]):
+                 sequences_ids: List[int]):
         self.nucleobase = base
         self.aligned_to = aligned_to
         self.in_nodes = in_nodes

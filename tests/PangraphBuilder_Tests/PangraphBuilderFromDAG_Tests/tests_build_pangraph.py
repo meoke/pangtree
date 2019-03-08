@@ -1,10 +1,10 @@
 import unittest
 from ddt import ddt
 
-from context import metadatareader
-from context import Node
-from context import nucleotides as n
-from context import pathtools
+from tests.context import metadatareader
+from tests.context import Node
+from tests.context import nucleotides as n
+from tests.context import pathtools
 
 from tests.PangraphBuilder_Tests.PangraphBuilder_Tests import PangraphBuilderTests
 
@@ -57,13 +57,13 @@ class PangraphBuilderFromDAGTest_BuildPangraph(PangraphBuilderTests):
             Node(id=8, base=n.code('C'), aligned_to=None),
 
         ]
-        expected_pats = {
+        expected_paths = {
             "seq0": [[0, 2, 4, 7, 8]],
             "seq1": [[1, 3], [5, 6]],
             "seq2": [],
             "seq3": []
         }
-        expected_pangraph = PangraphBuilderTests.setup_pangraph(expected_nodes, expected_pats)
+        expected_pangraph = PangraphBuilderTests.setup_pangraph(expected_nodes, expected_paths)
         actual_pangraph = PangraphBuilderTests.setup_pangraph_from_maf_firstly_converted_to_dag(maf_path, self.seq_metadata, self.fasta_source)
         self.compare_pangraphs(actual_pangraph=actual_pangraph, expected_pangraph=expected_pangraph)
 
@@ -119,14 +119,14 @@ class PangraphBuilderFromDAGTest_BuildPangraph(PangraphBuilderTests):
         maf_path = "PangraphBuilder_Tests/PangraphBuilderFromDAG_Tests/build_pangraph/test_4_single_block_no_nucleotides.maf"
         expected_nodes = []
 
-        expected_pats = {
+        expected_paths = {
             "seq0": [],
             "seq1": [],
             "seq2": [],
             "seq3": []
         }
 
-        expected_pangraph = PangraphBuilderTests.setup_pangraph(expected_nodes, expected_pats)
+        expected_pangraph = PangraphBuilderTests.setup_pangraph(expected_nodes, expected_paths)
         actual_pangraph = PangraphBuilderTests.setup_pangraph_from_maf_firstly_converted_to_dag(maf_path, self.seq_metadata, self.fasta_source)
         self.compare_pangraphs(actual_pangraph=actual_pangraph, expected_pangraph=expected_pangraph)
 

@@ -1,11 +1,13 @@
 from pathlib import Path
 
-from old_pang.graph.Pangraph import Pangraph
-from old_pang.graph.Pangraph import Node
-from old_pang.graph import nucleotides as n
+from pangraph.Pangraph import Pangraph
+from pangraph.Pangraph import Node
+from pangraph import nucleotides as n
 
 
 def read(path: Path) -> Pangraph:
+    raise NotImplementedError()
+
     with open(path) as input:
         po_lines = input.readlines()
 

@@ -1,12 +1,13 @@
-from old_pang.graph.Pangraph import Pangraph
+from pangraph.Pangraph import Pangraph
 from pathlib import Path
 from typing import List
 from metadata.MultialignmentMetadata import MultialignmentMetadata
-from old_pang.graph.Node import Node
-from old_pang.graph import nucleotides as n
+from pangraph.Node import Node
+from pangraph import nucleotides as n
 
 
 def save(p: Pangraph, path: Path, genomes_info: MultialignmentMetadata) -> None:
+    raise NotImplementedError()
 
     po_lines = [None] * get_poa_file_length(p)
 
