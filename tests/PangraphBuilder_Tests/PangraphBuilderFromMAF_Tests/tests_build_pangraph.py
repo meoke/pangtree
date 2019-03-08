@@ -6,7 +6,8 @@ from tests.PangraphBuilder_Tests.PangraphBuilder_Tests import PangraphBuilderTes
 from tests.context import nucleotides as n
 from tests.context import Node
 from tests.context import metadatareader
-from tests.context import pathtools
+from tools import pathtools
+
 
 @ddt
 class PangraphBuilderFromMAFTest_BuildPangraph(PangraphBuilderTests):

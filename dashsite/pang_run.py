@@ -1,12 +1,12 @@
 from pang.Pangenome import Pangenome
-from pang.userio import pathtools
+from tools import pathtools
 from pang.fileformats.json import writer as jsonwriter
 from pathlib import Path
 from os import getcwd
 
 from base64 import b64decode
 
-from userio.PangenomeParameters import PangenomeParameters
+from arguments.PangenomeParameters import PangenomeParameters
 
 
 def run_pang(multialignment_contents,

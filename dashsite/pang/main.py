@@ -1,9 +1,10 @@
 import logging.config
 import time
-from userio import cmdargs, pathtools
+from arguments import cmd_arguments
+from tools import pathtools
 from Pangenome import Pangenome
 from fileformats.json import writer as pangenome_to_json_writer
-from userio.PangenomeParameters import PangenomeParameters
+from arguments.PangenomeParameters import PangenomeParameters
 
 
 def cleanup(params: PangenomeParameters)-> None:
@@ -17,7 +18,7 @@ def cleanup(params: PangenomeParameters)-> None:
 
 
 def main():
-    program_parameters = cmdargs.create_pangenome_parameters()
+    program_parameters = cmd_arguments.create_pangenome_parameters()
     logging.info(f'Program arguments: {str(program_parameters)}')
     start = time.clock()
 
@@ -29,7 +30,7 @@ def main():
         data_path = pathtools.create_child_dir(program_parameters.output_path, 'data')
         pangenome_to_json_writer.save_to_file(data_path, pangenome)
     except Exception as e:
-        logging.error("Something went wrong...")
+        logging.error("An exception was raised...")
         raise e
     finally:
         cleanup(program_parameters)

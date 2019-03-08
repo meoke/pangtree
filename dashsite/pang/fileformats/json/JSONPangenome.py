@@ -1,8 +1,8 @@
 import itertools
 from typing import List, Dict
 from Pangenome import Pangenome
-from userio.PangenomeParameters import PangenomeParameters, FastaComplementationOption
-import graph2.nucleotides as n
+from arguments.PangenomeParameters import PangenomeParameters, FastaComplementationOption
+import pangraph.nucleotides as n
 
 
 

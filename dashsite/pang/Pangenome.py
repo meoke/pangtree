@@ -1,13 +1,12 @@
-from consensus.algorithm.FindCutoff import MAX1, MAX2, FindMaxCutoff, FindNodeCutoff, NODE1, NODE2, NODE3, NODE4
-from graph2.FastaSource import EntrezFastaSource, FastaFileSystemSource
+from consensus.FindCutoff import MAX1, MAX2, FindMaxCutoff, FindNodeCutoff, NODE1, NODE2, NODE3, NODE4
+from pangraph.FastaSource import EntrezFastaSource, FastaFileSystemSource
 from metadata import reader as metadatareader
-from consensus.algorithm import tree as consensustree
-from consensus.algorithm import simple as consensussimple
-from graph2.Pangraph import Pangraph
-from userio import pathtools
-from userio.PangenomeParameters import ConsensusAlgorithm, FastaComplementationOption, MaxCutoffOption, \
+from pangraph.Pangraph import Pangraph
+from tools import pathtools
+from arguments.PangenomeParameters import ConsensusAlgorithm, FastaComplementationOption, MaxCutoffOption, \
     NodeCutoffOption, PangenomeParameters
-from consensus.TreeConsensusGenerator import TreeConsensusGenerator
+from consensus.SimplePOAConsensusGenerator import SimplePOAConsensusGenerator
+from consensus.TreePOAConsensusGenerator import TreePOAConsensusGenerator
 
 
 class Pangenome:
@@ -48,14 +47,17 @@ class Pangenome:
         output_dir = pathtools.create_child_dir(self.params.output_path, 'consensus')
 
         if self.params.consensus_type == ConsensusAlgorithm.SIMPLE:
-            self.pangraph = consensussimple.run(outputdir=output_dir,
-                                                pangraph=self.pangraph,
-                                                hbmin=self.params.hbmin,
-                                                genomes_info=self.genomes_info,
-                                                filename_prefix="simple")
+            consensus_generator = SimplePOAConsensusGenerator(
+                hbmin=self.params.hbmin
+            )
+            self.consensuses_tree = consensus_generator.get_consensuses_tree(
+                pangraph=self.pangraph,
+                genomes_info=self.genomes_info,
+                output_dir=output_dir,
+            )
         elif self.params.consensus_type == ConsensusAlgorithm.TREE:
             cutoffs_log_path = self._create_cutoffs_log_path(output_dir)
-            consensus_generator = TreeConsensusGenerator(
+            consensus_generator = TreePOAConsensusGenerator(
                 max_node_strategy=self._get_max_cutoff_strategy(cutoffs_log_path),
                 node_cutoff_strategy=self._get_node_cutoff_strategy(cutoffs_log_path),
                 stop=self.params.stop,
@@ -66,7 +68,10 @@ class Pangenome:
                 genomes_info=self.genomes_info,
                 output_dir=output_dir,
             )
-
+        else:
+            raise Exception("Not known consensus generation algorithm option."
+                            "Should be of type ConsensusAlgorithm."
+                            "Cannot generate consensuses.")
 
     def _create_cutoffs_log_path(self, consensus_output_dir):
         return pathtools.get_child_file_path(consensus_output_dir, "cutoffs_log.csv")
@@ -76,6 +81,10 @@ class Pangenome:
             return MAX1(self.params.range, cutoffs_log_file_path=cutoffs_log_path)
         elif self.params.max_cutoff_option == MaxCutoffOption.MAX2:
             return MAX2(cutoffs_log_file_path=cutoffs_log_path)
+        else:
+            raise Exception("Not known max cutoff option."
+                            "Should be of type MaxCutoffOption."
+                            "Cannot generate consensuses.")
 
     def _get_node_cutoff_strategy(self, cutoffs_log_path) -> FindNodeCutoff:
         if self.params.node_cutoff_option == NodeCutoffOption.NODE1:
@@ -86,6 +95,10 @@ class Pangenome:
             return NODE3(cutoffs_log_file_path=cutoffs_log_path)
         elif self.params.node_cutoff_option == NodeCutoffOption.NODE4:
             return NODE4(cutoffs_log_file_path=cutoffs_log_path)
+        else:
+            raise Exception("Not known node cutoff option."
+                            "Should be of type NodeCutoffOption."
+                            "Cannot generate consensuses.")
 
     def _build_genomes_info(self):
         if not self.params.metadata_file_content:

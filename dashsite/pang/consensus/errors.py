@@ -1,2 +1,0 @@
-class TreeConsensusGenerationException(Exception):
-    pass

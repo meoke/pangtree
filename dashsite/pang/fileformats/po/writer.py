@@ -1,9 +1,9 @@
-from graph.Pangraph import Pangraph
+from old_pang.graph.Pangraph import Pangraph
 from pathlib import Path
 from typing import List
 from metadata.MultialignmentMetadata import MultialignmentMetadata
-from graph.Node import Node
-from graph import nucleotides as n
+from old_pang.graph.Node import Node
+from old_pang.graph import nucleotides as n
 
 
 def save(p: Pangraph, path: Path, genomes_info: MultialignmentMetadata) -> None:

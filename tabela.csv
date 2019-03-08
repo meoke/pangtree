@@ -1,7 +1,0 @@
-,ID,Genbank ID,Assembly ID,Mafname,Name,Group,Leaf assignment,C_1,C_2
-0,0,,,seq0,seq0,A,7,0.9375,0.1250
-1,1,,,seq1,seq1,A,8,0.8750,0.1250
-2,2,,,seq2,seq2,A,9,0.8235,0.1765
-3,3,,,seq3,seq3,A,6,0.5625,0.1250
-4,4,,,seq4,seq4,B,3,0.1176,1.0000
-5,5,,,seq5,seq5,B,4,0.1176,0.8235
