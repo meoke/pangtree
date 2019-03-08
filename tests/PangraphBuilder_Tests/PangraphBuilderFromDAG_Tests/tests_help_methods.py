@@ -1,9 +1,8 @@
 import unittest
 from ddt import ddt, data, unpack
 
-from context import maf_to_dagmaf
-
-from graph.Pangraph import PangraphBuilderFromDAG
+from tests.context import maf_to_dagmaf
+from tests.context import PangraphBuilderFromDAG
 from tests.PangraphBuilder_Tests.PangraphBuilder_Tests import PangraphBuilderTests
 
 

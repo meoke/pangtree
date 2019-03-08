@@ -30,9 +30,8 @@ class PangraphBuilderTests(unittest.TestCase):
     @staticmethod
     def setup_pangraph(expected_nodes, expected_paths):
         pangraph = Pangraph()
-        pangraph._pathmanager.init_paths([], 0)
-        pangraph._nodes = expected_nodes
-        pangraph.set_paths(len(expected_nodes), expected_paths)
+        pangraph.nodes = expected_nodes
+        pangraph.paths = expected_paths
         return pangraph
 
     @staticmethod
@@ -58,12 +57,12 @@ class PangraphBuilderTests(unittest.TestCase):
     @staticmethod
     def show_pangraph_differences(actual_pangraph, expected_pangraph):
         print("Nodes differences: ")
-        PangraphBuilderTests.show_nodes_differences(actual_pangraph._nodes,
-                                                  expected_pangraph._nodes)
+        PangraphBuilderTests.show_nodes_differences(actual_pangraph.nodes,
+                                                  expected_pangraph.nodes)
 
         print("Paths differences: ")
-        PangraphBuilderTests.show_paths_differences(actual_pangraph._pathmanager.paths,
-                                                  expected_pangraph._pathmanager.paths)
+        PangraphBuilderTests.show_paths_differences(actual_pangraph.paths,
+                                                  expected_pangraph.paths)
 
     @staticmethod
     def show_nodes_differences(actual_nodes, expected_nodes):
@@ -77,11 +76,19 @@ class PangraphBuilderTests(unittest.TestCase):
 
     @staticmethod
     def show_paths_differences(actual_paths, expected_paths):
-        if actual_paths.shape != expected_paths.shape:
-            print(f"Actual pm has shape {actual_paths.shape} while expected pm: {expected_paths.shape}")
-
-        for i, (actual_row, expected_row) in enumerate(zip(actual_paths, expected_paths)):
-            if (actual_row != expected_row).any():
-                print(f"Rows {i} differ.")
-                print(f"Actual row: {actual_row}")
-                print(f"Expected row: {expected_row}")
+        for seq_id, paths in expected_paths.items():
+            if seq_id not in actual_paths:
+                print(f"There is no {seq_id} in actual paths!")
+                continue
+            elif actual_paths[seq_id] != expected_paths[seq_id]:
+                print(f"Sequence {seq_id} differs in expected and actual paths!")
+                print(f"Expected: {paths}")
+                print(f"Actual: {actual_paths[seq_id]}")
+        # if actual_paths.shape != expected_paths.shape:
+        #     print(f"Actual pm has shape {actual_paths.shape} while expected pm: {expected_paths.shape}")
+        #
+        # for i, (actual_row, expected_row) in enumerate(zip(actual_paths, expected_paths)):
+        #     if (actual_row != expected_row).any():
+        #         print(f"Rows {i} differ.")
+        #         print(f"Actual row: {actual_row}")
+        #         print(f"Expected row: {expected_row}")
