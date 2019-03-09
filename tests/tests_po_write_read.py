@@ -6,8 +6,6 @@ from typing import List
 from tests.context import Pangraph
 from tests.context import Node
 from tests.context import nucleotides as n
-from tests.context import powriter
-from tests.context import poreader
 from tests.context import pathtools
 from tests.context import MultialignmentMetadata
 from tests.context import SequenceMetadata
@@ -15,35 +13,35 @@ import tests.helper_show_diffs as diff
 
 
 def get_pangraph1() -> (Pangraph, List[str]):
-    nodes = [Node(id=0, base=n.code('A'), in_nodes=[], aligned_to=1),
-             Node(id=1, base=n.code('G'), in_nodes=[], aligned_to=0),
-             Node(id=2, base=n.code('C'), in_nodes=[0, 1], aligned_to=3),
-             Node(id=3, base=n.code('G'), in_nodes=[], aligned_to=2),
-             Node(id=4, base=n.code('A'), in_nodes=[2, 3], aligned_to=5),
-             Node(id=5, base=n.code('T'), in_nodes=[2], aligned_to=4),
-             Node(id=6, base=n.code('G'), in_nodes=[4, 5], aligned_to=None),
-             Node(id=7, base=n.code('G'), in_nodes=[6], aligned_to=None),
-             Node(id=8, base=n.code('A'), in_nodes=[7], aligned_to=9),
-             Node(id=9, base=n.code('C'), in_nodes=[7], aligned_to=10),
-             Node(id=10, base=n.code('G'), in_nodes=[7], aligned_to=11),
-             Node(id=11, base=n.code('T'), in_nodes=[7], aligned_to=8),
-             Node(id=12, base=n.code('A'), in_nodes=[8, 10], aligned_to=13),
-             Node(id=13, base=n.code('C'), in_nodes=[11], aligned_to=12),
-             Node(id=14, base=n.code('T'), in_nodes=[12, 13], aligned_to=None),
-             Node(id=15, base=n.code('A'), in_nodes=[14], aligned_to=16),
-             Node(id=16, base=n.code('C'), in_nodes=[14], aligned_to=17),
-             Node(id=17, base=n.code('G'), in_nodes=[14], aligned_to=15)
+    nodes = [Node(id=0, base=n.code('A'), aligned_to=1),
+             Node(id=1, base=n.code('G'), aligned_to=0),
+             Node(id=2, base=n.code('C'), aligned_to=3),
+             Node(id=3, base=n.code('G'), aligned_to=2),
+             Node(id=4, base=n.code('A'), aligned_to=5),
+             Node(id=5, base=n.code('T'), aligned_to=4),
+             Node(id=6, base=n.code('G'), aligned_to=None),
+             Node(id=7, base=n.code('G'), aligned_to=None),
+             Node(id=8, base=n.code('A'), aligned_to=9),
+             Node(id=9, base=n.code('C'), aligned_to=10),
+             Node(id=10, base=n.code('G'),aligned_to=11),
+             Node(id=11, base=n.code('T'),aligned_to=8),
+             Node(id=12, base=n.code('A'),aligned_to=13),
+             Node(id=13, base=n.code('C'), aligned_to=12),
+             Node(id=14, base=n.code('T'), aligned_to=None),
+             Node(id=15, base=n.code('A'), aligned_to=16),
+             Node(id=16, base=n.code('C'), aligned_to=17),
+             Node(id=17, base=n.code('G'), aligned_to=15)
              ]
 
     paths_to_node_ids = {
-        'testseq0': [0, 2, 4, 6, 7, 8, 12, 14, 16],
-        'testseq1': [1, 2, 5, 6, 7, 9],
-        'testseq2': [3, 4, 6, 7, 10, 12, 14, 17],
-        'testseq3': [11, 13, 14, 15]
+        'testseq0': [[0, 2, 4, 6, 7, 8, 12, 14, 16]],
+        'testseq1': [[1, 2, 5, 6, 7, 9]],
+        'testseq2': [[3, 4, 6, 7, 10, 12, 14, 17]],
+        'testseq3': [[11, 13, 14, 15]]
     }
     pangraph = Pangraph()
-    pangraph.update_nodes(nodes)
-    pangraph.set_paths(len(nodes), paths_to_node_ids)
+    pangraph.nodes = nodes
+    pangraph.paths = paths_to_node_ids
 
     expected_pofile = ["VERSION=October",
                        "NAME=test01",
@@ -80,29 +78,29 @@ def get_pangraph1() -> (Pangraph, List[str]):
     return pangraph, expected_pofile
 
 def get_pangraph_with_consensuses() -> (Pangraph, List[str]):
-    nodes = [Node(id=0, base=n.code('C'), in_nodes=[], aligned_to=1),
-             Node(id=1, base=n.code('T'), in_nodes=[], aligned_to=0),
-             Node(id=2, base=n.code('A'), in_nodes=[1], aligned_to=3),
-             Node(id=3, base=n.code('G'), in_nodes=[0], aligned_to=2),
-             Node(id=4, base=n.code('C'), in_nodes=[2, 3], aligned_to=None),
-             Node(id=5, base=n.code('T'), in_nodes=[4], aligned_to=None),
-             Node(id=6, base=n.code('A'), in_nodes=[5], aligned_to=7),
-             Node(id=7, base=n.code('T'), in_nodes=[5], aligned_to=6),
-             Node(id=8, base=n.code('G'), in_nodes=[6, 7], aligned_to=None),
+    nodes = [Node(id=0, base=n.code('C'), aligned_to=1),
+             Node(id=1, base=n.code('T'), aligned_to=0),
+             Node(id=2, base=n.code('A'), aligned_to=3),
+             Node(id=3, base=n.code('G'), aligned_to=2),
+             Node(id=4, base=n.code('C'), aligned_to=None),
+             Node(id=5, base=n.code('T'), aligned_to=None),
+             Node(id=6, base=n.code('A'), aligned_to=7),
+             Node(id=7, base=n.code('T'), aligned_to=6),
+             Node(id=8, base=n.code('G'), aligned_to=None)
              ]
 
     sequences_paths_to_node_ids = {
-        'testseq0': [0, 3, 4, 5, 6, 8],
-        'testseq1': [1, 2, 4, 5, 7, 8]
+        'testseq0': [[0, 3, 4, 5, 6, 8]],
+        'testseq1': [[1, 2, 4, 5, 7, 8]]
     }
     consensuses_paths_to_node_ids = {
-        'CONSENS0': [0, 3, 4, 5, 7, 8],
-        'CONSENS1': [1, 2, 4, 5, 6, 8]
+        'CONSENS0': [[0, 3, 4, 5, 7, 8]],
+        'CONSENS1': [[1, 2, 4, 5, 6, 8]]
     }
     pangraph = Pangraph()
-    pangraph.update_nodes(nodes)
-    pangraph.set_paths(len(nodes), sequences_paths_to_node_ids)
-    pangraph.set_consensuses(len(nodes), consensuses_paths_to_node_ids)
+    pangraph.nodes = nodes
+    pangraph.paths = sequences_paths_to_node_ids
+    # pangraph.set_consensuses(len(nodes), consensuses_paths_to_node_ids)
 
     expected_pofile = ["VERSION=October",
                        "NAME=test01",
@@ -130,6 +128,7 @@ def get_pangraph_with_consensuses() -> (Pangraph, List[str]):
     return pangraph, expected_pofile
 
 @ddt
+@unittest.skip("po read write must be reimplemented")
 class PoWriteReadTest(unittest.TestCase):
 
     def setUp(self):

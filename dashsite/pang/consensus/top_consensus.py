@@ -56,7 +56,7 @@ class PangraphPO_Translator:
                                    nodes_count=self.pangraph.get_sequence_nodes_count(self.seq_new_to_old[new_seq_id]),
                                    weight=sequences_weight[self.seq_new_to_old[new_seq_id]],
                                    consensus_id=-1,
-                                   start_node_id=self.pangraph.paths[self.seq_new_to_old[new_seq_id]][0][0]
+                                   start_node_id=self.old_to_new[self.pangraph.paths[self.seq_new_to_old[new_seq_id]][0][0]]
                                    )
                         for new_seq_id in range(len(paths_to_keep))]
 
@@ -78,7 +78,7 @@ class PangraphPO_Translator:
 
     def _get_aligned_node(self, old_node_id: NodeID, nodes_ids_to_keep: List[NodeID]) -> NodeID:
         aligned_to = self.pangraph.nodes[old_node_id].aligned_to
-        while aligned_to is not None:
+        while aligned_to is not None and aligned_to != old_node_id:
             if aligned_to in nodes_ids_to_keep:
                 return self.old_to_new[aligned_to]
             aligned_to = self.pangraph.nodes[aligned_to].aligned_to

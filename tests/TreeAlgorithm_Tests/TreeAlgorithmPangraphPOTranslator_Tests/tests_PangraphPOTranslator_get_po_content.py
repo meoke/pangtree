@@ -8,7 +8,7 @@ from tests.context import nucleotides as n
 from tests.context import NodePO, SequencePO
 
 @ddt
-class PangraphPO_TranslatorTest(unittest.TestCase):
+class PangraphPOTranslator_get_po_content_Test(unittest.TestCase):
 
     def setUp(self):
         nodes = [Node(id=0, base=n.code('T'), aligned_to=None,),

@@ -29,7 +29,7 @@ def get_tree(jsonpangenome: JSONPangenome, clck_data, old_tree):
 
 def create_tree(jsonpangenome: JSONPangenome):
     tree_graph = nx.DiGraph()
-    for consensus in jsonpangenome.consensuses:
+    for consensus in sorted(jsonpangenome.consensuses, key=lambda c: c.id):
         tree_graph.add_node(consensus.id,
                             name=consensus.name,
                             comp=consensus.comp_to_all_sequences,

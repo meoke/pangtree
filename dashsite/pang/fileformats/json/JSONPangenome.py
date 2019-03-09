@@ -116,6 +116,7 @@ class JSONPangenome:
         paths_str_id_to_int_id = {seq_id: i for i, seq_id in enumerate(sorted(pangenome.pangraph.paths.keys()))}
         if pangenome.pangraph.paths:
             seqeuences_metadata = [pangenome.genomes_info.genomes_metadata[seqID] for seqID in pangenome.pangraph.paths.keys()]
+            sorted_seqeuences_metadata = sorted(seqeuences_metadata, key=lambda m : paths_str_id_to_int_id[m.mafname])
 
             self.sequences = [JSONSequence(id=paths_str_id_to_int_id[seq_metadata.mafname],  # todo to musi być główne ID!!!
                                            genbankID=seq_metadata.genbankID,
@@ -124,7 +125,7 @@ class JSONPangenome:
                                            name=seq_metadata.name,
                                            group=seq_metadata.group,
                                            nodes_ids=list(itertools.chain.from_iterable(pangenome.pangraph.paths[seq_metadata.mafname])))
-                              for i, seq_metadata in enumerate(seqeuences_metadata)]
+                              for i, seq_metadata in enumerate(sorted_seqeuences_metadata)]
         else:
             self.sequences = None
 
