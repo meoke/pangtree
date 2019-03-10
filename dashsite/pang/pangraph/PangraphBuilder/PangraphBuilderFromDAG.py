@@ -20,7 +20,8 @@ SequenceInfo = namedtuple('SequenceInfo', ['block_id',
                                            'start',
                                            'strand',
                                            'size',
-                                           'srcSize'])
+                                           'srcSize',
+                                           'orient'])
 
 Edge = namedtuple('Edge', ['seq_id',
                            'from_block_id',
@@ -71,7 +72,8 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
                                                            start=start_position(seq),
                                                            strand=seq.annotations["strand"],
                                                            size=seq.annotations["size"],
-                                                           srcSize=seq.annotations["srcSize"]))
+                                                           srcSize=seq.annotations["srcSize"],
+                                                           orient=n.orient))
         absents_sequences: List[SequenceID] = []
         for seq_id, seq_info_list in self.seqs_info.items():
             if seq_info_list:
@@ -177,7 +179,7 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
         # ask Ania
         # left = block.id
         # right = edge.to
-        # if left > rigth:
+        # if left > right:
         #     return -edge.edge_type
 
     def complement_tail_for_1_1_edge(self, block_id, seq_id, edge, last_node_id):
@@ -225,39 +227,110 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
                 to_block_id=edge.to,
                 last_node_id=current_node_id))
 
+    def should_join_with_last_node(self, edge_type: Tuple[int, int]) -> bool:
+        if edge_type == (1, 1) or edge_type == (1, -1):
+            return True
+        elif edge_type == (-1, 1) or edge_type == (-1, -1):
+            return False
+        else:
+            raise SequenceBuildingException("Incorrect edge type."
+                                            "Cannot decide if sequence should be joined with complemented nucleotides.")
+
+    def complement_sequence_middles_if_needed(self, block: Block, edge: Arc, seq, last_node_id: NodeID):
+        seq_id = seq[0].seq_id
+        left_block_sinfo, right_block_sinfo = self.get_edge_sinfos(from_block_id=block.id,
+                                                                   edge=edge,
+                                                                   seq_id=seq_id)
+        if self.complementation_not_needed(left_block_sinfo, right_block_sinfo):
+            if edge.edge_type == (1,-1):
+                return last_node_id
+            else:
+                return None
+        else:
+            current_node_id = self.get_max_node_id()
+            column_id = self.column_id
+            # last_pos = left_block_sinfo.start + left_block_sinfo.size-1
+            # next_pos = right_block_sinfo.start
+            if left_block_sinfo.start < right_block_sinfo.start:
+                last_pos = left_block_sinfo.start + left_block_sinfo.size - 1
+                next_pos = right_block_sinfo.start
+            else:
+                last_pos = right_block_sinfo.start + right_block_sinfo.size - 1
+                next_pos = left_block_sinfo.start
+
+
+            join_with = last_node_id if self.should_join_with_last_node(edge.edge_type) else None
+            for i in range(last_pos + 1, next_pos):
+                column_id += 1
+                current_node_id += 1
+                missing_nucleotide = self.full_sequences[seq_id][i]
+                self.add_node(id=current_node_id,
+                              base=missing_nucleotide,
+                              aligned_to=None,
+                              column_id=column_id,
+                              block_id=None)
+                self.add_node_to_sequence(seq_id=seq_id, join_with=join_with, node_id=current_node_id)
+                join_with = current_node_id
+
+            if self.should_join_with_next_node(edge.edge_type):
+                return current_node_id
+            else:
+                return None
+
+    def should_join_with_next_node(self, edge_type):
+        if edge_type == (-1, 1) or edge_type == (1, -1) or edge_type == (-1, -1):
+            return True
+        elif edge_type == (1, 1):
+            return False
+        else:
+            raise SequenceBuildingException("Incorrect edge type."
+                                            "Cannot decide if complemented nucleotides should be joined with next block.")
+
     def add_block_out_edges_to_free_edges(self, block: Block, join_info: Dict[SequenceID, NodeID]):
         for edge in block.out_edges:
             edge_type = self.get_correct_edge_type(block, edge)
-            if edge_type == (1, 1):
-                for seq in edge.sequences:
-                    seq_id = seq[0].seq_id
-                    self.complement_tail_for_1_1_edge(block_id=block.id,
-                                                      seq_id=seq[0].seq_id,
-                                                      edge=edge,
-                                                      last_node_id=join_info[seq_id])
-            elif edge_type == (-1,1):
-                for seq in edge.sequences:
-                    self.complement_tail_for_m1_1_edge(block=block,
-                                                       edge=edge,
-                                                       seq=seq)
-            elif edge_type == (1, -1):
-                for seq in edge.sequences:
-                    seq_id = seq[0].seq_id
-                    left_block_sinfo, right_block_sinfo = self.get_edge_sinfos(from_block_id=block.id, edge=edge, seq_id=seq_id)
-                    if not self.continuous_sequence(left_block_sinfo, right_block_sinfo):
-                        last_node_id = self.complement_sequence_middle_nodes(seq_id=seq_id,
-                                                                             last_pos=left_block_sinfo.start + left_block_sinfo.size-1,
-                                                                             next_pos=right_block_sinfo.start,
-                                                                             last_node_id=join_info[seq_id])
-                    else:
-                        last_node_id = join_info[seq_id]
+            for seq in edge.sequences:
+                seq_id = seq[0].seq_id
+                last_node_id = self.complement_sequence_middles_if_needed(block=block,
+                                                                          edge=edge,
+                                                                          seq=seq,
+                                                                          last_node_id=join_info[seq_id])
+                if last_node_id is not None:
+                    self.free_edges[seq_id].append(Edge(seq_id=seq_id,
+                                                        from_block_id=block.id,
+                                                        to_block_id=edge.to,
+                                                        last_node_id=last_node_id))
 
-                    self.free_edges[seq_id].append(
-                        Edge(
-                            seq_id=seq_id,
-                            from_block_id=block.id,
-                            to_block_id=edge.to,
-                            last_node_id=last_node_id))
+            # if edge_type == (1, 1):
+            #     for seq in edge.sequences:
+            #         seq_id = seq[0].seq_id
+            #         self.complement_tail_for_1_1_edge(block_id=block.id,
+            #                                           seq_id=seq[0].seq_id,
+            #                                           edge=edge,
+            #                                           last_node_id=join_info[seq_id])
+            # elif edge_type == (-1,1):
+            #     for seq in edge.sequences:
+            #         self.complement_tail_for_m1_1_edge(block=block,
+            #                                            edge=edge,
+            #                                            seq=seq)
+            # elif edge_type == (1, -1):
+            #     for seq in edge.sequences:
+            #         seq_id = seq[0].seq_id
+            #         left_block_sinfo, right_block_sinfo = self.get_edge_sinfos(from_block_id=block.id, edge=edge, seq_id=seq_id)
+            #         if not self.continuous_sequence(left_block_sinfo, right_block_sinfo):
+            #             last_node_id = self.complement_sequence_middle_nodes(seq_id=seq_id,
+            #                                                                  last_pos=left_block_sinfo.start + left_block_sinfo.size-1,
+            #                                                                  next_pos=right_block_sinfo.start,
+            #                                                                  last_node_id=join_info[seq_id])
+            #         else:
+            #             last_node_id = join_info[seq_id]
+            #
+            #         self.free_edges[seq_id].append(
+            #             Edge(
+            #                 seq_id=seq_id,
+            #                 from_block_id=block.id,
+            #                 to_block_id=edge.to,
+            #                 last_node_id=last_node_id))
 
     def manage_endings(self, block: Block, join_info: Dict[SequenceID, NodeID]):
         sequences_ending_in_this_block = self.get_ending_sequences(block)
@@ -301,15 +374,26 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
             if sinfo.block_id == block_id:
                 return sinfo
 
-    def continuous_sequence(self, left_block_sinfo, right_block_sinfo):
-        if left_block_sinfo.strand == 1 and right_block_sinfo.strand == 1:
-            return left_block_sinfo.start + left_block_sinfo.size == right_block_sinfo.start
-        elif left_block_sinfo.strand == 1 and right_block_sinfo.strand == -1:
-            raise Exception("+ łączy się z -")
-        elif left_block_sinfo.strand == -1 and right_block_sinfo.strand == +1:
-            raise Exception("- łączy się z +")
-        elif left_block_sinfo.strand == -1 and right_block_sinfo.strand == -1:
-            return right_block_sinfo.start + right_block_sinfo.size == left_block_sinfo.start
+    def complementation_not_needed(self, left, right):
+        # if left.start > right.start:
+        #     return True
+
+        left_start = left.start if left.orient == 1 else left.srcSize - left.start - left.size
+        left_size = left.size
+
+        right_start = right.start if right.orient == 1 else right.srcSize - right.start - right.size
+        right_size = right.size
+
+        return left.start + left.size == right.start or right.start + right.size == left.start
+
+        if left.strand == 1 and right.strand == 1:
+            return left_start + left_size == right_start
+        elif left.strand == 1 and right.strand == -1:
+            return left_start + left_size == right_start
+        elif left.strand == -1 and right.strand == +1:
+            return left_start + left_size == right_start
+        elif left.strand == -1 and right.strand == -1:
+            return right_start + right_size == left_start
         else:
             raise Exception("Unexcpected strand values!")
 
