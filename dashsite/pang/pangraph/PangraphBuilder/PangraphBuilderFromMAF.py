@@ -42,7 +42,7 @@ class PangraphBuilderFromMAF(PangraphBuilderBase):
 
     def init_pangraph(self, pangraph):
         pangraph.nodes = []
-        pangraph.paths = {seq_id : [] for seq_id in self.sequences_names}
+        pangraph.paths = {seq_id: [] for seq_id in self.sequences_names}
         self.pangraph = pangraph
 
     def add_node_do_sequence(self, seqID: SequenceID, node_id: NodeID):
@@ -57,7 +57,7 @@ class PangraphBuilderFromMAF(PangraphBuilderBase):
                  aligned_to: NodeID,
                  column_id: ColumnID,
                  block_id: BlockID) -> None:
-        self.pangraph.nodes.append(Node(id=id,
+        self.pangraph.nodes.append(Node(node_id=id,
                                         base=nucleotides.code(base),
                                         aligned_to=aligned_to,
                                         column_id=column_id,

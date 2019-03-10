@@ -390,16 +390,16 @@ def get_layout(get_url_function):
                                             id='pangraph_graph',
                                             style={
                                                 'height': '500px',
-                                                   'width': '30000px'
-                                                   },
+                                                'width': '30000px'
+                                                  },
                                         )
                                     ],
                                     style={'display': 'none'}
 
                                 )
                             ],
-                            style={'overflow-y': 'scroll' },
-                            className = 'twelve columns'
+                            style={'overflow-y': 'scroll'},
+                            className='twelve columns'
                         )
                     ],
                     className='row'

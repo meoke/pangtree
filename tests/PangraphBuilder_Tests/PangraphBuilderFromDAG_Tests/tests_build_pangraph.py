@@ -20,16 +20,16 @@ class PangraphBuilderFromDAGTest_BuildPangraph(PangraphBuilderTests):
     def test_00_simple(self):
         maf_path = "PangraphBuilder_Tests/PangraphBuilderFromDAG_Tests/build_pangraph/test_0_simple.maf"
         expected_nodes = [
-            Node(id=0, base=n.code('A'), aligned_to=None),
-            Node(id=1, base=n.code('C'), aligned_to=None),
-            Node(id=2, base=n.code('T'), aligned_to=None),
-            Node(id=3, base=n.code('G'), aligned_to=None),
-            Node(id=4, base=n.code('A'), aligned_to=None),
-            Node(id=5, base=n.code('C'), aligned_to=None),
-            Node(id=6, base=n.code('T'), aligned_to=None),
-            Node(id=7, base=n.code('G'), aligned_to=None),
-            Node(id=8, base=n.code('A'), aligned_to=None),
-            Node(id=9, base=n.code('A'), aligned_to=None),
+            Node(node_id=0, base=n.code('A'), aligned_to=None),
+            Node(node_id=1, base=n.code('C'), aligned_to=None),
+            Node(node_id=2, base=n.code('T'), aligned_to=None),
+            Node(node_id=3, base=n.code('G'), aligned_to=None),
+            Node(node_id=4, base=n.code('A'), aligned_to=None),
+            Node(node_id=5, base=n.code('C'), aligned_to=None),
+            Node(node_id=6, base=n.code('T'), aligned_to=None),
+            Node(node_id=7, base=n.code('G'), aligned_to=None),
+            Node(node_id=8, base=n.code('A'), aligned_to=None),
+            Node(node_id=9, base=n.code('A'), aligned_to=None),
         ]
 
         expected_paths = {
@@ -45,16 +45,16 @@ class PangraphBuilderFromDAGTest_BuildPangraph(PangraphBuilderTests):
     def test_01_reversed_seq_in_one_block(self):
         maf_path = "PangraphBuilder_Tests/PangraphBuilderFromDAG_Tests/build_pangraph/test_1_reversed_seq_in_one_block.maf"
         expected_nodes = [
-            Node(id=0, base=n.code('A'), aligned_to=1),
-            Node(id=1, base=n.code('G'), aligned_to=0),
-            Node(id=2, base=n.code('C'), aligned_to=3),
-            Node(id=3, base=n.code('T'), aligned_to=2),
+            Node(node_id=0, base=n.code('A'), aligned_to=1),
+            Node(node_id=1, base=n.code('G'), aligned_to=0),
+            Node(node_id=2, base=n.code('C'), aligned_to=3),
+            Node(node_id=3, base=n.code('T'), aligned_to=2),
 
-            Node(id=4, base=n.code('G'), aligned_to=5),
-            Node(id=5, base=n.code('T'), aligned_to=4),
-            Node(id=6, base=n.code('A'), aligned_to=7),
-            Node(id=7, base=n.code('C'), aligned_to=6),
-            Node(id=8, base=n.code('C'), aligned_to=None),
+            Node(node_id=4, base=n.code('G'), aligned_to=5),
+            Node(node_id=5, base=n.code('T'), aligned_to=4),
+            Node(node_id=6, base=n.code('A'), aligned_to=7),
+            Node(node_id=7, base=n.code('C'), aligned_to=6),
+            Node(node_id=8, base=n.code('C'), aligned_to=None),
 
         ]
         expected_paths = {
@@ -70,15 +70,15 @@ class PangraphBuilderFromDAGTest_BuildPangraph(PangraphBuilderTests):
     def test_02_seq_starts_in_second_block(self):
         maf_path = "PangraphBuilder_Tests/PangraphBuilderFromDAG_Tests/build_pangraph/test_2_seq_starts_in_second_block.maf"
         expected_nodes = [
-            Node(id=0, base=n.code('C'), aligned_to=None),
-            Node(id=1, base=n.code('T'), aligned_to=None),
-            Node(id=2, base=n.code('G'), aligned_to=None),
-            Node(id=3, base=n.code('T'), aligned_to=None),
-            Node(id=4, base=n.code('G'), aligned_to=5),
-            Node(id=5, base=n.code('T'), aligned_to=4),
-            Node(id=6, base=n.code('A'), aligned_to=None),
-            Node(id=7, base=n.code('A'), aligned_to=None),
-            Node(id=8, base=n.code('C'), aligned_to=None),
+            Node(node_id=0, base=n.code('C'), aligned_to=None),
+            Node(node_id=1, base=n.code('T'), aligned_to=None),
+            Node(node_id=2, base=n.code('G'), aligned_to=None),
+            Node(node_id=3, base=n.code('T'), aligned_to=None),
+            Node(node_id=4, base=n.code('G'), aligned_to=5),
+            Node(node_id=5, base=n.code('T'), aligned_to=4),
+            Node(node_id=6, base=n.code('A'), aligned_to=None),
+            Node(node_id=7, base=n.code('A'), aligned_to=None),
+            Node(node_id=8, base=n.code('C'), aligned_to=None),
         ]
 
         expected_paths = {
@@ -94,14 +94,14 @@ class PangraphBuilderFromDAGTest_BuildPangraph(PangraphBuilderTests):
     def test_03_edge_not_from_last_node_in_block(self):
         maf_path = "PangraphBuilder_Tests/PangraphBuilderFromDAG_Tests/build_pangraph/test_3_edge_not_from_last_node_in_block.maf"
         expected_nodes = [
-            Node(id=0, base=n.code('A'), aligned_to=None),
-            Node(id=1, base=n.code('C'), aligned_to=None),
-            Node(id=2, base=n.code('T'), aligned_to=None),
-            Node(id=3, base=n.code('G'), aligned_to=None),
-            Node(id=4, base=n.code('G'), aligned_to=None),
-            Node(id=5, base=n.code('A'), aligned_to=6),
-            Node(id=6, base=n.code('T'), aligned_to=5),
-            Node(id=7, base=n.code('C'), aligned_to=None)
+            Node(node_id=0, base=n.code('A'), aligned_to=None),
+            Node(node_id=1, base=n.code('C'), aligned_to=None),
+            Node(node_id=2, base=n.code('T'), aligned_to=None),
+            Node(node_id=3, base=n.code('G'), aligned_to=None),
+            Node(node_id=4, base=n.code('G'), aligned_to=None),
+            Node(node_id=5, base=n.code('A'), aligned_to=6),
+            Node(node_id=6, base=n.code('T'), aligned_to=5),
+            Node(node_id=7, base=n.code('C'), aligned_to=None)
         ]
 
         expected_pats = {
@@ -132,7 +132,7 @@ class PangraphBuilderFromDAGTest_BuildPangraph(PangraphBuilderTests):
 
     def test_05_single_block_single_nucletodide(self):
         maf_path = "PangraphBuilder_Tests/PangraphBuilderFromDAG_Tests/build_pangraph/test_5_single_block_single_nucletodide.maf"
-        expected_nodes = [Node(id=0, base=n.code('A'), aligned_to=None)]
+        expected_nodes = [Node(node_id=0, base=n.code('A'), aligned_to=None)]
 
         expected_paths = {
             "seq0": [[0]],
@@ -148,19 +148,19 @@ class PangraphBuilderFromDAGTest_BuildPangraph(PangraphBuilderTests):
     def test_06_1st_block_separates_into_2_branches_which_connect_in_3rd_block(self):
         maf_path = "PangraphBuilder_Tests/PangraphBuilderFromDAG_Tests/build_pangraph/" \
                    "test_6_1st_block_separates_into_2_branches_which_connect_in_3rd_block.maf"
-        expected_nodes = [Node(id=0, base=n.code('A'), aligned_to=1),
-                          Node(id=1, base=n.code('C'), aligned_to=2),
-                          Node(id=2, base=n.code('G'), aligned_to=0),
-                          Node(id=3, base=n.code('C'), aligned_to=None),
-                          Node(id=4, base=n.code('A'), aligned_to=5),
-                          Node(id=5, base=n.code('T'), aligned_to=4),
+        expected_nodes = [Node(node_id=0, base=n.code('A'), aligned_to=1),
+                          Node(node_id=1, base=n.code('C'), aligned_to=2),
+                          Node(node_id=2, base=n.code('G'), aligned_to=0),
+                          Node(node_id=3, base=n.code('C'), aligned_to=None),
+                          Node(node_id=4, base=n.code('A'), aligned_to=5),
+                          Node(node_id=5, base=n.code('T'), aligned_to=4),
 
-                          Node(id=6, base=n.code('G'), aligned_to=None),
-                          Node(id=7, base=n.code('G'), aligned_to=None),
+                          Node(node_id=6, base=n.code('G'), aligned_to=None),
+                          Node(node_id=7, base=n.code('G'), aligned_to=None),
 
-                          Node(id=8, base=n.code('C'), aligned_to=9),
-                          Node(id=9, base=n.code('G'), aligned_to=10),
-                          Node(id=10, base=n.code('T'),aligned_to=8)]
+                          Node(node_id=8, base=n.code('C'), aligned_to=9),
+                          Node(node_id=9, base=n.code('G'), aligned_to=10),
+                          Node(node_id=10, base=n.code('T'), aligned_to=8)]
 
         expected_paths = {
             "seq0": [[0, 3, 4, 8]],
@@ -176,22 +176,22 @@ class PangraphBuilderFromDAGTest_BuildPangraph(PangraphBuilderTests):
     def test_07_inactive_edges_due_to_reversed_seqs(self):
         maf_path = "PangraphBuilder_Tests/PangraphBuilderFromDAG_Tests/build_pangraph/test_7_inactive_edges_due_to_reversed_seqs.maf"
         expected_nodes = [
-                            Node(id=0, base=n.code('A'), aligned_to=None),
-                            Node(id=1, base=n.code('C'), aligned_to=None),
-                            Node(id=2, base=n.code('T'), aligned_to=None),
-                            Node(id=3, base=n.code('G'), aligned_to=None),
-                            Node(id=4, base=n.code('A'), aligned_to=5),
-                            Node(id=5, base=n.code('G'), aligned_to=4),
-                            Node(id=6, base=n.code('C'), aligned_to=None),
-                            Node(id=7, base=n.code('A'), aligned_to=None),
-                            Node(id=8, base=n.code('T'), aligned_to=None),
-                            Node(id=9, base=n.code('G'), aligned_to=None),
-                            Node(id=10, base=n.code('A'), aligned_to=None),
-                            Node(id=11, base=n.code('A'), aligned_to=None),
-                            Node(id=12, base=n.code('A'), aligned_to=13),
-                            Node(id=13, base=n.code('C'), aligned_to=12),
-                            Node(id=14, base=n.code('A'), aligned_to=15),
-                            Node(id=15, base=n.code('T'), aligned_to=14),
+                            Node(node_id=0, base=n.code('A'), aligned_to=None),
+                            Node(node_id=1, base=n.code('C'), aligned_to=None),
+                            Node(node_id=2, base=n.code('T'), aligned_to=None),
+                            Node(node_id=3, base=n.code('G'), aligned_to=None),
+                            Node(node_id=4, base=n.code('A'), aligned_to=5),
+                            Node(node_id=5, base=n.code('G'), aligned_to=4),
+                            Node(node_id=6, base=n.code('C'), aligned_to=None),
+                            Node(node_id=7, base=n.code('A'), aligned_to=None),
+                            Node(node_id=8, base=n.code('T'), aligned_to=None),
+                            Node(node_id=9, base=n.code('G'), aligned_to=None),
+                            Node(node_id=10, base=n.code('A'), aligned_to=None),
+                            Node(node_id=11, base=n.code('A'), aligned_to=None),
+                            Node(node_id=12, base=n.code('A'), aligned_to=13),
+                            Node(node_id=13, base=n.code('C'), aligned_to=12),
+                            Node(node_id=14, base=n.code('A'), aligned_to=15),
+                            Node(node_id=15, base=n.code('T'), aligned_to=14),
         ]
 
         expected_paths = {
@@ -208,17 +208,17 @@ class PangraphBuilderFromDAGTest_BuildPangraph(PangraphBuilderTests):
     def test_08_reversed_block(self):
         maf_path = "PangraphBuilder_Tests/PangraphBuilderFromDAG_Tests/build_pangraph/test_8_reversed_block.maf"
         expected_nodes = [
-                            Node(id=0, base=n.code('C'), aligned_to=None),
-                            Node(id=1, base=n.code('A'), aligned_to=None),
-                            Node(id=2, base=n.code('T'), aligned_to=None),
+                            Node(node_id=0, base=n.code('C'), aligned_to=None),
+                            Node(node_id=1, base=n.code('A'), aligned_to=None),
+                            Node(node_id=2, base=n.code('T'), aligned_to=None),
                             #next block is reversed because it was converted to dag
-                            Node(id=3, base=n.code('G'), aligned_to=None),
-                            Node(id=4, base=n.code('G'), aligned_to=None),
-                            Node(id=5, base=n.code('A'), aligned_to=6),
-                            Node(id=6, base=n.code('G'), aligned_to=5),
-                            Node(id=7, base=n.code('A'), aligned_to=None),
-                            Node(id=8, base=n.code('G'), aligned_to=None),
-                            Node(id=9, base=n.code('T'), aligned_to=None)
+                            Node(node_id=3, base=n.code('G'), aligned_to=None),
+                            Node(node_id=4, base=n.code('G'), aligned_to=None),
+                            Node(node_id=5, base=n.code('A'), aligned_to=6),
+                            Node(node_id=6, base=n.code('G'), aligned_to=5),
+                            Node(node_id=7, base=n.code('A'), aligned_to=None),
+                            Node(node_id=8, base=n.code('G'), aligned_to=None),
+                            Node(node_id=9, base=n.code('T'), aligned_to=None)
         ]
 
         expected_paths = {
@@ -236,29 +236,29 @@ class PangraphBuilderFromDAGTest_BuildPangraph(PangraphBuilderTests):
         maf_path = "PangraphBuilder_Tests/PangraphBuilderFromDAG_Tests/build_pangraph/" \
                    "test_9_inactive_edges_but_all_strands_plus.maf"
         expected_nodes = [
-            Node(id=0, base=n.code('A'), aligned_to=None),
-            Node(id=1, base=n.code('C'), aligned_to=None),
-            Node(id=2, base=n.code('T'), aligned_to=None),
-            Node(id=3, base=n.code('G'), aligned_to=None),
-            Node(id=4, base=n.code('G'), aligned_to=None),
+            Node(node_id=0, base=n.code('A'), aligned_to=None),
+            Node(node_id=1, base=n.code('C'), aligned_to=None),
+            Node(node_id=2, base=n.code('T'), aligned_to=None),
+            Node(node_id=3, base=n.code('G'), aligned_to=None),
+            Node(node_id=4, base=n.code('G'), aligned_to=None),
 
-            Node(id=5, base=n.code('A'), aligned_to=None),
-            Node(id=6, base=n.code('C'), aligned_to=None),
-            Node(id=7, base=n.code('T'), aligned_to=None),
-            Node(id=8, base=n.code('G'), aligned_to=None),
-            Node(id=9, base=n.code('G'), aligned_to=None),
+            Node(node_id=5, base=n.code('A'), aligned_to=None),
+            Node(node_id=6, base=n.code('C'), aligned_to=None),
+            Node(node_id=7, base=n.code('T'), aligned_to=None),
+            Node(node_id=8, base=n.code('G'), aligned_to=None),
+            Node(node_id=9, base=n.code('G'), aligned_to=None),
 
-            Node(id=10, base=n.code('A'), aligned_to=None),
-            Node(id=11, base=n.code('C'), aligned_to=None),
-            Node(id=12, base=n.code('T'), aligned_to=None),
-            Node(id=13, base=n.code('G'), aligned_to=None),
-            Node(id=14, base=n.code('G'), aligned_to=None),
+            Node(node_id=10, base=n.code('A'), aligned_to=None),
+            Node(node_id=11, base=n.code('C'), aligned_to=None),
+            Node(node_id=12, base=n.code('T'), aligned_to=None),
+            Node(node_id=13, base=n.code('G'), aligned_to=None),
+            Node(node_id=14, base=n.code('G'), aligned_to=None),
 
-            Node(id=15, base=n.code('A'), aligned_to=None),
-            Node(id=16, base=n.code('C'), aligned_to=None),
-            Node(id=17, base=n.code('T'), aligned_to=None),
-            Node(id=18, base=n.code('G'), aligned_to=None),
-            Node(id=19, base=n.code('G'), aligned_to=None)
+            Node(node_id=15, base=n.code('A'), aligned_to=None),
+            Node(node_id=16, base=n.code('C'), aligned_to=None),
+            Node(node_id=17, base=n.code('T'), aligned_to=None),
+            Node(node_id=18, base=n.code('G'), aligned_to=None),
+            Node(node_id=19, base=n.code('G'), aligned_to=None)
         ]
         expected_paths = {
             "seq0": [],
@@ -277,31 +277,31 @@ class PangraphBuilderFromDAGTest_BuildPangraph(PangraphBuilderTests):
                 "test_10_parallel_blocks_1st_and_2nd_merge_into_3rd.maf"
 
         expected_nodes = [
-            Node(id=0, base=n.code('G'), aligned_to=1),
-            Node(id=1, base=n.code('T'), aligned_to=0),
-            Node(id=2, base=n.code('T'), aligned_to=None),
-            Node(id=3, base=n.code('A'), aligned_to=None),
-            Node(id=4, base=n.code('C'), aligned_to=5),
-            Node(id=5, base=n.code('G'), aligned_to=4),
-            Node(id=6, base=n.code('C'), aligned_to=None),
+            Node(node_id=0, base=n.code('G'), aligned_to=1),
+            Node(node_id=1, base=n.code('T'), aligned_to=0),
+            Node(node_id=2, base=n.code('T'), aligned_to=None),
+            Node(node_id=3, base=n.code('A'), aligned_to=None),
+            Node(node_id=4, base=n.code('C'), aligned_to=5),
+            Node(node_id=5, base=n.code('G'), aligned_to=4),
+            Node(node_id=6, base=n.code('C'), aligned_to=None),
 
-            Node(id=7, base=n.code('A'), aligned_to=None),
-            Node(id=8, base=n.code('C'), aligned_to=None),
-            Node(id=9, base=n.code('T'), aligned_to=None),
-            Node(id=10, base=n.code('G'),aligned_to=None),
-            Node(id=11, base=n.code('G'),aligned_to=None),
+            Node(node_id=7, base=n.code('A'), aligned_to=None),
+            Node(node_id=8, base=n.code('C'), aligned_to=None),
+            Node(node_id=9, base=n.code('T'), aligned_to=None),
+            Node(node_id=10, base=n.code('G'), aligned_to=None),
+            Node(node_id=11, base=n.code('G'), aligned_to=None),
 
-            Node(id=12, base=n.code('C'), aligned_to=13),
-            Node(id=13, base=n.code('G'), aligned_to=12),
-            Node(id=14, base=n.code('C'), aligned_to=15),
-            Node(id=15, base=n.code('G'), aligned_to=16),
-            Node(id=16, base=n.code('T'), aligned_to=14),
-            Node(id=17, base=n.code('A'), aligned_to=18),
-            Node(id=18, base=n.code('T'), aligned_to=17),
-            Node(id=19, base=n.code('A'), aligned_to=20),
-            Node(id=20, base=n.code('C'), aligned_to=19),
-            Node(id=21, base=n.code('C'), aligned_to=22),
-            Node(id=22, base=n.code('G'), aligned_to=21)
+            Node(node_id=12, base=n.code('C'), aligned_to=13),
+            Node(node_id=13, base=n.code('G'), aligned_to=12),
+            Node(node_id=14, base=n.code('C'), aligned_to=15),
+            Node(node_id=15, base=n.code('G'), aligned_to=16),
+            Node(node_id=16, base=n.code('T'), aligned_to=14),
+            Node(node_id=17, base=n.code('A'), aligned_to=18),
+            Node(node_id=18, base=n.code('T'), aligned_to=17),
+            Node(node_id=19, base=n.code('A'), aligned_to=20),
+            Node(node_id=20, base=n.code('C'), aligned_to=19),
+            Node(node_id=21, base=n.code('C'), aligned_to=22),
+            Node(node_id=22, base=n.code('G'), aligned_to=21)
         ]
 
         expected_paths = {

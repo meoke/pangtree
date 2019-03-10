@@ -52,11 +52,11 @@ def extract_pangraph(po_lines):
         node_line = next(po_lines_iterator)
         base = node_line[0].upper()
         in_nodes, sequences_IDs, aligned_to = _extract_node_parameters(node_line)
-        nodes[i] = Node(id=i,
+        nodes[i] = Node(node_id=i,
                         base=n.code(base),
                         in_nodes=in_nodes,
                         aligned_to=aligned_to,
-                        column_id=-1,#TODO
+                        column_id=-1,  #TODO
                         block_id=0)
         for sequence_id in sequences_IDs:
             pathname = path_ids_to_pathnames[sequence_id]

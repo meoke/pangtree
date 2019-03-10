@@ -4,13 +4,14 @@ from pangraph.custom_types import SequenceID, Sequence
 ConsensusNodeID = NewType('ConsensusNodeID', int)
 Compatibility = NewType('Compatibility', float)
 
+
 class ConsensusNode(object):
     def __init__(self,
                  parent_node_id: ConsensusNodeID = None,
                  children_nodes_ids: List[ConsensusNodeID] = None,
                  sequences_ids: List[SequenceID] = None,
                  consensus_id: ConsensusNodeID = None,
-                 mincomp: Compatibility=None,
+                 mincomp: Compatibility = None,
                  compatibilities_to_all: Dict[SequenceID, Compatibility] = None,
                  consensus_path: Sequence = None):
         self.parent_node_id: ConsensusNodeID = parent_node_id

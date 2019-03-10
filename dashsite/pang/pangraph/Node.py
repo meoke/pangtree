@@ -4,12 +4,12 @@ from .nucleotides import decode
 
 class Node:
     def __init__(self,
-                 id: int,
+                 node_id: int,
                  base: int,
                  aligned_to: List[int],
                  column_id: int = None,
                  block_id: int = None):
-        self.id = id
+        self.id = node_id
         self.base = base
         self.aligned_to = aligned_to
         self.column_id = column_id
@@ -17,8 +17,8 @@ class Node:
 
     def __eq__(self, other):
         return (self.id == other.id
-            and self.base == other.base
-            and self.aligned_to == other.aligned_to)
+                and self.base == other.base
+                and self.aligned_to == other.aligned_to)
 
     def __str__(self):
         return \

@@ -8,6 +8,7 @@ from pangraph.PangraphToFilesConverters.PangraphToPO import PangraphToPO, NodePO
 from consensus.exceptions import TreeConsensusGenerationException
 from call_external.poa import call as call_poa
 
+
 def get_top_consensus(pangraph: Pangraph, sequences_ids: List[SequenceID], output_dir: Path, file_prefix: str) -> Sequence:
     poa_input_path = pathtools.get_child_file_path(output_dir, f"{file_prefix}_in_pangenome.po")
     poa_output_path = pathtools.get_child_file_path(output_dir, f"{file_prefix}_out_pangenome.po")
@@ -56,7 +57,8 @@ class PangraphPO_Translator:
                                    nodes_count=self.pangraph.get_sequence_nodes_count(self.seq_new_to_old[new_seq_id]),
                                    weight=sequences_weight[self.seq_new_to_old[new_seq_id]],
                                    consensus_id=-1,
-                                   start_node_id=self.old_to_new[self.pangraph.paths[self.seq_new_to_old[new_seq_id]][0][0]]
+                                   start_node_id=self.old_to_new[
+                                       self.pangraph.paths[self.seq_new_to_old[new_seq_id]][0][0]]
                                    )
                         for new_seq_id in range(len(paths_to_keep))]
 
@@ -112,7 +114,7 @@ class PangraphPO_Translator:
             break
 
         consensus_name = f"S{top_consensus_expected_id}"
-        first_node_line_id = 5 + paths_count *2
+        first_node_line_id = 5 + paths_count * 2
         old_node_id = 0
         new_node_id = 0
         consensus_path = [None] * consens0_nodes_count
@@ -120,7 +122,7 @@ class PangraphPO_Translator:
             if consensus_name in poa_output_lines[file_position]:
                 consensus_path[old_node_id] = self.new_to_old[new_node_id]
                 old_node_id += 1
-            new_node_id+=1
+            new_node_id += 1
 
         return consensus_path
 

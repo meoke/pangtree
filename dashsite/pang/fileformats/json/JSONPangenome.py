@@ -5,7 +5,6 @@ from arguments.PangenomeParameters import PangenomeParameters, FastaComplementat
 import pangraph.nucleotides as n
 
 
-
 class JSONProgramParameters:
     def __init__(self, program_parameters: PangenomeParameters):
         self.multialignment_file_path: str = str(program_parameters.multialignment_file_path)
@@ -26,8 +25,8 @@ class JSONProgramParameters:
 
 
 class JSONNode:
-    def __init__(self, id: int, nucleobase: str, column_id: int, block_id: int, aligned_to: int):
-        self.id = id
+    def __init__(self, node_id: int, nucleobase: str, column_id: int, block_id: int, aligned_to: int):
+        self.id = node_id
         self.nucleobase = nucleobase
         self.column_id = column_id
         self.block_id = block_id
@@ -36,14 +35,14 @@ class JSONNode:
 
 class JSONSequence:
     def __init__(self,
-                 id: int,
+                 node_id: int,
                  genbankID: str,
                  assemblyID: str,
                  mafname: str,
-                 name:str,
+                 name: str,
                  group: str,
                  nodes_ids: List[int]):
-        self.id = id
+        self.id = node_id
         self.genbankID = genbankID
         self.assemblyID = assemblyID
         self.mafname = mafname
@@ -54,7 +53,7 @@ class JSONSequence:
 
 class JSONConsensus:
     def __init__(self,
-                 id: int,
+                 node_id: int,
                  name: str,
                  parent: int,
                  children: List[int],
@@ -62,7 +61,7 @@ class JSONConsensus:
                  sequences_ids: List[int],
                  nodes_ids: List[int],
                  mincomp: float):
-        self.id = id
+        self.id = node_id
         self.name = name
         self.parent = parent
         self.children = children
@@ -74,11 +73,11 @@ class JSONConsensus:
 
 class JSONMAFNode:
     def __init__(self,
-                 id: int,
+                 node_id: int,
                  orient: int,
                  out_edges
                  ):
-        self.id = id
+        self.id = node_id
         self.orient = orient
         self.out_edges = out_edges
 
@@ -89,22 +88,22 @@ class JSONPangenome:
     sequences: List[JSONSequence]
     nodes: List[JSONNode]
 
-    def __init__(self, pangenome: Pangenome = None, program_parameters: PangenomeParameters=None):
+    def __init__(self, pangenome: Pangenome = None, program_parameters: PangenomeParameters = None):
         if program_parameters:
             self.program_parameters = JSONProgramParameters(program_parameters)
         else:
             self.program_parameters = None
 
         if pangenome.dagmaf:
-            self.dagmaf = [JSONMAFNode(id=n.id,
-                                   orient=n.orient,
-                                   out_edges=n.out_edges)
-                        for n in pangenome.dagmaf.dagmafnodes]
+            self.dagmaf = [JSONMAFNode(node_id=n.id,
+                                       orient=n.orient,
+                                       out_edges=n.out_edges)
+                           for n in pangenome.dagmaf.dagmafnodes]
         else:
             self.dagmaf = []
 
         if pangenome.pangraph.nodes:
-            self.nodes = [JSONNode(id=node.id,
+            self.nodes = [JSONNode(node_id=node.id,
                                    nucleobase=n.decode(node.base),
                                    column_id=node.column_id,
                                    block_id=node.block_id,
@@ -115,22 +114,24 @@ class JSONPangenome:
 
         paths_str_id_to_int_id = {seq_id: i for i, seq_id in enumerate(sorted(pangenome.pangraph.paths.keys()))}
         if pangenome.pangraph.paths:
-            seqeuences_metadata = [pangenome.genomes_info.genomes_metadata[seqID] for seqID in pangenome.pangraph.paths.keys()]
-            sorted_seqeuences_metadata = sorted(seqeuences_metadata, key=lambda m : paths_str_id_to_int_id[m.mafname])
+            seqeuences_metadata = [pangenome.genomes_info.genomes_metadata[seqID]
+                                   for seqID in pangenome.pangraph.paths.keys()]
+            sorted_seqeuences_metadata = sorted(seqeuences_metadata, key = lambda m: paths_str_id_to_int_id[m.mafname])
 
-            self.sequences = [JSONSequence(id=paths_str_id_to_int_id[seq_metadata.mafname],  # todo to musi być główne ID!!!
+            self.sequences = [JSONSequence(node_id=paths_str_id_to_int_id[seq_metadata.mafname],  # todo główne ID!!!
                                            genbankID=seq_metadata.genbankID,
                                            assemblyID=seq_metadata.assemblyID,
                                            mafname=seq_metadata.mafname,
                                            name=seq_metadata.name,
                                            group=seq_metadata.group,
-                                           nodes_ids=list(itertools.chain.from_iterable(pangenome.pangraph.paths[seq_metadata.mafname])))
+                                           nodes_ids=list(itertools.chain.from_iterable(
+                                               pangenome.pangraph.paths[seq_metadata.mafname])))
                               for i, seq_metadata in enumerate(sorted_seqeuences_metadata)]
         else:
             self.sequences = None
 
         if pangenome.consensuses_tree:
-            self.consensuses = [JSONConsensus(id=consensus_node.consensus_id,
+            self.consensuses = [JSONConsensus(node_id=consensus_node.consensus_id,
                                               name=f"CONSENSUS{consensus_node.consensus_id}",
                                               parent=consensus_node.parent_node_id,
                                               children=consensus_node.children_nodes_ids,

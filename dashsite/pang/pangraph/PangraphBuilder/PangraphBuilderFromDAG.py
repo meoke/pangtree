@@ -44,7 +44,7 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
 
     def get_sequences(self, fasta_source: FastaSource) -> Dict[SequenceID, Sequence]:
         return {
-            SequenceID(seq_id): Sequence(fasta_source.get_source(id=seq_id))
+            SequenceID(seq_id): Sequence(fasta_source.get_source(sequenceID=seq_id))
             for seq_id in self.sequences_names
         }
 
@@ -118,7 +118,7 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
                  aligned_to: NodeID,
                  column_id: ColumnID,
                  block_id: BlockID) -> None:
-        self.pangraph.nodes.append(Node(id=id,
+        self.pangraph.nodes.append(Node(node_id=id,
                                         base=nucleotides.code(base),
                                         aligned_to=aligned_to,
                                         column_id=column_id,
@@ -176,11 +176,6 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
 
     def get_correct_edge_type(self, block, edge: Arc) -> Tuple[int, int]:
         return edge.edge_type
-        # ask Ania
-        # left = block.id
-        # right = edge.to
-        # if left > right:
-        #     return -edge.edge_type
 
     def complement_tail_for_1_1_edge(self, block_id, seq_id, edge, last_node_id):
         current_node_id = self.get_max_node_id()
@@ -188,7 +183,7 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
         join_with = last_node_id
         left_block_sinfo, right_block_sinfo = self.get_edge_sinfos(from_block_id=block_id, edge=edge, seq_id=seq_id)
         last_pos = left_block_sinfo.start + left_block_sinfo.size-1
-        next_pos = right_block_sinfo.start #if right_block_sinfo.strand == 1 else right_block_sinfo.srcSize - right_block_sinfo.start - right_block_sinfo.size
+        next_pos = right_block_sinfo.start
         for i in range(last_pos + 1, next_pos):
             column_id += 1
             current_node_id += 1
@@ -207,7 +202,7 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
         current_node_id = self.get_max_node_id()
         column_id = self.column_id
         join_with = None
-        last_pos=left_block_sinfo.start + left_block_sinfo.size-1
+        last_pos = left_block_sinfo.start + left_block_sinfo.size-1
         next_pos = right_block_sinfo.start
         for i in range(last_pos + 1, next_pos):
             column_id += 1
@@ -242,7 +237,7 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
                                                                    edge=edge,
                                                                    seq_id=seq_id)
         if self.complementation_not_needed(left_block_sinfo, right_block_sinfo):
-            if edge.edge_type == (1,-1):
+            if edge.edge_type == (1, -1):
                 return last_node_id
             else:
                 return None
@@ -257,7 +252,6 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
             else:
                 last_pos = right_block_sinfo.start + right_block_sinfo.size - 1
                 next_pos = left_block_sinfo.start
-
 
             join_with = last_node_id if self.should_join_with_last_node(edge.edge_type) else None
             for i in range(last_pos + 1, next_pos):
@@ -284,7 +278,7 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
             return False
         else:
             raise SequenceBuildingException("Incorrect edge type."
-                                            "Cannot decide if complemented nucleotides should be joined with next block.")
+                                            "Cannot decide if complemented nucleotides must be joined with next block.")
 
     def add_block_out_edges_to_free_edges(self, block: Block, join_info: Dict[SequenceID, NodeID]):
         for edge in block.out_edges:
@@ -300,37 +294,6 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
                                                         from_block_id=block.id,
                                                         to_block_id=edge.to,
                                                         last_node_id=last_node_id))
-
-            # if edge_type == (1, 1):
-            #     for seq in edge.sequences:
-            #         seq_id = seq[0].seq_id
-            #         self.complement_tail_for_1_1_edge(block_id=block.id,
-            #                                           seq_id=seq[0].seq_id,
-            #                                           edge=edge,
-            #                                           last_node_id=join_info[seq_id])
-            # elif edge_type == (-1,1):
-            #     for seq in edge.sequences:
-            #         self.complement_tail_for_m1_1_edge(block=block,
-            #                                            edge=edge,
-            #                                            seq=seq)
-            # elif edge_type == (1, -1):
-            #     for seq in edge.sequences:
-            #         seq_id = seq[0].seq_id
-            #         left_block_sinfo, right_block_sinfo = self.get_edge_sinfos(from_block_id=block.id, edge=edge, seq_id=seq_id)
-            #         if not self.continuous_sequence(left_block_sinfo, right_block_sinfo):
-            #             last_node_id = self.complement_sequence_middle_nodes(seq_id=seq_id,
-            #                                                                  last_pos=left_block_sinfo.start + left_block_sinfo.size-1,
-            #                                                                  next_pos=right_block_sinfo.start,
-            #                                                                  last_node_id=join_info[seq_id])
-            #         else:
-            #             last_node_id = join_info[seq_id]
-            #
-            #         self.free_edges[seq_id].append(
-            #             Edge(
-            #                 seq_id=seq_id,
-            #                 from_block_id=block.id,
-            #                 to_block_id=edge.to,
-            #                 last_node_id=last_node_id))
 
     def manage_endings(self, block: Block, join_info: Dict[SequenceID, NodeID]):
         sequences_ending_in_this_block = self.get_ending_sequences(block)
@@ -375,32 +338,12 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
                 return sinfo
 
     def complementation_not_needed(self, left, right):
-        # if left.start > right.start:
-        #     return True
-
-        left_start = left.start if left.orient == 1 else left.srcSize - left.start - left.size
-        left_size = left.size
-
-        right_start = right.start if right.orient == 1 else right.srcSize - right.start - right.size
-        right_size = right.size
-
         return left.start + left.size == right.start or right.start + right.size == left.start
-
-        if left.strand == 1 and right.strand == 1:
-            return left_start + left_size == right_start
-        elif left.strand == 1 and right.strand == -1:
-            return left_start + left_size == right_start
-        elif left.strand == -1 and right.strand == +1:
-            return left_start + left_size == right_start
-        elif left.strand == -1 and right.strand == -1:
-            return right_start + right_size == left_start
-        else:
-            raise Exception("Unexcpected strand values!")
 
     def complement_sequence_middle_nodes(self, seq_id: SequenceID, last_pos, next_pos, last_node_id: NodeID) -> NodeID:
         current_node_id = self.get_max_node_id()
         column_id = self.column_id
-        join_with=last_node_id
+        join_with = last_node_id
         for i in range(last_pos+1, next_pos):
             column_id += 1
             current_node_id += 1

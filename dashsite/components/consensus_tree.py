@@ -58,8 +58,9 @@ def get_node_id_to_y_pos(tree):
     nodes_to_process = deque(leafs_ids)
     while nodes_to_process:
         processed_child_id = nodes_to_process.pop()
-        parents = [node_id for node_id in tree.nodes
-                     if processed_child_id in tree.nodes[node_id]['children_consensuses']]
+        parents = [node_id
+                   for node_id in tree.nodes
+                   if processed_child_id in tree.nodes[node_id]['children_consensuses']]
         if parents:
             parent_id = parents[0]
         else:
@@ -84,7 +85,7 @@ def get_node_id_to_y_pos(tree):
     return node_id_to_y
 
 
-def get_consensus_tree_graph(jsonpangenome: JSONPangenome, tree, sliderValue):
+def get_consensus_tree_graph(jsonpangenome: JSONPangenome, tree, slider_value):
     # read positions
     node_id_to_y = get_node_id_to_y_pos(tree)
     dots_labels_on_hover = [f'min_comp: {tree.nodes[node_id]["mincomp"]}' for node_id in range(len(node_id_to_y))]
@@ -93,9 +94,9 @@ def get_consensus_tree_graph(jsonpangenome: JSONPangenome, tree, sliderValue):
     dots_x = [dot_x for [dot_x, _] in dots_positions]
     dots_y = [dot_y for [_, dot_y] in dots_positions]
     dots_annotations = [{'x':x_pos,
-                         'y':y_pos,
-                         'text':f"{dots_numbers[i]}",
-                         'showarrow':False}
+                         'y': y_pos,
+                         'text': f"{dots_numbers[i]}",
+                         'showarrow': False}
                         for i, (x_pos, y_pos) in enumerate(zip(dots_x, dots_y))]
     leaves_x = []
     leaves_y = []
@@ -120,10 +121,10 @@ def get_consensus_tree_graph(jsonpangenome: JSONPangenome, tree, sliderValue):
                        line=dict(color='rgb(210,210,210)', width=1),
                        hoverinfo='none'
                        )
-    line = go.Scatter(x=[sliderValue, sliderValue],
-                    y=[0, 100],
-                    mode='lines',
-                    line=dict(color=colors['accent']))
+    line = go.Scatter(x=[slider_value, slider_value],
+                      y=[0, 100],
+                      mode='lines',
+                      line=dict(color=colors['accent']))
     dots = go.Scatter(x=dots_x,
                       y=dots_y,
                       mode='markers',
@@ -153,13 +154,16 @@ def get_consensus_tree_graph(jsonpangenome: JSONPangenome, tree, sliderValue):
                     )
     )
 
-    #graph settings - layout
+    #
+    #  graph settings - layout
     layout = dict(title='Consensuses Tree',
                   annotations=dots_annotations,
                   font=dict(size=12),
                   showlegend=False,
-                  xaxis=go.layout.XAxis(dict(range=[0,1.2],showline=False, zeroline=False, showgrid=False, showticklabels=False,)),
-                  yaxis=go.layout.YAxis(dict(range=[0,100],showline=False, zeroline=False, showgrid=False, showticklabels=False,)),
+                  xaxis=go.layout.XAxis(dict(range=[0, 1.2], showline=False, zeroline=False, showgrid=False,
+                                             showticklabels=False,)),
+                  yaxis=go.layout.YAxis(dict(range=[0, 100], showline=False, zeroline=False, showgrid=False,
+                                             showticklabels=False,)),
                   margin=dict(l=40, r=40, b=85, t=100),
                   hovermode='closest',
                   plot_bgcolor='rgb(248,248,248)',
@@ -167,7 +171,7 @@ def get_consensus_tree_graph(jsonpangenome: JSONPangenome, tree, sliderValue):
                   )
 
     return go.Figure(
-            data=[lines,dots, leaves_info, line],
+            data=[lines, dots, leaves_info, line],
             layout=layout
             )
 

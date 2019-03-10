@@ -22,21 +22,21 @@ class PangraphBuilderFromMAFTest_BuildPangraph(PangraphBuilderTests):
                    "files_build_pangraph/" \
                    "test_1_messy_sequences.maf"
         expected_nodes = [
-            Node(id=0, base=n.code('A'), aligned_to=None),
-            Node(id=1, base=n.code('A'), aligned_to=2),
-            Node(id=2, base=n.code('C'), aligned_to=1),
-            Node(id=3, base=n.code('T'), aligned_to=None),
-            Node(id=4, base=n.code('C'), aligned_to=5),
-            Node(id=5, base=n.code('G'), aligned_to=4),
-            Node(id=6, base=n.code('A'), aligned_to=None),
-            Node(id=7, base=n.code('C'), aligned_to=None),
-            Node(id=8, base=n.code('G'), aligned_to=None),
-            Node(id=9, base=n.code('C'), aligned_to=10),
-            Node(id=10, base=n.code('G'), aligned_to=9),
-            Node(id=11, base=n.code('T'), aligned_to=None),
-            Node(id=12, base=n.code('C'), aligned_to=None),
-            Node(id=13, base=n.code('C'), aligned_to=None),
-            Node(id=14, base=n.code('A'), aligned_to=None),
+            Node(node_id=0, base=n.code('A'), aligned_to=None),
+            Node(node_id=1, base=n.code('A'), aligned_to=2),
+            Node(node_id=2, base=n.code('C'), aligned_to=1),
+            Node(node_id=3, base=n.code('T'), aligned_to=None),
+            Node(node_id=4, base=n.code('C'), aligned_to=5),
+            Node(node_id=5, base=n.code('G'), aligned_to=4),
+            Node(node_id=6, base=n.code('A'), aligned_to=None),
+            Node(node_id=7, base=n.code('C'), aligned_to=None),
+            Node(node_id=8, base=n.code('G'), aligned_to=None),
+            Node(node_id=9, base=n.code('C'), aligned_to=10),
+            Node(node_id=10, base=n.code('G'), aligned_to=9),
+            Node(node_id=11, base=n.code('T'), aligned_to=None),
+            Node(node_id=12, base=n.code('C'), aligned_to=None),
+            Node(node_id=13, base=n.code('C'), aligned_to=None),
+            Node(node_id=14, base=n.code('A'), aligned_to=None),
         ]
 
         expected_paths = {

@@ -4,8 +4,10 @@ from pathlib import Path
 from typing import Union, Dict
 
 from tools import pathtools
-from arguments.PangenomeParameters import FastaComplementationOption, PangenomeParameters, ConsensusAlgorithm, MaxCutoffOption, \
-    NodeCutoffOption
+from arguments.PangenomeParameters import FastaComplementationOption
+from arguments.PangenomeParameters import PangenomeParameters
+from arguments.PangenomeParameters import ConsensusAlgorithm
+from arguments.PangenomeParameters import MaxCutoffOption, NodeCutoffOption
 from tools.pathtools import create_default_output_dir
 
 ArgType = Union[str, float, str, Path]
@@ -100,7 +102,7 @@ def _get_parser() -> argparse.ArgumentParser:
     p.add_argument('--data', '-d',
                    type=_file_arg,
                    required=True,
-                   help='Path to the json file with genomes specification. See... examples\Ebola\ebola_metadata.json')
+                   help='Path to the json file with genomes specification. See... examples\\Ebola\\ebola_metadata.json')
     p.add_argument('--output', '-o',
                    type=_dir_arg,
                    default=create_default_output_dir(Path(getcwd())),
