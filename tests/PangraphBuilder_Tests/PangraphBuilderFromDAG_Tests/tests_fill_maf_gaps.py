@@ -157,9 +157,9 @@ class PangraphBuilderFromDAGTest_FillMafGaps(PangraphBuilderTests):
         actual_pangraph = PangraphBuilderTests.setup_pangraph_from_maf_firstly_converted_to_dag(maf_path, self.seq_metadata, self.fasta_source)
         self.compare_pangraphs(actual_pangraph=actual_pangraph, expected_pangraph=expected_pangraph)
 
-    def test_5_missing_one_reverted_sequence_middle(self):
+    def test_5_missing_one_reverted_sequence_middle_1_1(self):
         maf_path = "PangraphBuilder_Tests/PangraphBuilderFromDAG_Tests/files_fill_maf_gaps/" \
-                   "test_5_missing_one_reverted_sequence_middle.maf"
+                   "test_5_missing_one_reverted_sequence_middle_1_1.maf"
         expected_nodes = [
             # block 0
             Node(id=0, base=n.code('A'), aligned_to=1),
@@ -169,20 +169,91 @@ class PangraphBuilderFromDAGTest_FillMafGaps(PangraphBuilderTests):
             Node(id=4, base=n.code('A'), aligned_to=5),
             Node(id=5, base=n.code('G'), aligned_to=4),
 
-            # missing seq2
-            # Node(id=6, base=n.code('T'), in_nodes=[5], aligned_to=None),
-            # Node(id=7, base=n.code('C'), in_nodes=[10], aligned_to=None),
+            # missing seq2, on edge (1,1)
+            Node(id=6, base=n.code('T'), aligned_to=None),
+            Node(id=7, base=n.code('C'), aligned_to=None),
 
-            Node(id=6, base=n.code('A'), aligned_to=7),
-            Node(id=7, base=n.code('G'), aligned_to=6),
-            Node(id=8, base=n.code('G'), aligned_to=None),
-            Node(id=9, base=n.code('T'), aligned_to=None),
+            # block 1
+            Node(id=8, base=n.code('A'), aligned_to=9),
+            Node(id=9, base=n.code('G'), aligned_to=8),
+            Node(id=10, base=n.code('G'), aligned_to=None),
+            Node(id=11, base=n.code('T'), aligned_to=None),
         ]
 
         expected_paths = {
             "seq0": [],
-            "seq1": [[0, 2, 3, 4, 7, 8, 9]],
-            "seq2": [[1, 5], [6, 8, 9]],
+            "seq1": [[0, 2, 3, 4, 9, 10, 11]],
+            "seq2": [[1, 5, 6, 7], [8, 10, 11]],
+            "seq3": []
+        }
+        expected_pangraph = PangraphBuilderTests.setup_pangraph(expected_nodes, expected_paths)
+        actual_pangraph = PangraphBuilderTests.setup_pangraph_from_maf_firstly_converted_to_dag(maf_path,
+                                                                                                self.seq_metadata,
+                                                                                                self.fasta_source)
+        self.compare_pangraphs(actual_pangraph=actual_pangraph, expected_pangraph=expected_pangraph)
+
+    def test_6_missing_one_reverted_sequence_middle_minus1_1(self):
+        maf_path = "PangraphBuilder_Tests/PangraphBuilderFromDAG_Tests/files_fill_maf_gaps/" \
+                   "test_6_missing_one_reverted_sequence_middle_minus1_1.maf"
+        expected_nodes = [
+            # block 0
+            Node(id=0, base=n.code('A'), aligned_to=1),
+            Node(id=1, base=n.code('G'), aligned_to=0),
+            Node(id=2, base=n.code('C'), aligned_to=None),
+            Node(id=3, base=n.code('T'), aligned_to=None),
+            Node(id=4, base=n.code('A'), aligned_to=5),
+            Node(id=5, base=n.code('G'), aligned_to=4),
+
+            # missing seq2, on edge (-1,1)
+            Node(id=6, base=n.code('T'), aligned_to=None),
+            Node(id=7, base=n.code('C'), aligned_to=None),
+
+            # block 1
+            Node(id=8, base=n.code('A'), aligned_to=7),
+            Node(id=9, base=n.code('G'), aligned_to=6),
+            Node(id=10, base=n.code('G'), aligned_to=None),
+            Node(id=11, base=n.code('T'), aligned_to=None),
+        ]
+
+        expected_paths = {
+            "seq0": [],
+            "seq1": [[0, 2, 3, 4, 9, 10, 11]],
+            "seq2": [[1, 5], [6, 7, 8, 10, 11]],
+            "seq3": []
+        }
+        expected_pangraph = PangraphBuilderTests.setup_pangraph(expected_nodes, expected_paths)
+        actual_pangraph = PangraphBuilderTests.setup_pangraph_from_maf_firstly_converted_to_dag(maf_path,
+                                                                                                self.seq_metadata,
+                                                                                                self.fasta_source)
+        self.compare_pangraphs(actual_pangraph=actual_pangraph, expected_pangraph=expected_pangraph)
+
+    def test_7_missing_one_reverted_sequence_middle_minus1_minus1(self):
+        maf_path = "PangraphBuilder_Tests/PangraphBuilderFromDAG_Tests/files_fill_maf_gaps/" \
+                   "test_7_missing_one_reverted_sequence_middle_minus1_minus1.maf"
+        expected_nodes = [
+            # block 0
+            Node(id=0, base=n.code('A'), aligned_to=1),
+            Node(id=1, base=n.code('G'), aligned_to=0),
+            Node(id=2, base=n.code('C'), aligned_to=None),
+            Node(id=3, base=n.code('T'), aligned_to=None),
+            Node(id=4, base=n.code('A'), aligned_to=5),
+            Node(id=5, base=n.code('G'), aligned_to=4),
+
+            # missing seq2, on edge (-1,1)
+            Node(id=6, base=n.code('T'), aligned_to=None),
+            Node(id=7, base=n.code('C'), aligned_to=None),
+
+            # block 1
+            Node(id=8, base=n.code('A'), aligned_to=7),
+            Node(id=9, base=n.code('G'), aligned_to=6),
+            Node(id=10, base=n.code('G'), aligned_to=None),
+            Node(id=11, base=n.code('T'), aligned_to=None),
+        ]
+
+        expected_paths = {
+            "seq0": [],
+            "seq1": [[0, 2, 3, 4, 9, 10, 11]],
+            "seq2": [[1, 5], [6, 7, 8, 10, 11]],
             "seq3": []
         }
         expected_pangraph = PangraphBuilderTests.setup_pangraph(expected_nodes, expected_paths)

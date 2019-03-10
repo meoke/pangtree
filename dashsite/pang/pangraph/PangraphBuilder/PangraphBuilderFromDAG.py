@@ -172,27 +172,92 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
         current_columns_ids = [node.column_id for node in self.pangraph.nodes]
         return max(current_columns_ids) if current_columns_ids else ColumnID(-1)
 
+    def get_correct_edge_type(self, block, edge: Arc) -> Tuple[int, int]:
+        return edge.edge_type
+        # ask Ania
+        # left = block.id
+        # right = edge.to
+        # if left > rigth:
+        #     return -edge.edge_type
+
+    def complement_tail_for_1_1_edge(self, block_id, seq_id, edge, last_node_id):
+        current_node_id = self.get_max_node_id()
+        column_id = self.column_id
+        join_with = last_node_id
+        left_block_sinfo, right_block_sinfo = self.get_edge_sinfos(from_block_id=block_id, edge=edge, seq_id=seq_id)
+        last_pos = left_block_sinfo.start + left_block_sinfo.size-1
+        next_pos = right_block_sinfo.start #if right_block_sinfo.strand == 1 else right_block_sinfo.srcSize - right_block_sinfo.start - right_block_sinfo.size
+        for i in range(last_pos + 1, next_pos):
+            column_id += 1
+            current_node_id += 1
+            missing_nucleotide = self.full_sequences[seq_id][i]
+            self.add_node(id=current_node_id,
+                          base=missing_nucleotide,
+                          aligned_to=None,
+                          column_id=column_id,
+                          block_id=None)
+            self.add_node_to_sequence(seq_id=seq_id, join_with=join_with, node_id=current_node_id)
+            join_with = current_node_id
+
+    def complement_tail_for_m1_1_edge(self, block, edge, seq):
+        seq_id = seq[0].seq_id
+        left_block_sinfo, right_block_sinfo = self.get_edge_sinfos(from_block_id=block.id, edge=edge, seq_id=seq_id)
+        current_node_id = self.get_max_node_id()
+        column_id = self.column_id
+        join_with = None
+        last_pos=left_block_sinfo.start + left_block_sinfo.size-1
+        next_pos = right_block_sinfo.start
+        for i in range(last_pos + 1, next_pos):
+            column_id += 1
+            current_node_id += 1
+            missing_nucleotide = self.full_sequences[seq_id][i]
+            self.add_node(id=current_node_id,
+                          base=missing_nucleotide,
+                          aligned_to=None,
+                          column_id=column_id,
+                          block_id=None)
+            self.add_node_to_sequence(seq_id=seq_id, join_with=join_with, node_id=current_node_id)
+            join_with = current_node_id
+        self.free_edges[seq_id].append(
+            Edge(
+                seq_id=seq_id,
+                from_block_id=None,
+                to_block_id=edge.to,
+                last_node_id=current_node_id))
+
     def add_block_out_edges_to_free_edges(self, block: Block, join_info: Dict[SequenceID, NodeID]):
         for edge in block.out_edges:
-            if edge.edge_type != (1, -1):
-                continue
-            for seq in edge.sequences:
-                seq_id = seq[0].seq_id
-                left_block_sinfo, right_block_sinfo = self.get_edge_sinfos(from_block_id=block.id, edge=edge, seq_id=seq_id)
-                if not self.continuous_sequence(left_block_sinfo, right_block_sinfo):
-                    last_node_id = self.complement_sequence_middle_nodes(seq_id=seq_id,
-                                                                         last_pos=left_block_sinfo.start + left_block_sinfo.size-1,
-                                                                         next_pos=right_block_sinfo.start,
-                                                                         last_node_id=join_info[seq_id])
-                else:
-                    last_node_id = join_info[seq_id]
+            edge_type = self.get_correct_edge_type(block, edge)
+            if edge_type == (1, 1):
+                for seq in edge.sequences:
+                    seq_id = seq[0].seq_id
+                    self.complement_tail_for_1_1_edge(block_id=block.id,
+                                                      seq_id=seq[0].seq_id,
+                                                      edge=edge,
+                                                      last_node_id=join_info[seq_id])
+            elif edge_type == (-1,1):
+                for seq in edge.sequences:
+                    self.complement_tail_for_m1_1_edge(block=block,
+                                                       edge=edge,
+                                                       seq=seq)
+            elif edge_type == (1, -1):
+                for seq in edge.sequences:
+                    seq_id = seq[0].seq_id
+                    left_block_sinfo, right_block_sinfo = self.get_edge_sinfos(from_block_id=block.id, edge=edge, seq_id=seq_id)
+                    if not self.continuous_sequence(left_block_sinfo, right_block_sinfo):
+                        last_node_id = self.complement_sequence_middle_nodes(seq_id=seq_id,
+                                                                             last_pos=left_block_sinfo.start + left_block_sinfo.size-1,
+                                                                             next_pos=right_block_sinfo.start,
+                                                                             last_node_id=join_info[seq_id])
+                    else:
+                        last_node_id = join_info[seq_id]
 
-                self.free_edges[seq_id].append(
-                    Edge(
-                        seq_id=seq_id,
-                        from_block_id=block.id,
-                        to_block_id=edge.to,
-                        last_node_id=last_node_id))
+                    self.free_edges[seq_id].append(
+                        Edge(
+                            seq_id=seq_id,
+                            from_block_id=block.id,
+                            to_block_id=edge.to,
+                            last_node_id=last_node_id))
 
     def manage_endings(self, block: Block, join_info: Dict[SequenceID, NodeID]):
         sequences_ending_in_this_block = self.get_ending_sequences(block)
