@@ -21,7 +21,8 @@ _nucleotide_dictionary = {'-': 0,
                           'Z': 25,
                           'Q': 26,
                           'V': 27,
-                          'X': 28}
+                          'X': 28,
+                          '?': 100}
 
 
 _nucleotide_inverse_dictionary = {v: k for k, v in _nucleotide_dictionary.items()}

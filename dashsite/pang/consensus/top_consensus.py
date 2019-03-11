@@ -40,8 +40,12 @@ class PangraphPO_Translator:
         self.seq_new_to_old: Dict[int, SequenceID] = None
 
     def get_input_po_content(self) -> str:
-        paths_to_keep = [path for seq_id in self.sequences_ids for path in self.pangraph.paths[seq_id]]
-        nodes_ids_to_keep = list(set([node_id for path in paths_to_keep for node_id in path]))
+        paths_to_keep = [path
+                         for seq_id in self.sequences_ids
+                         for path in self.pangraph.paths[seq_id]]
+        nodes_ids_to_keep = list(set([node_id
+                                      for path in paths_to_keep
+                                      for node_id in path]))
 
         self.old_to_new = {node_id: i for i, node_id in enumerate(sorted(nodes_ids_to_keep))}
         self.new_to_old = {new_node_id: old_node_id for old_node_id, new_node_id in self.old_to_new.items()}

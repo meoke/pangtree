@@ -17,6 +17,7 @@ from dashsite.pang.pangraph.FastaSource import FastaFileSystemSource
 from dashsite.pang.pangraph.PangraphBuilder.PangraphBuilderFromDAG import PangraphBuilderFromDAG
 from dashsite.pang.pangraph.PangraphBuilder.PangraphBuilderFromMAF import PangraphBuilderFromMAF
 from dashsite.pang.pangraph.PangraphToFilesConverters.PangraphToPO import PangraphToPO, NodePO, SequencePO
+from dashsite.pang.pangraph.custom_types import SequenceID
 
 from dashsite.pang.fileformats.maf.reader import maf_to_dagmaf
 # import dashsite.pang.fileformats.po.writer as powriter

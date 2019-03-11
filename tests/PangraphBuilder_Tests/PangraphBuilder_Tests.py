@@ -1,7 +1,9 @@
 import unittest
 from io import StringIO
 from pathlib import Path
+from typing import Optional
 
+from pangraph.FastaSource import FastaSource
 from tests.context import maf_to_dagmaf
 from tests.context import Pangraph
 from tests.context import PangraphBuilderFromDAG
@@ -12,7 +14,7 @@ from tests.context import PangraphBuilderFromMAF
 
 class PangraphBuilderTests(unittest.TestCase):
     @staticmethod
-    def setup_pangraph_from_maf_firstly_converted_to_dag(maf_path, metadata, fasta_source):
+    def setup_pangraph_from_maf_firstly_converted_to_dag(maf_path, metadata, fasta_source : Optional[FastaSource] = None):
         mafcontent = PangraphBuilderTests.get_file_content(maf_path)
         pangraph = Pangraph()
         builder = PangraphBuilderFromDAG(metadata, fasta_source)
@@ -84,11 +86,3 @@ class PangraphBuilderTests(unittest.TestCase):
                 print(f"Sequence {seq_id} differs in expected and actual paths!")
                 print(f"Expected: {paths}")
                 print(f"Actual: {actual_paths[seq_id]}")
-        # if actual_paths.shape != expected_paths.shape:
-        #     print(f"Actual pm has shape {actual_paths.shape} while expected pm: {expected_paths.shape}")
-        #
-        # for i, (actual_row, expected_row) in enumerate(zip(actual_paths, expected_paths)):
-        #     if (actual_row != expected_row).any():
-        #         print(f"Rows {i} differ.")
-        #         print(f"Actual row: {actual_row}")
-        #         print(f"Expected row: {expected_row}")
