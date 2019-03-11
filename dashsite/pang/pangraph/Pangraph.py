@@ -8,7 +8,7 @@ from pangraph.PangraphBuilder.PangraphBuilderFromMAF import PangraphBuilderFromM
 from pangraph.FastaSource import FastaSource
 from metadata.MultialignmentMetadata import MultialignmentMetadata
 from .Node import Node
-from .custom_types import NodeID, SequenceID
+from .custom_types import NodeID, SequenceID, Nucleobase
 
 
 class Pangraph:
@@ -23,8 +23,9 @@ class Pangraph:
     def build_from_maf_firstly_converted_to_dag(self,
                                                 mafcontent: StringIO,
                                                 fasta_source: FastaSource,
-                                                genomes_info: MultialignmentMetadata):
-        builder: PangraphBuilderBase = PangraphBuilderFromDAG(genomes_info, fasta_source)
+                                                genomes_info: MultialignmentMetadata,
+                                                missing_nucleotide_symbol: Nucleobase="?"):
+        builder: PangraphBuilderBase = PangraphBuilderFromDAG(genomes_info, missing_nucleotide_symbol, fasta_source)
         self._build(builder, mafcontent)
 
     def build_from_maf(self, mafcontent: StringIO, genomes_info: MultialignmentMetadata):

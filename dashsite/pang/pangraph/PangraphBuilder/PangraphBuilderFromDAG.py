@@ -7,7 +7,7 @@ from mafgraph.graph.Arc import Arc
 
 from fileformats.maf.DAGMaf import DAGMaf
 from fileformats.maf.reader import maf_to_dagmaf
-from pangraph import nucleotides
+# from pangraph import nucleotides
 from pangraph.FastaSource import FastaSource
 from pangraph.Node import Node
 from pangraph.PangraphBuilder.PangraphBuilderBase import PangraphBuilderBase
@@ -30,14 +30,18 @@ Edge = namedtuple('Edge', ['seq_id',
 
 
 class PangraphBuilderFromDAG(PangraphBuilderBase):
-    def __init__(self, genomes_info: MultialignmentMetadata, fasta_source: Optional[FastaSource] = None):
+    def __init__(self,
+                 genomes_info: MultialignmentMetadata,
+                 missing_nucleotide_symbol: Nucleobase,
+                 fasta_source: Optional[FastaSource] = None):
         super().__init__(genomes_info)
         self.pangraph = None
         self.dagmaf: DAGMaf = None
         self.free_edges: Dict[SequenceID, List[Edge]] = None
         self.seqs_info: Dict[SequenceID, SequenceInfo] = None
         self.column_id: ColumnID = None
-        self.complement_sequences = True if fasta_source else False  # todo use this info while building 
+        self.complement_sequences: bool = True if fasta_source else False  # todo use this info while building
+        self.missing_nucleotide_symbol: Nucleobase = missing_nucleotide_symbol
 
         if self.complement_sequences:
             self.full_sequences: Dict[SequenceID, Sequence] = self.get_sequences(fasta_source)
@@ -92,7 +96,7 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
     def get_missing_nucleotide(self, seq_id, i) -> Nucleobase:
         if self.complement_sequences:
             return Nucleobase(self.full_sequences[seq_id][i])
-        return Nucleobase('?')
+        return Nucleobase(self.missing_nucleotide_symbol)
 
     def complement_sequence_starting_nodes(self, seq_id: SequenceID, first_block_sinfo: SequenceInfo) -> None:
         current_node_id: NodeID = self.get_max_node_id()
@@ -119,12 +123,13 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
 
     def add_node(self,
                  node_id: NodeID,
-                 base: Nucleobase,
+                 base: str,
                  aligned_to: NodeID,
                  column_id: ColumnID,
                  block_id: BlockID) -> None:
         self.pangraph.nodes.append(Node(node_id=node_id,
-                                        base=nucleotides.code(base),
+                                        base=Nucleobase(b"%b" % base),
+                                        # base=nucleotides.code(base),
                                         aligned_to=aligned_to,
                                         column_id=column_id,
                                         block_id=block_id))

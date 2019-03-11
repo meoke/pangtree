@@ -33,7 +33,8 @@ class Pangenome:
         self.genomes_info.feed_with_maf_data(self.params.multialignment_file_content)
         self.pangraph.build_from_maf_firstly_converted_to_dag(mafcontent=self.params.multialignment_file_content,
                                                               fasta_source=fasta_source,
-                                                              genomes_info=self.genomes_info)
+                                                              genomes_info=self.genomes_info,
+                                                              missing_nucleotide_symbol=self.params.missing_nucleotide_symbol)
 
     def build_from_maf(self):
         self.genomes_info.feed_with_maf_data(self.params.multialignment_file_content)

@@ -10,4 +10,4 @@ BlockID = NewType('BlockID', int)
 
 Sequence = NewType('Sequence', str)
 
-Nucleobase = NewType('Nucleobase', str)
+Nucleobase = NewType('Nucleobase', bytes)
