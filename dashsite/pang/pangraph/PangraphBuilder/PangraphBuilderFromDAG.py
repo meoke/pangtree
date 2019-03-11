@@ -34,7 +34,7 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
         super().__init__(genomes_info)
         self.pangraph = None
         self.dagmaf: DAGMaf = None
-        self.free_edges: Dict[SequenceID, Edge] = None
+        self.free_edges: Dict[SequenceID, List[Edge]] = None
         self.seqs_info: Dict[SequenceID, SequenceInfo] = None
         self.column_id: ColumnID = None
         self.complement_sequences = True if fasta_source else False  # todo use this info while building 
@@ -95,8 +95,8 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
         join_with = None
         for i in range(first_block_sinfo.start):
             current_node_id += 1
-            missing_nucleotide = self.full_sequences[seq_id][i]
-            self.add_node(id=current_node_id,
+            missing_nucleotide = Nucleobase(self.full_sequences[seq_id][i])
+            self.add_node(node_id=current_node_id,
                           base=missing_nucleotide,
                           aligned_to=None,
                           column_id=column_id,
@@ -110,15 +110,15 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
                                             last_node_id=current_node_id,))
 
     def get_max_node_id(self) -> NodeID:
-        return NodeID(len(self.pangraph.nodes)) - 1
+        return NodeID(len(self.pangraph.nodes) - 1)
 
     def add_node(self,
-                 id: NodeID,
+                 node_id: NodeID,
                  base: Nucleobase,
                  aligned_to: NodeID,
                  column_id: ColumnID,
                  block_id: BlockID) -> None:
-        self.pangraph.nodes.append(Node(node_id=id,
+        self.pangraph.nodes.append(Node(node_id=node_id,
                                         base=nucleotides.code(base),
                                         aligned_to=aligned_to,
                                         column_id=column_id,
@@ -149,7 +149,7 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
             for i, nucl in enumerate(nodes_codes):
                 current_node_id += 1
                 seqs_id = [seq_id for seq_id, n in sequence_name_to_nucleotide.items() if n == nucl]
-                self.add_node(id=current_node_id,
+                self.add_node(node_id=current_node_id,
                               base=nucl,
                               aligned_to=self.get_next_aligned_node_id(i, column_nodes_ids),
                               column_id=self.column_id,
@@ -187,8 +187,8 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
         for i in range(last_pos + 1, next_pos):
             column_id += 1
             current_node_id += 1
-            missing_nucleotide = self.full_sequences[seq_id][i]
-            self.add_node(id=current_node_id,
+            missing_nucleotide = Nucleobase(self.full_sequences[seq_id][i])
+            self.add_node(node_id=current_node_id,
                           base=missing_nucleotide,
                           aligned_to=None,
                           column_id=column_id,
@@ -207,8 +207,8 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
         for i in range(last_pos + 1, next_pos):
             column_id += 1
             current_node_id += 1
-            missing_nucleotide = self.full_sequences[seq_id][i]
-            self.add_node(id=current_node_id,
+            missing_nucleotide = Nucleobase(self.full_sequences[seq_id][i])
+            self.add_node(node_id=current_node_id,
                           base=missing_nucleotide,
                           aligned_to=None,
                           column_id=column_id,
@@ -257,8 +257,8 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
             for i in range(last_pos + 1, next_pos):
                 column_id += 1
                 current_node_id += 1
-                missing_nucleotide = self.full_sequences[seq_id][i]
-                self.add_node(id=current_node_id,
+                missing_nucleotide = Nucleobase(self.full_sequences[seq_id][i])
+                self.add_node(node_id=current_node_id,
                               base=missing_nucleotide,
                               aligned_to=None,
                               column_id=column_id,
@@ -347,8 +347,8 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
         for i in range(last_pos+1, next_pos):
             column_id += 1
             current_node_id += 1
-            missing_nucleotide = self.full_sequences[seq_id][i]
-            self.add_node(id=current_node_id,
+            missing_nucleotide = Nucleobase(self.full_sequences[seq_id][i])
+            self.add_node(node_id=current_node_id,
                           base=missing_nucleotide,
                           aligned_to=None,
                           column_id=column_id,

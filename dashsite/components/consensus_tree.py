@@ -93,7 +93,7 @@ def get_consensus_tree_graph(jsonpangenome: JSONPangenome, tree, slider_value):
     dots_positions = [[tree.nodes[node_id]["mincomp"], node_id_to_y[node_id]] for node_id in range(len(node_id_to_y))]
     dots_x = [dot_x for [dot_x, _] in dots_positions]
     dots_y = [dot_y for [_, dot_y] in dots_positions]
-    dots_annotations = [{'x':x_pos,
+    dots_annotations = [{'x': x_pos,
                          'y': y_pos,
                          'text': f"{dots_numbers[i]}",
                          'showarrow': False}

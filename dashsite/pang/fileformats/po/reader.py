@@ -8,8 +8,8 @@ from pangraph import nucleotides as n
 def read(path: Path) -> Pangraph:
     raise NotImplementedError()
 
-    with open(path) as input:
-        po_lines = input.readlines()
+    with open(path) as po_input:
+        po_lines = po_input.readlines()
 
     p = Pangraph()
     nodes, sequences_to_nodes_ids, consensuses_to_nodes_ids = extract_pangraph(po_lines)

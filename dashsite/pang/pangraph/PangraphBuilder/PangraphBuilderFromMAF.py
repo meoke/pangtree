@@ -12,29 +12,29 @@ class PangraphBuilderFromMAF(PangraphBuilderBase):
         super().__init__(genomes_info)
         self.pangraph = None
 
-    def build(self, input: StringIO, pangraph):
-        input = [*AlignIO.parse(input, "maf")]
+    def build(self, input_content: StringIO, pangraph):
+        input_content = [*AlignIO.parse(input_content, "maf")]
         self.init_pangraph(pangraph)
 
         current_node_id = NodeID(-1)
         column_id = ColumnID(-1)
-        for block_id, block in enumerate(input):
+        for block_id, block in enumerate(input_content):
             block_width = len(block[0].seq)
 
             for col in range(block_width):
                 column_id += 1
-                sequence_name_to_nucleotide = {seq.id: seq[col] for seq in block}
+                sequence_name_to_nucleotide = {SequenceID(seq.id): Nucleobase(seq[col]) for seq in block}
                 nodes_codes = sorted([*(
                     set([nucleotide for nucleotide in sequence_name_to_nucleotide.values()])).difference({'-'})])
                 column_nodes_ids = [current_node_id + i + 1 for i, _ in enumerate(nodes_codes)]
 
                 for i, nucl in enumerate(nodes_codes):
                     current_node_id += 1
-                    self.add_node(id=current_node_id,
+                    self.add_node(node_id=current_node_id,
                                   base=nucl,
                                   aligned_to=self.get_next_aligned_node_id(i, column_nodes_ids),
-                                  column_id=column_id,
-                                  block_id=block_id)
+                                  column_id=ColumnID(column_id),
+                                  block_id=BlockID(block_id))
 
                     for sequence, nucleotide in sequence_name_to_nucleotide.items():
                         if nucleotide == nucl:
@@ -52,12 +52,12 @@ class PangraphBuilderFromMAF(PangraphBuilderBase):
             self.pangraph.paths[seqID].append([node_id])
 
     def add_node(self,
-                 id: NodeID,
+                 node_id: NodeID,
                  base: Nucleobase,
                  aligned_to: NodeID,
                  column_id: ColumnID,
                  block_id: BlockID) -> None:
-        self.pangraph.nodes.append(Node(node_id=id,
+        self.pangraph.nodes.append(Node(node_id=node_id,
                                         base=nucleotides.code(base),
                                         aligned_to=aligned_to,
                                         column_id=column_id,

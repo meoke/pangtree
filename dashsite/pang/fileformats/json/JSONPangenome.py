@@ -2,26 +2,26 @@ import itertools
 from typing import List, Dict
 from Pangenome import Pangenome
 from arguments.PangenomeParameters import PangenomeParameters, FastaComplementationOption
-import pangraph.nucleotides as n
+from pangraph.nucleotides import decode
 
 
 class JSONProgramParameters:
-    def __init__(self, program_parameters: PangenomeParameters):
-        self.multialignment_file_path: str = str(program_parameters.multialignment_file_path)
-        self.metadata_file_path: str = str(program_parameters.metadata_file_path)
-        self.output_path: str = str(program_parameters.output_path)
-        self.generate_fasta: bool = program_parameters.generate_fasta
-        self.consensus_type: str = str(program_parameters.consensus_type)
-        self.max_cutoff_strategy = program_parameters.max_cutoff_option
-        self.node_cutoff_strategy = program_parameters.node_cutoff_option
-        self.hbmin: float = program_parameters.hbmin
-        self.r: float = program_parameters.range
-        self.multiplier: float = program_parameters.multiplier
-        self.stop: float = program_parameters.stop
-        self.re_consensus: bool = program_parameters.re_consensus
-        self.not_dag: bool = program_parameters.not_dag
-        self.fasta_complementation_option: FastaComplementationOption = str(program_parameters.fasta_complementation_option)
-        self.local_fasta_dirpath: str = str(program_parameters.local_fasta_dirpath)
+    def __init__(self, params: PangenomeParameters):
+        self.multialignment_file_path: str = str(params.multialignment_file_path)
+        self.metadata_file_path: str = str(params.metadata_file_path)
+        self.output_path: str = str(params.output_path)
+        self.generate_fasta: bool = params.generate_fasta
+        self.consensus_type: str = str(params.consensus_type)
+        self.max_cutoff_strategy = params.max_cutoff_option
+        self.node_cutoff_strategy = params.node_cutoff_option
+        self.hbmin: float = params.hbmin
+        self.r: float = params.search_range
+        self.multiplier: float = params.multiplier
+        self.stop: float = params.stop
+        self.re_consensus: bool = params.re_consensus
+        self.not_dag: bool = params.not_dag
+        self.fasta_complementation_option: FastaComplementationOption = str(params.fasta_complementation_option)
+        self.local_fasta_dirpath: str = str(params.local_fasta_dirpath)
 
 
 class JSONNode:
@@ -104,7 +104,7 @@ class JSONPangenome:
 
         if pangenome.pangraph.nodes:
             self.nodes = [JSONNode(node_id=node.id,
-                                   nucleobase=n.decode(node.base),
+                                   nucleobase=decode(node.base),
                                    column_id=node.column_id,
                                    block_id=node.block_id,
                                    aligned_to=node.aligned_to)
@@ -116,7 +116,7 @@ class JSONPangenome:
         if pangenome.pangraph.paths:
             seqeuences_metadata = [pangenome.genomes_info.genomes_metadata[seqID]
                                    for seqID in pangenome.pangraph.paths.keys()]
-            sorted_seqeuences_metadata = sorted(seqeuences_metadata, key = lambda m: paths_str_id_to_int_id[m.mafname])
+            sorted_seqeuences_metadata = sorted(seqeuences_metadata, key=lambda m: paths_str_id_to_int_id[m.mafname])
 
             self.sequences = [JSONSequence(node_id=paths_str_id_to_int_id[seq_metadata.mafname],  # todo główne ID!!!
                                            genbankID=seq_metadata.genbankID,

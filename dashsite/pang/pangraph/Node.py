@@ -1,14 +1,14 @@
-from typing import List, Union, Set
+from pangraph.custom_types import NodeID, Nucleobase, BlockID, ColumnID
 from .nucleotides import decode
 
 
 class Node:
     def __init__(self,
-                 node_id: int,
-                 base: int,
-                 aligned_to: List[int],
-                 column_id: int = None,
-                 block_id: int = None):
+                 node_id: NodeID,
+                 base: Nucleobase,
+                 aligned_to: NodeID,
+                 column_id: ColumnID = None,
+                 block_id: BlockID = None):
         self.id = node_id
         self.base = base
         self.aligned_to = aligned_to

@@ -194,7 +194,7 @@ def create_pangenome_parameters() -> PangenomeParameters:
             generate_fasta=args.fasta,
             consensus_type=args.consensus,
             hbmin=args.hbmin,
-            range=args.r,
+            search_range=args.r,
             multiplier=args.multiplier,
             stop=args.stop,
             re_consensus=args.re_consensus,

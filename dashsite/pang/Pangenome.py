@@ -77,7 +77,7 @@ class Pangenome:
 
     def _get_max_cutoff_strategy(self, cutoffs_log_path) -> FindMaxCutoff:
         if self.params.max_cutoff_option == MaxCutoffOption.MAX1:
-            return MAX1(self.params.range, cutoffs_log_file_path=cutoffs_log_path)
+            return MAX1(self.params.search_range, cutoffs_log_file_path=cutoffs_log_path)
         elif self.params.max_cutoff_option == MaxCutoffOption.MAX2:
             return MAX2(cutoffs_log_file_path=cutoffs_log_path)
         else:

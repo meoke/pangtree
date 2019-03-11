@@ -1,6 +1,5 @@
 import pandas as pd
 import plotly.graph_objs as go
-import numpy as np
 
 
 def get_graph(nodes_data, traces_data):

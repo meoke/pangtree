@@ -39,7 +39,7 @@ class PangenomeParameters:
                  generate_fasta: bool,
                  consensus_type: ConsensusAlgorithm,
                  hbmin: float,
-                 range: Optional[list],
+                 search_range: Optional[list],
                  multiplier: Optional[float],
                  stop: Optional[float],
                  re_consensus: Optional[bool],
@@ -67,7 +67,7 @@ class PangenomeParameters:
 
         self.stop = stop
         self.max_cutoff_option = max_cutoff_option
-        self.range = range
+        self.search_range = search_range
         self.node_cutoff_option = node_cutoff_option
         self.multiplier = multiplier
         self.re_consensus = re_consensus
@@ -104,13 +104,16 @@ class PangenomeParameters:
                 raise Exception("For TREE consensus algorithm RE CONSENSUS must be specified.")
 
         if self.max_cutoff_option is MaxCutoffOption.MAX1:
-            if self.range is None:
+            if self.search_range is None:
                 raise Exception("For MAX1 max cutoff option CUTOFF SEARCH RANGE must be specified.")
-            if len(self.range) != 2:
+            if len(self.search_range) != 2:
                 raise Exception("CUTOFF SEARCH RANGE must have length 2.")
-            if self.range[1] < self.range[0]:
+            if self.search_range[1] < self.search_range[0]:
                 raise Exception("CUTOFF SEARCH RANGE first value must be smaller or equal to second value.")
-            if self.range[0] < 0 or self.range[0] > 1 or self.range[1] < 0 or self.range[1] > 1:
+            if self.search_range[0] < 0 \
+                    or self.search_range[0] > 1 \
+                    or self.search_range[1] < 0\
+                    or self.search_range[1] > 1:
                 raise Exception("CUTOFF SEARCH RANGE values must be in the range of [0,1].")
 
         if self.node_cutoff_option in [NodeCutoffOption.NODE1, NodeCutoffOption.NODE2]:

@@ -46,7 +46,7 @@ class FindCutoff(ABC):
             return values[0]
         sorted_values = sorted(values)
         distances = np.array([sorted_values[i + 1] - sorted_values[i] for i in range(len(sorted_values) - 1)])
-        max_distance_index = np.argmax(distances)
+        max_distance_index : int= np.argmax(distances)
         return sorted_values[max_distance_index + 1]
 
 

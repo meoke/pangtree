@@ -1,15 +1,8 @@
 from pathlib import Path
-from collections import deque
-from typing import List, Dict, Tuple
-
 from consensus.ConsensusesTree import ConsensusesTree
-from consensus.ConsensusNode import ConsensusNode, Compatibility
-from consensus.FindCutoff import FindMaxCutoff, FindNodeCutoff
-from consensus.exceptions import TreeConsensusGenerationException
+from consensus.ConsensusNode import Compatibility
 from pangraph.Pangraph import Pangraph
-from pangraph.custom_types import SequenceID, Sequence
 from metadata.MultialignmentMetadata import MultialignmentMetadata
-import consensus.top_consensus as top_consensus
 
 
 class SimplePOAConsensusGenerator:

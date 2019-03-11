@@ -1,15 +1,18 @@
 from pathlib import Path
-from typing import List, Dict
+from typing import List, Dict, Union
 
 from pangraph import Pangraph
 from tools import pathtools
-from pangraph.custom_types import NodeID, SequenceID, Sequence
+from pangraph.custom_types import NodeID, SequenceID
 from pangraph.PangraphToFilesConverters.PangraphToPO import PangraphToPO, NodePO, SequencePO
 from consensus.exceptions import TreeConsensusGenerationException
 from call_external.poa import call as call_poa
 
 
-def get_top_consensus(pangraph: Pangraph, sequences_ids: List[SequenceID], output_dir: Path, file_prefix: str) -> Sequence:
+def get_top_consensus(pangraph: Pangraph,
+                      sequences_ids: List[SequenceID],
+                      output_dir: Path,
+                      file_prefix: str) -> List[NodeID]:
     poa_input_path = pathtools.get_child_file_path(output_dir, f"{file_prefix}_in_pangenome.po")
     poa_output_path = pathtools.get_child_file_path(output_dir, f"{file_prefix}_out_pangenome.po")
 
@@ -78,7 +81,7 @@ class PangraphPO_Translator:
         p_to_po = PangraphToPO()
         return p_to_po.get_po_file_content(po_nodes, po_sequences)
 
-    def _get_aligned_node(self, old_node_id: NodeID, nodes_ids_to_keep: List[NodeID]) -> NodeID:
+    def _get_aligned_node(self, old_node_id: NodeID, nodes_ids_to_keep: List[NodeID]) -> Union[NodeID, None]:
         aligned_to = self.pangraph.nodes[old_node_id].aligned_to
         while aligned_to is not None and aligned_to != old_node_id:
             if aligned_to in nodes_ids_to_keep:
@@ -97,27 +100,31 @@ class PangraphPO_Translator:
 
         top_consensus_expected_id = len(self.sequences_ids)
         if paths_count == top_consensus_expected_id:
-            raise TreeConsensusGenerationException("No consensuses in po files!")
+            raise TreeConsensusGenerationException("No additional sequences in output po than in input!")
 
+        detailed_consens0_info = None
         for i in range(2*paths_count):
             path_name = self._extract_line_value(next(po_lines_iterator))
-            if path_name != "CONSENS0":
+            if path_name == "CONSENS0":
+                detailed_consens0_info = next(po_lines_iterator)
+                if i != top_consensus_expected_id:
+                    raise Exception("Consensus is found in unexpected line number!")
+                break
+            else:
                 _ = next(po_lines_iterator)
                 continue
 
-            if i != top_consensus_expected_id:
-                raise Exception("Consensus is found in unexpected line number!")
+        if detailed_consens0_info is None:
+            raise Exception("Cannot find sequence with name \"CONSENS0\" in output po file.")
 
-            detailed_consens0_info = next(po_lines_iterator)
-            detailed_info = self._extract_line_value(detailed_consens0_info).split(' ')
-            consens0_nodes_count = int(detailed_info[0])
-            break
 
+        detailed_info = self._extract_line_value(detailed_consens0_info).split(' ')
+        consens0_nodes_count = int(detailed_info[0])
         consensus_name = f"S{top_consensus_expected_id}"
         first_node_line_id = 5 + paths_count * 2
         old_node_id = 0
         new_node_id = 0
-        consensus_path = [None] * consens0_nodes_count
+        consensus_path : List[NodeID] = [None] * consens0_nodes_count
         for file_position in range(first_node_line_id, len(poa_output_lines)):
             if consensus_name in poa_output_lines[file_position]:
                 consensus_path[old_node_id] = self.new_to_old[new_node_id]
