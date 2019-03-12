@@ -2,7 +2,6 @@ import itertools
 from typing import List, Dict
 from Pangenome import Pangenome
 from arguments.PangenomeParameters import PangenomeParameters, FastaComplementationOption
-from pangraph.nucleotides import decode
 
 
 class JSONProgramParameters:
@@ -104,7 +103,7 @@ class JSONPangenome:
 
         if pangenome.pangraph.nodes:
             self.nodes = [JSONNode(node_id=node.id,
-                                   nucleobase=decode(node.base),
+                                   nucleobase=node.base.decode("ASCII"),
                                    column_id=node.column_id,
                                    block_id=node.block_id,
                                    aligned_to=node.aligned_to)

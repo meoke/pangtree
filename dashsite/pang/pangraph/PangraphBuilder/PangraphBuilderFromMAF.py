@@ -1,10 +1,9 @@
 from Bio import AlignIO
 from io import StringIO
-from pangraph import nucleotides
 from pangraph.Node import Node
 from pangraph.PangraphBuilder.PangraphBuilderBase import PangraphBuilderBase
 from metadata.MultialignmentMetadata import MultialignmentMetadata
-from pangraph.custom_types import NodeID, SequenceID, Nucleobase, ColumnID, BlockID
+from pangraph.custom_types import NodeID, SequenceID, Nucleobase, ColumnID, BlockID, make_nucleobase
 
 
 class PangraphBuilderFromMAF(PangraphBuilderBase):
@@ -23,7 +22,7 @@ class PangraphBuilderFromMAF(PangraphBuilderBase):
 
             for col in range(block_width):
                 column_id += 1
-                sequence_name_to_nucleotide = {SequenceID(seq.id): Nucleobase(seq[col]) for seq in block}
+                sequence_name_to_nucleotide = {SequenceID(seq.id): (seq[col]) for seq in block}
                 nodes_codes = sorted([*(
                     set([nucleotide for nucleotide in sequence_name_to_nucleotide.values()])).difference({'-'})])
                 column_nodes_ids = [current_node_id + i + 1 for i, _ in enumerate(nodes_codes)]
@@ -31,7 +30,7 @@ class PangraphBuilderFromMAF(PangraphBuilderBase):
                 for i, nucl in enumerate(nodes_codes):
                     current_node_id += 1
                     self.add_node(node_id=current_node_id,
-                                  base=nucl,
+                                  nucleobase=make_nucleobase(nucl),
                                   aligned_to=self.get_next_aligned_node_id(i, column_nodes_ids),
                                   column_id=ColumnID(column_id),
                                   block_id=BlockID(block_id))
@@ -53,12 +52,12 @@ class PangraphBuilderFromMAF(PangraphBuilderBase):
 
     def add_node(self,
                  node_id: NodeID,
-                 base: Nucleobase,
+                 nucleobase: Nucleobase,
                  aligned_to: NodeID,
                  column_id: ColumnID,
                  block_id: BlockID) -> None:
         self.pangraph.nodes.append(Node(node_id=node_id,
-                                        base=nucleotides.code(base),
+                                        base=nucleobase,
                                         aligned_to=aligned_to,
                                         column_id=column_id,
                                         block_id=block_id))

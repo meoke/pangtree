@@ -2,7 +2,6 @@ from pathlib import Path
 
 from pangraph.Pangraph import Pangraph
 from pangraph.Pangraph import Node
-from pangraph import nucleotides as n
 
 
 def read(path: Path) -> Pangraph:

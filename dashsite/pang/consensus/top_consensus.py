@@ -1,3 +1,4 @@
+from bisect import bisect_left
 from pathlib import Path
 from typing import List, Dict, Union
 
@@ -12,7 +13,8 @@ from call_external.poa import call as call_poa
 def get_top_consensus(pangraph: Pangraph,
                       sequences_ids: List[SequenceID],
                       output_dir: Path,
-                      file_prefix: str) -> List[NodeID]:
+                      file_prefix: str,
+                      blosum_path) -> List[NodeID]:
     poa_input_path = pathtools.get_child_file_path(output_dir, f"{file_prefix}_in_pangenome.po")
     poa_output_path = pathtools.get_child_file_path(output_dir, f"{file_prefix}_out_pangenome.po")
 
@@ -22,6 +24,7 @@ def get_top_consensus(pangraph: Pangraph,
         poa_input.write(poa_input_content)
     call_poa(po_file_path=poa_input_path,
              hb_file_path=poa_output_path,
+             blosum_path=blosum_path,
              hbmin=0.6)
     with open(poa_output_path) as poa_output:
         poa_output_lines = poa_output.readlines()
@@ -46,14 +49,14 @@ class PangraphPO_Translator:
         nodes_ids_to_keep = list(set([node_id
                                       for path in paths_to_keep
                                       for node_id in path]))
-
-        self.old_to_new = {node_id: i for i, node_id in enumerate(sorted(nodes_ids_to_keep))}
+        sorted_nodes_ids_to_keep = sorted(nodes_ids_to_keep)
+        self.old_to_new = {node_id: i for i, node_id in enumerate(sorted_nodes_ids_to_keep)}
         self.new_to_old = {new_node_id: old_node_id for old_node_id, new_node_id in self.old_to_new.items()}
         self.seq_old_to_new = {seq_id: i for i, seq_id in enumerate(self.sequences_ids)}
         self.seq_new_to_old = {i: seq_id for seq_id, i in self.seq_old_to_new.items()}
 
         po_nodes = [NodePO(base=self.pangraph.nodes[self.new_to_old[new_node_id]].base,
-                           aligned_to=self._get_aligned_node(self.new_to_old[new_node_id], nodes_ids_to_keep),
+                           aligned_to=self._get_aligned_node(self.new_to_old[new_node_id], sorted_nodes_ids_to_keep),
                            in_nodes=set(),
                            sequences_ids=[]
                            )
@@ -85,13 +88,21 @@ class PangraphPO_Translator:
         p_to_po = PangraphToPO()
         return p_to_po.get_po_file_content(po_nodes, po_sequences)
 
-    def _get_aligned_node(self, old_node_id: NodeID, nodes_ids_to_keep: List[NodeID]) -> Union[NodeID, None]:
+    def _get_aligned_node(self, old_node_id: NodeID, sorted_nodes_ids_to_keep: List[NodeID]) -> Union[NodeID, None]:
         aligned_to = self.pangraph.nodes[old_node_id].aligned_to
-        while aligned_to is not None and aligned_to != old_node_id:
-            if aligned_to in nodes_ids_to_keep:
+        if aligned_to is None:
+            return None
+        while aligned_to != old_node_id:
+            if self.is_in(sorted_list=sorted_nodes_ids_to_keep, x=aligned_to):
                 return self.old_to_new[aligned_to]
             aligned_to = self.pangraph.nodes[aligned_to].aligned_to
         return None
+
+    def is_in(self, sorted_list, x):
+        i = bisect_left(sorted_list, x)
+        if i != len(sorted_list) and sorted_list[i] == x:
+            return True
+        return False
 
     def read_top_consensus(self, poa_output_lines: List[str]) -> List[NodeID]:
         po_lines_iterator = iter(poa_output_lines)

@@ -1,5 +1,4 @@
 from pangraph.custom_types import NodeID, Nucleobase, BlockID, ColumnID
-from .nucleotides import decode
 
 
 class Node:
@@ -21,9 +20,10 @@ class Node:
                 and self.aligned_to == other.aligned_to)
 
     def __str__(self):
+        base = self.base.decode("ASCII")
         return \
             f"id: {self.id}, " \
-            f"base: {decode(self.base)}, " \
+            f"base: {base}, " \
             f"aligned_to: {self.aligned_to}, " \
             f"column_id: {self.column_id}, " \
             f"block_id: {self.block_id}"

@@ -3,7 +3,7 @@ from ddt import ddt
 
 from tests.context import metadatareader
 from tests.context import Node
-from tests.context import nucleotides as n
+from tests.context import make_nucleobase as n
 from tests.context import pathtools
 from tests.context import FastaSource
 
@@ -36,18 +36,18 @@ class PangraphBuilderFromDAGTest_FillMafGapsWithN(PangraphBuilderTests):
     def test_1_missing_sequence_start(self):
         maf_path = "PangraphBuilder_Tests/PangraphBuilderFromDAG_Tests/files_fill_maf_gaps/test_1_missing_sequence_start.maf"
         expected_nodes = [
-            Node(node_id=0, base=n.code(self.unknown_symbol), aligned_to=None),
-            Node(node_id=1, base=n.code(self.unknown_symbol), aligned_to=None),
-            Node(node_id=2, base=n.code(self.unknown_symbol), aligned_to=None),
-            Node(node_id=3, base=n.code('A'), aligned_to=4),
-            Node(node_id=4, base=n.code('G'), aligned_to=3),
-            Node(node_id=5, base=n.code('G'), aligned_to=None),
-            Node(node_id=6, base=n.code('G'), aligned_to=7),
-            Node(node_id=7, base=n.code('T'), aligned_to=6),
-            Node(node_id=8, base=n.code('C'), aligned_to=None),
-            Node(node_id=9, base=n.code('A'), aligned_to=None),
-            Node(node_id=10, base=n.code('G'), aligned_to=None),
-            Node(node_id=11, base=n.code('T'), aligned_to=None)
+            Node(node_id=0, base=n(self.unknown_symbol), aligned_to=None),
+            Node(node_id=1, base=n(self.unknown_symbol), aligned_to=None),
+            Node(node_id=2, base=n(self.unknown_symbol), aligned_to=None),
+            Node(node_id=3, base=n('A'), aligned_to=4),
+            Node(node_id=4, base=n('G'), aligned_to=3),
+            Node(node_id=5, base=n('G'), aligned_to=None),
+            Node(node_id=6, base=n('G'), aligned_to=7),
+            Node(node_id=7, base=n('T'), aligned_to=6),
+            Node(node_id=8, base=n('C'), aligned_to=None),
+            Node(node_id=9, base=n('A'), aligned_to=None),
+            Node(node_id=10, base=n('G'), aligned_to=None),
+            Node(node_id=11, base=n('T'), aligned_to=None)
         ]
 
         expected_paths = {
@@ -63,21 +63,21 @@ class PangraphBuilderFromDAGTest_FillMafGapsWithN(PangraphBuilderTests):
     def test_2_missing_sequence_end(self):
         maf_path = "PangraphBuilder_Tests/PangraphBuilderFromDAG_Tests/files_fill_maf_gaps/test_2_missing_sequence_end.maf"
         expected_nodes = [
-            Node(node_id=0, base=n.code('A'), aligned_to=1),
-            Node(node_id=1, base=n.code('G'), aligned_to=0),
-            Node(node_id=2, base=n.code('C'), aligned_to=3),
-            Node(node_id=3, base=n.code('G'), aligned_to=2),
-            Node(node_id=4, base=n.code('T'), aligned_to=None),
-            Node(node_id=5, base=n.code('A'), aligned_to=6),
-            Node(node_id=6, base=n.code('C'), aligned_to=5),
+            Node(node_id=0, base=n('A'), aligned_to=1),
+            Node(node_id=1, base=n('G'), aligned_to=0),
+            Node(node_id=2, base=n('C'), aligned_to=3),
+            Node(node_id=3, base=n('G'), aligned_to=2),
+            Node(node_id=4, base=n('T'), aligned_to=None),
+            Node(node_id=5, base=n('A'), aligned_to=6),
+            Node(node_id=6, base=n('C'), aligned_to=5),
 
-            Node(node_id=7, base=n.code('A'), aligned_to=None),
-            Node(node_id=8, base=n.code('G'), aligned_to=None),
-            Node(node_id=9, base=n.code('G'), aligned_to=None),
-            Node(node_id=10, base=n.code('T'), aligned_to=None),
+            Node(node_id=7, base=n('A'), aligned_to=None),
+            Node(node_id=8, base=n('G'), aligned_to=None),
+            Node(node_id=9, base=n('G'), aligned_to=None),
+            Node(node_id=10, base=n('T'), aligned_to=None),
 
-            Node(node_id=11, base=n.code(self.unknown_symbol), aligned_to=None),
-            Node(node_id=12, base=n.code(self.unknown_symbol), aligned_to=None),
+            Node(node_id=11, base=n(self.unknown_symbol), aligned_to=None),
+            Node(node_id=12, base=n(self.unknown_symbol), aligned_to=None),
         ]
 
         expected_paths = {
@@ -94,24 +94,24 @@ class PangraphBuilderFromDAGTest_FillMafGapsWithN(PangraphBuilderTests):
         maf_path = "PangraphBuilder_Tests/PangraphBuilderFromDAG_Tests/files_fill_maf_gaps/test_3_missing_two_sequences_middle.maf"
         expected_nodes = [
             # block 0
-            Node(node_id=0, base=n.code('A'), aligned_to=1),
-            Node(node_id=1, base=n.code('G'), aligned_to=0),
-            Node(node_id=2, base=n.code('C'), aligned_to=None),
+            Node(node_id=0, base=n('A'), aligned_to=1),
+            Node(node_id=1, base=n('G'), aligned_to=0),
+            Node(node_id=2, base=n('C'), aligned_to=None),
 
             # missing seq1
-            Node(node_id=3, base=n.code(self.unknown_symbol), aligned_to=None),
-            Node(node_id=4, base=n.code(self.unknown_symbol), aligned_to=None),
+            Node(node_id=3, base=n(self.unknown_symbol), aligned_to=None),
+            Node(node_id=4, base=n(self.unknown_symbol), aligned_to=None),
 
             # missing seq2
-            Node(node_id=5, base=n.code(self.unknown_symbol), aligned_to=None),
-            Node(node_id=6, base=n.code(self.unknown_symbol), aligned_to=None),
+            Node(node_id=5, base=n(self.unknown_symbol), aligned_to=None),
+            Node(node_id=6, base=n(self.unknown_symbol), aligned_to=None),
 
             # block 1
-            Node(node_id=7, base=n.code('C'), aligned_to=8),
-            Node(node_id=8, base=n.code('G'), aligned_to=7),
-            Node(node_id=9, base=n.code('A'), aligned_to=None),
-            Node(node_id=10, base=n.code('G'), aligned_to=None),
-            Node(node_id=11, base=n.code('T'), aligned_to=None)
+            Node(node_id=7, base=n('C'), aligned_to=8),
+            Node(node_id=8, base=n('G'), aligned_to=7),
+            Node(node_id=9, base=n('A'), aligned_to=None),
+            Node(node_id=10, base=n('G'), aligned_to=None),
+            Node(node_id=11, base=n('T'), aligned_to=None)
         ]
 
         expected_paths = {
@@ -129,21 +129,21 @@ class PangraphBuilderFromDAGTest_FillMafGapsWithN(PangraphBuilderTests):
                    "test_4_missing_one_sequence_middle.maf"
         expected_nodes = [
             #block 0
-            Node(node_id=0, base=n.code('A'), aligned_to=1),
-            Node(node_id=1, base=n.code('G'), aligned_to=0),
-            Node(node_id=2, base=n.code('C'), aligned_to=None),
-            Node(node_id=3, base=n.code('T'), aligned_to=None),
-            Node(node_id=4, base=n.code('A'), aligned_to=5),
-            Node(node_id=5, base=n.code('G'), aligned_to=4),
+            Node(node_id=0, base=n('A'), aligned_to=1),
+            Node(node_id=1, base=n('G'), aligned_to=0),
+            Node(node_id=2, base=n('C'), aligned_to=None),
+            Node(node_id=3, base=n('T'), aligned_to=None),
+            Node(node_id=4, base=n('A'), aligned_to=5),
+            Node(node_id=5, base=n('G'), aligned_to=4),
 
             # missing se2
-            Node(node_id=6, base=n.code(self.unknown_symbol), aligned_to=None),
-            Node(node_id=7, base=n.code(self.unknown_symbol), aligned_to=None),
+            Node(node_id=6, base=n(self.unknown_symbol), aligned_to=None),
+            Node(node_id=7, base=n(self.unknown_symbol), aligned_to=None),
 
-            Node(node_id=8, base=n.code('A'), aligned_to=9),
-            Node(node_id=9, base=n.code('G'), aligned_to=8),
-            Node(node_id=10, base=n.code('G'), aligned_to=None),
-            Node(node_id=11, base=n.code('T'), aligned_to=None),
+            Node(node_id=8, base=n('A'), aligned_to=9),
+            Node(node_id=9, base=n('G'), aligned_to=8),
+            Node(node_id=10, base=n('G'), aligned_to=None),
+            Node(node_id=11, base=n('T'), aligned_to=None),
 
 
         ]
@@ -163,22 +163,22 @@ class PangraphBuilderFromDAGTest_FillMafGapsWithN(PangraphBuilderTests):
                    "test_5_missing_one_reverted_sequence_middle_1_1.maf"
         expected_nodes = [
             # block 0
-            Node(node_id=0, base=n.code('A'), aligned_to=1),
-            Node(node_id=1, base=n.code('G'), aligned_to=0),
-            Node(node_id=2, base=n.code('C'), aligned_to=None),
-            Node(node_id=3, base=n.code('T'), aligned_to=None),
-            Node(node_id=4, base=n.code('A'), aligned_to=5),
-            Node(node_id=5, base=n.code('G'), aligned_to=4),
+            Node(node_id=0, base=n('A'), aligned_to=1),
+            Node(node_id=1, base=n('G'), aligned_to=0),
+            Node(node_id=2, base=n('C'), aligned_to=None),
+            Node(node_id=3, base=n('T'), aligned_to=None),
+            Node(node_id=4, base=n('A'), aligned_to=5),
+            Node(node_id=5, base=n('G'), aligned_to=4),
 
             # missing seq2, on edge (1,1)
-            Node(node_id=6, base=n.code(self.unknown_symbol), aligned_to=None),
-            Node(node_id=7, base=n.code(self.unknown_symbol), aligned_to=None),
+            Node(node_id=6, base=n(self.unknown_symbol), aligned_to=None),
+            Node(node_id=7, base=n(self.unknown_symbol), aligned_to=None),
 
             # block 1
-            Node(node_id=8, base=n.code('A'), aligned_to=9),
-            Node(node_id=9, base=n.code('G'), aligned_to=8),
-            Node(node_id=10, base=n.code('G'), aligned_to=None),
-            Node(node_id=11, base=n.code('T'), aligned_to=None),
+            Node(node_id=8, base=n('A'), aligned_to=9),
+            Node(node_id=9, base=n('G'), aligned_to=8),
+            Node(node_id=10, base=n('G'), aligned_to=None),
+            Node(node_id=11, base=n('T'), aligned_to=None),
         ]
 
         expected_paths = {
@@ -199,21 +199,21 @@ class PangraphBuilderFromDAGTest_FillMafGapsWithN(PangraphBuilderTests):
 
         expected_nodes = [
             # block 1 because it is first in DAG and reverted
-            Node(node_id=0, base=n.code('A'), aligned_to=None),
-            Node(node_id=1, base=n.code('C'), aligned_to=None),
-            Node(node_id=2, base=n.code('C'), aligned_to=3),
-            Node(node_id=3, base=n.code('T'), aligned_to=2),
+            Node(node_id=0, base=n('A'), aligned_to=None),
+            Node(node_id=1, base=n('C'), aligned_to=None),
+            Node(node_id=2, base=n('C'), aligned_to=3),
+            Node(node_id=3, base=n('T'), aligned_to=2),
 
             # missing seq2, on edge (-1,1)
-            Node(node_id=4, base=n.code(self.unknown_symbol), aligned_to=None),
-            Node(node_id=5, base=n.code(self.unknown_symbol), aligned_to=None),
+            Node(node_id=4, base=n(self.unknown_symbol), aligned_to=None),
+            Node(node_id=5, base=n(self.unknown_symbol), aligned_to=None),
 
-            Node(node_id=6, base=n.code('A'), aligned_to=7),
-            Node(node_id=7, base=n.code('C'), aligned_to=6),
-            Node(node_id=8, base=n.code('C'), aligned_to=None),
-            Node(node_id=9, base=n.code('T'), aligned_to=None),
-            Node(node_id=10, base=n.code('A'), aligned_to=11),
-            Node(node_id=11, base=n.code('C'), aligned_to=10),
+            Node(node_id=6, base=n('A'), aligned_to=7),
+            Node(node_id=7, base=n('C'), aligned_to=6),
+            Node(node_id=8, base=n('C'), aligned_to=None),
+            Node(node_id=9, base=n('T'), aligned_to=None),
+            Node(node_id=10, base=n('A'), aligned_to=11),
+            Node(node_id=11, base=n('C'), aligned_to=10),
 
 
         ]
@@ -235,22 +235,22 @@ class PangraphBuilderFromDAGTest_FillMafGapsWithN(PangraphBuilderTests):
                    "test_7_missing_one_reverted_sequence_middle_minus1_minus1.maf"
         expected_nodes = [
             # block 0
-            Node(node_id=0, base=n.code('A'), aligned_to=None),
-            Node(node_id=1, base=n.code('C'), aligned_to=None),
-            Node(node_id=2, base=n.code('T'), aligned_to=None),
-            Node(node_id=3, base=n.code('A'), aligned_to=None),
+            Node(node_id=0, base=n('A'), aligned_to=None),
+            Node(node_id=1, base=n('C'), aligned_to=None),
+            Node(node_id=2, base=n('T'), aligned_to=None),
+            Node(node_id=3, base=n('A'), aligned_to=None),
 
             # missing seq2
-            Node(node_id=4, base=n.code(self.unknown_symbol), aligned_to=None),
-            Node(node_id=5, base=n.code(self.unknown_symbol), aligned_to=None),
+            Node(node_id=4, base=n(self.unknown_symbol), aligned_to=None),
+            Node(node_id=5, base=n(self.unknown_symbol), aligned_to=None),
 
             # block 1
-            Node(node_id=6, base=n.code('A'), aligned_to=7),
-            Node(node_id=7, base=n.code('G'), aligned_to=6),
-            Node(node_id=8, base=n.code('C'), aligned_to=9),
-            Node(node_id=9, base=n.code('G'), aligned_to=8),
-            Node(node_id=10, base=n.code('C'), aligned_to=11),
-            Node(node_id=11, base=n.code('T'), aligned_to=10),
+            Node(node_id=6, base=n('A'), aligned_to=7),
+            Node(node_id=7, base=n('G'), aligned_to=6),
+            Node(node_id=8, base=n('C'), aligned_to=9),
+            Node(node_id=9, base=n('G'), aligned_to=8),
+            Node(node_id=10, base=n('C'), aligned_to=11),
+            Node(node_id=11, base=n('T'), aligned_to=10),
         ]
 
         expected_paths = {

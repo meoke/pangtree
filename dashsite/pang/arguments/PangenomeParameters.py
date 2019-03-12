@@ -1,8 +1,10 @@
+import os
 from typing import Optional
 
 from io import StringIO
 from enum import Enum
 from pathlib import Path
+
 
 
 class ConsensusAlgorithm(Enum):
@@ -35,7 +37,6 @@ class PangenomeParameters:
                  multialignment_file_path: Path,
                  metadata_file_content: Optional[str],
                  metadata_file_path: Path,
-                 blosum_file_content: Optional[StringIO],
                  blosum_file_path: Optional[Path],
                  output_path: Path,
                  generate_fasta: bool,
@@ -56,13 +57,12 @@ class PangenomeParameters:
         self.multialignment_file_path = multialignment_file_path
         self.metadata_file_content = metadata_file_content
         self.metadata_file_path = metadata_file_path
-        self.blosum_file_content = blosum_file_content
-        self.blosum_file_path = blosum_file_path
+        self.blosum_file_path = blosum_file_path or self._get_default_blosum_path()
         self.output_path = output_path
 
         self.not_dag = not_dag
         self.fasta_complementation_option = fasta_complementation_option
-        self.missing_nucleotide_symbol = missing_nucleotide_symbol
+        self.missing_nucleotide_symbol = missing_nucleotide_symbol or '?'
         self.local_fasta_dirpath = local_fasta_dirpath
 
         self.generate_fasta = generate_fasta
@@ -88,29 +88,19 @@ class PangenomeParameters:
             raise Exception("Unspecified output path.")
 
         if self.fasta_complementation_option is FastaComplementationOption.NO and \
-            self.blosum_file_content is not None and self.missing_nucleotide_symbol is not None:
+                self.missing_nucleotide_symbol is not None:
             try:
-                self._blosum_contains_missing_nucl_symbol(blosum_content= self.blosum_file_content,
-                                                             missing_nucleotide_symbol = self.missing_nucleotide_symbol)
+                self._blosum_contains_missing_nucl_symbol(blosum_path= self.blosum_file_path,
+                                                          missing_nucleotide_symbol = self.missing_nucleotide_symbol)
             except Exception as e:
-                raise Exception("The BLOSUM provided does not contain symbol specified for missing nucleotides.") from e
+                raise Exception(f"The BLOSUM does not contain "
+                                f"symbol specified for missing nucleotides ({self.missing_nucleotide_symbol}.") from e
         elif self.fasta_complementation_option is FastaComplementationOption.NO and \
-            self.missing_nucleotide_symbol is not None:
+            self.missing_nucleotide_symbol is None:
             try:
                 self._blosum_contains_missing_nucl_symbol(missing_nucleotide_symbol = self.missing_nucleotide_symbol)
             except Exception as e:
-                raise Exception("The symbol specified for missing nucleotides is not included in default BLOSUM file. "
-                                "Provide a custom BLOSUM file"
-                                f" which defines score for the symbol {self.missing_nucleotide_symbol}") from e
-        elif self.fasta_complementation_option is FastaComplementationOption.NO and \
-            self.blosum_file_content is not None:
-            try:
-                self._blosum_contains_missing_nucl_symbol(blosum_content= self.blosum_file_content)
-            except Exception as e:
-                raise Exception("The provided BLOSUM file does not include a symbol used by the program as default "
-                                "symbol for missing nucleotide. Add scores for symbol \'?\' in the provided BLOSUM file "
-                                "or "
-                                "specify custom symbol for missing nucleotides which is included in the BLOSUM file.") from e
+                raise Exception("The BLOSUM does not contain default symbol for missing nucleotides (\'?\').") from e
 
         if self.fasta_complementation_option is FastaComplementationOption.LOCAL and self.local_fasta_dirpath is None:
             raise Exception("Unspecified path to direction with fasta files, "
@@ -155,9 +145,10 @@ class PangenomeParameters:
             raise Exception("STOP value must be in the range of [0,1].")
 
     def _blosum_contains_missing_nucl_symbol(self,
-                                             blosum_content: Optional[StringIO] = None,
-                                             missing_nucleotide_symbol: Optional[str] = '?'):
-        blosum_lines = blosum_content.readlines()
+                                             blosum_path: Path,
+                                             missing_nucleotide_symbol: str):
+        with open(blosum_path) as b:
+            blosum_lines = b.readlines()
         for blosum_line in blosum_lines:
             if len(blosum_line) > 0 and blosum_line[0] == " ":
                 blosum_symbols_line = blosum_line
@@ -169,7 +160,7 @@ class PangenomeParameters:
             raise Exception("Error while a try of finding symbol for missing nucletides.")
 
 
-
-
+    def _get_default_blosum_path(self):
+        return Path(os.path.abspath(__file__)).joinpath('../../bin/blosum80.mat').resolve()
 
 

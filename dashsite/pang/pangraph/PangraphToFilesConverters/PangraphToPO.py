@@ -1,5 +1,4 @@
 from typing import List
-from pangraph import nucleotides as n
 from pangraph.custom_types import NodeID
 
 
@@ -84,7 +83,7 @@ class PangraphToPO:
         return start_at + i
 
     def _get_node_code(self, nucleobase: int) -> str:
-        return n.decode(nucleobase).lower()
+        return nucleobase.decode("ASCII").lower()
 
     def _get_in_nodes_info(self, in_nodes: List[NodeID]) -> str:
         return "".join([f'L{i}' for i in in_nodes])

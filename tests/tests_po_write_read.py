@@ -5,32 +5,32 @@ from typing import List
 
 from tests.context import Pangraph
 from tests.context import Node
-from tests.context import nucleotides as n
 from tests.context import pathtools
 from tests.context import MultialignmentMetadata
 from tests.context import SequenceMetadata
+from tests.context import make_nucleobase as n
 import tests.helper_show_diffs as diff
 
 
 def get_pangraph1() -> (Pangraph, List[str]):
-    nodes = [Node(node_id=0, base=n.code('A'), aligned_to=1),
-             Node(node_id=1, base=n.code('G'), aligned_to=0),
-             Node(node_id=2, base=n.code('C'), aligned_to=3),
-             Node(node_id=3, base=n.code('G'), aligned_to=2),
-             Node(node_id=4, base=n.code('A'), aligned_to=5),
-             Node(node_id=5, base=n.code('T'), aligned_to=4),
-             Node(node_id=6, base=n.code('G'), aligned_to=None),
-             Node(node_id=7, base=n.code('G'), aligned_to=None),
-             Node(node_id=8, base=n.code('A'), aligned_to=9),
-             Node(node_id=9, base=n.code('C'), aligned_to=10),
-             Node(node_id=10, base=n.code('G'), aligned_to=11),
-             Node(node_id=11, base=n.code('T'), aligned_to=8),
-             Node(node_id=12, base=n.code('A'), aligned_to=13),
-             Node(node_id=13, base=n.code('C'), aligned_to=12),
-             Node(node_id=14, base=n.code('T'), aligned_to=None),
-             Node(node_id=15, base=n.code('A'), aligned_to=16),
-             Node(node_id=16, base=n.code('C'), aligned_to=17),
-             Node(node_id=17, base=n.code('G'), aligned_to=15)
+    nodes = [Node(node_id=0, base=n('A'), aligned_to=1),
+             Node(node_id=1, base=n('G'), aligned_to=0),
+             Node(node_id=2, base=n('C'), aligned_to=3),
+             Node(node_id=3, base=n('G'), aligned_to=2),
+             Node(node_id=4, base=n('A'), aligned_to=5),
+             Node(node_id=5, base=n('T'), aligned_to=4),
+             Node(node_id=6, base=n('G'), aligned_to=None),
+             Node(node_id=7, base=n('G'), aligned_to=None),
+             Node(node_id=8, base=n('A'), aligned_to=9),
+             Node(node_id=9, base=n('C'), aligned_to=10),
+             Node(node_id=10, base=n('G'), aligned_to=11),
+             Node(node_id=11, base=n('T'), aligned_to=8),
+             Node(node_id=12, base=n('A'), aligned_to=13),
+             Node(node_id=13, base=n('C'), aligned_to=12),
+             Node(node_id=14, base=n('T'), aligned_to=None),
+             Node(node_id=15, base=n('A'), aligned_to=16),
+             Node(node_id=16, base=n('C'), aligned_to=17),
+             Node(node_id=17, base=n('G'), aligned_to=15)
              ]
 
     paths_to_node_ids = {
@@ -78,15 +78,15 @@ def get_pangraph1() -> (Pangraph, List[str]):
     return pangraph, expected_pofile
 
 def get_pangraph_with_consensuses() -> (Pangraph, List[str]):
-    nodes = [Node(node_id=0, base=n.code('C'), aligned_to=1),
-             Node(node_id=1, base=n.code('T'), aligned_to=0),
-             Node(node_id=2, base=n.code('A'), aligned_to=3),
-             Node(node_id=3, base=n.code('G'), aligned_to=2),
-             Node(node_id=4, base=n.code('C'), aligned_to=None),
-             Node(node_id=5, base=n.code('T'), aligned_to=None),
-             Node(node_id=6, base=n.code('A'), aligned_to=7),
-             Node(node_id=7, base=n.code('T'), aligned_to=6),
-             Node(node_id=8, base=n.code('G'), aligned_to=None)
+    nodes = [Node(node_id=0, base=n('C'), aligned_to=1),
+             Node(node_id=1, base=n('T'), aligned_to=0),
+             Node(node_id=2, base=n('A'), aligned_to=3),
+             Node(node_id=3, base=n('G'), aligned_to=2),
+             Node(node_id=4, base=n('C'), aligned_to=None),
+             Node(node_id=5, base=n('T'), aligned_to=None),
+             Node(node_id=6, base=n('A'), aligned_to=7),
+             Node(node_id=7, base=n('T'), aligned_to=6),
+             Node(node_id=8, base=n('G'), aligned_to=None)
              ]
 
     sequences_paths_to_node_ids = {

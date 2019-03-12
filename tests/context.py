@@ -10,7 +10,6 @@ from dashsite.pang.metadata.SequenceMetadata import SequenceMetadata
 from dashsite.pang.metadata.reader import read as json_to_metadata
 
 from dashsite.pang.pangraph.Node import Node
-from dashsite.pang.pangraph import nucleotides
 from dashsite.pang.pangraph.Pangraph import Pangraph
 from dashsite.pang.pangraph.FastaSource import FastaSource
 from dashsite.pang.pangraph.FastaSource import FastaFileSystemSource
@@ -18,6 +17,7 @@ from dashsite.pang.pangraph.PangraphBuilder.PangraphBuilderFromDAG import Pangra
 from dashsite.pang.pangraph.PangraphBuilder.PangraphBuilderFromMAF import PangraphBuilderFromMAF
 from dashsite.pang.pangraph.PangraphToFilesConverters.PangraphToPO import PangraphToPO, NodePO, SequencePO
 from dashsite.pang.pangraph.custom_types import SequenceID
+from dashsite.pang.pangraph.custom_types import make_nucleobase, Nucleobase
 
 from dashsite.pang.fileformats.maf.reader import maf_to_dagmaf
 # import dashsite.pang.fileformats.po.writer as powriter

@@ -6,9 +6,9 @@ from metadata.MultialignmentMetadata import MultialignmentMetadata
 
 
 class SimplePOAConsensusGenerator:
-    def __init__(self,
-                 hbmin: Compatibility):
+    def __init__(self, hbmin: Compatibility, blosum_path: Path):
         self.hbmin: Compatibility = hbmin
+        self.blosum_path: Path = blosum_path
 
     def get_consensuses_tree(self,
                              pangraph: Pangraph,

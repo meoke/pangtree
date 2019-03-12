@@ -198,13 +198,11 @@ def create_pangenome_parameters() -> PangenomeParameters:
 
     parser = _get_parser()
     args = parser.parse_args()
-    blosum_content = pathtools.get_file_content_as_stringio(args.blosum) if args.blosum else None
     return PangenomeParameters(
             multialignment_file_content=pathtools.get_file_content_as_stringio(args.multialignment),
             multialignment_file_path=args.multialignment,
             metadata_file_content=pathtools.get_file_content(args.data),
             metadata_file_path=args.data,
-            blosum_file_content=blosum_content,
             blosum_file_path=args.blosum,
             output_path=args.output,
             generate_fasta=args.fasta,

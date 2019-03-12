@@ -3,7 +3,6 @@ from pathlib import Path
 from typing import List
 from metadata.MultialignmentMetadata import MultialignmentMetadata
 from pangraph.Node import Node
-from pangraph import nucleotides as n
 
 
 def save(p: Pangraph, path: Path, genomes_info: MultialignmentMetadata) -> None:

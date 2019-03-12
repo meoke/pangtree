@@ -17,7 +17,9 @@ class PangraphBuilderTests(unittest.TestCase):
     def setup_pangraph_from_maf_firstly_converted_to_dag(maf_path, metadata, fasta_source : Optional[FastaSource] = None):
         mafcontent = PangraphBuilderTests.get_file_content(maf_path)
         pangraph = Pangraph()
-        builder = PangraphBuilderFromDAG(metadata, None, fasta_source)
+        builder = PangraphBuilderFromDAG(genomes_info=metadata,
+                                         missing_nucleotide_symbol="?",
+                                         fasta_source=fasta_source)
         builder.build(mafcontent, pangraph)
         return pangraph
 

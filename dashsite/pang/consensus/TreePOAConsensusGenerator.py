@@ -15,10 +15,12 @@ class TreePOAConsensusGenerator:
     def __init__(self,
                  max_node_strategy: FindMaxCutoff,
                  node_cutoff_strategy: FindNodeCutoff,
+                 blosum_path: Path,
                  stop: Compatibility,
                  re_consensus: bool):
         self.max_node_strategy: FindMaxCutoff = max_node_strategy
         self.node_cutoff_strategy: FindNodeCutoff = node_cutoff_strategy
+        self.blosum_path: Path = blosum_path
         self.stop: Compatibility = stop
         self.re_consensus: bool = re_consensus
         self.pangraph: Pangraph = None
@@ -64,7 +66,8 @@ class TreePOAConsensusGenerator:
             return top_consensus.get_top_consensus(pangraph=self.pangraph,
                                                    sequences_ids=sequences_ids,
                                                    output_dir=self.output_dir,
-                                                   file_prefix=name)
+                                                   file_prefix=name,
+                                                   blosum_path=self.blosum_path)
         except TreeConsensusGenerationException as e:
             raise TreeConsensusGenerationException(f'Cannot find {name} consensus.') from e
 
