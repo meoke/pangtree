@@ -1,15 +1,14 @@
-from typing import List, Union, Set
-from .nucleotides import decode
+from pangraph.custom_types import NodeID, Nucleobase, BlockID, ColumnID
 
 
 class Node:
     def __init__(self,
-                 id: int,
-                 base: int,
-                 aligned_to: List[int],
-                 column_id: int = None,
-                 block_id: int = None):
-        self.id = id
+                 node_id: NodeID,
+                 base: Nucleobase,
+                 aligned_to: NodeID,
+                 column_id: ColumnID = None,
+                 block_id: BlockID = None):
+        self.id = node_id
         self.base = base
         self.aligned_to = aligned_to
         self.column_id = column_id
@@ -17,13 +16,14 @@ class Node:
 
     def __eq__(self, other):
         return (self.id == other.id
-            and self.base == other.base
-            and self.aligned_to == other.aligned_to)
+                and self.base == other.base
+                and self.aligned_to == other.aligned_to)
 
     def __str__(self):
+        base = self.base.decode("ASCII")
         return \
             f"id: {self.id}, " \
-            f"base: {decode(self.base)}, " \
+            f"base: {base}, " \
             f"aligned_to: {self.aligned_to}, " \
             f"column_id: {self.column_id}, " \
             f"block_id: {self.block_id}"

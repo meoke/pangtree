@@ -17,6 +17,7 @@ class Pangenome:
         self.pangraph = Pangraph()
         self.dagmaf = None
         self.consensuses_tree = None
+        self.missing_nucleotide_symbol = self.params.missing_nucleotide_symbol
 
     def build_from_maf_firstly_converted_to_dag(self):
         if self.params.fasta_complementation_option is FastaComplementationOption.NO:
@@ -33,7 +34,8 @@ class Pangenome:
         self.genomes_info.feed_with_maf_data(self.params.multialignment_file_content)
         self.pangraph.build_from_maf_firstly_converted_to_dag(mafcontent=self.params.multialignment_file_content,
                                                               fasta_source=fasta_source,
-                                                              genomes_info=self.genomes_info)
+                                                              genomes_info=self.genomes_info,
+                                                              missing_nucleotide_symbol=self.missing_nucleotide_symbol)
 
     def build_from_maf(self):
         self.genomes_info.feed_with_maf_data(self.params.multialignment_file_content)
@@ -48,7 +50,8 @@ class Pangenome:
 
         if self.params.consensus_type == ConsensusAlgorithm.SIMPLE:
             consensus_generator = SimplePOAConsensusGenerator(
-                hbmin=self.params.hbmin
+                hbmin=self.params.hbmin,
+                blosum_path=self.params.blosum_file_path,
             )
             self.consensuses_tree = consensus_generator.get_consensuses_tree(
                 pangraph=self.pangraph,
@@ -60,6 +63,7 @@ class Pangenome:
             consensus_generator = TreePOAConsensusGenerator(
                 max_node_strategy=self._get_max_cutoff_strategy(cutoffs_log_path),
                 node_cutoff_strategy=self._get_node_cutoff_strategy(cutoffs_log_path),
+                blosum_path=self.params.blosum_file_path,
                 stop=self.params.stop,
                 re_consensus=self.params.stop
             )
@@ -77,7 +81,7 @@ class Pangenome:
 
     def _get_max_cutoff_strategy(self, cutoffs_log_path) -> FindMaxCutoff:
         if self.params.max_cutoff_option == MaxCutoffOption.MAX1:
-            return MAX1(self.params.range, cutoffs_log_file_path=cutoffs_log_path)
+            return MAX1(self.params.search_range, cutoffs_log_file_path=cutoffs_log_path)
         elif self.params.max_cutoff_option == MaxCutoffOption.MAX2:
             return MAX2(cutoffs_log_file_path=cutoffs_log_path)
         else:

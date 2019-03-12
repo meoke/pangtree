@@ -1,8 +1,10 @@
+import os
 from typing import Optional
 
 from io import StringIO
 from enum import Enum
 from pathlib import Path
+
 
 
 class ConsensusAlgorithm(Enum):
@@ -35,16 +37,18 @@ class PangenomeParameters:
                  multialignment_file_path: Path,
                  metadata_file_content: Optional[str],
                  metadata_file_path: Path,
+                 blosum_file_path: Optional[Path],
                  output_path: Path,
                  generate_fasta: bool,
                  consensus_type: ConsensusAlgorithm,
                  hbmin: float,
-                 range: Optional[list],
+                 search_range: Optional[list],
                  multiplier: Optional[float],
                  stop: Optional[float],
                  re_consensus: Optional[bool],
                  not_dag: bool,
                  fasta_complementation_option: Optional[FastaComplementationOption],
+                 missing_nucleotide_symbol: Optional[str],
                  local_fasta_dirpath: Optional[Path],
                  max_cutoff_option: Optional[MaxCutoffOption],
                  node_cutoff_option: Optional[NodeCutoffOption]
@@ -53,10 +57,12 @@ class PangenomeParameters:
         self.multialignment_file_path = multialignment_file_path
         self.metadata_file_content = metadata_file_content
         self.metadata_file_path = metadata_file_path
+        self.blosum_file_path = blosum_file_path or self._get_default_blosum_path()
         self.output_path = output_path
 
         self.not_dag = not_dag
         self.fasta_complementation_option = fasta_complementation_option
+        self.missing_nucleotide_symbol = missing_nucleotide_symbol or '?'
         self.local_fasta_dirpath = local_fasta_dirpath
 
         self.generate_fasta = generate_fasta
@@ -67,7 +73,7 @@ class PangenomeParameters:
 
         self.stop = stop
         self.max_cutoff_option = max_cutoff_option
-        self.range = range
+        self.search_range = search_range
         self.node_cutoff_option = node_cutoff_option
         self.multiplier = multiplier
         self.re_consensus = re_consensus
@@ -80,6 +86,21 @@ class PangenomeParameters:
 
         if self.output_path is None:
             raise Exception("Unspecified output path.")
+
+        if self.fasta_complementation_option is FastaComplementationOption.NO and \
+                self.missing_nucleotide_symbol is not None:
+            try:
+                self._blosum_contains_missing_nucl_symbol(blosum_path= self.blosum_file_path,
+                                                          missing_nucleotide_symbol = self.missing_nucleotide_symbol)
+            except Exception as e:
+                raise Exception(f"The BLOSUM does not contain "
+                                f"symbol specified for missing nucleotides ({self.missing_nucleotide_symbol}.") from e
+        elif self.fasta_complementation_option is FastaComplementationOption.NO and \
+            self.missing_nucleotide_symbol is None:
+            try:
+                self._blosum_contains_missing_nucl_symbol(missing_nucleotide_symbol = self.missing_nucleotide_symbol)
+            except Exception as e:
+                raise Exception("The BLOSUM does not contain default symbol for missing nucleotides (\'?\').") from e
 
         if self.fasta_complementation_option is FastaComplementationOption.LOCAL and self.local_fasta_dirpath is None:
             raise Exception("Unspecified path to direction with fasta files, "
@@ -104,13 +125,16 @@ class PangenomeParameters:
                 raise Exception("For TREE consensus algorithm RE CONSENSUS must be specified.")
 
         if self.max_cutoff_option is MaxCutoffOption.MAX1:
-            if self.range is None:
+            if self.search_range is None:
                 raise Exception("For MAX1 max cutoff option CUTOFF SEARCH RANGE must be specified.")
-            if len(self.range) != 2:
+            if len(self.search_range) != 2:
                 raise Exception("CUTOFF SEARCH RANGE must have length 2.")
-            if self.range[1] < self.range[0]:
+            if self.search_range[1] < self.search_range[0]:
                 raise Exception("CUTOFF SEARCH RANGE first value must be smaller or equal to second value.")
-            if self.range[0] < 0 or self.range[0] > 1 or self.range[1] < 0 or self.range[1] > 1:
+            if self.search_range[0] < 0 \
+                    or self.search_range[0] > 1 \
+                    or self.search_range[1] < 0\
+                    or self.search_range[1] > 1:
                 raise Exception("CUTOFF SEARCH RANGE values must be in the range of [0,1].")
 
         if self.node_cutoff_option in [NodeCutoffOption.NODE1, NodeCutoffOption.NODE2]:
@@ -120,7 +144,23 @@ class PangenomeParameters:
         if self.stop < 0 or self.stop > 1:
             raise Exception("STOP value must be in the range of [0,1].")
 
+    def _blosum_contains_missing_nucl_symbol(self,
+                                             blosum_path: Path,
+                                             missing_nucleotide_symbol: str):
+        with open(blosum_path) as b:
+            blosum_lines = b.readlines()
+        for blosum_line in blosum_lines:
+            if len(blosum_line) > 0 and blosum_line[0] == " ":
+                blosum_symbols_line = blosum_line
+                break
+        blosum_symbols = str.strip(blosum_symbols_line).split(" ")
+        if missing_nucleotide_symbol in blosum_symbols:
+            return True
+        else:
+            raise Exception("Error while a try of finding symbol for missing nucletides.")
 
 
+    def _get_default_blosum_path(self):
+        return Path(os.path.abspath(__file__)).joinpath('../../bin/blosum80.mat').resolve()
 
 

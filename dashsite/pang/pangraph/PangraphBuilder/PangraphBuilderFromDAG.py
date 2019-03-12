@@ -1,18 +1,17 @@
 from io import StringIO
 from collections import namedtuple
-from typing import Dict, Tuple, List
+from typing import Dict, Tuple, List, Optional
 
 from mafgraph.graph import Block
 from mafgraph.graph.Arc import Arc
 
 from fileformats.maf.DAGMaf import DAGMaf
 from fileformats.maf.reader import maf_to_dagmaf
-from pangraph import nucleotides
 from pangraph.FastaSource import FastaSource
 from pangraph.Node import Node
 from pangraph.PangraphBuilder.PangraphBuilderBase import PangraphBuilderBase
 from pangraph.exceptions import NoSequenceInfo, SequenceBuildingException
-from pangraph.custom_types import ColumnID, SequenceID, NodeID, BlockID, Sequence, Nucleobase
+from pangraph.custom_types import ColumnID, SequenceID, NodeID, BlockID, Sequence, Nucleobase, make_nucleobase
 from metadata.MultialignmentMetadata import MultialignmentMetadata
 from mafgraph.mafreader import start_position
 
@@ -20,7 +19,8 @@ SequenceInfo = namedtuple('SequenceInfo', ['block_id',
                                            'start',
                                            'strand',
                                            'size',
-                                           'srcSize'])
+                                           'srcSize',
+                                           'orient'])
 
 Edge = namedtuple('Edge', ['seq_id',
                            'from_block_id',
@@ -29,21 +29,25 @@ Edge = namedtuple('Edge', ['seq_id',
 
 
 class PangraphBuilderFromDAG(PangraphBuilderBase):
-    def __init__(self, genomes_info: MultialignmentMetadata, fasta_source: FastaSource):
+    def __init__(self,
+                 genomes_info: MultialignmentMetadata,
+                 missing_nucleotide_symbol: str,
+                 fasta_source: Optional[FastaSource] = None):
         super().__init__(genomes_info)
         self.pangraph = None
         self.dagmaf: DAGMaf = None
-        self.free_edges: Dict[SequenceID, Edge] = None
+        self.free_edges: Dict[SequenceID, List[Edge]] = None
         self.seqs_info: Dict[SequenceID, SequenceInfo] = None
         self.column_id: ColumnID = None
-        self.complement_sequences = True if fasta_source else False  # todo use this info while building 
+        self.complement_sequences: bool = True if fasta_source else False  # todo use this info while building
+        self.missing_nucleotide_symbol: Nucleobase = make_nucleobase(missing_nucleotide_symbol)
 
         if self.complement_sequences:
             self.full_sequences: Dict[SequenceID, Sequence] = self.get_sequences(fasta_source)
 
     def get_sequences(self, fasta_source: FastaSource) -> Dict[SequenceID, Sequence]:
         return {
-            SequenceID(seq_id): Sequence(fasta_source.get_source(id=seq_id))
+            SequenceID(seq_id): Sequence(fasta_source.get_source(sequenceID=seq_id))
             for seq_id in self.sequences_names
         }
 
@@ -71,7 +75,8 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
                                                            start=start_position(seq),
                                                            strand=seq.annotations["strand"],
                                                            size=seq.annotations["size"],
-                                                           srcSize=seq.annotations["srcSize"]))
+                                                           srcSize=seq.annotations["srcSize"],
+                                                           orient=n.orient))
         absents_sequences: List[SequenceID] = []
         for seq_id, seq_info_list in self.seqs_info.items():
             if seq_info_list:
@@ -87,15 +92,20 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
             if first_block_sinfo.start != 0:
                 self.complement_sequence_starting_nodes(seq_id, first_block_sinfo)
 
+    def get_missing_nucleotide(self, seq_id, i) -> Nucleobase:
+        if self.complement_sequences:
+            return make_nucleobase(self.full_sequences[seq_id][i])
+        return self.missing_nucleotide_symbol
+
     def complement_sequence_starting_nodes(self, seq_id: SequenceID, first_block_sinfo: SequenceInfo) -> None:
         current_node_id: NodeID = self.get_max_node_id()
         column_id = -first_block_sinfo.start
         join_with = None
         for i in range(first_block_sinfo.start):
             current_node_id += 1
-            missing_nucleotide = self.full_sequences[seq_id][i]
-            self.add_node(id=current_node_id,
-                          base=missing_nucleotide,
+            missing_nucleotide = self.get_missing_nucleotide(seq_id, i)
+            self.add_node(node_id=current_node_id,
+                          nucleobase=missing_nucleotide,
                           aligned_to=None,
                           column_id=column_id,
                           block_id=None)
@@ -108,16 +118,16 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
                                             last_node_id=current_node_id,))
 
     def get_max_node_id(self) -> NodeID:
-        return NodeID(len(self.pangraph.nodes)) - 1
+        return NodeID(len(self.pangraph.nodes) - 1)
 
     def add_node(self,
-                 id: NodeID,
-                 base: Nucleobase,
+                 node_id: NodeID,
+                 nucleobase: Nucleobase,
                  aligned_to: NodeID,
                  column_id: ColumnID,
                  block_id: BlockID) -> None:
-        self.pangraph.nodes.append(Node(id=id,
-                                        base=nucleotides.code(base),
+        self.pangraph.nodes.append(Node(node_id=node_id,
+                                        base=nucleobase,
                                         aligned_to=aligned_to,
                                         column_id=column_id,
                                         block_id=block_id))
@@ -147,8 +157,8 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
             for i, nucl in enumerate(nodes_codes):
                 current_node_id += 1
                 seqs_id = [seq_id for seq_id, n in sequence_name_to_nucleotide.items() if n == nucl]
-                self.add_node(id=current_node_id,
-                              base=nucl,
+                self.add_node(node_id=current_node_id,
+                              nucleobase=make_nucleobase(nucl),
                               aligned_to=self.get_next_aligned_node_id(i, column_nodes_ids),
                               column_id=self.column_id,
                               block_id=block.id)
@@ -172,27 +182,80 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
         current_columns_ids = [node.column_id for node in self.pangraph.nodes]
         return max(current_columns_ids) if current_columns_ids else ColumnID(-1)
 
+    def get_correct_edge_type(self, block, edge: Arc) -> Tuple[int, int]:
+        return edge.edge_type
+
+
+    def should_join_with_last_node(self, edge_type: Tuple[int, int]) -> bool:
+        if edge_type == (1, 1) or edge_type == (1, -1):
+            return True
+        elif edge_type == (-1, 1) or edge_type == (-1, -1):
+            return False
+        else:
+            raise SequenceBuildingException("Incorrect edge type."
+                                            "Cannot decide if sequence should be joined with complemented nucleotides.")
+
+    def complement_sequence_middles_if_needed(self, block: Block, edge: Arc, seq, last_node_id: NodeID):
+        seq_id = seq[0].seq_id
+        left_block_sinfo, right_block_sinfo = self.get_edge_sinfos(from_block_id=block.id,
+                                                                   edge=edge,
+                                                                   seq_id=seq_id)
+        if self.complementation_not_needed(left_block_sinfo, right_block_sinfo):
+            if edge.edge_type == (1, -1):
+                return last_node_id
+            else:
+                return None
+        else:
+            current_node_id = self.get_max_node_id()
+            column_id = self.column_id
+            if left_block_sinfo.start < right_block_sinfo.start:
+                last_pos = left_block_sinfo.start + left_block_sinfo.size - 1
+                next_pos = right_block_sinfo.start
+            else:
+                last_pos = right_block_sinfo.start + right_block_sinfo.size - 1
+                next_pos = left_block_sinfo.start
+
+            join_with = last_node_id if self.should_join_with_last_node(edge.edge_type) else None
+            for i in range(last_pos + 1, next_pos):
+                column_id += 1
+                current_node_id += 1
+                missing_nucleotide = self.get_missing_nucleotide(seq_id, i)
+                self.add_node(node_id=current_node_id,
+                              nucleobase=missing_nucleotide,
+                              aligned_to=None,
+                              column_id=column_id,
+                              block_id=None)
+                self.add_node_to_sequence(seq_id=seq_id, join_with=join_with, node_id=current_node_id)
+                join_with = current_node_id
+
+            if self.should_join_with_next_node(edge.edge_type):
+                return current_node_id
+            else:
+                return None
+
+    def should_join_with_next_node(self, edge_type):
+        if edge_type == (-1, 1) or edge_type == (1, -1) or edge_type == (-1, -1):
+            return True
+        elif edge_type == (1, 1):
+            return False
+        else:
+            raise SequenceBuildingException("Incorrect edge type."
+                                            "Cannot decide if complemented nucleotides must be joined with next block.")
+
     def add_block_out_edges_to_free_edges(self, block: Block, join_info: Dict[SequenceID, NodeID]):
         for edge in block.out_edges:
-            if edge.edge_type != (1, -1):
-                continue
+            edge_type = self.get_correct_edge_type(block, edge)
             for seq in edge.sequences:
                 seq_id = seq[0].seq_id
-                left_block_sinfo, right_block_sinfo = self.get_edge_sinfos(from_block_id=block.id, edge=edge, seq_id=seq_id)
-                if not self.continuous_sequence(left_block_sinfo, right_block_sinfo):
-                    last_node_id = self.complement_sequence_middle_nodes(seq_id=seq_id,
-                                                                         last_pos=left_block_sinfo.start + left_block_sinfo.size-1,
-                                                                         next_pos=right_block_sinfo.start,
-                                                                         last_node_id=join_info[seq_id])
-                else:
-                    last_node_id = join_info[seq_id]
-
-                self.free_edges[seq_id].append(
-                    Edge(
-                        seq_id=seq_id,
-                        from_block_id=block.id,
-                        to_block_id=edge.to,
-                        last_node_id=last_node_id))
+                last_node_id = self.complement_sequence_middles_if_needed(block=block,
+                                                                          edge=edge,
+                                                                          seq=seq,
+                                                                          last_node_id=join_info[seq_id])
+                if last_node_id is not None:
+                    self.free_edges[seq_id].append(Edge(seq_id=seq_id,
+                                                        from_block_id=block.id,
+                                                        to_block_id=edge.to,
+                                                        last_node_id=last_node_id))
 
     def manage_endings(self, block: Block, join_info: Dict[SequenceID, NodeID]):
         sequences_ending_in_this_block = self.get_ending_sequences(block)
@@ -223,10 +286,10 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
                                  f"Left block is {left_seq_info}, right block is {right_seq_info}.")
         return left_seq_info, right_seq_info
 
-    def get_column_nucleotides_sorted_codes(self, seq_to_nucl: Dict[SequenceID, Nucleobase]) -> List[Nucleobase]:
+    def get_column_nucleotides_sorted_codes(self, seq_to_nucl: Dict[SequenceID, str]) -> List[str]:
         return sorted(
                 set(
-                    [Nucleobase(nucleotide)
+                    [nucleotide
                      for nucleotide
                      in seq_to_nucl.values()
                      if nucleotide is not '-']))
@@ -236,28 +299,19 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
             if sinfo.block_id == block_id:
                 return sinfo
 
-    def continuous_sequence(self, left_block_sinfo, right_block_sinfo):
-        if left_block_sinfo.strand == 1 and right_block_sinfo.strand == 1:
-            return left_block_sinfo.start + left_block_sinfo.size == right_block_sinfo.start
-        elif left_block_sinfo.strand == 1 and right_block_sinfo.strand == -1:
-            raise Exception("+ łączy się z -")
-        elif left_block_sinfo.strand == -1 and right_block_sinfo.strand == +1:
-            raise Exception("- łączy się z +")
-        elif left_block_sinfo.strand == -1 and right_block_sinfo.strand == -1:
-            return right_block_sinfo.start + right_block_sinfo.size == left_block_sinfo.start
-        else:
-            raise Exception("Unexcpected strand values!")
+    def complementation_not_needed(self, left, right):
+        return left.start + left.size == right.start or right.start + right.size == left.start
 
     def complement_sequence_middle_nodes(self, seq_id: SequenceID, last_pos, next_pos, last_node_id: NodeID) -> NodeID:
         current_node_id = self.get_max_node_id()
         column_id = self.column_id
-        join_with=last_node_id
+        join_with = last_node_id
         for i in range(last_pos+1, next_pos):
             column_id += 1
             current_node_id += 1
-            missing_nucleotide = self.full_sequences[seq_id][i]
-            self.add_node(id=current_node_id,
-                          base=missing_nucleotide,
+            missing_nucleotide = self.get_missing_nucleotide(seq_id, i)
+            self.add_node(node_id=current_node_id,
+                          nucleobase=missing_nucleotide,
                           aligned_to=None,
                           column_id=column_id,
                           block_id=None)

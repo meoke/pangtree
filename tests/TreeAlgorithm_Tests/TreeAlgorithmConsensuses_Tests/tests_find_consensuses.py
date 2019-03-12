@@ -1,61 +1,65 @@
+import os
 import unittest
 from pathlib import Path
 
 from ddt import ddt
 from tests.context import Node, Pangraph
-from tests.context import nucleotides as n
+from tests.context import make_nucleobase as n
 from tests.context import TreePOAConsensusGenerator, MAX1, MAX2, NODE1, NODE2, NODE3, NODE4
 from tests.context import Compatibility
 
 @ddt
 class FindConsensusesTests(unittest.TestCase):
 
+    def setUp(self):
+        self.blosum_path = Path(os.path.abspath(__file__)).joinpath('../../../bin/blosum80.mat')
+
     def test1(self):
-        nodes = [Node(id=0, base=n.code('A'), aligned_to=1),
-                 Node(id=1, base=n.code('C'), aligned_to=2),
-                 Node(id=2, base=n.code('T'), aligned_to=0),
-                 Node(id=3, base=n.code('G'), aligned_to=None),
-                 Node(id=4, base=n.code('T'), aligned_to=None),
-                 Node(id=5, base=n.code('A'), aligned_to=6),
-                 Node(id=6, base=n.code('C'), aligned_to=7),
-                 Node(id=7, base=n.code('G'), aligned_to=8),
-                 Node(id=8, base=n.code('T'), aligned_to=5),
-                 Node(id=9, base=n.code('A'), aligned_to=10),
-                 Node(id=10, base=n.code('G'),aligned_to=9),
+        nodes = [Node(node_id=0, base=n('A'), aligned_to=1),
+                 Node(node_id=1, base=n('C'), aligned_to=2),
+                 Node(node_id=2, base=n('T'), aligned_to=0),
+                 Node(node_id=3, base=n('G'), aligned_to=None),
+                 Node(node_id=4, base=n('T'), aligned_to=None),
+                 Node(node_id=5, base=n('A'), aligned_to=6),
+                 Node(node_id=6, base=n('C'), aligned_to=7),
+                 Node(node_id=7, base=n('G'), aligned_to=8),
+                 Node(node_id=8, base=n('T'), aligned_to=5),
+                 Node(node_id=9, base=n('A'), aligned_to=10),
+                 Node(node_id=10, base=n('G'), aligned_to=9),
 
-                 Node(id=11, base=n.code('C'), aligned_to=12),
-                 Node(id=12, base=n.code('T'), aligned_to=11),
-                 Node(id=13, base=n.code('A'), aligned_to=14),
-                 Node(id=14, base=n.code('C'), aligned_to=13),
-                 Node(id=15, base=n.code('C'), aligned_to=16),
-                 Node(id=16, base=n.code('G'), aligned_to=15),
-                 Node(id=17, base=n.code('C'), aligned_to=None),
-                 Node(id=18, base=n.code('A'), aligned_to=19),
-                 Node(id=19, base=n.code('C'), aligned_to=20),
-                 Node(id=20, base=n.code('G'), aligned_to=21),
-                 Node(id=21, base=n.code('T'), aligned_to=18),
+                 Node(node_id=11, base=n('C'), aligned_to=12),
+                 Node(node_id=12, base=n('T'), aligned_to=11),
+                 Node(node_id=13, base=n('A'), aligned_to=14),
+                 Node(node_id=14, base=n('C'), aligned_to=13),
+                 Node(node_id=15, base=n('C'), aligned_to=16),
+                 Node(node_id=16, base=n('G'), aligned_to=15),
+                 Node(node_id=17, base=n('C'), aligned_to=None),
+                 Node(node_id=18, base=n('A'), aligned_to=19),
+                 Node(node_id=19, base=n('C'), aligned_to=20),
+                 Node(node_id=20, base=n('G'), aligned_to=21),
+                 Node(node_id=21, base=n('T'), aligned_to=18),
 
-                 Node(id=22, base=n.code('G'), aligned_to=23),
-                 Node(id=23, base=n.code('T'), aligned_to=22),
-                 Node(id=24, base=n.code('A'), aligned_to=25),
-                 Node(id=25, base=n.code('C'), aligned_to=26),
-                 Node(id=26, base=n.code('G'), aligned_to=24),
-                 Node(id=27, base=n.code('A'), aligned_to=28),
-                 Node(id=28, base=n.code('C'), aligned_to=29),
-                 Node(id=29, base=n.code('T'), aligned_to=27),
-                 Node(id=30, base=n.code('C'), aligned_to=31),
-                 Node(id=31, base=n.code('G'), aligned_to=30),
+                 Node(node_id=22, base=n('G'), aligned_to=23),
+                 Node(node_id=23, base=n('T'), aligned_to=22),
+                 Node(node_id=24, base=n('A'), aligned_to=25),
+                 Node(node_id=25, base=n('C'), aligned_to=26),
+                 Node(node_id=26, base=n('G'), aligned_to=24),
+                 Node(node_id=27, base=n('A'), aligned_to=28),
+                 Node(node_id=28, base=n('C'), aligned_to=29),
+                 Node(node_id=29, base=n('T'), aligned_to=27),
+                 Node(node_id=30, base=n('C'), aligned_to=31),
+                 Node(node_id=31, base=n('G'), aligned_to=30),
 
-                 Node(id=32, base=n.code('A'), aligned_to=33),
-                 Node(id=33, base=n.code('G'), aligned_to=34),
-                 Node(id=34, base=n.code('T'), aligned_to=32),
-                 Node(id=35, base=n.code('A'), aligned_to=36),
-                 Node(id=36, base=n.code('C'), aligned_to=37),
-                 Node(id=37, base=n.code('T'), aligned_to=35),
-                 Node(id=38, base=n.code('C'), aligned_to=39),
-                 Node(id=39, base=n.code('G'), aligned_to=40),
-                 Node(id=40, base=n.code('T'), aligned_to=38),
-                 Node(id=41, base=n.code('C'), aligned_to=None)
+                 Node(node_id=32, base=n('A'), aligned_to=33),
+                 Node(node_id=33, base=n('G'), aligned_to=34),
+                 Node(node_id=34, base=n('T'), aligned_to=32),
+                 Node(node_id=35, base=n('A'), aligned_to=36),
+                 Node(node_id=36, base=n('C'), aligned_to=37),
+                 Node(node_id=37, base=n('T'), aligned_to=35),
+                 Node(node_id=38, base=n('C'), aligned_to=39),
+                 Node(node_id=39, base=n('G'), aligned_to=40),
+                 Node(node_id=40, base=n('T'), aligned_to=38),
+                 Node(node_id=41, base=n('C'), aligned_to=None)
                  ]
 
         paths = {
@@ -73,7 +77,8 @@ class FindConsensusesTests(unittest.TestCase):
         consensuses_generator = TreePOAConsensusGenerator(max_node_strategy=MAX2(),
                                                           node_cutoff_strategy=NODE3(),
                                                           stop=Compatibility(0.99),
-                                                          re_consensus=True
+                                                          re_consensus=True,
+                                                          blosum_path=self.blosum_path
                                                           )
         consensuses_generator.get_consensuses_tree(pangraph=self.pangraph,
                                                    output_dir=Path("TreeAlgorithm_Tests/TreeAlgorithmConsensuses_Tests/output"))

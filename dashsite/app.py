@@ -46,7 +46,7 @@ def trigger_pangenome_reload(run_pang_n_clicks, load_pangenome_n_clicks, last_cl
         return json.dumps([last_clicked[0]+1, last_clicked[1], 'run_pang'])
     if load_pangenome_n_clicks and last_clicked[1] == load_pangenome_n_clicks - 1:
         return json.dumps([last_clicked[0], last_clicked[1]+1, 'load_pangenome'])
-    return json.dumps([0,0, ''])
+    return json.dumps([0, 0, ''])
 
 
 @app.callback(
@@ -108,7 +108,7 @@ def call_pang(last_clicked,
         fasta_option = True if 'FASTA' in pang_options_values else False
         re_consensus_value = True if 're_consensus' in tree_consensus_options_values else False
         anti_fragmentation_value = True if 'anti_fragmentation' in tree_consensus_options_values else False
-        no_multiplier_anti_granular = True #todo
+        no_multiplier_anti_granular = True  # todo
         pangenome, json_path = run_pang(maf_contents,
                                         metadata_contents,
                                         fasta_option,
@@ -123,6 +123,7 @@ def call_pang(last_clicked,
 
         shutil.copy(json_path, "download/pangenome.json")
         return pangenomejson_writer.pangenome_to_json(pangenome)
+
 
 @app.callback(
     dash.dependencies.Output('program_parameters_display', 'children'),
@@ -150,6 +151,7 @@ def update_program_parameters(jsonified_pangenome):
                 ]
         # return str(jsonpangenome.program_parameters)
 
+
 @app.callback(
     dash.dependencies.Output('hidden_consensus_tree_data', 'children'),
     [dash.dependencies.Input('hidden_pang_result', 'children'),
@@ -165,11 +167,13 @@ def update_consensus_graph_data(jsonified_pangenome, click_data, old_jsonfied_co
     jsonified_tree = json_graph.tree_data(tree, root=0)
     return jsonpickle.encode(jsonified_tree)
 
+
 @app.callback(
     dash.dependencies.Output('consensus_tree', 'style'),
     [dash.dependencies.Input('consensus_tree_graph', 'figure')])
 def show_graph(_):
     return {'display': 'block'}
+
 
 @app.callback(
     dash.dependencies.Output('hidden_consensuses_table_data', 'children'),
@@ -184,6 +188,7 @@ def update_consensuses_table(jsonified_consensus_tree, slider_value, jsonified_p
     consensus_table_data.to_csv('tabela.csv')
     return consensus_table_data.to_json()
 
+
 @app.callback(
     dash.dependencies.Output('consensuses_table', 'data'),
     [dash.dependencies.Input('hidden_consensuses_table_data', 'children')]
@@ -191,6 +196,7 @@ def update_consensuses_table(jsonified_consensus_tree, slider_value, jsonified_p
 def update_consensuses_table_rows(jsonified_consensuses_table_data):
     table_data = pd.read_json(jsonified_consensuses_table_data)
     return consensus_table.table_to_rows_json(table_data)
+
 
 @app.callback(
     dash.dependencies.Output('consensuses_table', 'columns'),
@@ -200,12 +206,14 @@ def update_consensuses_table_columncs(jsonified_consensuses_table_data):
     table_data = pd.read_json(jsonified_consensuses_table_data)
     return [{"name": i, "id": i} for i in table_data.columns]
 
+
 @app.callback(
     dash.dependencies.Output('consensus_tree_slider_value', 'children'),
     [dash.dependencies.Input('consensus_tree_slider', 'value')]
 )
 def show_slider_value(slider_value):
     return f"Slider value: \n{slider_value}."
+
 
 @app.callback(
     dash.dependencies.Output('consensus_tree_graph', 'figure'),
@@ -229,7 +237,6 @@ def color_consensuses_table_cells(jsonified_consensuses_table_data, jsonified_co
     return consensus_table.get_cells_styling(tree, table_data)
 
 
-
 @app.callback(
     dash.dependencies.Output('hidden_csv_generated', 'children'),
     [dash.dependencies.Input('hidden_consensus_tree_data', 'children')],
@@ -251,7 +258,7 @@ def generate_csv_file(jsonified_consensus_tree, csv_generated, jsonified_pangeno
     dash.dependencies.Output('consensus_node_details', 'data'),
     [dash.dependencies.Input('consensus_tree_graph', 'clickData')],
     [dash.dependencies.State('hidden_consensus_tree_data', 'children'),
-    dash.dependencies.State('hidden_pang_result', 'children')]
+     dash.dependencies.State('hidden_pang_result', 'children')]
 )
 def update_consensus_node_details(tree_click_data, jsonified_tree, jsonified_pangenome):
     tree = json_graph.tree_graph(jsonpickle.decode(jsonified_tree))
@@ -269,6 +276,7 @@ def update_consensus_node_details_header(tree_click_data):
     node_id = clicked_node['pointIndex']
     return f"Sequences assigned to consensus {node_id}:"
 
+
 @app.callback(
     dash.dependencies.Output('hidden_pangraph_points', 'children'),
     [dash.dependencies.Input('hidden_pang_result', 'children')]
@@ -278,6 +286,7 @@ def update_pangraph_data_points(jsonified_pangenome):
     if jsonpangenome.nodes:
         pangraph_nodes_data = pangraph.get_nodes_data(jsonpangenome)
         return pangraph_nodes_data.to_json()
+
 
 @app.callback(
     dash.dependencies.Output('hidden_pangraph_traces', 'children'),
@@ -289,21 +298,24 @@ def update_pangraph_traces(jsonified_pangenome):
         pangraph_traces_data = pangraph.get_traces_data(jsonpangenome)
         return json.dumps(pangraph_traces_data)
 
+
 @app.callback(
     dash.dependencies.Output('pangraph_graph', 'figure'),
     [dash.dependencies.Input('hidden_pangraph_points', 'children'),
-    dash.dependencies.Input('hidden_pangraph_traces', 'children')]
+     dash.dependencies.Input('hidden_pangraph_traces', 'children')]
 )
 def update_pangraph_data(jsonified_pangraph_points, jsonified_pangraph_traces):
     pangraph_nodes_data = pd.read_json(jsonified_pangraph_points)
     pangraph_traces_data = json.loads(jsonified_pangraph_traces)
     return pangraph.get_graph(pangraph_nodes_data, pangraph_traces_data)
 
+
 @app.callback(
     dash.dependencies.Output('pangraph_display', 'style'),
     [dash.dependencies.Input('pangraph_graph', 'figure')])
 def show_graph(_):
     return {'display': 'block'}
+
 
 @app.server.route('/download_pangenome')
 def download_json():
@@ -319,7 +331,6 @@ def download_csv():
                            mimetype='text/csv',
                            attachment_filename='consensus.csv',
                            as_attachment=True)
-
 
 
 for css in external_css:

@@ -8,5 +8,5 @@ class PangraphBuilderBase(abc.ABC):
         self.sequences_names = genomes_info.get_all_mafnames()
 
     @abc.abstractmethod
-    def build(self, input, pangraph):
+    def build(self, input_content, pangraph):
         pass

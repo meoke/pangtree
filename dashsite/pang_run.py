@@ -20,11 +20,11 @@ def run_pang(multialignment_contents,
              re_consensus,
              anti_fragmentation_value,
              no_multiplier_anti_granular):
-    #maf
+    # maf
     content_type, content_string = multialignment_contents.split(',')
     maf_str = b64decode(content_string).decode('ascii')
 
-    #metadata
+    # metadata
     content_type, content_string = metadata_contents.split(',')
     metadata_str = b64decode(content_string).decode('ascii')
 

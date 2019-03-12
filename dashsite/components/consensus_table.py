@@ -27,7 +27,6 @@ def hide_children(consensus_tree, parent_id):
     return consensus_tree
 
 
-
 def table_to_rows_json(df_table_data):
     df_json = df_table_data.to_dict("rows")
     return df_json
@@ -59,7 +58,8 @@ def get_consensuses_table(jsonpangenome, consensus_tree):
     consensuses_names = [consensus_tree.nodes[node_id]['name'] for node_id in consensuses_nodes_ids]
     table_data = pd.DataFrame(
         columns=['ID', 'Genbank ID', 'Assembly ID', 'Mafname', 'Name', 'Group', 'Leaf assignment'] +
-                consensuses_names)
+                consensuses_names
+    )
 
     for seq in jsonpangenome.sequences:
         leaf = [node_id

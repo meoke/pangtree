@@ -1,6 +1,5 @@
 from typing import List
-from pangraph import nucleotides as n
-from pangraph.custom_types import NodeID, SequenceID
+from pangraph.custom_types import NodeID
 
 
 class NodePO:
@@ -28,7 +27,7 @@ class PangraphToPO:
     def __init__(self):
         self.po_nodes: List[NodePO] = None
         self.po_sequences: List[SequencePO] = None
-        self.po_lines = None
+        self.po_lines: List[str] = None
 
     def get_po_file_content(self, po_nodes: List[NodePO], po_sequences: List[SequencePO]) -> str:
         self.po_nodes = po_nodes
@@ -55,7 +54,9 @@ class PangraphToPO:
         self.po_lines[4] = f"SOURCECOUNT={len(self.po_sequences)}"
         return 4
 
-    def _write_sequences_info(self, start_at: int) -> List[str]:
+    def _write_sequences_info(self, start_at: int) -> int:
+        if not self.po_sequences:
+            raise Exception("No sequences info to write in PO file.")
         i = -2
         for sequence in self.po_sequences:
             i += 2
@@ -68,22 +69,26 @@ class PangraphToPO:
                                                          f"{sequence.name}"]))
         return start_at + i + 1
 
-    def _write_nodes_info(self, start_at: int):
-        for i, node in enumerate(self.po_nodes):
+    def _write_nodes_info(self, start_at: int) -> int:
+        if not self.po_nodes:
+            raise Exception("No nodes info to write in PO file.")
+        i = 0
+        for node in self.po_nodes:
             self.po_lines[start_at + i] = "".join([self._get_node_code(node.nucleobase),
                                                    ":",
                                                    self._get_in_nodes_info(node.in_nodes),
                                                    self._get_sources_info(node.sequences_ids),
                                                    self._get_aligned_to_info(node.aligned_to)])
+            i += 1
         return start_at + i
 
     def _get_node_code(self, nucleobase: int) -> str:
-        return n.decode(nucleobase).lower()
+        return nucleobase.decode("ASCII").lower()
 
     def _get_in_nodes_info(self, in_nodes: List[NodeID]) -> str:
         return "".join([f'L{i}' for i in in_nodes])
 
-    def _get_sources_info(self, sources_ids: List[SequenceID]) -> str:
+    def _get_sources_info(self, sources_ids: List[int]) -> str:
         return "".join([f'S{i}' for i in sources_ids])
 
     def _get_aligned_to_info(self, aligned_to: NodeID) -> str:

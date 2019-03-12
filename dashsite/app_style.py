@@ -5,6 +5,4 @@ colors = {
     'cold_background': '#CDCDCD'
 }
 
-external_css = [
-'https://codepen.io/chriddyp/pen/bWLwgP.css'
-]
+external_css = ['https://codepen.io/chriddyp/pen/bWLwgP.css']

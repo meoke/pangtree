@@ -8,10 +8,10 @@ def read(metadata_json: str) -> MultialignmentMetadata:
 
     metadata_json = json.loads(metadata_json)
     genome_metadata = {seq['mafname']: SequenceMetadata(name=seq['name'],
-                                                     genbankID=seq['genbankID'],
-                                                     assemblyID=seq['assemblyID'],
-                                                     mafname=seq['mafname'],
-                                                     group=seq['group'])
+                                                        genbankID=seq['genbankID'],
+                                                        assemblyID=seq['assemblyID'],
+                                                        mafname=seq['mafname'],
+                                                        group=seq['group'])
                        for seq in metadata_json['data']}
 
     return MultialignmentMetadata(title=metadata_json['title'],

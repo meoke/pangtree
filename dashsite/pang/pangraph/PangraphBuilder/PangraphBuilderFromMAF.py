@@ -1,10 +1,9 @@
 from Bio import AlignIO
 from io import StringIO
-from pangraph import nucleotides
 from pangraph.Node import Node
 from pangraph.PangraphBuilder.PangraphBuilderBase import PangraphBuilderBase
 from metadata.MultialignmentMetadata import MultialignmentMetadata
-from pangraph.custom_types import NodeID, SequenceID, Nucleobase, ColumnID, BlockID
+from pangraph.custom_types import NodeID, SequenceID, Nucleobase, ColumnID, BlockID, make_nucleobase
 
 
 class PangraphBuilderFromMAF(PangraphBuilderBase):
@@ -12,29 +11,29 @@ class PangraphBuilderFromMAF(PangraphBuilderBase):
         super().__init__(genomes_info)
         self.pangraph = None
 
-    def build(self, input: StringIO, pangraph):
-        input = [*AlignIO.parse(input, "maf")]
+    def build(self, input_content: StringIO, pangraph):
+        input_content = [*AlignIO.parse(input_content, "maf")]
         self.init_pangraph(pangraph)
 
         current_node_id = NodeID(-1)
         column_id = ColumnID(-1)
-        for block_id, block in enumerate(input):
+        for block_id, block in enumerate(input_content):
             block_width = len(block[0].seq)
 
             for col in range(block_width):
                 column_id += 1
-                sequence_name_to_nucleotide = {seq.id: seq[col] for seq in block}
+                sequence_name_to_nucleotide = {SequenceID(seq.id): (seq[col]) for seq in block}
                 nodes_codes = sorted([*(
                     set([nucleotide for nucleotide in sequence_name_to_nucleotide.values()])).difference({'-'})])
                 column_nodes_ids = [current_node_id + i + 1 for i, _ in enumerate(nodes_codes)]
 
                 for i, nucl in enumerate(nodes_codes):
                     current_node_id += 1
-                    self.add_node(id=current_node_id,
-                                  base=nucl,
+                    self.add_node(node_id=current_node_id,
+                                  nucleobase=make_nucleobase(nucl),
                                   aligned_to=self.get_next_aligned_node_id(i, column_nodes_ids),
-                                  column_id=column_id,
-                                  block_id=block_id)
+                                  column_id=ColumnID(column_id),
+                                  block_id=BlockID(block_id))
 
                     for sequence, nucleotide in sequence_name_to_nucleotide.items():
                         if nucleotide == nucl:
@@ -42,7 +41,7 @@ class PangraphBuilderFromMAF(PangraphBuilderBase):
 
     def init_pangraph(self, pangraph):
         pangraph.nodes = []
-        pangraph.paths = {seq_id : [] for seq_id in self.sequences_names}
+        pangraph.paths = {seq_id: [] for seq_id in self.sequences_names}
         self.pangraph = pangraph
 
     def add_node_do_sequence(self, seqID: SequenceID, node_id: NodeID):
@@ -52,13 +51,13 @@ class PangraphBuilderFromMAF(PangraphBuilderBase):
             self.pangraph.paths[seqID].append([node_id])
 
     def add_node(self,
-                 id: NodeID,
-                 base: Nucleobase,
+                 node_id: NodeID,
+                 nucleobase: Nucleobase,
                  aligned_to: NodeID,
                  column_id: ColumnID,
                  block_id: BlockID) -> None:
-        self.pangraph.nodes.append(Node(id=id,
-                                        base=nucleotides.code(base),
+        self.pangraph.nodes.append(Node(node_id=node_id,
+                                        base=nucleobase,
                                         aligned_to=aligned_to,
                                         column_id=column_id,
                                         block_id=block_id))

@@ -4,8 +4,10 @@ from pathlib import Path
 from typing import Union, Dict
 
 from tools import pathtools
-from arguments.PangenomeParameters import FastaComplementationOption, PangenomeParameters, ConsensusAlgorithm, MaxCutoffOption, \
-    NodeCutoffOption
+from arguments.PangenomeParameters import FastaComplementationOption
+from arguments.PangenomeParameters import PangenomeParameters
+from arguments.PangenomeParameters import ConsensusAlgorithm
+from arguments.PangenomeParameters import MaxCutoffOption, NodeCutoffOption
 from tools.pathtools import create_default_output_dir
 
 ArgType = Union[str, float, str, Path]
@@ -100,7 +102,16 @@ def _get_parser() -> argparse.ArgumentParser:
     p.add_argument('--data', '-d',
                    type=_file_arg,
                    required=True,
-                   help='Path to the json file with genomes specification. See... examples\Ebola\ebola_metadata.json')
+                   help='Path to the json file with genomes specification. See... examples\\Ebola\\ebola_metadata.json')
+    p.add_argument('--blosum',
+                   type=_file_arg,
+                   help='Path to the BLOSUM matrix used in consensus generation algorithm.'
+                        'If fasta_complementation option is NO and a custom symbol is provided, '
+                        'the matrix specified here must include this symbol.'
+                        'If fasta_complementation option is NO and a custom symbol is not provided, '
+                        'the matrix specified here must include symbol \'?\' '
+                        'as this is the default symbol for missing nucleotide.'
+                   )
     p.add_argument('--output', '-o',
                    type=_dir_arg,
                    default=create_default_output_dir(Path(getcwd())),
@@ -157,6 +168,10 @@ def _get_parser() -> argparse.ArgumentParser:
                         'Don\'t use this argument if you want the pangraph to be build without full sequences.'
                         'Pass "ncbi" if you want to download the lacking fragments from ncbi'
                         'Pass "local" if you want to use fasta from local file system.')
+    p.add_argument('-missing_n',
+                   type=str,
+                   help='If fasta_complementation is NO, a custom symbol for missing nucleotides can be specified.'
+                        'Make sure it is included in BLOSUM matrix you use.')
     p.add_argument('-fasta_dir',
                    type=_dir_arg,
                    help='Local directory with fasta files used to complement missing parts of sequences in maf file.')
@@ -188,16 +203,18 @@ def create_pangenome_parameters() -> PangenomeParameters:
             multialignment_file_path=args.multialignment,
             metadata_file_content=pathtools.get_file_content(args.data),
             metadata_file_path=args.data,
+            blosum_file_path=args.blosum,
             output_path=args.output,
             generate_fasta=args.fasta,
             consensus_type=args.consensus,
             hbmin=args.hbmin,
-            range=args.r,
+            search_range=args.r,
             multiplier=args.multiplier,
             stop=args.stop,
             re_consensus=args.re_consensus,
             not_dag=args.not_dag,
             fasta_complementation_option=args.fasta_complementation,
+            missing_nucleotide_symbol=args.missing_n,
             local_fasta_dirpath=args.fasta_dir,
             max_cutoff_option=args.max,
             node_cutoff_option=args.node

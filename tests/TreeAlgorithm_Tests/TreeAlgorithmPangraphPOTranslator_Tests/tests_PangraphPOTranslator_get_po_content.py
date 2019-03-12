@@ -4,28 +4,29 @@ import numpy as np
 from tests.context import PangraphPO_Translator
 from tests.context import Pangraph
 from tests.context import Node
-from tests.context import nucleotides as n
+from tests.context import make_nucleobase as n
 from tests.context import NodePO, SequencePO
+from tests.context import SequenceID
 
 @ddt
 class PangraphPOTranslator_get_po_content_Test(unittest.TestCase):
 
     def setUp(self):
-        nodes = [Node(id=0, base=n.code('T'), aligned_to=None,),
-                 Node(id=1, base=n.code('A'), aligned_to=2),
-                 Node(id=2, base=n.code('G'), aligned_to=1),
-                 Node(id=3, base=n.code('A'), aligned_to=4),
-                 Node(id=4, base=n.code('C'), aligned_to=3),
-                 Node(id=5, base=n.code('A'), aligned_to=6),
-                 Node(id=6, base=n.code('C'), aligned_to=7),
-                 Node(id=7, base=n.code('G'), aligned_to=8),
-                 Node(id=8, base=n.code('T'), aligned_to=5),
-                 Node(id=9, base=n.code('A'), aligned_to=None),
-                 Node(id=10, base=n.code('C'), aligned_to=11),
-                 Node(id=11, base=n.code('T'), aligned_to=10),
-                 Node(id=12, base=n.code('G'), aligned_to=None),
-                 Node(id=13, base=n.code('A'), aligned_to=14),
-                 Node(id=14, base=n.code('C'), aligned_to=13)
+        nodes = [Node(node_id=0, base=n('T'), aligned_to=None, ),
+                 Node(node_id=1, base=n('A'), aligned_to=2),
+                 Node(node_id=2, base=n('G'), aligned_to=1),
+                 Node(node_id=3, base=n('A'), aligned_to=4),
+                 Node(node_id=4, base=n('C'), aligned_to=3),
+                 Node(node_id=5, base=n('A'), aligned_to=6),
+                 Node(node_id=6, base=n('C'), aligned_to=7),
+                 Node(node_id=7, base=n('G'), aligned_to=8),
+                 Node(node_id=8, base=n('T'), aligned_to=5),
+                 Node(node_id=9, base=n('A'), aligned_to=None),
+                 Node(node_id=10, base=n('C'), aligned_to=11),
+                 Node(node_id=11, base=n('T'), aligned_to=10),
+                 Node(node_id=12, base=n('G'), aligned_to=None),
+                 Node(node_id=13, base=n('A'), aligned_to=14),
+                 Node(node_id=14, base=n('C'), aligned_to=13)
                  ]
 
         paths = {
@@ -39,15 +40,15 @@ class PangraphPOTranslator_get_po_content_Test(unittest.TestCase):
         self.pangraph.paths = paths
 
     def test_subpangraph_construction_from_pangraph_keep_seq_0_1(self):
-        expected_ponodes = [NodePO(base=n.code('T'), aligned_to=None, in_nodes=[], sequences_ids=[0]),
-                            NodePO(base=n.code('A'), aligned_to=None, in_nodes=[0], sequences_ids=[0, 1]),
-                            NodePO(base=n.code('A'), in_nodes=[1], aligned_to=None, sequences_ids=[0, 1]),
-                            NodePO(base=n.code('A'), in_nodes=[2], aligned_to=4, sequences_ids=[0]),
-                            NodePO(base=n.code('C'), in_nodes=[2], aligned_to=3, sequences_ids=[1]),
-                            NodePO(base=n.code('A'), in_nodes=[3, 4], aligned_to=None, sequences_ids=[0]),
-                            NodePO(base=n.code('C'), in_nodes=[5], aligned_to=7, sequences_ids=[0]),
-                            NodePO(base=n.code('T'), in_nodes=[5], aligned_to=6, sequences_ids=[1]),
-                            NodePO(base=n.code('A'), in_nodes=[6], aligned_to=None, sequences_ids=[0])]
+        expected_ponodes = [NodePO(base=n('T'), aligned_to=None, in_nodes=[], sequences_ids=[0]),
+                            NodePO(base=n('A'), aligned_to=None, in_nodes=[0], sequences_ids=[0, 1]),
+                            NodePO(base=n('A'), in_nodes=[1], aligned_to=None, sequences_ids=[0, 1]),
+                            NodePO(base=n('A'), in_nodes=[2], aligned_to=4, sequences_ids=[0]),
+                            NodePO(base=n('C'), in_nodes=[2], aligned_to=3, sequences_ids=[1]),
+                            NodePO(base=n('A'), in_nodes=[3, 4], aligned_to=None, sequences_ids=[0]),
+                            NodePO(base=n('C'), in_nodes=[5], aligned_to=7, sequences_ids=[0]),
+                            NodePO(base=n('T'), in_nodes=[5], aligned_to=6, sequences_ids=[1]),
+                            NodePO(base=n('A'), in_nodes=[6], aligned_to=None, sequences_ids=[0])]
         expected_posequences = [SequencePO(name='testseq0',
                                            nodes_count=7,
                                            weight=0,
@@ -85,13 +86,13 @@ class PangraphPOTranslator_get_po_content_Test(unittest.TestCase):
         self.assertEqual(expected_po_content, actual_po_content)
 
     def test_subpangraph_construction_from_pangraph_keep_seq3(self):
-        expected_nodes = [NodePO(base=n.code('C'), in_nodes=[], aligned_to=None, sequences_ids=[0]),
-                          NodePO(base=n.code('A'), in_nodes=[0], aligned_to=None, sequences_ids=[0]),
-                          NodePO(base=n.code('T'), in_nodes=[1], aligned_to=None, sequences_ids=[0]),
-                          NodePO(base=n.code('A'), in_nodes=[2], aligned_to=None, sequences_ids=[0]),
-                          NodePO(base=n.code('T'), in_nodes=[3], aligned_to=None, sequences_ids=[0]),
-                          NodePO(base=n.code('G'), in_nodes=[4], aligned_to=None, sequences_ids=[0]),
-                          NodePO(base=n.code('C'), in_nodes=[5], aligned_to=None, sequences_ids=[0])
+        expected_nodes = [NodePO(base=n('C'), in_nodes=[], aligned_to=None, sequences_ids=[0]),
+                          NodePO(base=n('A'), in_nodes=[0], aligned_to=None, sequences_ids=[0]),
+                          NodePO(base=n('T'), in_nodes=[1], aligned_to=None, sequences_ids=[0]),
+                          NodePO(base=n('A'), in_nodes=[2], aligned_to=None, sequences_ids=[0]),
+                          NodePO(base=n('T'), in_nodes=[3], aligned_to=None, sequences_ids=[0]),
+                          NodePO(base=n('G'), in_nodes=[4], aligned_to=None, sequences_ids=[0]),
+                          NodePO(base=n('C'), in_nodes=[5], aligned_to=None, sequences_ids=[0])
                           ]
         expected_posequences = [
             SequencePO(name='testseq3', nodes_count=7, weight=100, consensus_id=-1, start_node_id=0)
@@ -118,11 +119,11 @@ class PangraphPOTranslator_get_po_content_Test(unittest.TestCase):
 
 
     def test_subpangraph_construction_full_graph(self):
-        nodes = [Node(id=0, base=n.code('A'), aligned_to=None),
-                 Node(id=1, base=n.code('A'), aligned_to=None),
-                 Node(id=2, base=n.code('C'), aligned_to=None),
-                 Node(id=3, base=n.code('A'), aligned_to=None),
-                 Node(id=4, base=n.code('T'), aligned_to=None)
+        nodes = [Node(node_id=0, base=n('A'), aligned_to=None),
+                 Node(node_id=1, base=n('A'), aligned_to=None),
+                 Node(node_id=2, base=n('C'), aligned_to=None),
+                 Node(node_id=3, base=n('A'), aligned_to=None),
+                 Node(node_id=4, base=n('T'), aligned_to=None)
                  ]
 
         paths = {
@@ -134,11 +135,11 @@ class PangraphPOTranslator_get_po_content_Test(unittest.TestCase):
 
         expected_nodes_ids_mapping = {0: 1, 1: 2, 2: 4, 3: 5, 4: 7}
 
-        expected_nodes = [NodePO(base=n.code('A'), in_nodes=[], aligned_to=None, sequences_ids=[0]),
-                          NodePO(base=n.code('A'), in_nodes=[0], aligned_to=None, sequences_ids=[0]),
-                          NodePO(base=n.code('C'), in_nodes=[1], aligned_to=None, sequences_ids=[0]),
-                          NodePO(base=n.code('A'), in_nodes=[2], aligned_to=None, sequences_ids=[0]),
-                          NodePO(base=n.code('T'), in_nodes=[3], aligned_to=None, sequences_ids=[0])
+        expected_nodes = [NodePO(base=n('A'), in_nodes=[], aligned_to=None, sequences_ids=[0]),
+                          NodePO(base=n('A'), in_nodes=[0], aligned_to=None, sequences_ids=[0]),
+                          NodePO(base=n('C'), in_nodes=[1], aligned_to=None, sequences_ids=[0]),
+                          NodePO(base=n('A'), in_nodes=[2], aligned_to=None, sequences_ids=[0]),
+                          NodePO(base=n('T'), in_nodes=[3], aligned_to=None, sequences_ids=[0])
                           ]
         expected_posequences = [
             SequencePO(name='testseq1', nodes_count=5, weight=100, consensus_id=-1, start_node_id=0)
@@ -162,9 +163,9 @@ class PangraphPOTranslator_get_po_content_Test(unittest.TestCase):
 
 
     def test_subpangraph_should_omit_edges_1(self):
-        pangraph_nodes = [Node(id=0,base=n.code('A'), aligned_to=None),
-                          Node(id=1,base=n.code('C'), aligned_to=None),
-                          Node(id=2,base=n.code('C'), aligned_to=None)]
+        pangraph_nodes = [Node(node_id=0, base=n('A'), aligned_to=None),
+                          Node(node_id=1, base=n('C'), aligned_to=None),
+                          Node(node_id=2, base=n('C'), aligned_to=None)]
         pangraph_paths_to_nodes_ids = {
             'seq1': [[0, 2]],
             'seq2': [[0, 1, 2]]
@@ -175,9 +176,9 @@ class PangraphPOTranslator_get_po_content_Test(unittest.TestCase):
 
         # remove seq1
         expected_ponodes = [
-            NodePO(base=n.code('A'), in_nodes=[], aligned_to=None, sequences_ids=[2]),
-            NodePO(base=n.code('C'), in_nodes=[0], aligned_to=None, sequences_ids=[2]),
-            NodePO(base=n.code('C'), in_nodes=[1], aligned_to=None, sequences_ids=[2])
+            NodePO(base=n('A'), in_nodes=[], aligned_to=None, sequences_ids=[2]),
+            NodePO(base=n('C'), in_nodes=[0], aligned_to=None, sequences_ids=[2]),
+            NodePO(base=n('C'), in_nodes=[1], aligned_to=None, sequences_ids=[2])
         ]
         expected_ppo_sequences = {
             SequencePO(name='seq2', nodes_count=3, weight=100,consensus_id=-1,start_node_id=0)
@@ -200,9 +201,9 @@ class PangraphPOTranslator_get_po_content_Test(unittest.TestCase):
 
 
     def test_subpangraph_should_omit_edges_2(self):
-        pangraph_nodes = [Node(id=0, base=n.code('A'), aligned_to=None),
-                          Node(id=1, base=n.code('C'), aligned_to=None),
-                          Node(id=2, base=n.code('C'), aligned_to=None)]
+        pangraph_nodes = [Node(node_id=0, base=n('A'), aligned_to=None),
+                          Node(node_id=1, base=n('C'), aligned_to=None),
+                          Node(node_id=2, base=n('C'), aligned_to=None)]
         pangraph_paths_to_nodes_ids = {
             'seq1': [[0, 2]],
             'seq2': [[0, 1, 2]]
@@ -213,8 +214,8 @@ class PangraphPOTranslator_get_po_content_Test(unittest.TestCase):
 
         # remove seq2
         expected_nodes = [
-            NodePO(base=n.code('A'), in_nodes=[], aligned_to=None, sequences_ids=[0]),
-            NodePO(base=n.code('C'), in_nodes=[0], aligned_to=None, sequences_ids=[0]),
+            NodePO(base=n('A'), in_nodes=[], aligned_to=None, sequences_ids=[0]),
+            NodePO(base=n('C'), in_nodes=[0], aligned_to=None, sequences_ids=[0]),
         ]
         expected_po_sequences = {
             SequencePO(name='seq1', nodes_count=2, weight=100, consensus_id=-1, start_node_id= 0)
@@ -237,10 +238,10 @@ class PangraphPOTranslator_get_po_content_Test(unittest.TestCase):
 
     def test_subpangraph_should_omit_in_nodes_and_aligned_nodes(self):
         #original pangraph
-        pangraph_nodes = [Node(id=0,base=n.code('A'), aligned_to=None),
-                          Node(id=1,base=n.code('C'), aligned_to=2),
-                          Node(id=2,base=n.code('T'), aligned_to=1),
-                          Node(id=3,base=n.code('G'), aligned_to=None)]
+        pangraph_nodes = [Node(node_id=0, base=n('A'), aligned_to=None),
+                          Node(node_id=1, base=n('C'), aligned_to=2),
+                          Node(node_id=2, base=n('T'), aligned_to=1),
+                          Node(node_id=3, base=n('G'), aligned_to=None)]
         pangraph_paths_to_nodes_ids = {
             'seq1': [[0, 1, 3]],
             'seq2': [[0, 2, 3]]
@@ -251,9 +252,9 @@ class PangraphPOTranslator_get_po_content_Test(unittest.TestCase):
 
         # remove seq1
         expected_ponodes = [
-            NodePO(base=n.code('A'), in_nodes=[], aligned_to=None, sequences_ids=[1]),
-            NodePO(base=n.code('T'), in_nodes=[0], aligned_to=None, sequences_ids=[1]),
-            NodePO(base=n.code('G'), in_nodes=[1], aligned_to=None, sequences_ids=[1])
+            NodePO(base=n('A'), in_nodes=[], aligned_to=None, sequences_ids=[1]),
+            NodePO(base=n('T'), in_nodes=[0], aligned_to=None, sequences_ids=[1]),
+            NodePO(base=n('G'), in_nodes=[1], aligned_to=None, sequences_ids=[1])
         ]
         expected_sequence_po = {
             SequencePO(name='seq2', nodes_count=3, weight=100,consensus_id=-1,start_node_id=0)
@@ -275,6 +276,64 @@ class PangraphPOTranslator_get_po_content_Test(unittest.TestCase):
 
         self.assertEqual(expected_po_content, actual_po_content)
 
+    def test_subpangraph_unfilled_nodes(self):
+        symbol_for_uknown = '?'
+        pangraph_nodes = [Node(node_id=0, base=n('A'), aligned_to=1),
+                          Node(node_id=1, base=n('C'), aligned_to=0),
+                          Node(node_id=2, base=n('G'), aligned_to=None),
+                          Node(node_id=3, base=n(symbol_for_uknown), aligned_to=None),
+                          Node(node_id=4, base=n(symbol_for_uknown), aligned_to=None),
+                          Node(node_id=5, base=n('G'), aligned_to=None),
+                          Node(node_id=6, base=n('C'), aligned_to=None),
+                          Node(node_id=7, base=n('A'), aligned_to=None),
+                          Node(node_id=5, base=n('T'), aligned_to=None)]
+        pangraph_paths_to_nodes_ids = {
+            'seq1': [[0, 2, 3, 4, 7, 8]],
+            'seq2': [[1, 2, 5, 6, 7, 8]]
+        }
+        pangraph = Pangraph()
+        pangraph.nodes = pangraph_nodes
+        pangraph.paths = pangraph_paths_to_nodes_ids
+
+        # remove seq1
+        expected_ponodes = [
+            NodePO(base=n('A'), in_nodes=[], aligned_to=1, sequences_ids=[0]),
+            NodePO(base=n('C'), in_nodes=[], aligned_to=0, sequences_ids=[1]),
+            NodePO(base=n('G'), in_nodes=[0, 1], aligned_to=None, sequences_ids=[0, 1]),
+            NodePO(base=n(symbol_for_uknown), in_nodes=[2], aligned_to=None, sequences_ids=[0]),
+            NodePO(base=n(symbol_for_uknown), in_nodes=[3], aligned_to=None, sequences_ids=[0]),
+            NodePO(base=n('G'), in_nodes=[2], aligned_to=None, sequences_ids=[1]),
+            NodePO(base=n('C'), in_nodes=[5], aligned_to=None, sequences_ids=[1]),
+            NodePO(base=n('A'), in_nodes=[4], aligned_to=None, sequences_ids=[0, 1]),
+            NodePO(base=n('T'), in_nodes=[5], aligned_to=None, sequences_ids=[0, 1]),
+        ]
+        expected_po_sequences = [
+            SequencePO(name='seq1', nodes_count=4, weight=0,consensus_id=-1,start_node_id=0),
+            SequencePO(name='seq2', nodes_count=6, weight=100,consensus_id=-1,start_node_id=1)
+        ]
+        expected_nodes_ids_mapping = {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8}
+
+        translator = PangraphPO_Translator(pangraph, [SequenceID('seq1'), SequenceID('seq2')])
+        actual_po_content = translator.get_input_po_content()
+        expected_po_content = "VERSION=pangenome\n" \
+                              "NAME=pangenome\n" \
+                              "TITLE=pangenome\n" \
+                              "LENGTH=9\n" \
+                              "SOURCECOUNT=2\n" \
+                              "SOURCENAME=seq1\n" \
+                              "SOURCEINFO=6 0 100 -1 seq1\n" \
+                              "SOURCENAME=seq2\n" \
+                              "SOURCEINFO=6 1 100 -1 seq2\n" \
+                              "a:S0A1\n" \
+                              "c:S1A0\n" \
+                              "g:L0L1S0S1\n" \
+                              f"{symbol_for_uknown}:L2S0\n" \
+                              f"{symbol_for_uknown}:L3S0\n" \
+                              "g:L2S1\n" \
+                              "c:L5S1\n" \
+                              "a:L4L6S0S1\n" \
+                              "t:L7S0S1"
+        self.assertEqual(expected_po_content, actual_po_content)
 
     def compare_subpangraphs(self, expected_subpangraph, actual_subpangraph):
         self.assertEqual(expected_subpangraph.pangraph._nodes, actual_subpangraph.pangraph._nodes)

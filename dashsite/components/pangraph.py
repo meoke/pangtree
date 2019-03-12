@@ -1,6 +1,5 @@
 import pandas as pd
 import plotly.graph_objs as go
-import numpy as np
 
 
 def get_graph(nodes_data, traces_data):
@@ -56,7 +55,8 @@ def get_graph(nodes_data, traces_data):
     return g
 
 def get_traces_data(jsonpangenome):
-    y_position_dict = {'A': 40, 'C': 35, 'G': 30, 'T': 25, 'N': 20, 'W': 10}
+    # todo pass here symbol for unknonw
+    y_position_dict = {'A': 40, 'C': 35, 'G': 30, 'T': 25, 'N': 20, 'W': 10, '?': 5, 'n': 2}
     d = {
         sequence.mafname: ([jsonpangenome.nodes[node_id].column_id * 5 for node_id in sequence.nodes_ids],
                             [y_position_dict[jsonpangenome.nodes[node_id].nucleobase] for node_id in sequence.nodes_ids])
@@ -65,7 +65,8 @@ def get_traces_data(jsonpangenome):
     return d
 
 def get_nodes_data(jsonpangenome):
-    y_position_dict = {'A': 40, 'C': 35, 'G': 30, 'T': 25, 'N': 20, 'W': 10}
+    # todo pass here symbol for unknonw
+    y_position_dict = {'A': 40, 'C': 35, 'G': 30, 'T': 25, 'N': 20, 'W': 10, '?': 5, 'n': 2}
 
     nodes_data = pd.DataFrame(
         columns=['ID', 'x', 'y', 'base', 'block_id', 'aligned_to'])
