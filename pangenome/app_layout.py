@@ -3,18 +3,18 @@ import dash_core_components as dcc
 import dash_table
 
 from app_style import colors
-from components.algorithm_description import general_info, table_info_markdown
-
+from dash_app_components.algorithm_description import general_info, table_info_markdown
+import app_elements_names as app_ids
 
 def get_layout(get_url_function):
     return html.Div(
     children=[
         html.Div(
-            id="header",
+            id=app_ids.id_header,
             children=[
                 html.H1(
                     'Multiple sequence alignment analysis',
-                    id='title',
+                    id=app_ids.id_title,
                     className='ten columns',
                     style={'margin': '10px'}
                 ),
@@ -34,12 +34,11 @@ def get_layout(get_url_function):
             className='twelve columns row'
         ),
         html.Div(
-            id='body',
+            id=app_ids.id_body,
             children=[
                 html.Div(
-                    id="program",
+                    id=app_ids.id_program,
                     children=[
-                        # html.H3("Analysis", style={'margin-top': '0px'}),
                         html.Div(
                             children=[
                                 html.Div(
@@ -202,7 +201,7 @@ def get_layout(get_url_function):
                     className='row'
                 ),
                 html.Div(
-                    id='visualisation',
+                    id=app_ids.id_visualisation,
                     children=[
                         html.H3("Visualisation"),
                         html.Div(
@@ -215,8 +214,6 @@ def get_layout(get_url_function):
                                         html.A('Select Files')
                                     ]),
                                     style={
-                                        # 'width': '100%',
-                                        # 'height': '40px',
                                         'lineHeight': '40px',
                                         'borderWidth': '1px',
                                         'borderStyle': 'dashed',
@@ -225,7 +222,7 @@ def get_layout(get_url_function):
                                         'margin': '10px'
                                     },
                                     # Allow multiple files to be uploaded
-                                    multiple=True,
+                                    multiple=False,
                                     className='five columns'
                                 ),
                                 html.Div("or load example data: ",
@@ -250,14 +247,14 @@ def get_layout(get_url_function):
                             style={}
                         ),
                         html.Div(
-                            id='program_parameters',
+                            id=app_ids.id_program_parameters,
                             children=[
                                 html.Div(
-                                    id='hidden_program_parameters',
+                                    id=app_ids.id_program_parameters_hidden,
                                     style={'display': 'none'}
                                 ),
                                 html.Div(
-                                    id='program_parameters_display'
+                                    id=app_ids.id_program_parameters_display
                                 )
                             ],
                             style={'width': '100%'}

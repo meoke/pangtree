@@ -11,10 +11,10 @@ from app_style import external_css
 from fileformats.json.JSONPangenome import JSONProgramParameters
 
 from pang_run import run_pang, decode_json
-from components import consensus_tree
-from components import consensus_table
-from components import consensus_node
-from components import pangraph
+from dash_app_components import consensus_tree
+from dash_app_components import consensus_table
+from dash_app_components import consensus_node
+from dash_app_components import pangraph
 
 from pang.fileformats.json import reader as pangenomejson_reader, writer as pangenomejson_writer
 
@@ -23,30 +23,30 @@ import jsonpickle
 import app_layout
 import dash_html_components as html
 
-app = dash.Dash(__name__)
-app.title = 'pang'
-app.layout = app_layout.get_layout(app.get_asset_url)
+# app = dash.Dash(__name__)
+# app.title = 'pang'
+# app.layout = app_layout.get_layout(app.get_asset_url)
 
 
-@app.callback(
-    dash.dependencies.Output('hidden_last_clicked', 'children'),
-    [dash.dependencies.Input('pang_button', 'n_clicks'),
-     dash.dependencies.Input('load_pangenome', 'n_clicks')],
-    [dash.dependencies.State('hidden_last_clicked', 'children')]
-)
-def trigger_pangenome_reload(run_pang_n_clicks, load_pangenome_n_clicks, last_clicked_jsonified):
-    if last_clicked_jsonified is None:
-        if run_pang_n_clicks == 1:
-            a = str(json.dumps([1, 0, 'run_pang']))
-            return a
-        if load_pangenome_n_clicks == 1:
-            return json.dumps([0, 1, 'load_pangenome'])
-    last_clicked = json.loads(last_clicked_jsonified)
-    if run_pang_n_clicks and last_clicked[0] == run_pang_n_clicks - 1:
-        return json.dumps([last_clicked[0]+1, last_clicked[1], 'run_pang'])
-    if load_pangenome_n_clicks and last_clicked[1] == load_pangenome_n_clicks - 1:
-        return json.dumps([last_clicked[0], last_clicked[1]+1, 'load_pangenome'])
-    return json.dumps([0, 0, ''])
+# @app.callback(
+#     dash.dependencies.Output('hidden_last_clicked', 'children'),
+#     [dash.dependencies.Input('pang_button', 'n_clicks'),
+#      dash.dependencies.Input('load_pangenome', 'n_clicks')],
+#     [dash.dependencies.State('hidden_last_clicked', 'children')]
+# )
+# def trigger_pangenome_reload(run_pang_n_clicks, load_pangenome_n_clicks, last_clicked_jsonified):
+#     if last_clicked_jsonified is None:
+#         if run_pang_n_clicks == 1:
+#             a = str(json.dumps([1, 0, 'run_pang']))
+#             return a
+#         if load_pangenome_n_clicks == 1:
+#             return json.dumps([0, 1, 'load_pangenome'])
+#     last_clicked = json.loads(last_clicked_jsonified)
+#     if run_pang_n_clicks and last_clicked[0] == run_pang_n_clicks - 1:
+#         return json.dumps([last_clicked[0]+1, last_clicked[1], 'run_pang'])
+#     if load_pangenome_n_clicks and last_clicked[1] == load_pangenome_n_clicks - 1:
+#         return json.dumps([last_clicked[0], last_clicked[1]+1, 'load_pangenome'])
+#     return json.dumps([0, 0, ''])
 
 
 @app.callback(
@@ -76,53 +76,53 @@ def download_json_button(_):
     return False
 
 
-@app.callback(
-    dash.dependencies.Output('hidden_pang_result', 'children'),
-    [dash.dependencies.Input('hidden_last_clicked', 'children')],
-    [dash.dependencies.State('pangenome_upload', 'contents'),
-     dash.dependencies.State('maf_upload', 'contents'),
-     dash.dependencies.State('metadata_upload', 'contents'),
-     dash.dependencies.State('pang_options', 'values'),
-     dash.dependencies.State('algorithm', 'value'),
-     dash.dependencies.State('hbmin', 'value'),
-     dash.dependencies.State('r', 'value'),
-     dash.dependencies.State('multiplier', 'value'),
-     dash.dependencies.State('stop', 'value'),
-     dash.dependencies.State('tree_consensus_options', 'values')
-     ])
-def call_pang(last_clicked,
-              pangenome_contents,
-              maf_contents,
-              metadata_contents,
-              pang_options_values,
-              consensus_algorithm_value,
-              hbmin_value,
-              r_value,
-              multiplier_value,
-              stop_value,
-              tree_consensus_options_values):
-    last_clicked = json.loads(last_clicked)
-    if last_clicked[2] == 'load_pangenome':
-        return decode_json(pangenome_contents[0])
-    else:
-        fasta_option = True if 'FASTA' in pang_options_values else False
-        re_consensus_value = True if 're_consensus' in tree_consensus_options_values else False
-        anti_fragmentation_value = True if 'anti_fragmentation' in tree_consensus_options_values else False
-        no_multiplier_anti_granular = True  # todo
-        pangenome, json_path = run_pang(maf_contents,
-                                        metadata_contents,
-                                        fasta_option,
-                                        consensus_algorithm_value,
-                                        hbmin_value,
-                                        r_value,
-                                        multiplier_value,
-                                        stop_value,
-                                        re_consensus_value,
-                                        anti_fragmentation_value,
-                                        no_multiplier_anti_granular)
-
-        shutil.copy(json_path, "download/pangenome.json")
-        return pangenomejson_writer.pangenome_to_json(pangenome)
+# @app.callback(
+#     dash.dependencies.Output('hidden_pang_result', 'children'),
+#     [dash.dependencies.Input('hidden_last_clicked', 'children')],
+#     [dash.dependencies.State('pangenome_upload', 'contents'),
+#      dash.dependencies.State('maf_upload', 'contents'),
+#      dash.dependencies.State('metadata_upload', 'contents'),
+#      dash.dependencies.State('pang_options', 'values'),
+#      dash.dependencies.State('algorithm', 'value'),
+#      dash.dependencies.State('hbmin', 'value'),
+#      dash.dependencies.State('r', 'value'),
+#      dash.dependencies.State('multiplier', 'value'),
+#      dash.dependencies.State('stop', 'value'),
+#      dash.dependencies.State('tree_consensus_options', 'values')
+#      ])
+# def call_pang(last_clicked,
+#               pangenome_contents,
+#               maf_contents,
+#               metadata_contents,
+#               pang_options_values,
+#               consensus_algorithm_value,
+#               hbmin_value,
+#               r_value,
+#               multiplier_value,
+#               stop_value,
+#               tree_consensus_options_values):
+#     last_clicked = json.loads(last_clicked)
+#     if last_clicked[2] == 'load_pangenome':
+#         return decode_json(pangenome_contents[0])
+#     else:
+#         fasta_option = True if 'FASTA' in pang_options_values else False
+#         re_consensus_value = True if 're_consensus' in tree_consensus_options_values else False
+#         anti_fragmentation_value = True if 'anti_fragmentation' in tree_consensus_options_values else False
+#         no_multiplier_anti_granular = True  # todo
+#         pangenome, json_path = run_pang(maf_contents,
+#                                         metadata_contents,
+#                                         fasta_option,
+#                                         consensus_algorithm_value,
+#                                         hbmin_value,
+#                                         r_value,
+#                                         multiplier_value,
+#                                         stop_value,
+#                                         re_consensus_value,
+#                                         anti_fragmentation_value,
+#                                         no_multiplier_anti_granular)
+#
+#         shutil.copy(json_path, "download/pangenome.json")
+#         return pangenomejson_writer.pangenome_to_json(pangenome)
 
 
 @app.callback(
@@ -149,7 +149,6 @@ def update_program_parameters(jsonified_pangenome):
                 html.P(f"Fasta_complementation: {params.fasta_complementation_option}"),
                 html.P(f"Local fasta dir: {params.local_fasta_dirpath}")
                 ]
-        # return str(jsonpangenome.program_parameters)
 
 
 @app.callback(
@@ -317,24 +316,24 @@ def show_graph(_):
     return {'display': 'block'}
 
 
-@app.server.route('/download_pangenome')
-def download_json():
-    return flask.send_file('../download/pangenome.json',
-                           mimetype='text/csv',
-                           attachment_filename='pangenome.json',
-                           as_attachment=True)
+# @app.server.route('/download_pangenome')
+# def download_json():
+#     return flask.send_file('../download/pangenome.json',
+#                            mimetype='text/csv',
+#                            attachment_filename='pangenome.json',
+#                            as_attachment=True)
 
 
-@app.server.route('/download_csv')
-def download_csv():
-    return flask.send_file('../download/consensus.csv',
-                           mimetype='text/csv',
-                           attachment_filename='consensus.csv',
-                           as_attachment=True)
+# @app.server.route('/download_csv')
+# def download_csv():
+#     return flask.send_file('../download/consensus.csv',
+#                            mimetype='text/csv',
+#                            attachment_filename='consensus.csv',
+#                            as_attachment=True)
 
 
-for css in external_css:
-    app.css.append_css({"external_url": css})
+# for css in external_css:
+#     app.css.append_css({"external_url": css})
 
-if __name__ == '__main__':
-    app.run_server(debug=True, port=8052)
+# if __name__ == '__main__':
+#     app.run_server(debug=True, port=8052)

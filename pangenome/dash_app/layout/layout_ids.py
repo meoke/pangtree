@@ -1,0 +1,19 @@
+id_header = 'header'
+id_title = 'title'
+id_body = 'body'
+id_program = 'program'
+id_visualisation = 'visualisation'
+id_program_parameters = 'program_parameters'
+id_program_parameters_display = 'program_parameters_display'
+id_last_clicked_hidden = 'last_clicked_hidden'
+id_pang_button = 'pang_button'
+id_load_pangenome_button = 'load_pangenome_button'
+id_pangenome_hidden = 'pangenome_hidden'
+id_full_consensustable_hidden = "full_consensustable_hidden"
+id_partial_consensustable_hidden = "id_partial_consensustable_hidden"
+id_pangenome_parameters_hidden = "pangenome_parameters_hidden"
+id_pangenome_consensustree_hidden = "pangenome_consensustree_hidden"
+id_pangraph_hidden = "pangraph_hidden"
+id_mafgraph_hidden = "mafgraph_hidden"
+
+id_consensuses_table = "id_consensuses_table"

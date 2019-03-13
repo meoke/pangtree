@@ -55,7 +55,7 @@ class JSONConsensus:
                  sequences_ids: List[int],
                  nodes_ids: List[int],
                  mincomp: float):
-        self.id = node_id
+        self.node_id = node_id
         self.name = name
         self.parent = parent
         self.children = children

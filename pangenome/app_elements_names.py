@@ -1,0 +1,10 @@
+id_header = 'header'
+id_title = 'title'
+id_body = 'body'
+id_program = 'program'
+id_visualisation = 'visualisation'
+id_program_parameters = 'program_parameters'
+id_program_parameters_hidden = 'program_parameters_hidden'
+id_program_parameters_display = 'program_parameters_display'
+
+id_pang_button = 'pang_button'
