@@ -59,8 +59,3 @@ def get_file_content(path: Path) -> str:
         return input_file.read()
 
 
-def get_file_content_as_stringio(path: Path) -> StringIO:
-    """Returns file content."""
-
-    return StringIO(get_file_content(path))
-

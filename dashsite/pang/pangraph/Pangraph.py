@@ -21,19 +21,19 @@ class Pangraph:
                 self.paths == other.paths)
 
     def build_from_maf_firstly_converted_to_dag(self,
-                                                mafcontent: StringIO,
+                                                mafcontent: str,
                                                 fasta_source: FastaSource,
                                                 genomes_info: MultialignmentMetadata,
-                                                missing_nucleotide_symbol: Nucleobase="?"):
+                                                missing_nucleotide_symbol: str="?"):
         builder: PangraphBuilderBase = PangraphBuilderFromDAG(genomes_info, missing_nucleotide_symbol, fasta_source)
         self._build(builder, mafcontent)
 
-    def build_from_maf(self, mafcontent: StringIO, genomes_info: MultialignmentMetadata):
+    def build_from_maf(self, mafcontent: str, genomes_info: MultialignmentMetadata):
         builder: PangraphBuilderBase = PangraphBuilderFromMAF(genomes_info)
         self._build(builder, mafcontent)
 
-    def _build(self, builder: PangraphBuilderBase, build_input):
-        builder.build(build_input, self)
+    def _build(self, builder: PangraphBuilderBase, build_input: str):
+        builder.build(StringIO(build_input), self)
 
     def get_compatibilities(self, sequences_ids: List[SequenceID], consensus: List[NodeID]):
         compatibilities = dict()

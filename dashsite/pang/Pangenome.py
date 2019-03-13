@@ -1,6 +1,11 @@
+from typing import List
+from io import StringIO
+from Bio import AlignIO
+
+from consensus.ConsensusesTree import ConsensusesTree
 from consensus.FindCutoff import MAX1, MAX2, FindMaxCutoff, FindNodeCutoff, NODE1, NODE2, NODE3, NODE4
+from metadata.MultialignmentMetadata import MultialignmentMetadata
 from pangraph.FastaSource import EntrezFastaSource, FastaFileSystemSource
-from metadata import reader as metadatareader
 from pangraph.Pangraph import Pangraph
 from tools import pathtools
 from arguments.PangenomeParameters import ConsensusAlgorithm, FastaComplementationOption, MaxCutoffOption, \
@@ -13,10 +18,10 @@ class Pangenome:
     def __init__(self, pangenome_parameters):
         self.params: PangenomeParameters = pangenome_parameters
 
-        self.genomes_info = self._build_genomes_info()
-        self.pangraph = Pangraph()
+        self.genomes_info: MultialignmentMetadata= self._build_genomes_info()
+        self.pangraph: Pangraph = Pangraph()
         self.dagmaf = None
-        self.consensuses_tree = None
+        self.consensuses_tree: ConsensusesTree= None
         self.missing_nucleotide_symbol = self.params.missing_nucleotide_symbol
 
     def build_from_maf_firstly_converted_to_dag(self):
@@ -31,14 +36,14 @@ class Pangenome:
                             "Should be of type FastaComplementationOption."
                             "Cannot build pangraph.")
 
-        self.genomes_info.feed_with_maf_data(self.params.multialignment_file_content)
+        self.genomes_info.feed_with_maf_data(self._get_sequences_names_from_maf(self.params.multialignment_file_content))
         self.pangraph.build_from_maf_firstly_converted_to_dag(mafcontent=self.params.multialignment_file_content,
                                                               fasta_source=fasta_source,
                                                               genomes_info=self.genomes_info,
                                                               missing_nucleotide_symbol=self.missing_nucleotide_symbol)
 
     def build_from_maf(self):
-        self.genomes_info.feed_with_maf_data(self.params.multialignment_file_content)
+        self.genomes_info.feed_with_maf_data(self._get_sequences_names_from_maf(self.params.multialignment_file_content))
         self.pangraph.build_from_maf(self.params.multialignment_file_content, self.genomes_info)
 
     def generate_fasta_files_to_directory(self):
@@ -55,7 +60,6 @@ class Pangenome:
             )
             self.consensuses_tree = consensus_generator.get_consensuses_tree(
                 pangraph=self.pangraph,
-                genomes_info=self.genomes_info,
                 output_dir=output_dir,
             )
         elif self.params.consensus_type == ConsensusAlgorithm.TREE:
@@ -104,10 +108,7 @@ class Pangenome:
                             "Cannot generate consensuses.")
 
     def _build_genomes_info(self):
-        if not self.params.metadata_file_content:
-            raise NotImplementedError("Metadata not given. Cannot build pangenome object.")
-        # todo check if metadata given else generate
-        return metadatareader.read(self.params.metadata_file_content)
+        return MultialignmentMetadata(self.params.metadata_file_content)
 
     def run(self):
         """Creates Pangraph and runs required algorithms."""
@@ -123,4 +124,8 @@ class Pangenome:
         if self.params.consensus_type != ConsensusAlgorithm.NO:
             self.generate_consensus()
 
+    def _get_sequences_names_from_maf(self, multialignment_file_content: str) -> List[str]:
+        maf = [*AlignIO.parse(StringIO(multialignment_file_content), "maf")]
 
+        names_from_maf = {seq.id for block in maf for seq in block}
+        return list(names_from_maf)

@@ -1,11 +1,11 @@
 import unittest
 from ddt import ddt
 
-from tests.context import metadatareader
 from tests.context import Node
 from tests.context import make_nucleobase as n
 from tests.context import pathtools
 from tests.context import FastaSource
+from tests.context import MultialignmentMetadata
 
 from tests.PangraphBuilder_Tests.PangraphBuilder_Tests import PangraphBuilderTests
 
@@ -29,7 +29,7 @@ class PangraphBuilderFromDAGTest_FillMafGaps(PangraphBuilderTests):
 
     @classmethod
     def setUpClass(cls):
-        cls.seq_metadata = metadatareader.read(pathtools.get_file_content("PangraphBuilder_Tests/seq_metadata.json"))
+        cls.seq_metadata = MultialignmentMetadata(pathtools.get_file_content("PangraphBuilder_Tests/seq_metadata.csv"))
         cls.fasta_source = PangraphBuilderFromDAGTest_FillMafGaps.FakeFastaSource()
 
     def test_1_missing_sequence_start(self):

@@ -101,8 +101,7 @@ def _get_parser() -> argparse.ArgumentParser:
                    help='Path to the mulitalignment file. Accepted formats: .maf, .po.')
     p.add_argument('--data', '-d',
                    type=_file_arg,
-                   required=True,
-                   help='Path to the json file with genomes specification. See... examples\\Ebola\\ebola_metadata.json')
+                   help='Path to the csv file with genomes specification. See... examples\\Ebola\\ebola_metadata.csv')
     p.add_argument('--blosum',
                    type=_file_arg,
                    help='Path to the BLOSUM matrix used in consensus generation algorithm.'
@@ -198,10 +197,11 @@ def create_pangenome_parameters() -> PangenomeParameters:
 
     parser = _get_parser()
     args = parser.parse_args()
+    metadata_content = pathtools.get_file_content(args.data) if args.data else None
     return PangenomeParameters(
-            multialignment_file_content=pathtools.get_file_content_as_stringio(args.multialignment),
+            multialignment_file_content=pathtools.get_file_content(args.multialignment),
             multialignment_file_path=args.multialignment,
-            metadata_file_content=pathtools.get_file_content(args.data),
+            metadata_file_content=metadata_content,
             metadata_file_path=args.data,
             blosum_file_path=args.blosum,
             output_path=args.output,

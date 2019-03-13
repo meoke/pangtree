@@ -1,26 +1,79 @@
-from .SequenceID import SequenceID
-from .SequenceMetadata import SequenceMetadata
-from typing import Dict
+import re
 
+import pandas as pd
+
+from pangraph.FastaSource import EntrezSequenceID
+from pangraph.custom_types import SequenceID
+from typing import Dict, List
+from io import StringIO
 
 class MultialignmentMetadata:
-    def __init__(self, title: str, version: str, genomes_metadata: Dict[SequenceID, SequenceMetadata]):
-        self.title = title
-        self.version = version
-        self.genomes_metadata = genomes_metadata
+    metadata_df: Dict[SequenceID, Dict]
 
-    # def get_id(self, sequence_name: str) -> int:
-    #     return [seq_id for seq_id, data in self.genomes_metadata.items() if data.mafname == sequence_name][0]
-    #
-    # def get_group(self, sequence_name: str) -> str:
-    #     return [data.group for seq_id, data in self.genomes_metadata.items() if data.mafname == sequence_name][0]
-    #
-    # def get_title(self, sequence_name: str) -> str:
-    #     return [data.title for seq_id, data in self.genomes_metadata.items() if data.mafname == sequence_name][0]
+    def __init__(self,
+                 metadata_file_content: str = None):
+        if metadata_file_content is None:
+            self.metadata_df = None
+        else:
+            self.metadata_df = self._read_metadata_csv(metadata_file_content)
 
-    def get_all_mafnames(self):
-        return [data.mafname for seq_id, data in self.genomes_metadata.items()]
+    def _read_metadata_csv(self, csv_content):
+        try:
+            metadata_df = pd.read_csv(StringIO(csv_content),sep=',',error_bad_lines=False)
+        except Exception as e:
+            raise Exception("Error when reading csv metadata.") from e
 
-    def feed_with_maf_data(self, mafcontent):
-        # todo
-        pass
+        try:
+            metadata_df = metadata_df.set_index('seqid')
+        except Exception as e:
+            raise Exception("No \'seqid\' column in csv metadata.")
+
+        return metadata_df
+
+    def get_all_sequences_ids(self):
+        return [SequenceID(seq_id) for seq_id in self.metadata_df.index.tolist()]
+
+    def feed_with_maf_data(self, names_in_maf: List[str]) -> None:
+        seq_id_to_full_mafname = [{'seqid': MultialignmentMetadata.get_seqid_from_mafname(mafname), 'mafname': mafname} for mafname in names_in_maf]
+        if self.metadata_df is None:
+            self.metadata_df = pd.DataFrame.from_dict(seq_id_to_full_mafname)
+            self.metadata_df = self.metadata_df.set_index('seqid')
+        else:
+            self.metadata_df['mafname'] = self.metadata_df.index.map(lambda seqid: self._get_mafname(SequenceID(seqid), names_in_maf))
+        #todo check for any differences between metadata and sequences in maf
+
+    def get_seq_metadata_as_dict(self, seq_id):
+        try:
+            return self.metadata_df.to_dict(orient='index')[seq_id]
+        except Exception as e:
+            raise Exception(f"No record for {seq_id} in metadata.") from e
+
+    def _get_mafname(self, seqid: SequenceID, names_in_maf: List[str]) -> str:
+        for n in names_in_maf:
+            splitted = n.split('.')
+            if (len(splitted) > 1 and splitted[1] == seqid) or splitted[0] == seqid:
+                return n
+        return None
+
+    @staticmethod
+    def get_seqid_from_mafname(mafname):
+        splitted = mafname.split('.')
+        if (len(splitted) > 1):
+            return splitted[1]
+        elif len(splitted) == 1:
+            return splitted[0]
+
+    def get_entrez_name(self, seqid: SequenceID) -> EntrezSequenceID:
+        try:
+            return EntrezSequenceID(self.metadata_df[seqid]['entrez'])
+        except:
+            return self._guess_entrez_name(seqid)
+
+    def _guess_entrez_name(self, seqid: SequenceID) -> EntrezSequenceID:
+        version_indications = [*re.finditer('v[0-9]{1}', seqid)]
+        if len(version_indications) == 1 :
+            version_start = version_indications[0].span()[0]
+            if version_start == len(seqid) -2:
+                entrez_name = seqid[0:version_start] + "." + seqid[version_start+1:]
+                return EntrezSequenceID(entrez_name)
+        return EntrezSequenceID(seqid)

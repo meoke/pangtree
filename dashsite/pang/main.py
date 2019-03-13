@@ -25,7 +25,6 @@ def main():
     try:
         pangenome = Pangenome(program_parameters)
         pangenome.run()
-        # todo: result = pangenome.run(program_parameters)
 
         data_path = pathtools.create_child_dir(program_parameters.output_path, 'data')
         pangenome_to_json_writer.save_to_file(data_path, pangenome)

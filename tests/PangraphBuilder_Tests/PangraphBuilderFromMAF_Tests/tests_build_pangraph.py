@@ -5,7 +5,7 @@ from tests.PangraphBuilder_Tests.PangraphBuilder_Tests import PangraphBuilderTes
 
 from tests.context import make_nucleobase as n
 from tests.context import Node
-from tests.context import metadatareader
+from tests.context import MultialignmentMetadata
 from tools import pathtools
 
 
@@ -13,8 +13,8 @@ from tools import pathtools
 class PangraphBuilderFromMAFTest_BuildPangraph(PangraphBuilderTests):
 
     def setUp(self):
-        self.seq_metadata = metadatareader.read(
-            pathtools.get_file_content("PangraphBuilder_Tests/seq_metadata.json"))
+        self.seq_metadata = MultialignmentMetadata(
+            pathtools.get_file_content("PangraphBuilder_Tests/seq_metadata.csv"))
 
     def test_1_messy_sequences(self):
         maf_path = "PangraphBuilder_Tests/" \
