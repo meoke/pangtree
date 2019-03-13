@@ -35,7 +35,7 @@ class EntrezFastaSource(FastaSource):
         Entrez.email = "pedziadkiewicz@gmail.com"
 
     def get_source(self, sequenceID: str, start: int = None, end: int = None) -> str:
-        ncbi_id = sequenceID.split('.')[1]
+        ncbi_id = sequenceID
         if 'v1' in ncbi_id:
             ncbi_id = ncbi_id.replace('v1', '.1')
         if 'v2' in ncbi_id:

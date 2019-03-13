@@ -2,6 +2,7 @@ import itertools
 from typing import List, Dict
 from Pangenome import Pangenome
 from arguments.PangenomeParameters import PangenomeParameters, FastaComplementationOption
+from pangraph.custom_types import NodeID
 
 
 class JSONProgramParameters:
@@ -34,19 +35,13 @@ class JSONNode:
 
 class JSONSequence:
     def __init__(self,
-                 node_id: int,
-                 genbankID: str,
-                 assemblyID: str,
-                 mafname: str,
-                 name: str,
-                 group: str,
-                 nodes_ids: List[int]):
-        self.id = node_id
-        self.genbankID = genbankID
-        self.assemblyID = assemblyID
-        self.mafname = mafname
-        self.name = name
-        self.group = group
+                 sequence_int_id: int,
+                 sequence_str_id: str,
+                 metadata: Dict,
+                 nodes_ids: List[NodeID]):
+        self.sequence_int_id: int = sequence_int_id
+        self.sequence_str_id: str = sequence_str_id
+        self.metadata: Dict = metadata
         self.nodes_ids = nodes_ids
 
 
@@ -113,19 +108,28 @@ class JSONPangenome:
 
         paths_str_id_to_int_id = {seq_id: i for i, seq_id in enumerate(sorted(pangenome.pangraph.paths.keys()))}
         if pangenome.pangraph.paths:
-            seqeuences_metadata = [pangenome.genomes_info.genomes_metadata[seqID]
-                                   for seqID in pangenome.pangraph.paths.keys()]
-            sorted_seqeuences_metadata = sorted(seqeuences_metadata, key=lambda m: paths_str_id_to_int_id[m.mafname])
-
-            self.sequences = [JSONSequence(node_id=paths_str_id_to_int_id[seq_metadata.mafname],  # todo główne ID!!!
-                                           genbankID=seq_metadata.genbankID,
-                                           assemblyID=seq_metadata.assemblyID,
-                                           mafname=seq_metadata.mafname,
-                                           name=seq_metadata.name,
-                                           group=seq_metadata.group,
+            self.sequences = [JSONSequence(sequence_int_id = i,
+                                           sequence_str_id = seq_id,
+                                           metadata = pangenome.genomes_info.get_seq_metadata_as_dict(seq_id),
                                            nodes_ids=list(itertools.chain.from_iterable(
-                                               pangenome.pangraph.paths[seq_metadata.mafname])))
-                              for i, seq_metadata in enumerate(sorted_seqeuences_metadata)]
+                                               pangenome.pangraph.paths[seq_id]))
+                                           )
+                              for i, seq_id in enumerate(sorted(pangenome.genomes_info.get_all_sequences_ids()))]
+            #
+            # seqeuences_metadata = [pangenome.genomes_info.genomes_metadata[seqID]
+            #                        for seqID in pangenome.pangraph.paths.keys()]
+            # sorted_seqeuences_metadata = sorted(seqeuences_metadata, key=lambda m: paths_str_id_to_int_id[m.mafname])
+            #
+            # self.sequences = [JSONSequence(node_id=paths_str_id_to_int_id[seq_metadata.mafname],  # todo główne ID!!!
+            #                                metadata=pangenome.genomes_info.get_seq_metadata_as_dict()
+            #                                genbankID=seq_metadata.genbankID,
+            #                                assemblyID=seq_metadata.assemblyID,
+            #                                mafname=seq_metadata.mafname,
+            #                                name=seq_metadata.name,
+            #                                group=seq_metadata.group,
+            #                                nodes_ids=list(itertools.chain.from_iterable(
+            #                                    pangenome.pangraph.paths[seq_metadata.mafname])))
+            #                   for i, seq_metadata in enumerate(sorted_seqeuences_metadata)]
         else:
             self.sequences = None
 

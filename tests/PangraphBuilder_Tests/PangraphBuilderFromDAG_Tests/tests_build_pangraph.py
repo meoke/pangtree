@@ -1,7 +1,7 @@
 import unittest
 from ddt import ddt
 
-from tests.context import metadatareader
+from tests.context import MultialignmentMetadata
 from tests.context import Node
 from tests.context import make_nucleobase as n
 from tests.context import pathtools
@@ -13,8 +13,8 @@ from tests.PangraphBuilder_Tests.PangraphBuilder_Tests import PangraphBuilderTes
 class PangraphBuilderFromDAGTest_BuildPangraph(PangraphBuilderTests):
     @classmethod
     def setUpClass(cls):
-        cls.seq_metadata = metadatareader.read(
-            pathtools.get_file_content("PangraphBuilder_Tests/seq_metadata.json"))
+        cls.seq_metadata = MultialignmentMetadata(
+            pathtools.get_file_content("PangraphBuilder_Tests/seq_metadata.csv"))
         cls.fasta_source = None
 
     def test_00_simple(self):

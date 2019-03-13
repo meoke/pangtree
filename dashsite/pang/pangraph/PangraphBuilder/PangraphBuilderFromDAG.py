@@ -48,14 +48,14 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
     def get_sequences(self, fasta_source: FastaSource) -> Dict[SequenceID, Sequence]:
         return {
             SequenceID(seq_id): Sequence(fasta_source.get_source(sequenceID=seq_id))
-            for seq_id in self.sequences_names
+            for seq_id in self.sequences_ids
         }
 
     def build(self, maf: StringIO, pangraph) -> None:
         self.dagmaf = maf_to_dagmaf(maf)
         self.pangraph = pangraph
         self.init_pangraph()
-        self.free_edges = {SequenceID(seq_id): [] for seq_id in self.sequences_names}
+        self.free_edges = {SequenceID(seq_id): [] for seq_id in self.sequences_ids}
         self.set_seqs_info()
         self.column_id = ColumnID(-1)
 
@@ -64,10 +64,10 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
             self.process_block(mafnode)
 
     def init_pangraph(self):
-        self.pangraph.paths = {seq_id: [] for seq_id in self.sequences_names}
+        self.pangraph.paths = {seq_id: [] for seq_id in self.sequences_ids}
 
     def set_seqs_info(self) -> None:
-        self.seqs_info = {SequenceID(seq_id): [] for seq_id in self.sequences_names}
+        self.seqs_info = {SequenceID(seq_id): [] for seq_id in self.sequences_ids}
 
         for n in self.dagmaf.dagmafnodes:
             for seq in n.alignment:
@@ -109,7 +109,7 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
                           aligned_to=None,
                           column_id=column_id,
                           block_id=None)
-            self.add_node_to_sequence(seq_id=seq_id, join_with=join_with, node_id=current_node_id)
+            self.add_node_to_sequence(maf_seq_id=seq_id, join_with=join_with, node_id=current_node_id)
             join_with = current_node_id
             column_id += 1
         self.free_edges[seq_id].append(Edge(seq_id=seq_id,
@@ -132,7 +132,8 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
                                         column_id=column_id,
                                         block_id=block_id))
 
-    def add_node_to_sequence(self, seq_id: SequenceID, join_with: NodeID, node_id: NodeID) -> None:
+    def add_node_to_sequence(self, maf_seq_id: SequenceID, join_with: NodeID, node_id: NodeID) -> None:
+        seq_id = self.get_seq_id(maf_seq_id)
         if not self.pangraph.paths[seq_id] or join_with is None:
             self.pangraph.paths[seq_id].append([node_id])
         else:
@@ -225,7 +226,7 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
                               aligned_to=None,
                               column_id=column_id,
                               block_id=None)
-                self.add_node_to_sequence(seq_id=seq_id, join_with=join_with, node_id=current_node_id)
+                self.add_node_to_sequence(maf_seq_id=seq_id, join_with=join_with, node_id=current_node_id)
                 join_with = current_node_id
 
             if self.should_join_with_next_node(edge.edge_type):
@@ -315,7 +316,7 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
                           aligned_to=None,
                           column_id=column_id,
                           block_id=None)
-            self.add_node_to_sequence(seq_id=seq_id, join_with=join_with, node_id=current_node_id)
+            self.add_node_to_sequence(maf_seq_id=seq_id, join_with=join_with, node_id=current_node_id)
             join_with = current_node_id
         return current_node_id
 
@@ -333,10 +334,17 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
         elif last_block_sinfo.strand == -1:
             return last_block_sinfo.start != 0
         else:
-            raise Exception("Unecpected strand value")
+            raise Exception("Unexpected strand value")
 
     def get_next_aligned_node_id(self, current_column_i, column_nodes_ids):
         if len(column_nodes_ids) > 1:
             return column_nodes_ids[(current_column_i + 1) % len(column_nodes_ids)]
         return None
+
+    def get_seq_id(self, maf_seq_id):
+        try:
+            seq_id = maf_seq_id.split('.')[0]
+        except Exception as e:
+            raise Exception(f"Sequence {maf_seq_id} has incorrect format [].seqid.")
+        return seq_id
 

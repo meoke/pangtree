@@ -22,7 +22,7 @@ class PangraphBuilderFromMAF(PangraphBuilderBase):
 
             for col in range(block_width):
                 column_id += 1
-                sequence_name_to_nucleotide = {SequenceID(seq.id): (seq[col]) for seq in block}
+                sequence_name_to_nucleotide = {SequenceID(seq.id): seq[col] for seq in block}
                 nodes_codes = sorted([*(
                     set([nucleotide for nucleotide in sequence_name_to_nucleotide.values()])).difference({'-'})])
                 column_nodes_ids = [current_node_id + i + 1 for i, _ in enumerate(nodes_codes)]
@@ -37,14 +37,15 @@ class PangraphBuilderFromMAF(PangraphBuilderBase):
 
                     for sequence, nucleotide in sequence_name_to_nucleotide.items():
                         if nucleotide == nucl:
-                            self.add_node_do_sequence(seqID=sequence, node_id=current_node_id)
+                            self.add_node_do_sequence(maf_seq_id=sequence, node_id=current_node_id)
 
     def init_pangraph(self, pangraph):
         pangraph.nodes = []
-        pangraph.paths = {seq_id: [] for seq_id in self.sequences_names}
+        pangraph.paths = {seq_id: [] for seq_id in self.sequences_ids}
         self.pangraph = pangraph
 
-    def add_node_do_sequence(self, seqID: SequenceID, node_id: NodeID):
+    def add_node_do_sequence(self, maf_seq_id: SequenceID, node_id: NodeID):
+        seqID = self.get_seq_id(maf_seq_id)
         if self.pangraph.paths[seqID]:
             self.pangraph.paths[seqID][-1].append(node_id)
         else:
@@ -79,4 +80,11 @@ class PangraphBuilderFromMAF(PangraphBuilderBase):
 
         return nodes_count
 
+    def get_seq_id(self, maf_seq_id):
+        seq_id = maf_seq_id.split('.')
+        if len(seq_id) == 2:
+            return seq_id[1]
+        elif len(seq_id) == 1:
+            return seq_id[0]
+            raise Exception(f"Sequence {maf_seq_id} has incorrect format [].seqid.")
 

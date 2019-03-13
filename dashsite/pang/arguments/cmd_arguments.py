@@ -102,7 +102,7 @@ def _get_parser() -> argparse.ArgumentParser:
     p.add_argument('--data', '-d',
                    type=_file_arg,
                    required=True,
-                   help='Path to the json file with genomes specification. See... examples\\Ebola\\ebola_metadata.json')
+                   help='Path to the csv file with genomes specification. See... examples\\Ebola\\ebola_metadata.csv')
     p.add_argument('--blosum',
                    type=_file_arg,
                    help='Path to the BLOSUM matrix used in consensus generation algorithm.'

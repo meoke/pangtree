@@ -4,10 +4,8 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 
 from dashsite.pang.arguments import cmd_arguments
 
-from dashsite.pang.metadata import reader as metadatareader
 from dashsite.pang.metadata.MultialignmentMetadata import MultialignmentMetadata
 from dashsite.pang.metadata.SequenceMetadata import SequenceMetadata
-from dashsite.pang.metadata.reader import read as json_to_metadata
 
 from dashsite.pang.pangraph.Node import Node
 from dashsite.pang.pangraph.Pangraph import Pangraph
