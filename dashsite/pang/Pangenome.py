@@ -108,11 +108,7 @@ class Pangenome:
                             "Cannot generate consensuses.")
 
     def _build_genomes_info(self):
-        if not self.params.metadata_file_content:
-            raise NotImplementedError("Metadata not given. Cannot build pangenome object.")
-        # todo check if metadata given else generate
         return MultialignmentMetadata(self.params.metadata_file_content)
-        # return metadatareader.read(self.params.metadata_file_content)
 
     def run(self):
         """Creates Pangraph and runs required algorithms."""
@@ -128,8 +124,8 @@ class Pangenome:
         if self.params.consensus_type != ConsensusAlgorithm.NO:
             self.generate_consensus()
 
-    def _get_sequences_names_from_maf(self, multialignment_file_content) -> List[str]:
-        maf = [*AlignIO.parse(StringIO(str(multialignment_file_content)), "maf")]
+    def _get_sequences_names_from_maf(self, multialignment_file_content: str) -> List[str]:
+        maf = [*AlignIO.parse(StringIO(multialignment_file_content), "maf")]
 
         names_from_maf = {seq.id for block in maf for seq in block}
         return list(names_from_maf)

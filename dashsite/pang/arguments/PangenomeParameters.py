@@ -33,10 +33,10 @@ class NodeCutoffOption(Enum):
 
 class PangenomeParameters:
     def __init__(self,
-                 multialignment_file_content: StringIO,
+                 multialignment_file_content: str,
                  multialignment_file_path: Path,
                  metadata_file_content: Optional[str],
-                 metadata_file_path: Path,
+                 metadata_file_path: Optional[Path],
                  blosum_file_path: Optional[Path],
                  output_path: Path,
                  generate_fasta: bool,

@@ -1,15 +1,17 @@
 import abc
 from pathlib import Path
+from typing import NewType
 
 from Bio import Entrez
 
 from pangraph.custom_types import SequenceID
 from tools.pathtools import get_child_file_path
 
+EntrezSequenceID = NewType("EntrezSequenceID", str)
 
 class FastaSource(abc.ABC):
     @abc.abstractmethod
-    def get_source(self, sequenceID: SequenceID, start: int = None, end: int = None):
+    def get_source(self, sequenceID: str, start: int = None, end: int = None):
         pass
 
     def get_raw_sequence_from_fasta(self, fasta_handle):
@@ -34,28 +36,20 @@ class EntrezFastaSource(FastaSource):
         super().__init__()
         Entrez.email = "pedziadkiewicz@gmail.com"
 
-    def get_source(self, sequenceID: str, start: int = None, end: int = None) -> str:
-        ncbi_id = sequenceID
-        if 'v1' in ncbi_id:
-            ncbi_id = ncbi_id.replace('v1', '.1')
-        if 'v2' in ncbi_id:
-            ncbi_id = ncbi_id.replace('v2', '.2')
-        if 'v3' in ncbi_id:
-            ncbi_id = ncbi_id.replace('v3', '.3')
+    def get_source(self, sequenceID: EntrezSequenceID, start: int = None, end: int = None) -> str:
         try:
             if start is not None and end is not None:
                 handle = Entrez.efetch(db="nucleotide",
-                                       id=ncbi_id,
+                                       id=sequenceID,
                                        rettype="fasta",
                                        retmode="text",
                                        seq_start=start,
                                        seq_stop=end)
             else:
-                handle = Entrez.efetch(db="nucleotide", id=ncbi_id, rettype="fasta", retmode="text")
+                handle = Entrez.efetch(db="nucleotide", id=sequenceID, rettype="fasta", retmode="text")
             fasta_content = self.get_raw_sequence_from_fasta(handle)
             return fasta_content
         except Exception as ex:
-            print(ncbi_id, start, end)
-            raise ex
+            raise Exception(f"Cannot download from Entrez sequence of ID: {sequenceID}") from ex
 
 

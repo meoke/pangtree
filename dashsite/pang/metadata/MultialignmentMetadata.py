@@ -1,5 +1,8 @@
-import pandas
+import re
 
+import pandas as pd
+
+from pangraph.FastaSource import EntrezSequenceID
 from pangraph.custom_types import SequenceID
 from typing import Dict, List
 from io import StringIO
@@ -16,7 +19,7 @@ class MultialignmentMetadata:
 
     def _read_metadata_csv(self, csv_content):
         try:
-            metadata_df = pandas.read_csv(StringIO(csv_content),sep=',',error_bad_lines=False)
+            metadata_df = pd.read_csv(StringIO(csv_content),sep=',',error_bad_lines=False)
         except Exception as e:
             raise Exception("Error when reading csv metadata.") from e
 
@@ -28,11 +31,16 @@ class MultialignmentMetadata:
         return metadata_df
 
     def get_all_sequences_ids(self):
-        return self.metadata_df.index.tolist()
+        return [SequenceID(seq_id) for seq_id in self.metadata_df.index.tolist()]
 
     def feed_with_maf_data(self, names_in_maf: List[str]) -> None:
-        self.metadata_df['mafname'] = self.metadata_df.index.map(lambda seqid: self._get_mafname(seqid, names_in_maf))
-        pass
+        seq_id_to_full_mafname = [{'seqid': MultialignmentMetadata.get_seqid_from_mafname(mafname), 'mafname': mafname} for mafname in names_in_maf]
+        if self.metadata_df is None:
+            self.metadata_df = pd.DataFrame.from_dict(seq_id_to_full_mafname)
+            self.metadata_df = self.metadata_df.set_index('seqid')
+        else:
+            self.metadata_df['mafname'] = self.metadata_df.index.map(lambda seqid: self._get_mafname(SequenceID(seqid), names_in_maf))
+        #todo check for any differences between metadata and sequences in maf
 
     def get_seq_metadata_as_dict(self, seq_id):
         try:
@@ -46,3 +54,26 @@ class MultialignmentMetadata:
             if (len(splitted) > 1 and splitted[1] == seqid) or splitted[0] == seqid:
                 return n
         return None
+
+    @staticmethod
+    def get_seqid_from_mafname(mafname):
+        splitted = mafname.split('.')
+        if (len(splitted) > 1):
+            return splitted[1]
+        elif len(splitted) == 1:
+            return splitted[0]
+
+    def get_entrez_name(self, seqid: SequenceID) -> EntrezSequenceID:
+        try:
+            return EntrezSequenceID(self.metadata_df[seqid]['entrez'])
+        except:
+            return self._guess_entrez_name(seqid)
+
+    def _guess_entrez_name(self, seqid: SequenceID) -> EntrezSequenceID:
+        version_indications = [*re.finditer('v[0-9]{1}', seqid)]
+        if len(version_indications) == 1 :
+            version_start = version_indications[0].span()[0]
+            if version_start == len(seqid) -2:
+                entrez_name = seqid[0:version_start] + "." + seqid[version_start+1:]
+                return EntrezSequenceID(entrez_name)
+        return EntrezSequenceID(seqid)

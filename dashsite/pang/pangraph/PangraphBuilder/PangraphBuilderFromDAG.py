@@ -1,6 +1,6 @@
 from io import StringIO
 from collections import namedtuple
-from typing import Dict, Tuple, List, Optional
+from typing import Dict, Tuple, List, Optional, NewType
 
 from mafgraph.graph import Block
 from mafgraph.graph.Arc import Arc
@@ -14,6 +14,8 @@ from pangraph.exceptions import NoSequenceInfo, SequenceBuildingException
 from pangraph.custom_types import ColumnID, SequenceID, NodeID, BlockID, Sequence, Nucleobase, make_nucleobase
 from metadata.MultialignmentMetadata import MultialignmentMetadata
 from mafgraph.mafreader import start_position
+
+MafSequenceID = NewType('MafSequenceID', str)
 
 SequenceInfo = namedtuple('SequenceInfo', ['block_id',
                                            'start',
@@ -39,15 +41,16 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
         self.free_edges: Dict[SequenceID, List[Edge]] = None
         self.seqs_info: Dict[SequenceID, SequenceInfo] = None
         self.column_id: ColumnID = None
-        self.complement_sequences: bool = True if fasta_source else False  # todo use this info while building
+        self.complement_sequences: bool = True if fasta_source else False
         self.missing_nucleotide_symbol: Nucleobase = make_nucleobase(missing_nucleotide_symbol)
+        self.genomes_info: MultialignmentMetadata = genomes_info
 
         if self.complement_sequences:
             self.full_sequences: Dict[SequenceID, Sequence] = self.get_sequences(fasta_source)
 
     def get_sequences(self, fasta_source: FastaSource) -> Dict[SequenceID, Sequence]:
         return {
-            SequenceID(seq_id): Sequence(fasta_source.get_source(sequenceID=seq_id))
+            SequenceID(seq_id): Sequence(fasta_source.get_source(sequenceID=self.genomes_info.get_entrez_name(seq_id)))
             for seq_id in self.sequences_ids
         }
 
@@ -64,19 +67,19 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
             self.process_block(mafnode)
 
     def init_pangraph(self):
-        self.pangraph.paths = {seq_id: [] for seq_id in self.sequences_ids}
+        self.pangraph.paths = {SequenceID(seq_id): [] for seq_id in self.sequences_ids}
 
     def set_seqs_info(self) -> None:
         self.seqs_info = {SequenceID(seq_id): [] for seq_id in self.sequences_ids}
 
         for n in self.dagmaf.dagmafnodes:
             for seq in n.alignment:
-                self.seqs_info[seq.id].append(SequenceInfo(block_id=BlockID(n.id),
-                                                           start=start_position(seq),
-                                                           strand=seq.annotations["strand"],
-                                                           size=seq.annotations["size"],
-                                                           srcSize=seq.annotations["srcSize"],
-                                                           orient=n.orient))
+                self.seqs_info[self.get_seq_id(seq.id)].append(SequenceInfo(block_id=BlockID(n.id),
+                                                                            start=start_position(seq),
+                                                                            strand=seq.annotations["strand"],
+                                                                            size=seq.annotations["size"],
+                                                                            srcSize=seq.annotations["srcSize"],
+                                                                            orient=n.orient))
         absents_sequences: List[SequenceID] = []
         for seq_id, seq_info_list in self.seqs_info.items():
             if seq_info_list:
@@ -92,7 +95,7 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
             if first_block_sinfo.start != 0:
                 self.complement_sequence_starting_nodes(seq_id, first_block_sinfo)
 
-    def get_missing_nucleotide(self, seq_id, i) -> Nucleobase:
+    def get_missing_nucleotide(self, seq_id: SequenceID, i:int) -> Nucleobase:
         if self.complement_sequences:
             return make_nucleobase(self.full_sequences[seq_id][i])
         return self.missing_nucleotide_symbol
@@ -109,7 +112,7 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
                           aligned_to=None,
                           column_id=column_id,
                           block_id=None)
-            self.add_node_to_sequence(maf_seq_id=seq_id, join_with=join_with, node_id=current_node_id)
+            self.add_node_to_sequence(seq_id=seq_id, join_with=join_with, node_id=current_node_id)
             join_with = current_node_id
             column_id += 1
         self.free_edges[seq_id].append(Edge(seq_id=seq_id,
@@ -132,8 +135,7 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
                                         column_id=column_id,
                                         block_id=block_id))
 
-    def add_node_to_sequence(self, maf_seq_id: SequenceID, join_with: NodeID, node_id: NodeID) -> None:
-        seq_id = self.get_seq_id(maf_seq_id)
+    def add_node_to_sequence(self, seq_id: SequenceID, join_with: NodeID, node_id: NodeID) -> None:
         if not self.pangraph.paths[seq_id] or join_with is None:
             self.pangraph.paths[seq_id].append([node_id])
         else:
@@ -152,18 +154,19 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
         self.column_id = self.get_max_column_id()
         for col in range(block_width):
             self.column_id += 1
-            sequence_name_to_nucleotide = {seq.id: seq[col] for seq in block.alignment}
+            sequence_name_to_nucleotide = {MafSequenceID(seq.id): seq[col] for seq in block.alignment}
             nodes_codes = self.get_column_nucleotides_sorted_codes(sequence_name_to_nucleotide)
             column_nodes_ids = [current_node_id + i + 1 for i, _ in enumerate(nodes_codes)]
             for i, nucl in enumerate(nodes_codes):
                 current_node_id += 1
-                seqs_id = [seq_id for seq_id, n in sequence_name_to_nucleotide.items() if n == nucl]
+                maf_seqs_id = [seq_id for seq_id, n in sequence_name_to_nucleotide.items() if n == nucl]
                 self.add_node(node_id=current_node_id,
                               nucleobase=make_nucleobase(nucl),
                               aligned_to=self.get_next_aligned_node_id(i, column_nodes_ids),
                               column_id=self.column_id,
                               block_id=block.id)
-                for seq_id in seqs_id:
+                for maf_seq_id in maf_seqs_id:
+                    seq_id = self.get_seq_id(maf_seq_id)
                     self.add_node_to_sequence(seq_id, paths_join_info[seq_id], current_node_id)
                     paths_join_info[seq_id] = current_node_id
 
@@ -173,10 +176,11 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
     def get_paths_join_info(self, block: Block) -> Dict[SequenceID, NodeID]:
         paths_join_info: Dict[SequenceID, NodeID] = dict()
         for seq in block.alignment:
-            paths_join_info[seq.id] = None
-            for i, edge in enumerate(self.free_edges[seq.id]):
+            seq_id = self.get_seq_id(seq.id)
+            paths_join_info[seq_id] = None
+            for i, edge in enumerate(self.free_edges[seq_id]):
                 if edge.to_block_id == block.id:
-                    paths_join_info[seq.id] = edge.last_node_id
+                    paths_join_info[seq_id] = edge.last_node_id
         return paths_join_info
 
     def get_max_column_id(self) -> ColumnID:
@@ -197,7 +201,7 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
                                             "Cannot decide if sequence should be joined with complemented nucleotides.")
 
     def complement_sequence_middles_if_needed(self, block: Block, edge: Arc, seq, last_node_id: NodeID):
-        seq_id = seq[0].seq_id
+        seq_id = self.get_seq_id(seq[0].seq_id)
         left_block_sinfo, right_block_sinfo = self.get_edge_sinfos(from_block_id=block.id,
                                                                    edge=edge,
                                                                    seq_id=seq_id)
@@ -226,7 +230,7 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
                               aligned_to=None,
                               column_id=column_id,
                               block_id=None)
-                self.add_node_to_sequence(maf_seq_id=seq_id, join_with=join_with, node_id=current_node_id)
+                self.add_node_to_sequence(seq_id=seq_id, join_with=join_with, node_id=current_node_id)
                 join_with = current_node_id
 
             if self.should_join_with_next_node(edge.edge_type):
@@ -247,7 +251,7 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
         for edge in block.out_edges:
             edge_type = self.get_correct_edge_type(block, edge)
             for seq in edge.sequences:
-                seq_id = seq[0].seq_id
+                seq_id = self.get_seq_id(seq[0].seq_id)
                 last_node_id = self.complement_sequence_middles_if_needed(block=block,
                                                                           edge=edge,
                                                                           seq=seq,
@@ -316,7 +320,7 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
                           aligned_to=None,
                           column_id=column_id,
                           block_id=None)
-            self.add_node_to_sequence(maf_seq_id=seq_id, join_with=join_with, node_id=current_node_id)
+            self.add_node_to_sequence(seq_id=seq_id, join_with=join_with, node_id=current_node_id)
             join_with = current_node_id
         return current_node_id
 
@@ -341,10 +345,6 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
             return column_nodes_ids[(current_column_i + 1) % len(column_nodes_ids)]
         return None
 
-    def get_seq_id(self, maf_seq_id):
-        try:
-            seq_id = maf_seq_id.split('.')[0]
-        except Exception as e:
-            raise Exception(f"Sequence {maf_seq_id} has incorrect format [].seqid.")
-        return seq_id
+    def get_seq_id(self, maf_seq_id: MafSequenceID):
+        return MultialignmentMetadata.get_seqid_from_mafname(maf_seq_id)
 
