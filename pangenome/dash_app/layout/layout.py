@@ -351,46 +351,45 @@ def get_layout(get_url_function):
                                 id='blocks_graph'
                             ),
                             html.Div(
-                                id='pangraph',
+                                id=id_multialignmentgraph_container,
                                 children=[
-                                    html.Div(
-                                        id='hidden_pangraph_points',
-                                        style={'display': 'none'}
-                                    ),
-                                    html.Div(
-                                        id='hidden_pangraph_traces',
-                                        style={'display': 'none'}
-                                    ),
-                                    html.Div(
-                                        id='pangraph_display',
-                                        children=[
-                                            dcc.Graph(
-                                                id='pangraph_graph',
-                                                style={
-                                                    'height': '500px',
-                                                    'width': '30000px'
-                                                },
-                                            )
-                                        ],
-                                        style={'display': 'none'}
-
+                                        dcc.Graph(
+                                            id=id_multialignmentgraph,
+                                            style={
+                                                # 'height': '500px',
+                                                # 'width': '30000px'
+                                            },
+                                        )
+                                    ],
+                                style={'display': 'none',
+                                       'overflow-y': 'scroll'},
+                                className='twelve columns'
+                            ),
+                            html.Div(
+                                id=id_poagraph_container,
+                                children=[
+                                    dcc.Graph(
+                                        id=id_poagraph,
+                                        style={
+                                            # 'height': '500px',
+                                            # 'width': '30000px'
+                                        },
                                     )
                                 ],
-                                style={'overflow-y': 'scroll'},
+                                style={'display': 'none'},
                                 className='twelve columns'
                             )
                         ],
                         className='row'
                     ),
                     html.Div(
+                        id=id_hidenn_divs,
                         children=[
                             html.Div(
-                                id=id_pangenome_hidden,
-                                style={'display': 'none'}
+                                id=id_pangenome_hidden
                             ),
                             html.Div(
-                                id=id_last_clicked_hidden,
-                                style={'display': 'none'}
+                                id=id_last_clicked_hidden
                             ),
                             html.Div(
                                 id=id_full_consensustable_hidden
@@ -411,7 +410,7 @@ def get_layout(get_url_function):
                                 id=id_consensus_node_details_table_hidden
                             ),
                             html.Div(
-                                id=id_pangraph_hidden
+                                id=id_multialignmentgraph_hidden
                             ),
                             html.Div(
                                 id=id_mafgraph_hidden
@@ -424,4 +423,5 @@ def get_layout(get_url_function):
             )
         ],
         style={'padding': '0px',
-               'margin': '0px'})
+               'margin': '0px'}
+    )
