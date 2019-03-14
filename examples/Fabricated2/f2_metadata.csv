@@ -1,7 +1,7 @@
-seqid,group
-seq0,A
-seq1,A
-seq2,A
-seq3,A
-seq4,B
-seq5,B
+seqid,group,newcolumn
+seq0,A,x
+seq1,A,x
+seq2,A,z
+seq3,A,z
+seq4,B,y
+seq5,B,x
