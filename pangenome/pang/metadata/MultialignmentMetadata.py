@@ -4,11 +4,11 @@ import pandas as pd
 
 from pangraph.FastaSource import EntrezSequenceID
 from pangraph.custom_types import SequenceID
-from typing import Dict, List
+from typing import Dict, List, Any
 from io import StringIO
 
 class MultialignmentMetadata:
-    metadata_df: Dict[SequenceID, Dict]
+    metadata_df: pd.DataFrame
 
     def __init__(self,
                  metadata_file_content: str = None):
@@ -40,9 +40,9 @@ class MultialignmentMetadata:
             self.metadata_df = self.metadata_df.set_index('seqid')
         else:
             self.metadata_df['mafname'] = self.metadata_df.index.map(lambda seqid: self._get_mafname(SequenceID(seqid), names_in_maf))
-        #todo check for any differences between metadata and sequences in maf
+        #todo check for any differences between metadata and sequences in maf and check if no column contains "CONSENSUS" and if all are unique
 
-    def get_seq_metadata_as_dict(self, seq_id):
+    def get_seq_metadata_as_dict(self, seq_id: SequenceID) -> Dict[str, Any]:
         try:
             return self.metadata_df.to_dict(orient='index')[seq_id]
         except Exception as e:

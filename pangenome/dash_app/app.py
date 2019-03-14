@@ -11,5 +11,4 @@ from .callbacks import fire
 from .callbacks import broadcast_pangenome
 from .callbacks import parameters
 from .callbacks import consensustable
-
-
+from .callbacks import consensustree

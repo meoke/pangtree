@@ -125,5 +125,7 @@ def get_jsonified_pangenome_from_jsonpangenome(jsonpangenome: JSONPangenome) -> 
     return jsonpickle.encode(jsonpangenome, unpicklable=True)
 
 def decode_content(content: str) -> str:
+    if not content:
+        return ''
     content_string = content.split(',')[1]
     return b64decode(content_string).decode('ascii')

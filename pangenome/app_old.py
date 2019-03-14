@@ -125,30 +125,30 @@ def download_json_button(_):
 #         return pangenomejson_writer.pangenome_to_json(pangenome)
 
 
-@app.callback(
-    dash.dependencies.Output('program_parameters_display', 'children'),
-    [dash.dependencies.Input('hidden_pang_result', 'children')]
-)
-def update_program_parameters(jsonified_pangenome):
-    jsonpangenome = pangenomejson_reader.json_to_jsonpangenome(jsonified_pangenome)
-    if jsonpangenome.program_parameters:
-        params: JSONProgramParameters = jsonpangenome.program_parameters
-        return [html.P(f"Multialignment path: {params.multialignment_file_path}"),
-                html.P(f"Metadata path: {params.metadata_file_path}"),
-                html.P(f"Not dag: {params.not_dag}"),
-                html.P(f"Generate fasta: {params.generate_fasta}"),
-                html.P(f"Consensus type: {params.consensus_type}"),
-                html.P(f"(Simple consensus) HBMIN: {params.hbmin}"),
-                html.P(f"(Tree consensus) Max cutoff strategy: {params.max_cutoff_strategy}"),
-                html.P(f"(Tree consensus) Node cutoff strategy: {params.node_cutoff_strategy}"),
-                html.P(f"(Tree consensus, MAX1) Range: {params.r}"),
-                html.P(f"(Tree consensus, NODE1, NODE2) Multiplier: {params.multiplier}"),
-                html.P(f"(Tree consensus) Stop: {params.stop}"),
-                html.P(f"(Tree consensus) Re_consensus: {params.re_consensus}"),
-
-                html.P(f"Fasta_complementation: {params.fasta_complementation_option}"),
-                html.P(f"Local fasta dir: {params.local_fasta_dirpath}")
-                ]
+# @app.callback(
+#     dash.dependencies.Output('program_parameters_display', 'children'),
+#     [dash.dependencies.Input('hidden_pang_result', 'children')]
+# )
+# def update_program_parameters(jsonified_pangenome):
+#     jsonpangenome = pangenomejson_reader.json_to_jsonpangenome(jsonified_pangenome)
+#     if jsonpangenome.program_parameters:
+#         params: JSONProgramParameters = jsonpangenome.program_parameters
+#         return [html.P(f"Multialignment path: {params.multialignment_file_path}"),
+#                 html.P(f"Metadata path: {params.metadata_file_path}"),
+#                 html.P(f"Not dag: {params.not_dag}"),
+#                 html.P(f"Generate fasta: {params.generate_fasta}"),
+#                 html.P(f"Consensus type: {params.consensus_type}"),
+#                 html.P(f"(Simple consensus) HBMIN: {params.hbmin}"),
+#                 html.P(f"(Tree consensus) Max cutoff strategy: {params.max_cutoff_strategy}"),
+#                 html.P(f"(Tree consensus) Node cutoff strategy: {params.node_cutoff_strategy}"),
+#                 html.P(f"(Tree consensus, MAX1) Range: {params.r}"),
+#                 html.P(f"(Tree consensus, NODE1, NODE2) Multiplier: {params.multiplier}"),
+#                 html.P(f"(Tree consensus) Stop: {params.stop}"),
+#                 html.P(f"(Tree consensus) Re_consensus: {params.re_consensus}"),
+#
+#                 html.P(f"Fasta_complementation: {params.fasta_complementation_option}"),
+#                 html.P(f"Local fasta dir: {params.local_fasta_dirpath}")
+#                 ]
 
 
 @app.callback(
@@ -167,11 +167,11 @@ def update_consensus_graph_data(jsonified_pangenome, click_data, old_jsonfied_co
     return jsonpickle.encode(jsonified_tree)
 
 
-@app.callback(
-    dash.dependencies.Output('consensus_tree', 'style'),
-    [dash.dependencies.Input('consensus_tree_graph', 'figure')])
-def show_graph(_):
-    return {'display': 'block'}
+# @app.callback(
+#     dash.dependencies.Output('consensus_tree', 'style'),
+#     [dash.dependencies.Input('consensus_tree_graph', 'figure')])
+# def show_graph(_):
+#     return {'display': 'block'}
 
 
 @app.callback(
@@ -187,23 +187,23 @@ def update_consensuses_table(jsonified_consensus_tree, slider_value, jsonified_p
     consensus_table_data.to_csv('tabela.csv')
     return consensus_table_data.to_json()
 
+#
+# @app.callback(
+#     dash.dependencies.Output('consensuses_table', 'data'),
+#     [dash.dependencies.Input('hidden_consensuses_table_data', 'children')]
+# )
+# def update_consensuses_table_rows(jsonified_consensuses_table_data):
+#     table_data = pd.read_json(jsonified_consensuses_table_data)
+#     return consensus_table.table_to_rows_json(table_data)
 
-@app.callback(
-    dash.dependencies.Output('consensuses_table', 'data'),
-    [dash.dependencies.Input('hidden_consensuses_table_data', 'children')]
-)
-def update_consensuses_table_rows(jsonified_consensuses_table_data):
-    table_data = pd.read_json(jsonified_consensuses_table_data)
-    return consensus_table.table_to_rows_json(table_data)
 
-
-@app.callback(
-    dash.dependencies.Output('consensuses_table', 'columns'),
-    [dash.dependencies.Input('hidden_consensuses_table_data', 'children')]
-)
-def update_consensuses_table_columncs(jsonified_consensuses_table_data):
-    table_data = pd.read_json(jsonified_consensuses_table_data)
-    return [{"name": i, "id": i} for i in table_data.columns]
+# @app.callback(
+#     dash.dependencies.Output('consensuses_table', 'columns'),
+#     [dash.dependencies.Input('hidden_consensuses_table_data', 'children')]
+# )
+# def update_consensuses_table_columncs(jsonified_consensuses_table_data):
+#     table_data = pd.read_json(jsonified_consensuses_table_data)
+#     return [{"name": i, "id": i} for i in table_data.columns]
 
 
 @app.callback(

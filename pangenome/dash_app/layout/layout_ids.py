@@ -9,11 +9,17 @@ id_last_clicked_hidden = 'last_clicked_hidden'
 id_pang_button = 'pang_button'
 id_load_pangenome_button = 'load_pangenome_button'
 id_pangenome_hidden = 'pangenome_hidden'
-id_full_consensustable_hidden = "full_consensustable_hidden"
-id_partial_consensustable_hidden = "id_partial_consensustable_hidden"
-id_pangenome_parameters_hidden = "pangenome_parameters_hidden"
-id_pangenome_consensustree_hidden = "pangenome_consensustree_hidden"
-id_pangraph_hidden = "pangraph_hidden"
-id_mafgraph_hidden = "mafgraph_hidden"
+id_full_consensustable_hidden = 'full_consensustable_hidden'
+id_partial_consensustable_hidden = 'partial_consensustable_hidden'
+id_pangenome_parameters_hidden = 'pangenome_parameters_hidden'
+id_pangraph_hidden = 'pangraph_hidden'
+id_mafgraph_hidden = 'mafgraph_hidden'
 
-id_consensuses_table = "id_consensuses_table"
+id_consensuses_table = 'consensuses_table'
+id_current_consensustree_hidden = 'current_consensustree_hidden'
+id_full_consensustree_hidden = 'full_consensustree_hidden'
+
+id_consensus_tree_graph = 'consesus_tree_graph'
+id_consensus_tree_container = 'consensus_tree_container'
+id_leaf_info_dropdown = 'leaf_info_dropdown'
+id_consensus_tree_slider = 'consensus_tree_slider'

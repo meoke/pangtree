@@ -246,12 +246,8 @@ def get_layout(get_url_function):
                                 style={'width': '100%'}
                             ),
                             html.Div(
-                                id='consensus_tree',
+                                id=id_consensus_tree_container,
                                 children=[
-                                    html.Div(
-                                        id='hidden_consensus_tree_data',
-                                        style={'display': 'none'}
-                                    ),
                                     html.Div(
                                         id='tree',
                                         children=[
@@ -259,13 +255,13 @@ def get_layout(get_url_function):
                                                 id='graphics',
                                                 children=[
                                                     dcc.Graph(
-                                                        id='consensus_tree_graph',
+                                                        id=id_consensus_tree_graph,
                                                         style={'height': '1000px', 'width': 'auto'}
                                                     ),
                                                     html.Div(
                                                         [html.Div(
                                                             dcc.Slider(
-                                                                id='consensus_tree_slider',
+                                                                id=id_consensus_tree_slider,
                                                                 min=0,
                                                                 max=1,
                                                                 marks={int(i) if i % 1 == 0 else i: '{}'.format(i) for i
@@ -295,9 +291,15 @@ def get_layout(get_url_function):
                                             html.Div(
                                                 id='tree_info',
                                                 children=[
-                                                    html.Div(
-                                                        "<Compatibility charts placeholder>"
+                                                    html.H5("Choose metadata displayed in consensuses tree leaves:"),
+                                                    dcc.Dropdown(
+                                                        id=id_leaf_info_dropdown,
+                                                        style={'margin-bottom': '20px'},
+                                                        options=[
+                                                        ],
+                                                        value='SEQID'
                                                     ),
+                                                    html.H5("Consensus tree node details:"),
                                                     html.H5(
                                                         id='consensus_node_details_header'
                                                     ),
@@ -401,7 +403,10 @@ def get_layout(get_url_function):
                                 id=id_pangenome_parameters_hidden
                             ),
                             html.Div(
-                                id=id_pangenome_consensustree_hidden
+                                id=id_full_consensustree_hidden
+                            ),
+                            html.Div(
+                                id=id_current_consensustree_hidden
                             ),
                             html.Div(
                                 id=id_pangraph_hidden

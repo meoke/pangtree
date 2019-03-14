@@ -1,6 +1,6 @@
 from dash.dependencies import Input, Output, State
 
-from dash_app.components import parameters, consensustable
+from dash_app.components import parameters, consensustable, consensustree
 
 import dash_app.components.jsontools as jsontools
 from ..layout.layout_ids import *
@@ -32,11 +32,15 @@ def update_full_consensustable_hidden(jsonified_pangenome):
 
 
 @app.callback(
-    Output(id_pangenome_consensustree_hidden, 'children'),
+    Output(id_full_consensustree_hidden, 'children'),
     [Input(id_pangenome_hidden, 'children')]
 )
 def update_consensustree_hidden(jsonified_pangenome):
-    return "Pełne dane o consensus tree"
+    if not jsonified_pangenome:
+        return []
+    jsonpangenome = jsontools.unjsonify_jsonpangenome(jsonified_pangenome)
+    consensustree_dict = consensustree.get_consensustree_dict(jsonpangenome)
+    return jsontools.jsonify_dict(consensustree_dict)
 
 @app.callback(
     Output(id_pangraph_hidden, 'children'),
@@ -51,3 +55,4 @@ def update_pangraph_hidden(jsonified_pangenome):
 )
 def update_mafgraph_hidden(jsonified_pangenome):
     return "Pełne dane o mafgraph"
+

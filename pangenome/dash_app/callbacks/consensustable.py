@@ -33,6 +33,6 @@ def to_consensustable_content(jsonified_partial_consensustable):
 )
 def update_columns(jsonified_partial_consensustable):
     if not jsonified_partial_consensustable:
-        return []
+        return [{}]
     partial_consensustable_data = jsontools.unjsonify_df(jsonified_partial_consensustable)
     return [{"name": i, "id": i} for i in partial_consensustable_data.columns]
