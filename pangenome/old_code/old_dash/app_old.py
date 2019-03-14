@@ -1,27 +1,16 @@
 # -*- coding: utf-8 -*-
 
 import dash
-import shutil
 
 import json
-import pandas as pd
-import flask
 
-from app_style import external_css
-from fileformats.json.JSONPangenome import JSONProgramParameters
+from old_code.dash_app_components import consensus_table
 
-from pang_run import run_pang, decode_json
-from dash_app_components import consensus_tree
-from dash_app_components import consensus_table
-from dash_app_components import consensus_node
-from dash_app_components import pangraph
-
-from pang.fileformats.json import reader as pangenomejson_reader, writer as pangenomejson_writer
+from pang.fileformats.json import reader as pangenomejson_reader
 
 from networkx.readwrite import json_graph
 import jsonpickle
-import app_layout
-import dash_html_components as html
+
 
 # app = dash.Dash(__name__)
 # app.title = 'pang'
