@@ -413,6 +413,9 @@ def get_layout(get_url_function):
                                 id=id_multialignmentgraph_hidden
                             ),
                             html.Div(
+                                id=id_poagraph_hidden
+                            ),
+                            html.Div(
                                 id=id_mafgraph_hidden
                             )
                         ],
