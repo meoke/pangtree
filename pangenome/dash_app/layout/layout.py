@@ -291,7 +291,7 @@ def get_layout(get_url_function):
                                             html.Div(
                                                 id='tree_info',
                                                 children=[
-                                                    html.H5("Choose metadata displayed in consensuses tree leaves:"),
+                                                    html.H5("Metadata in consensuses tree leaves:"),
                                                     dcc.Dropdown(
                                                         id=id_leaf_info_dropdown,
                                                         style={'margin-bottom': '20px'},
@@ -301,11 +301,10 @@ def get_layout(get_url_function):
                                                     ),
                                                     html.H5("Consensus tree node details:"),
                                                     html.H5(
-                                                        id='consensus_node_details_header'
+                                                        id=id_consensus_node_details_header
                                                     ),
                                                     dash_table.DataTable(
-                                                        id='consensus_node_details',
-                                                        columns=[{"name": i, "id": i} for i in ["ID", "Name", "Group"]],
+                                                        id=id_consensus_node_details_table,
                                                         style_table={
                                                             'maxHeight': '800',
                                                             'overflowY': 'scroll'
@@ -407,6 +406,9 @@ def get_layout(get_url_function):
                             ),
                             html.Div(
                                 id=id_current_consensustree_hidden
+                            ),
+                            html.Div(
+                                id=id_consensus_node_details_table_hidden
                             ),
                             html.Div(
                                 id=id_pangraph_hidden

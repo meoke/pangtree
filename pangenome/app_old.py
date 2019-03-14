@@ -150,21 +150,21 @@ def download_json_button(_):
 #                 html.P(f"Local fasta dir: {params.local_fasta_dirpath}")
 #                 ]
 
-
-@app.callback(
-    dash.dependencies.Output('hidden_consensus_tree_data', 'children'),
-    [dash.dependencies.Input('hidden_pang_result', 'children'),
-     dash.dependencies.Input('consensus_tree_graph', 'clickData')],
-    [dash.dependencies.State('hidden_consensus_tree_data', 'children')])
-def update_consensus_graph_data(jsonified_pangenome, click_data, old_jsonfied_consensus_tree):
-    old_tree = None
-    if old_jsonfied_consensus_tree:
-        old_tree = json_graph.tree_graph(jsonpickle.decode(old_jsonfied_consensus_tree))
-
-    jsonpangenome = pangenomejson_reader.json_to_jsonpangenome(jsonified_pangenome)
-    tree = consensus_tree.get_tree(jsonpangenome, click_data, old_tree)
-    jsonified_tree = json_graph.tree_data(tree, root=0)
-    return jsonpickle.encode(jsonified_tree)
+#
+# @app.callback(
+#     dash.dependencies.Output('hidden_consensus_tree_data', 'children'),
+#     [dash.dependencies.Input('hidden_pang_result', 'children'),
+#      dash.dependencies.Input('consensus_tree_graph', 'clickData')],
+#     [dash.dependencies.State('hidden_consensus_tree_data', 'children')])
+# def update_consensus_graph_data(jsonified_pangenome, click_data, old_jsonfied_consensus_tree):
+#     old_tree = None
+#     if old_jsonfied_consensus_tree:
+#         old_tree = json_graph.tree_graph(jsonpickle.decode(old_jsonfied_consensus_tree))
+#
+#     jsonpangenome = pangenomejson_reader.json_to_jsonpangenome(jsonified_pangenome)
+#     tree = consensus_tree.get_tree(jsonpangenome, click_data, old_tree)
+#     jsonified_tree = json_graph.tree_data(tree, root=0)
+#     return jsonpickle.encode(jsonified_tree)
 
 
 # @app.callback(
@@ -214,26 +214,26 @@ def show_slider_value(slider_value):
     return f"Slider value: \n{slider_value}."
 
 
-@app.callback(
-    dash.dependencies.Output('consensus_tree_graph', 'figure'),
-    [dash.dependencies.Input('hidden_consensus_tree_data', 'children'),
-     dash.dependencies.Input('consensus_tree_slider', 'value')],
-    [dash.dependencies.State('hidden_pang_result', 'children')])
-def update_consensus_tree_graph(jsonified_consensus_tree, slider_value,  jsonified_pangenome):
-    jsonpangenome = pangenomejson_reader.json_to_jsonpangenome(jsonified_pangenome)
-    tree = json_graph.tree_graph(jsonpickle.decode(jsonified_consensus_tree))
-    return consensus_tree.get_consensus_tree_graph(jsonpangenome, tree, slider_value)
+# @app.callback(
+#     dash.dependencies.Output('consensus_tree_graph', 'figure'),
+#     [dash.dependencies.Input('hidden_consensus_tree_data', 'children'),
+#      dash.dependencies.Input('consensus_tree_slider', 'value')],
+#     [dash.dependencies.State('hidden_pang_result', 'children')])
+# def update_consensus_tree_graph(jsonified_consensus_tree, slider_value,  jsonified_pangenome):
+#     jsonpangenome = pangenomejson_reader.json_to_jsonpangenome(jsonified_pangenome)
+#     tree = json_graph.tree_graph(jsonpickle.decode(jsonified_consensus_tree))
+#     return consensus_tree.get_consensus_tree_graph(jsonpangenome, tree, slider_value)
+#
 
-
-@app.callback(
-    dash.dependencies.Output('consensuses_table', 'style_data_conditional'),
-    [dash.dependencies.Input('hidden_consensuses_table_data', 'children')],
-    [dash.dependencies.State('hidden_consensus_tree_data', 'children')]
-)
-def color_consensuses_table_cells(jsonified_consensuses_table_data, jsonified_consensus_tree):
-    tree = json_graph.tree_graph(jsonpickle.decode(jsonified_consensus_tree))
-    table_data = pd.read_json(jsonified_consensuses_table_data)
-    return consensus_table.get_cells_styling(tree, table_data)
+# @app.callback(
+#     dash.dependencies.Output('consensuses_table', 'style_data_conditional'),
+#     [dash.dependencies.Input('hidden_consensuses_table_data', 'children')],
+#     [dash.dependencies.State('hidden_consensus_tree_data', 'children')]
+# )
+# def color_consensuses_table_cells(jsonified_consensuses_table_data, jsonified_consensus_tree):
+#     tree = json_graph.tree_graph(jsonpickle.decode(jsonified_consensus_tree))
+#     table_data = pd.read_json(jsonified_consensuses_table_data)
+#     return consensus_table.get_cells_styling(tree, table_data)
 
 
 @app.callback(
@@ -253,27 +253,27 @@ def generate_csv_file(jsonified_consensus_tree, csv_generated, jsonified_pangeno
         return json.dumps(True)
 
 
-@app.callback(
-    dash.dependencies.Output('consensus_node_details', 'data'),
-    [dash.dependencies.Input('consensus_tree_graph', 'clickData')],
-    [dash.dependencies.State('hidden_consensus_tree_data', 'children'),
-     dash.dependencies.State('hidden_pang_result', 'children')]
-)
-def update_consensus_node_details(tree_click_data, jsonified_tree, jsonified_pangenome):
-    tree = json_graph.tree_graph(jsonpickle.decode(jsonified_tree))
-    jsonpangenome = pangenomejson_reader.json_to_jsonpangenome(jsonified_pangenome)
-    dash_table_data = consensus_node.get_details(tree_click_data, tree, jsonpangenome)
-    return dash_table_data
+# @app.callback(
+#     dash.dependencies.Output('consensus_node_details', 'data'),
+#     [dash.dependencies.Input('consensus_tree_graph', 'clickData')],
+#     [dash.dependencies.State('hidden_consensus_tree_data', 'children'),
+#      dash.dependencies.State('hidden_pang_result', 'children')]
+# )
+# def update_consensus_node_details(tree_click_data, jsonified_tree, jsonified_pangenome):
+#     tree = json_graph.tree_graph(jsonpickle.decode(jsonified_tree))
+#     jsonpangenome = pangenomejson_reader.json_to_jsonpangenome(jsonified_pangenome)
+#     dash_table_data = consensus_node.get_details(tree_click_data, tree, jsonpangenome)
+#     return dash_table_data
 
 
-@app.callback(
-    dash.dependencies.Output('consensus_node_details_header', 'children'),
-    [dash.dependencies.Input('consensus_tree_graph', 'clickData')]
-)
-def update_consensus_node_details_header(tree_click_data):
-    clicked_node = tree_click_data['points'][0]
-    node_id = clicked_node['pointIndex']
-    return f"Sequences assigned to consensus {node_id}:"
+# @app.callback(
+#     dash.dependencies.Output('consensus_node_details_header', 'children'),
+#     [dash.dependencies.Input('consensus_tree_graph', 'clickData')]
+# )
+# def update_consensus_node_details_header(tree_click_data):
+#     clicked_node = tree_click_data['points'][0]
+#     node_id = clicked_node['pointIndex']
+#     return f"Sequences assigned to consensus {node_id}:"
 
 
 @app.callback(

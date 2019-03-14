@@ -23,3 +23,7 @@ id_consensus_tree_graph = 'consesus_tree_graph'
 id_consensus_tree_container = 'consensus_tree_container'
 id_leaf_info_dropdown = 'leaf_info_dropdown'
 id_consensus_tree_slider = 'consensus_tree_slider'
+
+id_consensus_node_details_header="consensus_node_details_header"
+id_consensus_node_details_table= "consensus_node_details_table"
+id_consensus_node_details_table_hidden="consensus_node_details_table_hidden"

@@ -1,5 +1,5 @@
 from flask import Flask
 from dash import Dash
 
-server = Flask('myproject')
+server = Flask('pangenome')
 app = Dash(server=server)

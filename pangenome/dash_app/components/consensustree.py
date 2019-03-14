@@ -16,23 +16,10 @@ def get_consensustree_dict(jsonpangenome: JSONPangenome) -> Dict:
     return tree_dict
 
 
-def pies(jsonpangenome: JSONPangenome, consensus: JSONConsensus) -> Dict[str, Set[Any]]:
-    metadata = {}
-    for sequence_id in consensus.sequences_ids:
-        sequence = jsonpangenome.sequences[sequence_id]
-        sequence_metadata = sequence.metadata
-        for k, v in sequence_metadata.items():
-            if k in metadata.keys():
-                metadata[k].append(v)
-            else:
-                metadata[k] = [v]
-    return metadata
-
 def get_consensustree(jsonpangenome: JSONPangenome) -> nx.DiGraph:
     tree_graph = nx.DiGraph()
     for consensus in sorted(jsonpangenome.consensuses, key=lambda c: c.node_id):
         node_is_leaf = True if not consensus.children else False
-        consensus_sequences_metadata = pies(jsonpangenome, consensus)
         tree_graph.add_node(consensus.node_id,
                             name=consensus.name,
                             comp=consensus.comp_to_all_sequences,
@@ -41,8 +28,7 @@ def get_consensustree(jsonpangenome: JSONPangenome) -> nx.DiGraph:
                             hidden=False,
                             children_consensuses=consensus.children,
                             mincomp=consensus.mincomp,
-                            is_leaf = node_is_leaf,
-                            metadata=consensus_sequences_metadata)
+                            is_leaf = node_is_leaf)
         if consensus.parent is not None:
             tree_graph.add_edge(consensus.parent, consensus.node_id, weight=len(consensus.sequences_ids))
 
@@ -184,7 +170,6 @@ def get_leaf_label(sequences_ids: List[int], leaf_info_value: str, full_consensu
 
 def get_leaves_text_graph(positions: List[Tuple[float, float]], tree: nx.DiGraph, leaf_info_value: str,
                           full_consensustable: pd.DataFrame) -> go.Scatter:
-    print(f"Tworze etykietki lisci z wartością: {leaf_info_value}")
     x = []
     y = []
     text = []
@@ -214,3 +199,13 @@ def get_leaves_text_graph(positions: List[Tuple[float, float]], tree: nx.DiGraph
 
 def get_leaf_info_dropdown_options(metadata: List[str]) -> List[Dict[str, str]]:
     return [ {'label': m, 'value': m} for m in metadata]
+
+
+def get_offspring_ids(tree: nx.DiGraph, current_node_id: ConsensusNodeID) -> List[ConsensusNodeID]:
+    nodes_to_visit = deque(tree.nodes[current_node_id]['children_consensuses'])
+    offspring_ids = []
+    while nodes_to_visit:
+        current_node_id = nodes_to_visit.pop()
+        offspring_ids.append(current_node_id)
+        nodes_to_visit.extend(tree.nodes[current_node_id]['children_consensuses'])
+    return offspring_ids
