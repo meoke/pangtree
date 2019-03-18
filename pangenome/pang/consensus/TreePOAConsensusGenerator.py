@@ -166,5 +166,32 @@ class TreePOAConsensusGenerator:
         return [seq_id for seq_id, comp in compatibilities.items() if comp >= cutoff]
 
     def reorder_consensuses(self, children_nodes: List[ConsensusNode]) -> List[ConsensusNode]:
-        print("REORDER NOT IMPLEMENTED")
+        # print("REORDER NOT IMPLEMENTED")
+        all_sequences_ids = [seq_id  for c_node in children_nodes for seq_id in c_node.sequences_ids]
+        d = {seq_id: [] for seq_id in all_sequences_ids}
+        seq_id_to_consensus_id_comp = {}
+        for consensus in children_nodes:
+            seq_id_to_comp = self.pangraph.get_compatibilities(all_sequences_ids, consensus.consensus_path)
+            for seq_id, comp in seq_id_to_comp.items():
+                d[seq_id].append((consensus.consensus_id, comp))
+            for seq_id in consensus.sequences_ids:
+                seq_id_to_consensus_id_comp[seq_id] = (consensus.consensus_id, seq_id_to_comp[seq_id])
+
+        for seq_id, comp_id_comp in d.items():
+            sorted_comp_id_comp = sorted(comp_id_comp, key=lambda comp_id_comp: comp_id_comp[1], reverse=True)
+            current_comp = seq_id_to_consensus_id_comp[seq_id][1]
+            current_comp_id = seq_id_to_consensus_id_comp[seq_id][0]
+            if sorted_comp_id_comp[0][1] > current_comp:
+                better_comp_id = sorted_comp_id_comp[0][0]
+                children_nodes = self.move(children_nodes, current_comp_id=current_comp_id, better_comp_id=better_comp_id, seq_id=seq_id)
+
+        return children_nodes
+
+    def move(self, children_nodes, current_comp_id, better_comp_id, seq_id):
+        for consensus in children_nodes:
+            if consensus.consensus_id == current_comp_id:
+                to_del = consensus.sequences_ids.index(seq_id)
+                del consensus.sequences_ids[to_del]
+            elif consensus.consensus_id == better_comp_id:
+                consensus.sequences_ids.append(seq_id)
         return children_nodes

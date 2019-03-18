@@ -44,10 +44,11 @@ def update_consensustree_hidden(jsonified_pangenome):
 
 @app.callback(
     Output(id_multialignmentgraph_hidden, 'children'),
-    [Input(id_pangenome_hidden, 'children')]
+    [Input(id_pangenome_hidden, 'children')],
+    [State(id_show_vis, "value")]
 )
-def update_multialignmentgraph_hidden(jsonified_pangenome):
-    if not jsonified_pangenome:
+def update_multialignmentgraph_hidden(jsonified_pangenome, show_vis_value):
+    if not jsonified_pangenome or show_vis_value == "NO":
         return []
     jsonpangenome = jsontools.unjsonify_jsonpangenome(jsonified_pangenome)
     pangraph_data = multialignmentgraph.get_data(jsonpangenome)
@@ -55,10 +56,11 @@ def update_multialignmentgraph_hidden(jsonified_pangenome):
 
 @app.callback(
     Output(id_poagraph_hidden, 'children'),
-    [Input(id_pangenome_hidden, 'children')]
+    [Input(id_pangenome_hidden, 'children')],
+    [State(id_show_vis, "value")]
 )
-def update_poagraph_hidden(jsonified_pangenome):
-    if not jsonified_pangenome:
+def update_poagraph_hidden(jsonified_pangenome, show_vis_value):
+    if not jsonified_pangenome or show_vis_value == "NO":
         return []
     jsonpangenome = jsontools.unjsonify_jsonpangenome(jsonified_pangenome)
     poagraph_data = poagraph.get_data(jsonpangenome)

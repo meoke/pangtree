@@ -42,3 +42,5 @@ id_mafgraph_hidden = 'mafgraph_hidden'
 id_poagraph_hidden = 'poagraph_hidden'
 id_poagraph_container = "poagraph_container"
 id_poagraph = "poagraph"
+
+id_show_vis = "show_vis"

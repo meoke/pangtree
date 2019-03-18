@@ -202,6 +202,14 @@ def get_layout(get_url_function):
                             html.Div(
                                 id='data_upload',
                                 children=[
+                                    dcc.RadioItems(
+                                        id= id_show_vis,
+                                        options=[
+                                            {'label': 'Yes', 'value': 'YES'},
+                                            {'label': 'No', 'value': 'NO'}
+                                        ],
+                                        value='NO'
+                                    ),
                                     dcc.Upload(
                                         id='pangenome_upload',
                                         children=html.Div([
