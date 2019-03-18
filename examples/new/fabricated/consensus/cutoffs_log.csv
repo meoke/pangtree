@@ -1,0 +1,20 @@
+id,strategy,compatibilities,params,cutoff,reason
+id,strategy,compatibilities,params,cutoff,reason
+0,MAX2,"[0.9375, 0.8125, 0.8823529411764706, 0.625, 0.11764705882352941, 0.17647058823529413]",,0.625,Value after max distance in cutoff search range.
+0,NODE3,"[0.9375, 0.875, 0.8235294117647058, 0.5625, 0.11764705882352941, 0.11764705882352941]",so far cutoffs: [],0.5625,No so far cutoffs. Use max 2.
+1,MAX2,"[0.8823529411764706, 0.9411764705882353]",,0.9411764705882353,Value after max distance in cutoff search range.
+1,NODE3,"[0.8235294117647058, 1.0]",so far cutoffs: [0.5625],0.8235294117647058,guard < min(compatibilities). Return min(compatibilities).
+2,MAX2,"[0.8823529411764706, 0.9411764705882353]",,0.9411764705882353,Value after max distance in cutoff search range.
+2,NODE3,"[0.8235294117647058, 1.0]",so far cutoffs: [],1.0,No so far cutoffs. Use max 2.
+3,MAX2,[1.0],,1.0,Value after max distance in cutoff search range.
+3,NODE3,[1.0],so far cutoffs: [1.0],1.0,guard < min(compatibilities). Return min(compatibilities).
+4,MAX2,"[0.9375, 0.875, 0.8235294117647058, 0.5625]",,0.8235294117647058,Value after max distance in cutoff search range.
+4,NODE3,"[1.0, 0.8125, 0.8235294117647058, 0.5625]",so far cutoffs: [],0.8125,No so far cutoffs. Use max 2.
+5,MAX2,[1.0],,1.0,Value after max distance in cutoff search range.
+5,NODE3,[1.0],so far cutoffs: [0.8125],1.0,guard < min(compatibilities). Return min(compatibilities).
+6,MAX2,"[1.0, 0.8125, 0.8235294117647058]",,1.0,Value after max distance in cutoff search range.
+6,NODE3,"[1.0, 0.8125, 0.8235294117647058]",so far cutoffs: [],1.0,No so far cutoffs. Use max 2.
+7,MAX2,"[0.7647058823529411, 1.0]",,1.0,Value after max distance in cutoff search range.
+7,NODE3,"[0.7647058823529411, 1.0]",so far cutoffs: [1.0],1.0,guard > max(compatibilities). Use max 2.
+8,MAX2,[1.0],,1.0,Value after max distance in cutoff search range.
+8,NODE3,[1.0],"so far cutoffs: [1.0, 1.0]",1.0,guard < min(compatibilities). Return min(compatibilities).
