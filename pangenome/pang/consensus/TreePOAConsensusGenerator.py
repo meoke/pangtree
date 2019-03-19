@@ -1,6 +1,7 @@
 from pathlib import Path
 from collections import deque
 from typing import List, Dict, Tuple
+import logging
 
 from consensus.ConsensusesTree import ConsensusesTree
 from consensus.ConsensusNode import ConsensusNode, Compatibility, ConsensusNodeID
@@ -9,7 +10,9 @@ from consensus.exceptions import TreeConsensusGenerationException
 from pangraph.Pangraph import Pangraph
 from pangraph.custom_types import SequenceID, NodeID
 import consensus.top_consensus as top_consensus
+from tools import pathtools
 
+logger = logging.getLogger('tresholdsCSV')
 
 class TreePOAConsensusGenerator:
     def __init__(self,
@@ -27,12 +30,14 @@ class TreePOAConsensusGenerator:
         self.output_dir: Path = None
         self.consensuses_tree: ConsensusesTree = None
 
+
     def get_consensuses_tree(self,
                              pangraph: Pangraph,
                              output_dir: Path
                              ) -> ConsensusesTree:
         self.pangraph = pangraph
         self.output_dir = output_dir
+        logger.addHandler(self.get_tresholds_log_handler())
 
         self.break_if_pangraph_is_invalid()
 
@@ -41,6 +46,7 @@ class TreePOAConsensusGenerator:
         nodes_to_process = deque([self.consensuses_tree.get_node(ConsensusNodeID(0))])
         while nodes_to_process:
             node = nodes_to_process.pop()
+            logger.info("Cos tu sobie napisze,albo nie,albo tak")
             children_nodes = self.get_children_nodes(node)
 
             if len(children_nodes) == 1:
@@ -195,3 +201,11 @@ class TreePOAConsensusGenerator:
             elif consensus.consensus_id == better_comp_id:
                 consensus.sequences_ids.append(seq_id)
         return children_nodes
+
+    def set_tresholds_log_handler(self) -> logging.Handler:
+        fh = logging.FileHandler(pathtools.get_child_file_path(self.output_dir, "tresholds.csv"))
+        formatter = logging.Formatter(fmt="%(message)s")
+        fh.setFormatter(formatter)
+        fh.setLevel(logging.INFO)
+        logger.handlers = [fh]
+        return fh

@@ -4,7 +4,6 @@ from typing import NewType
 
 from Bio import Entrez
 
-from pangraph.custom_types import SequenceID
 from tools.pathtools import get_child_file_path
 
 EntrezSequenceID = NewType("EntrezSequenceID", str)

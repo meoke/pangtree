@@ -164,3 +164,23 @@ class PangenomeParameters:
         return Path(os.path.abspath(__file__)).joinpath('../../bin/blosum80.mat').resolve()
 
 
+    def __str__(self):
+        return f"""
+        Pangenome parameters:
+        multialignment_file_path: {self.multialignment_file_path}
+        metadata_file_path: {self.metadata_file_path}
+        blosum_file_path: {self.blosum_file_path}
+        output_path: {self.output_path}
+        not_dag: {self.not_dag}
+        fasta_complementation_option: {self.fasta_complementation_option}
+        missing_nucleotide_symbol: {self.missing_nucleotide_symbol}
+        local_fasta_dirpath: {self.local_fasta_dirpath}
+        generate_fasta: {self.generate_fasta}
+        consensus_type: {self.consensus_type}
+        hbmin: {self.hbmin}
+        stop: {self.stop}
+        max_cutoff_option: {self.max_cutoff_option}
+        search_range: {self.search_range}
+        node_cutoff_option: {self.node_cutoff_option}
+        multiplier: {self.multiplier}
+        re_consensus: {self.re_consensus}"""

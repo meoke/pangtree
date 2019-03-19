@@ -1,3 +1,4 @@
+import logging
 import logging.config
 import time
 from arguments import cmd_arguments
@@ -6,20 +7,24 @@ from Pangenome import Pangenome
 from fileformats.json import writer as pangenome_to_json_writer
 from arguments.PangenomeParameters import PangenomeParameters
 
+logging.config.fileConfig('logging.conf')
+logger = logging.getLogger('')
+
 
 def cleanup(params: PangenomeParameters)-> None:
     """Removes output directory if it is empty."""
 
     no_output = pathtools.remove_dir_if_empty(params.output_path)
     if no_output:
-        logging.info("No output was produced.")
+        logger.info("No output was produced.")
     else:
-        logging.info(f"Program output is placed in {params.output_path}")
+        logger.info(f"Program output is placed in {params.output_path}")
 
 
 def main():
     program_parameters = cmd_arguments.create_pangenome_parameters()
-    logging.info(f'Program arguments: {str(program_parameters)}')
+
+    logger.info(f'Program arguments: {str(program_parameters)}')
     start = time.clock()
 
     try:
@@ -29,7 +34,7 @@ def main():
         data_path = pathtools.create_child_dir(program_parameters.output_path, 'data')
         pangenome_to_json_writer.save_to_file(data_path, pangenome)
     except Exception as e:
-        logging.error("An exception was raised...")
+        logger.error("An exception was raised...")
         raise e
     finally:
         cleanup(program_parameters)
