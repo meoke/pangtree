@@ -1,7 +1,7 @@
 from Bio import AlignIO
 from io import StringIO
 from pangraph.Node import Node
-from pangraph.PangraphBuilder.PangraphBuilderBase import PangraphBuilderBase
+from pangraph.PangraphBuilders.PangraphBuilderBase import PangraphBuilderBase
 from metadata.MultialignmentMetadata import MultialignmentMetadata
 from pangraph.custom_types import NodeID, SequenceID, Nucleobase, ColumnID, BlockID, make_nucleobase
 

@@ -2,10 +2,10 @@ from io import StringIO
 from typing import List, Dict
 import numpy as np
 
-from pangraph.PangraphBuilder.PangraphBuilderBase import PangraphBuilderBase
-from pangraph.PangraphBuilder.PangraphBuilderFromDAG import PangraphBuilderFromDAG
-from pangraph.PangraphBuilder.PangraphBuilderFromMAF import PangraphBuilderFromMAF
-from pangraph.FastaSource import FastaSource
+from pangraph.PangraphBuilders.PangraphBuilderBase import PangraphBuilderBase
+from pangraph.PangraphBuilders.PangraphBuilderFromDAG import PangraphBuilderFromDAG
+from pangraph.PangraphBuilders.PangraphBuilderFromMAF import PangraphBuilderFromMAF
+from fasta_providers.FastaProvider import FastaProvider
 from metadata.MultialignmentMetadata import MultialignmentMetadata
 from .Node import Node
 from .custom_types import NodeID, SequenceID, Nucleobase
@@ -22,7 +22,7 @@ class Pangraph:
 
     def build_from_maf_firstly_converted_to_dag(self,
                                                 mafcontent: str,
-                                                fasta_source: FastaSource,
+                                                fasta_source: FastaProvider,
                                                 genomes_info: MultialignmentMetadata,
                                                 missing_nucleotide_symbol: str="?"):
         builder: PangraphBuilderBase = PangraphBuilderFromDAG(genomes_info, missing_nucleotide_symbol, fasta_source)

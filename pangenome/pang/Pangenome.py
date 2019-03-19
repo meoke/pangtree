@@ -5,7 +5,8 @@ from Bio import AlignIO
 from consensus.ConsensusesTree import ConsensusesTree
 from consensus.FindCutoff import MAX1, MAX2, FindMaxCutoff, FindNodeCutoff, NODE1, NODE2, NODE3, NODE4
 from metadata.MultialignmentMetadata import MultialignmentMetadata
-from pangraph.FastaSource import EntrezFastaSource, FastaFileSystemSource
+from fasta_providers.FromEntrezFastaProvider import FromEntrezFastaProvider
+from fasta_providers.FromZIPFastaProvider import FromZIPSystemProvider
 from pangraph.Pangraph import Pangraph
 from tools import pathtools
 from arguments.PangenomeParameters import ConsensusAlgorithm, FastaComplementationOption, MaxCutoffOption, \
@@ -28,9 +29,9 @@ class Pangenome:
         if self.params.fasta_complementation_option is FastaComplementationOption.NO:
             fasta_source = None
         elif self.params.fasta_complementation_option is FastaComplementationOption.NCBI:
-            fasta_source = EntrezFastaSource()
+            fasta_source = FromEntrezFastaProvider()
         elif self.params.fasta_complementation_option is FastaComplementationOption.LOCAL:
-            fasta_source = FastaFileSystemSource(self.params.local_fasta_dirpath)
+            fasta_source = FromZIPSystemProvider(self.params.local_fasta_dirpath)
         else:
             raise Exception("Not known fasta complementation option. "
                             "Should be of type FastaComplementationOption."
@@ -85,7 +86,7 @@ class Pangenome:
 
     def _get_max_cutoff_strategy(self, cutoffs_log_path) -> FindMaxCutoff:
         if self.params.max_cutoff_option == MaxCutoffOption.MAX1:
-            return MAX1(self.params.search_range, cutoffs_log_file_path=cutoffs_log_path)
+            return MAX1()
         elif self.params.max_cutoff_option == MaxCutoffOption.MAX2:
             return MAX2(cutoffs_log_file_path=cutoffs_log_path)
         else:
@@ -95,9 +96,9 @@ class Pangenome:
 
     def _get_node_cutoff_strategy(self, cutoffs_log_path) -> FindNodeCutoff:
         if self.params.node_cutoff_option == NodeCutoffOption.NODE1:
-            return NODE1(self.params.multiplier, cutoffs_log_file_path=cutoffs_log_path)
+            return NODE1()
         elif self.params.node_cutoff_option == NodeCutoffOption.NODE2:
-            return NODE2(self.params.multiplier, cutoffs_log_file_path=cutoffs_log_path)
+            return NODE2()
         elif self.params.node_cutoff_option == NodeCutoffOption.NODE3:
             return NODE3(cutoffs_log_file_path=cutoffs_log_path)
         elif self.params.node_cutoff_option == NodeCutoffOption.NODE4:

@@ -11,8 +11,8 @@ from pangenome.pang.pangraph.Node import Node
 from pangenome.pang.pangraph.Pangraph import Pangraph
 from pangenome.pang.pangraph.FastaSource import FastaSource
 from pangenome.pang.pangraph.FastaSource import FastaFileSystemSource
-from pangenome.pang.pangraph.PangraphBuilder.PangraphBuilderFromDAG import PangraphBuilderFromDAG
-from pangenome.pang.pangraph.PangraphBuilder.PangraphBuilderFromMAF import PangraphBuilderFromMAF
+from pangenome.pang.pangraph.PangraphBuilders.PangraphBuilderFromDAG import PangraphBuilderFromDAG
+from pangenome.pang.pangraph.PangraphBuilders.PangraphBuilderFromMAF import PangraphBuilderFromMAF
 from pangenome.pang.pangraph.PangraphToFilesConverters.PangraphToPO import PangraphToPO, NodePO, SequencePO
 from pangenome.pang.pangraph.custom_types import SequenceID
 from pangenome.pang.pangraph.custom_types import make_nucleobase, Nucleobase

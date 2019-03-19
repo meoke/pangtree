@@ -7,9 +7,9 @@ from mafgraph.graph.Arc import Arc
 
 from fileformats.maf.DAGMaf import DAGMaf
 from fileformats.maf.reader import maf_to_dagmaf
-from pangraph.FastaSource import FastaSource
+from fasta_providers.FastaProvider import FastaProvider
 from pangraph.Node import Node
-from pangraph.PangraphBuilder.PangraphBuilderBase import PangraphBuilderBase
+from pangraph.PangraphBuilders.PangraphBuilderBase import PangraphBuilderBase
 from pangraph.exceptions import NoSequenceInfo, SequenceBuildingException
 from pangraph.custom_types import ColumnID, SequenceID, NodeID, BlockID, Sequence, Nucleobase, make_nucleobase
 from metadata.MultialignmentMetadata import MultialignmentMetadata
@@ -34,7 +34,7 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
     def __init__(self,
                  genomes_info: MultialignmentMetadata,
                  missing_nucleotide_symbol: str,
-                 fasta_source: Optional[FastaSource] = None):
+                 fasta_source: Optional[FastaProvider] = None):
         super().__init__(genomes_info)
         self.pangraph = None
         self.dagmaf: DAGMaf = None
@@ -48,7 +48,7 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
         if self.complement_sequences:
             self.full_sequences: Dict[SequenceID, Sequence] = self.get_sequences(fasta_source)
 
-    def get_sequences(self, fasta_source: FastaSource) -> Dict[SequenceID, Sequence]:
+    def get_sequences(self, fasta_source: FastaProvider) -> Dict[SequenceID, Sequence]:
         return {
             SequenceID(seq_id): Sequence(fasta_source.get_source(sequenceID=self.genomes_info.get_entrez_name(seq_id)))
             for seq_id in self.sequences_ids

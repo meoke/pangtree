@@ -2,7 +2,7 @@ import re
 
 import pandas as pd
 
-from pangraph.FastaSource import EntrezSequenceID
+from fasta_providers.FromEntrezFastaProvider import EntrezSequenceID
 from pangraph.custom_types import SequenceID
 from typing import Dict, List, Any
 from io import StringIO
