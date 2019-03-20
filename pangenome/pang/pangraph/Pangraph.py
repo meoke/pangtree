@@ -7,9 +7,11 @@ from pangraph.PangraphBuilders.PangraphBuilderFromDAG import PangraphBuilderFrom
 from pangraph.PangraphBuilders.PangraphBuilderFromMAF import PangraphBuilderFromMAF
 from fasta_providers.FastaProvider import FastaProvider
 from metadata.MultialignmentMetadata import MultialignmentMetadata
+from tools import loggingtools
 from .Node import Node
 from .custom_types import NodeID, SequenceID, Nucleobase
 
+global_logger = loggingtools.get_logger("")
 
 class Pangraph:
     def __init__(self):
@@ -25,10 +27,12 @@ class Pangraph:
                                                 fasta_source: FastaProvider,
                                                 genomes_info: MultialignmentMetadata,
                                                 missing_nucleotide_symbol: str="?"):
+        global_logger.info("Building pangraph from MAF firstly converted to DAG...")
         builder: PangraphBuilderBase = PangraphBuilderFromDAG(genomes_info, missing_nucleotide_symbol, fasta_source)
         self._build(builder, mafcontent)
 
     def build_from_maf(self, mafcontent: str, genomes_info: MultialignmentMetadata):
+        global_logger.info("Building pangraph from raw MAF")
         builder: PangraphBuilderBase = PangraphBuilderFromMAF(genomes_info)
         self._build(builder, mafcontent)
 
@@ -77,3 +81,6 @@ class Pangraph:
             normalized_sources_weights_dict = {path: int((weight - min_weight)/diff_weight*100)
                                                for path, weight in unweighted_sources_weights.items()}
         return normalized_sources_weights_dict
+
+    def get_sequences_ids(self) -> List[SequenceID]:
+        return [*self.paths.keys()]

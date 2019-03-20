@@ -3,7 +3,11 @@ from typing import NewType
 from Bio import Entrez
 
 from fasta_providers.FastaProvider import FastaProvider
+from tools import loggingtools
+
 EntrezSequenceID = NewType("EntrezSequenceID", str)
+
+detailed_logger = loggingtools.get_logger("details")
 
 class FromEntrezFastaProvider(FastaProvider):
     def __init__(self,):
@@ -11,6 +15,7 @@ class FromEntrezFastaProvider(FastaProvider):
         Entrez.email = "pedziadkiewicz@gmail.com"
 
     def get_source(self, sequenceID: EntrezSequenceID, start: int = None, end: int = None) -> str:
+        detailed_logger.info(f"Downloading from entrez sequence {sequenceID}...")
         try:
             if start is not None and end is not None:
                 handle = Entrez.efetch(db="nucleotide",

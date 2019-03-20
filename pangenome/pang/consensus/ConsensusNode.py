@@ -22,3 +22,10 @@ class ConsensusNode(object):
         self.compatibilities_to_all: Dict[SequenceID, Compatibility] = compatibilities_to_all
         self.consensus_path: List[NodeID] = consensus_path
 
+    def __str__(self):
+        return f"ID: {self.consensus_id}, "\
+            f"parentID: {self.parent_node_id}, " \
+            f"children: {self.children_nodes_ids}, " \
+            f"mincomp: {self.mincomp}, " \
+            f"path length: {len(self.consensus_path)}, "\
+            f"sequences ids: {self.sequences_ids}."

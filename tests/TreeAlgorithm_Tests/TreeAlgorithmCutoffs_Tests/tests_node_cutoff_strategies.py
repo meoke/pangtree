@@ -37,13 +37,13 @@ class NodeCutoffStrategiesTests(unittest.TestCase):
         )
     @unpack
     def test_node1_strategy(self, expected_cutoff, compatibilites, multiplier):
-        node1_strategy: NODE1 = NODE1(multiplier)
+        node1_strategy: NODE1 = NODE1()
         actual_cutoff = node1_strategy.find_node_cutoff(compatibilites, [])
         self.assertEqual(actual_cutoff, expected_cutoff)
 
     def test_node1_no_compatibilities(self):
         with self.assertRaises(ValueError) as err:
-            node1_strategy: NODE1 = NODE1(0)
+            node1_strategy: NODE1 = NODE1()
             _ = node1_strategy.find_node_cutoff([], [])
             self.assertEqual(str(err.exception), f"Empty compatibilities list. Cannot find cutoff.")
 
@@ -52,9 +52,9 @@ class NodeCutoffStrategiesTests(unittest.TestCase):
     )
     @unpack
     def test_node2_strategy_guard_greater_than_all_comps(self, expected_cutoff, compatibilities, so_far_cutoffs, multiplier):
-        node2_strategy = NODE2(multiplier)
+        node2_strategy = NODE2()
         actual_cutoff = node2_strategy.find_node_cutoff(compatibilities, so_far_cutoffs)
-        node1_strategy = NODE1(multiplier)
+        node1_strategy = NODE1()
         node1_strategy_cutoff = node1_strategy.find_node_cutoff(compatibilities, so_far_cutoffs)
         self.assertEqual(actual_cutoff, expected_cutoff)
         self.assertEqual(actual_cutoff, node1_strategy_cutoff)
@@ -74,13 +74,13 @@ class NodeCutoffStrategiesTests(unittest.TestCase):
     )
     @unpack
     def test_node2_strategy(self, expected_cutoff, compatibilities, so_far_cutoffs, multiplier):
-        node2_strategy = NODE2(multiplier)
+        node2_strategy = NODE2()
         actual_cutoff = node2_strategy.find_node_cutoff(compatibilities, so_far_cutoffs)
         self.assertEqual(expected_cutoff, actual_cutoff)
 
     def test_node2_no_compatibilities(self):
         with self.assertRaises(ValueError) as err:
-            node2_strategy: NODE2 = NODE2(1)
+            node2_strategy: NODE2 = NODE2()
             _ = node2_strategy.find_node_cutoff([], [])
             self.assertEqual(str(err.exception), f"Empty compatibilities list. Cannot find cutoff.")
 

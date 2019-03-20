@@ -189,6 +189,14 @@ def _get_parser() -> argparse.ArgumentParser:
                    type=_node_cutoff_option,
                    help='Specify which strategy - NODE1 (1), NODE2 (2), NODE3 (3) or NODE4 (4) use '
                         'for finding max cutoff (see details in README.md)')
+    p.add_argument('-v', '--verbose',
+                   action='store_true',
+                   default=False,
+                   help='Set if detailed log files must be produced.')
+    p.add_argument('-q', '--quiet',
+                   action='store_true',
+                   default=False,
+                   help='Set to turn off console logging .')
     return p
 
 
@@ -217,5 +225,7 @@ def create_pangenome_parameters() -> PangenomeParameters:
             missing_nucleotide_symbol=args.missing_n,
             local_fasta_dirpath=args.fasta_dir,
             max_cutoff_option=args.max,
-            node_cutoff_option=args.node
+            node_cutoff_option=args.node,
+            verbose=args.verbose,
+            quiet=args.quiet
         )

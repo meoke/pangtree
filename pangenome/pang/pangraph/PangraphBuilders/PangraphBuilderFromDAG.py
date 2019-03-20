@@ -15,6 +15,11 @@ from pangraph.custom_types import ColumnID, SequenceID, NodeID, BlockID, Sequenc
 from metadata.MultialignmentMetadata import MultialignmentMetadata
 from mafgraph.mafreader import start_position
 
+from tools import loggingtools
+
+global_logger = loggingtools.get_global_logger()
+detailed_logger = loggingtools.get_logger("details")
+
 MafSequenceID = NewType('MafSequenceID', str)
 
 SequenceInfo = namedtuple('SequenceInfo', ['block_id',
@@ -146,7 +151,7 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
             raise SequenceBuildingException("Cannot find path with specified last node id.")
 
     def process_block(self, block: Block) -> None:
-        print(f"Process block {block.id}")
+        global_logger.info(f"Processing block {block.id}...")
         current_node_id = self.get_max_node_id()
         block_width = len(block.alignment[0].seq)
         paths_join_info = self.get_paths_join_info(block)

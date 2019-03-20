@@ -1,40 +1,17 @@
-import csv
 from abc import ABC
-from pathlib import Path
 from typing import List
 import numpy as np
 
 from consensus.ConsensusNode import Compatibility
 
 
+class FindCutoffResult:
+    def __init__(self, cutoff: Compatibility, explanation: str):
+        self.cutoff = cutoff
+        self.explanation = explanation
+
+
 class FindCutoff(ABC):
-    def __init__(self, cutoffs_log_file_path: Path = None):
-        self.cutoffs_log_file_path = cutoffs_log_file_path
-        self.log_counter = -1
-        if self.cutoffs_log_file_path:
-            with open(self.cutoffs_log_file_path, 'a') as output:
-                csv_writer = csv.writer(output, delimiter=',')
-                csv_writer.writerow(["id",
-                                     "strategy",
-                                     "compatibilities",
-                                     "params",
-                                     "cutoff",
-                                     "reason"
-                                     ])
-
-    def log_cutoff_search(self, compatibilities: List[Compatibility], cutoff, reason, params) -> None:
-        self.log_counter += 1
-        if self.cutoffs_log_file_path:
-            with open(self.cutoffs_log_file_path, 'a') as output:
-                csv_writer = csv.writer(output, delimiter=',')
-                csv_writer.writerow([self.log_counter,
-                                     self.__class__.__name__,
-                                     compatibilities,
-                                     params,
-                                     cutoff,
-                                     reason
-                                     ])
-
     @staticmethod
     def break_if_empty(compatibilities: List[Compatibility]) -> None:
         if not list(compatibilities):
@@ -47,37 +24,37 @@ class FindCutoff(ABC):
         sorted_values = sorted(values)
         distances = np.array([sorted_values[i + 1] - sorted_values[i] for i in range(len(sorted_values) - 1)])
         max_distance_index : int= np.argmax(distances)
-        return sorted_values[max_distance_index + 1]
+        return Compatibility(sorted_values[max_distance_index + 1])
 
 
 class FindMaxCutoff(FindCutoff):
-    def find_max_cutoff(self, compatibilities: List[Compatibility], log: bool = False) -> Compatibility:
+    def find_max_cutoff(self, compatibilities: List[Compatibility]) -> FindCutoffResult:
         pass
 
 
 class FindNodeCutoff(FindCutoff):
     def find_node_cutoff(self,
                          compatibilities: List[Compatibility],
-                         so_far_cutoffs: List[Compatibility],
-                         log: bool = False) -> Compatibility:
+                         so_far_cutoffs: List[Compatibility]) -> FindCutoffResult:
         pass
 
     @staticmethod
     def get_max2_result(compatibilities: List[Compatibility]) -> Compatibility:
         strategy = MAX2()
-        return strategy.find_max_cutoff(compatibilities)
+        max2_result = strategy.find_max_cutoff(compatibilities)
+        return max2_result.cutoff
 
 
 class MAX1(FindMaxCutoff):
-    def __init__(self, cutoff_search_range: List[Compatibility], cutoffs_log_file_path: Path = None):
-        super().__init__(cutoffs_log_file_path)
+    def __init__(self, cutoff_search_range: List[Compatibility]):
+        super().__init__()
         if len(cutoff_search_range) != 2:
             raise ValueError("Cutoff search range must have length 2.")
         elif cutoff_search_range[1] < cutoff_search_range[0]:
             raise ValueError("For cutoff search range [x, y] x must be <= y.")
         self.cutoff_search_range = cutoff_search_range
 
-    def find_max_cutoff(self, compatibilities: List[Compatibility], log: bool = False) -> Compatibility:
+    def find_max_cutoff(self, compatibilities: List[Compatibility]) -> FindCutoffResult:
         FindCutoff.break_if_empty(compatibilities)
         min_search_pos = round((len(compatibilities) - 1) * self.cutoff_search_range[0])
         max_search_pos = round((len(compatibilities) - 1) * self.cutoff_search_range[1])
@@ -90,29 +67,24 @@ class MAX1(FindMaxCutoff):
             cutoff = FindCutoff.sort_and_get_value_following_max_distance(search_range)
             reason = "Value after max distance in cutoff search range."
 
-        if log:
-            self.log_cutoff_search(compatibilities, cutoff, reason, f"r: {self.cutoff_search_range}")
-        return cutoff
+        return FindCutoffResult(cutoff, reason)
 
 
 class MAX2(FindMaxCutoff):
-    def find_max_cutoff(self, compatibilities: List[Compatibility], log: bool = False) -> Compatibility:
+    def find_max_cutoff(self, compatibilities: List[Compatibility]) -> FindCutoffResult:
         FindCutoff.break_if_empty(compatibilities)
         cutoff = FindCutoff.sort_and_get_value_following_max_distance(compatibilities)
         reason = "Value after max distance in cutoff search range."
-        if log:
-            self.log_cutoff_search(compatibilities, cutoff, reason, "")
-        return cutoff
+        return FindCutoffResult(cutoff, reason)
 
 
 class NODE1(FindNodeCutoff):
-    def __init__(self, multiplier, cutoffs_log_file_path: Path = None):
-        super().__init__(cutoffs_log_file_path)
+    def __init__(self, multiplier):
+        super().__init__()
         self.multiplier = multiplier
 
     def find_node_cutoff(self, compatibilities: List[Compatibility],
-                         so_far_cutoffs: List[Compatibility],
-                         log: bool = False) -> Compatibility:
+                         so_far_cutoffs: List[Compatibility]) -> FindCutoffResult:
         FindCutoff.break_if_empty(compatibilities)
 
         if len(compatibilities) == 1:
@@ -127,30 +99,27 @@ class NODE1(FindNodeCutoff):
             if cutoff is None:
                 cutoff = NODE1.get_value_following_first_gap_greater_than_required_gap(sorted_comp, mean_distance)
                 reason = "Value after mean_distance * 1"
-        if log:
-            self.log_cutoff_search(compatibilities, cutoff, reason, f"multiplier: {self.multiplier}")
-        return cutoff
+        return FindCutoffResult(cutoff, reason)
 
     @staticmethod
-    def get_value_following_first_gap_greater_than_required_gap(sorted_comp: List[Compatibility], required_gap: float):
+    def get_value_following_first_gap_greater_than_required_gap(sorted_comp: List[Compatibility], required_gap: float) -> Compatibility:
         if len(sorted_comp) == 1:
-            return sorted_comp[0]
+            return Compatibility(sorted_comp[0])
         distances = np.array([sorted_comp[i + 1] - sorted_comp[i] for i in range(len(sorted_comp) - 1)])
         if any(distances >= required_gap):
             a = np.where(distances >= required_gap)[0][0] + 1
-            return sorted_comp[a]
+            return Compatibility(sorted_comp[a])
         return None
 
 
 class NODE2(FindNodeCutoff):
-    def __init__(self, multiplier, cutoffs_log_file_path: Path = None):
-        super().__init__(cutoffs_log_file_path)
+    def __init__(self, multiplier):
+        super().__init__()
         self.multiplier = multiplier
 
     def find_node_cutoff(self,
                          compatibilities: List[Compatibility],
-                         so_far_cutoffs: List[Compatibility],
-                         log: bool = False) -> Compatibility:
+                         so_far_cutoffs: List[Compatibility]) -> FindCutoffResult:
         if not so_far_cutoffs:
             cutoff = self.get_node1_result(compatibilities)
             reason = "No so far cutoffs. First child in node."
@@ -177,23 +146,18 @@ class NODE2(FindNodeCutoff):
                     comp_greater_than_guard = [c for c in sorted_comp if c > guard]
                     cutoff = min(comp_greater_than_guard)
                     reason = "No gap greater then mean_distance*multiplier. Take first to the right."
-        if log:
-            self.log_cutoff_search(compatibilities,
-                                   cutoff,
-                                   reason,
-                                   f"multiplier: {self.multiplier}, so_far_cutoffs: {so_far_cutoffs}")
-        return cutoff
+        return FindCutoffResult(cutoff, reason)
 
     def get_node1_result(self, compatibilities: List[Compatibility]) -> Compatibility:
-        strategy = NODE1(self.multiplier)
-        return strategy.find_node_cutoff(compatibilities, [])
+        strategy = NODE1()
+        node1_result = strategy.find_node_cutoff(compatibilities, [])
+        return node1_result.cutoff
 
 
 class NODE3(FindNodeCutoff):
     def find_node_cutoff(self,
                          compatibilities: List[Compatibility],
-                         so_far_cutoffs: List[Compatibility],
-                         log: bool = False) -> Compatibility:
+                         so_far_cutoffs: List[Compatibility]) -> FindCutoffResult:
         if not so_far_cutoffs:
             cutoff = self.get_max2_result(compatibilities)
             reason = "No so far cutoffs. Use max 2."
@@ -210,18 +174,13 @@ class NODE3(FindNodeCutoff):
                 first_comp_greater_than_guard_index = [i for i, c in enumerate(sorted_comp) if c > guard][0]
                 cutoff = self.get_max2_result(sorted_comp[0:first_comp_greater_than_guard_index + 1])
                 reason = "Use max 2 on sorted_comp[0:first_comp_greater_than_guard_index + 1]"
-        if log:
-            self.log_cutoff_search(compatibilities, cutoff, reason, f"so far cutoffs: {so_far_cutoffs}")
-        return cutoff
+        return FindCutoffResult(cutoff, reason)
 
 
 class NODE4(FindNodeCutoff):
     def find_node_cutoff(self,
                          compatibilities: List[Compatibility],
-                         so_far_cutoffs: List[Compatibility],
-                         log=False) -> Compatibility:
+                         so_far_cutoffs: List[Compatibility]) -> FindCutoffResult:
         cutoff = self.get_max2_result(compatibilities)
         reason = "Use MAX2"
-        if log:
-            self.log_cutoff_search(compatibilities, cutoff, reason, "")
-        return cutoff
+        return FindCutoffResult(cutoff, reason)

@@ -7,6 +7,12 @@ from pangraph.custom_types import SequenceID
 from typing import Dict, List, Any
 from io import StringIO
 
+from tools import loggingtools
+
+global_logger = loggingtools.get_global_logger()
+detailed_logger = loggingtools.get_logger("details")
+
+
 class MultialignmentMetadata:
     metadata_df: pd.DataFrame
 
@@ -18,6 +24,7 @@ class MultialignmentMetadata:
             self.metadata_df = self._read_metadata_csv(metadata_file_content)
 
     def _read_metadata_csv(self, csv_content):
+        global_logger.info("Reading metadata...")
         try:
             metadata_df = pd.read_csv(StringIO(csv_content),sep=',',error_bad_lines=False)
         except Exception as e:
@@ -70,10 +77,12 @@ class MultialignmentMetadata:
             return self._guess_entrez_name(seqid)
 
     def _guess_entrez_name(self, seqid: SequenceID) -> EntrezSequenceID:
+        detailed_logger.info(f"Guessing entrez sequence id...")
         version_indications = [*re.finditer('v[0-9]{1}', seqid)]
+        guessed_entrez_name = seqid
         if len(version_indications) == 1 :
             version_start = version_indications[0].span()[0]
             if version_start == len(seqid) -2:
-                entrez_name = seqid[0:version_start] + "." + seqid[version_start+1:]
-                return EntrezSequenceID(entrez_name)
-        return EntrezSequenceID(seqid)
+                guessed_entrez_name = seqid[0:version_start] + "." + seqid[version_start+1:]
+        detailed_logger.info(f"{seqid} translated to {guessed_entrez_name}")
+        return EntrezSequenceID(guessed_entrez_name)

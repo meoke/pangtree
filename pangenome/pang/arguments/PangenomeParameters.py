@@ -1,10 +1,8 @@
 import os
 from typing import Optional
 
-from io import StringIO
 from enum import Enum
 from pathlib import Path
-
 
 
 class ConsensusAlgorithm(Enum):
@@ -32,27 +30,16 @@ class NodeCutoffOption(Enum):
 
 
 class PangenomeParameters:
-    def __init__(self,
-                 multialignment_file_content: str,
-                 multialignment_file_path: Path,
-                 metadata_file_content: Optional[str],
-                 metadata_file_path: Optional[Path],
-                 blosum_file_path: Optional[Path],
-                 output_path: Path,
-                 generate_fasta: bool,
-                 consensus_type: ConsensusAlgorithm,
-                 hbmin: float,
-                 search_range: Optional[list],
-                 multiplier: Optional[float],
-                 stop: Optional[float],
-                 re_consensus: Optional[bool],
-                 not_dag: bool,
+    def __init__(self, multialignment_file_content: str, multialignment_file_path: Path,
+                 metadata_file_content: Optional[str], metadata_file_path: Optional[Path],
+                 blosum_file_path: Optional[Path], output_path: Path, generate_fasta: bool,
+                 consensus_type: ConsensusAlgorithm, hbmin: float, search_range: Optional[list],
+                 multiplier: Optional[float], stop: Optional[float], re_consensus: Optional[bool], not_dag: bool,
                  fasta_complementation_option: Optional[FastaComplementationOption],
-                 missing_nucleotide_symbol: Optional[str],
-                 local_fasta_dirpath: Optional[Path],
-                 max_cutoff_option: Optional[MaxCutoffOption],
-                 node_cutoff_option: Optional[NodeCutoffOption]
-                 ):
+                 missing_nucleotide_symbol: Optional[str], local_fasta_dirpath: Optional[Path],
+                 max_cutoff_option: Optional[MaxCutoffOption], node_cutoff_option: Optional[NodeCutoffOption],
+                 verbose: bool,
+                 quiet: bool):
         self.multialignment_file_content = multialignment_file_content
         self.multialignment_file_path = multialignment_file_path
         self.metadata_file_content = metadata_file_content
@@ -77,6 +64,8 @@ class PangenomeParameters:
         self.node_cutoff_option = node_cutoff_option
         self.multiplier = multiplier
         self.re_consensus = re_consensus
+        self.verbose = verbose
+        self.quiet = quiet
 
         self._validate()
 
