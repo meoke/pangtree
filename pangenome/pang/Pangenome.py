@@ -56,7 +56,7 @@ class Pangenome:
         if self.params.fasta_complementation_option is FastaComplementationOption.NO:
             fasta_source = None
         elif self.params.fasta_complementation_option is FastaComplementationOption.NCBI:
-            fasta_source = FromEntrezFastaProvider()
+            fasta_source = FromEntrezFastaProvider(self.params.email_address)
         elif self.params.fasta_complementation_option is FastaComplementationOption.LOCAL:
             fasta_source = FromZIPSystemProvider(self.params.local_fasta_dirpath)
         else:

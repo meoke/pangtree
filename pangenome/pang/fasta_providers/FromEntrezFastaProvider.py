@@ -10,9 +10,9 @@ EntrezSequenceID = NewType("EntrezSequenceID", str)
 detailed_logger = loggingtools.get_logger("details")
 
 class FromEntrezFastaProvider(FastaProvider):
-    def __init__(self,):
+    def __init__(self, email_address):
         super().__init__()
-        Entrez.email = "pedziadkiewicz@gmail.com"
+        Entrez.email = email_address
 
     def get_source(self, sequenceID: EntrezSequenceID, start: int = None, end: int = None) -> str:
         detailed_logger.info(f"Downloading from entrez sequence {sequenceID}...")

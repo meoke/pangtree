@@ -64,7 +64,7 @@ class TreePOAConsensusGenerator:
                 self.consensuses_tree.nodes.append(child)
                 if not self.node_is_ready(child):
                     nodes_to_process.append(child)
-        global_logger.info("Consensus tree generation finished.\n")
+        global_logger.info("Consensuses Tree generation finished.\n")
         return self.consensuses_tree
 
     def init_consensuses_tree(self) -> ConsensusesTree:

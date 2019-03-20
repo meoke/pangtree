@@ -1,4 +1,5 @@
 import argparse
+import re
 from os import getcwd
 from pathlib import Path
 from typing import Union, Dict
@@ -42,6 +43,15 @@ def _float_0_1(arg: str) -> float:
     if v < 0 or v > 1:
         raise argparse.ArgumentTypeError(f"This argument must be in range [0,1].")
     return v
+
+
+def _email_address(arg: str) -> str:
+    """Check if provided e-mail address is correct."""
+    match = re.match('^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$', arg)
+    if match != None:
+        return arg
+    else:
+        raise argparse.ArgumentTypeError(f"Incorrect e-mail address ({arg}) was passed.")
 
 
 def _fasta_complementation_option(arg_fasta_complementation: str) -> FastaComplementationOption:
@@ -167,6 +177,10 @@ def _get_parser() -> argparse.ArgumentParser:
                         'Don\'t use this argument if you want the pangraph to be build without full sequences.'
                         'Pass "ncbi" if you want to download the lacking fragments from ncbi'
                         'Pass "local" if you want to use fasta from local file system.')
+    p.add_argument('-email',
+                   type=_email_address,
+                   help='E-mail address requiered when Fasta Complementation Option is \"NCBI\" '
+                        'as using Entrez API obligates the user to pass e-mail address.')
     p.add_argument('-missing_n',
                    type=str,
                    help='If fasta_complementation is NO, a custom symbol for missing nucleotides can be specified.'
@@ -227,5 +241,6 @@ def create_pangenome_parameters() -> PangenomeParameters:
             max_cutoff_option=args.max,
             node_cutoff_option=args.node,
             verbose=args.verbose,
-            quiet=args.quiet
+            quiet=args.quiet,
+            email_address=args.email
         )

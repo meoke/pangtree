@@ -39,7 +39,8 @@ class PangenomeParameters:
                  missing_nucleotide_symbol: Optional[str], local_fasta_dirpath: Optional[Path],
                  max_cutoff_option: Optional[MaxCutoffOption], node_cutoff_option: Optional[NodeCutoffOption],
                  verbose: bool,
-                 quiet: bool):
+                 quiet: bool,
+                 email_address: str):
         self.multialignment_file_content = multialignment_file_content
         self.multialignment_file_path = multialignment_file_path
         self.metadata_file_content = metadata_file_content
@@ -49,6 +50,7 @@ class PangenomeParameters:
 
         self.not_dag = not_dag
         self.fasta_complementation_option = fasta_complementation_option
+        self.email_address = email_address
         self.missing_nucleotide_symbol = missing_nucleotide_symbol or '?'
         self.local_fasta_dirpath = local_fasta_dirpath
 
@@ -95,6 +97,10 @@ class PangenomeParameters:
             raise Exception("Unspecified path to direction with fasta files, "
                             "while FastaComplementationOption.LocalFasta was chosen. "
                             "Use FastaComplementationOption.No or FastaComplementationOption.NCBI instead.")
+
+        if self.fasta_complementation_option is FastaComplementationOption.NCBI and self.email_address is None:
+            raise Exception("Unspecified email address. "
+                            "Email address is requiered if FastaComplementationOption.NCBI was chosen.")
 
         if self.consensus_type is None:
             raise Exception("Unspecified consensus algorithm. "
@@ -148,10 +154,8 @@ class PangenomeParameters:
         else:
             raise Exception("Error while a try of finding symbol for missing nucletides.")
 
-
     def _get_default_blosum_path(self):
         return Path(os.path.abspath(__file__)).joinpath('../../bin/blosum80.mat').resolve()
-
 
     def __str__(self):
         return f"""
