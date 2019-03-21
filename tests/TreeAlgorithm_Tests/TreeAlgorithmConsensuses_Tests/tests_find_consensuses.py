@@ -81,7 +81,8 @@ class FindConsensusesTests(unittest.TestCase):
                                                           blosum_path=self.blosum_path
                                                           )
         consensuses_generator.get_consensuses_tree(pangraph=self.pangraph,
-                                                   output_dir=Path("TreeAlgorithm_Tests/TreeAlgorithmConsensuses_Tests/output"))
+                                                   output_dir=Path("TreeAlgorithm_Tests/TreeAlgorithmConsensuses_Tests/output"),
+                                                   log_tresholds=False)
         print("KONIEC")
 
 

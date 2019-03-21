@@ -156,7 +156,7 @@ def _get_parser() -> argparse.ArgumentParser:
                         'Value of node compatibility above which the node is no more split.')
     p.add_argument('-re_consensus',
                    action='store_true',
-                   default=True,
+                   default=False,
                    help='Tree POA algorithm parameter.'
                         'Set if after producing children nodes, sequences should be moved to'
                         ' siblings nodes if compatibility to its consensus is higher.')

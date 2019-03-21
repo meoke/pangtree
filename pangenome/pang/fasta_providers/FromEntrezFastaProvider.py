@@ -8,6 +8,7 @@ from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 
 from fasta_providers.FastaProvider import FastaProvider
+from pangraph.custom_types import Sequence
 from tools import loggingtools, pathtools
 
 EntrezSequenceID = NewType("EntrezSequenceID", str)
@@ -33,7 +34,7 @@ class FromEntrezFastaProvider(FastaProvider):
             sequence = self.download_from_ncbi(sequenceID, start, end)
         return sequence
 
-    def download_from_ncbi(self, sequenceID, start, end):
+    def download_from_ncbi(self, sequenceID:EntrezSequenceID, start: int, end: int) -> Sequence:
         detailed_logger.info(f"Downloading from entrez sequence {sequenceID}...")
         try:
             if start is not None and end is not None:
@@ -68,14 +69,17 @@ class FastaCache:
 
     def save_to_cache(self, seq_id, sequence)-> None:
         detailed_logger.info(f"Caching sequence {seq_id}...")
+        if not self.cache_dir_exists():
+            self.create_cache_dir()
         cache_filename = self.get_cached_filepath(seq_id)
         with open(cache_filename, 'w') as fasta_file_handle:
             SeqIO.write(SeqRecord(seq=Seq(sequence), id=seq_id, description="cached"), fasta_file_handle, "fasta")
 
     def read_from_cache(self, seq_id):
         detailed_logger.info(f"Reading {seq_id} from cache...")
-        cache_filename = self.get_cached_filepath(seq_id)
-        seq = SeqIO.read(cache_filename, "fasta")
+        cache_filepath = self.get_cached_filepath(seq_id)
+        with open(cache_filepath) as fasta_handle:
+            seq = SeqIO.read(fasta_handle, "fasta")
         return seq.seq
 
     def get_cached_filepath(self, seq_id):
@@ -87,8 +91,8 @@ class FastaCache:
     def sequence_cached(self, sequenceID):
         if not self.cache_dir_exists():
             return False
-        expected_fasta_file_name = self.get_cached_filename(sequenceID)
+        expected_fasta_file_name = self.get_cached_filepath(sequenceID)
         fasta_files_in_cache_dir = self.cache_dir.glob("*.fasta")
-        if expected_fasta_file_name in fasta_files_in_cache_dir:
+        if expected_fasta_file_name in [*fasta_files_in_cache_dir]:
             return True
         return False

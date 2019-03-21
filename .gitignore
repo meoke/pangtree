@@ -120,3 +120,4 @@ pang_output*
 tests/TreeAlgorithm_Tests/TreeAlgorithmConsensuses_Tests/output/*
 examples/new/ebola/consensus/*.po
 examples/new/fabricated/consensus/*.po
+pangenome/pang/.fastacache

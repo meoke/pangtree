@@ -97,7 +97,7 @@ class Pangenome:
                 node_cutoff_strategy=self._get_node_cutoff_strategy(),
                 blosum_path=self.params.blosum_file_path,
                 stop=self.params.stop,
-                re_consensus=self.params.stop
+                re_consensus=self.params.re_consensus
             )
             self.consensuses_tree = consensus_generator.get_consensuses_tree(
                 pangraph=self.pangraph,

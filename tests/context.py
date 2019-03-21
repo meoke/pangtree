@@ -9,8 +9,9 @@ from pangenome.pang.metadata.SequenceMetadata import SequenceMetadata
 
 from pangenome.pang.pangraph.Node import Node
 from pangenome.pang.pangraph.Pangraph import Pangraph
-from pangenome.pang.pangraph.FastaSource import FastaSource
-from pangenome.pang.pangraph.FastaSource import FastaFileSystemSource
+from pangenome.pang.fasta_providers.FastaProvider import FastaProvider
+from pangenome.pang.fasta_providers.FromZIPFastaProvider import FromZIPSystemProvider
+from pangenome.pang.fasta_providers.FromEntrezFastaProvider import FromEntrezFastaProvider
 from pangenome.pang.pangraph.PangraphBuilders.PangraphBuilderFromDAG import PangraphBuilderFromDAG
 from pangenome.pang.pangraph.PangraphBuilders.PangraphBuilderFromMAF import PangraphBuilderFromMAF
 from pangenome.pang.pangraph.PangraphToFilesConverters.PangraphToPO import PangraphToPO, NodePO, SequencePO

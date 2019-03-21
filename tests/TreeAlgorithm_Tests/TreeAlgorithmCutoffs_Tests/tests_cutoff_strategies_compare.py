@@ -17,9 +17,9 @@ class CutoffStrategiesComparisonTests(unittest.TestCase):
     @unpack
     def test_max1_max2_strategy_should_be_equal_for_full_range(self, expected_cutoff, compatibilites):
         max1_strategy: MAX1 = MAX1([0,1])
-        max1_cutoff = max1_strategy.find_max_cutoff(compatibilites)
+        max1_cutoff = max1_strategy.find_max_cutoff(compatibilites).cutoff
         max2_strategy: MAX2 = MAX2()
-        max2_cutoff = max2_strategy.find_max_cutoff(compatibilites)
+        max2_cutoff = max2_strategy.find_max_cutoff(compatibilites).cutoff
         # self.assertEqual(max1_cutoff, max2_cutoff)
         self.assertEqual(expected_cutoff, max1_cutoff)
 

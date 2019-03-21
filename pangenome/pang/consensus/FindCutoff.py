@@ -149,7 +149,7 @@ class NODE2(FindNodeCutoff):
         return FindCutoffResult(cutoff, reason)
 
     def get_node1_result(self, compatibilities: List[Compatibility]) -> Compatibility:
-        strategy = NODE1()
+        strategy = NODE1(self.multiplier)
         node1_result = strategy.find_node_cutoff(compatibilities, [])
         return node1_result.cutoff
 

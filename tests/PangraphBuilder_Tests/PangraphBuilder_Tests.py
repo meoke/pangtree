@@ -4,7 +4,6 @@ from pathlib import Path
 from typing import Optional
 
 from fasta_providers.FastaProvider import FastaProvider
-from tests.context import maf_to_dagmaf
 from tests.context import Pangraph
 from tests.context import PangraphBuilderFromDAG
 from Bio import AlignIO
