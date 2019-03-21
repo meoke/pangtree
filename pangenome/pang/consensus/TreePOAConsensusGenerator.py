@@ -41,7 +41,6 @@ class TreePOAConsensusGenerator:
         global_logger.info("Consensuses Tree generation started.")
         self.pangraph = pangraph
         self.output_dir = output_dir
-        # self.set_tresholds_log_handler()
         if log_tresholds:
             loggingtools.add_fileHandler_to_logger(output_dir, "tresholdsCSV", "tresholds.csv", "%(message)s", False)
 

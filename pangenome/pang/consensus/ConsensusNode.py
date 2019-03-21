@@ -29,3 +29,11 @@ class ConsensusNode(object):
             f"mincomp: {self.mincomp}, " \
             f"path length: {len(self.consensus_path)}, "\
             f"sequences ids: {self.sequences_ids}."
+
+    def __eq__(self, other):
+        return self.parent_node_id == other.parent_node_id and \
+            self.consensus_id == other.consensus_id and \
+            self.sequences_ids == other.sequences_ids and \
+            abs(self.mincomp - other.mincomp) < 0.001 and \
+            self.compatibilities_to_all == other.compatibilities_to_all and \
+            self.consensus_path == other.consensus_path

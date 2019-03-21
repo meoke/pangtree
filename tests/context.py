@@ -27,4 +27,6 @@ from pangenome.pang.consensus.FindCutoff import MAX1, MAX2, NODE1, NODE2, NODE3,
 from pangenome.pang.consensus.TreePOAConsensusGenerator import Compatibility
 from pangenome.pang.consensus.top_consensus import get_top_consensus, PangraphPO_Translator
 
+from pangenome.pang.consensus.ConsensusNode import ConsensusNode
+
 from pangenome.pang.tools import pathtools
