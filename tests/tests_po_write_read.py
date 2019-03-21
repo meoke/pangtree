@@ -145,7 +145,7 @@ class PoWriteReadTest(unittest.TestCase):
     @data((get_pangraph1()[0], get_pangraph1()[1]))
     @unpack
     def test_write_po(self, pangraph, expected_pofile):
-        poa_path = pathtools.get_child_file_path(self.output_dir, "saved_pangraph.po")
+        poa_path = pathtools.get_child_path(self.output_dir, "saved_pangraph.po")
         powriter.save(pangraph, poa_path, self.genomes_info)
         with open(poa_path) as poa_file:
             actual_pofile = poa_file.read().splitlines()
@@ -160,7 +160,7 @@ class PoWriteReadTest(unittest.TestCase):
           (get_pangraph_with_consensuses()[0], get_pangraph_with_consensuses()[1]))
     @unpack
     def test_read_po(self, expected_pangraph, pofile_lines):
-        poa_path = pathtools.get_child_file_path(self.output_dir, "pangraph_to_read.po")
+        poa_path = pathtools.get_child_path(self.output_dir, "pangraph_to_read.po")
         with open(poa_path, 'w') as poa_file:
             poa_file.writelines("\n".join(pofile_lines))
 

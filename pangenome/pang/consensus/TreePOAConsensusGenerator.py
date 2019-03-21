@@ -9,7 +9,7 @@ from consensus.exceptions import TreeConsensusGenerationException
 from pangraph.Pangraph import Pangraph
 from pangraph.custom_types import SequenceID, NodeID
 import consensus.top_consensus as top_consensus
-from tools import pathtools, loggingtools
+from tools import loggingtools
 
 tresholds_logger = loggingtools.get_logger('tresholdsCSV')
 detailed_logger = loggingtools.get_logger('details')
@@ -189,30 +189,29 @@ class TreePOAConsensusGenerator:
         return [seq_id for seq_id, comp in compatibilities.items() if comp >= cutoff]
 
     def reorder_consensuses(self, children_nodes: List[ConsensusNode]) -> List[ConsensusNode]:
-        # print("REORDER NOT IMPLEMENTED")
         any_sequence_was_moved = False
-        all_sequences_ids = [seq_id  for c_node in children_nodes for seq_id in c_node.sequences_ids]
-        d = {seq_id: [] for seq_id in all_sequences_ids}
-        seq_id_to_consensus_id_comp = {}
+        all_sequences_ids = [seq_id for c_node in children_nodes for seq_id in c_node.sequences_ids]
+        possible_compatibilities = {seq_id: [] for seq_id in all_sequences_ids}
+        current_compatibilities_assignment = {}
         for consensus in children_nodes:
             seq_id_to_comp = self.pangraph.get_compatibilities(all_sequences_ids, consensus.consensus_path)
             for seq_id, comp in seq_id_to_comp.items():
-                d[seq_id].append((consensus.consensus_id, comp))
+                possible_compatibilities[seq_id].append((consensus.consensus_id, comp))
             for seq_id in consensus.sequences_ids:
-                seq_id_to_consensus_id_comp[seq_id] = (consensus.consensus_id, seq_id_to_comp[seq_id])
+                current_compatibilities_assignment[seq_id] = (consensus.consensus_id, seq_id_to_comp[seq_id])
 
-        for seq_id, comp_id_comp in d.items():
-            sorted_comp_id_comp = sorted(comp_id_comp, key=lambda comp_id_comp: comp_id_comp[1], reverse=True)
-            current_comp = seq_id_to_consensus_id_comp[seq_id][1]
-            current_comp_id = seq_id_to_consensus_id_comp[seq_id][0]
-            if sorted_comp_id_comp[0][1] > current_comp:
-                better_comp_id = sorted_comp_id_comp[0][0]
+        for seq_id, comp_id_comp in possible_compatibilities.items():
+            sorted_possible_compatibilities = sorted(comp_id_comp, key=lambda comp_id_comp: comp_id_comp[1], reverse=True)
+            current_comp = current_compatibilities_assignment[seq_id][1]
+            current_comp_id = current_compatibilities_assignment[seq_id][0]
+            if sorted_possible_compatibilities[0][1] > current_comp:
+                better_comp_id = sorted_possible_compatibilities[0][0]
                 children_nodes = self.move(children_nodes, current_comp_id=current_comp_id, better_comp_id=better_comp_id, seq_id=seq_id)
                 any_sequence_was_moved = True
         if not any_sequence_was_moved:
             detailed_logger.info("No sequence was reassigned to different node.")
 
-        return children_nodes
+        return self.update_children_nodes(children_nodes)
 
     def move(self, children_nodes, current_comp_id, better_comp_id, seq_id):
         detailed_logger.info(f"Sequence {seq_id} moved from consensus {current_comp_id} to {better_comp_id}.")
@@ -223,12 +222,16 @@ class TreePOAConsensusGenerator:
             elif consensus.consensus_id == better_comp_id:
                 consensus.sequences_ids.append(seq_id)
         return children_nodes
-    #
-    # def set_tresholds_log_handler(self) -> logging.Handler:
-    #     fh = logging.FileHandler(pathtools.get_child_file_path(self.output_dir, "tresholds.csv"))
-    #     formatter = logging.Formatter(fmt="%(message)s")
-    #     fh.setFormatter(formatter)
-    #     fh.setLevel(logging.INFO)
-    #     tresholds_logger.propagate = False
-    #     tresholds_logger.handlers = [fh]
-    #     return fh
+
+    def update_children_nodes(self, children_nodes: List[ConsensusNode]):
+        to_remove = []
+        for i, child in enumerate(children_nodes):
+            if not child.sequences_ids:
+                to_remove.append(i)
+            else:
+                new_compatibilities = self.pangraph.get_compatibilities(child.sequences_ids, child.consensus_path)
+                child.mincomp = min([comp for seq_id, comp in new_compatibilities.items()])
+        for r in sorted(to_remove, reverse=True):
+            del children_nodes[r]
+        return children_nodes
+

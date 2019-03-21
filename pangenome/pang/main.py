@@ -1,5 +1,3 @@
-import logging
-import logging.config
 import time
 from arguments import cmd_arguments
 from tools import pathtools, loggingtools

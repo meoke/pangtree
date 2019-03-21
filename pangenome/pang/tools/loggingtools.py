@@ -1,8 +1,12 @@
 import logging
+import logging.config
+import os
 import sys
+from pathlib import Path
 
 from . import pathtools
-logging.config.fileConfig('logging.conf')
+logging_config_path = Path(os.path.abspath(__file__)).joinpath('../../logging.conf').resolve()
+logging.config.fileConfig(logging_config_path)
 
 
 def add_fileHandler_to_logger(outputdir,
@@ -11,7 +15,7 @@ def add_fileHandler_to_logger(outputdir,
                               format="%(levelname)s - %(message)s",
                               propagate=True):
     logger = logging.getLogger(logger_name)
-    fh = logging.FileHandler(pathtools.get_child_file_path(outputdir, filename))
+    fh = logging.FileHandler(pathtools.get_child_path(outputdir, filename))
     ft = logging.Formatter(format, datefmt="%x-%X")
     fh.setFormatter(ft)
     logger.propagate = propagate

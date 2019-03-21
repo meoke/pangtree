@@ -3,7 +3,7 @@ from io import StringIO
 from pathlib import Path
 from typing import Optional
 
-from pangraph.FastaSource import FastaSource
+from fasta_providers.FastaProvider import FastaProvider
 from tests.context import maf_to_dagmaf
 from tests.context import Pangraph
 from tests.context import PangraphBuilderFromDAG
@@ -14,7 +14,7 @@ from tests.context import PangraphBuilderFromMAF
 
 class PangraphBuilderTests(unittest.TestCase):
     @staticmethod
-    def setup_pangraph_from_maf_firstly_converted_to_dag(maf_path, metadata, fasta_source : Optional[FastaSource] = None):
+    def setup_pangraph_from_maf_firstly_converted_to_dag(maf_path, metadata, fasta_source : Optional[FastaProvider] = None):
         mafcontent = PangraphBuilderTests.get_file_content(maf_path)
         pangraph = Pangraph()
         builder = PangraphBuilderFromDAG(genomes_info=metadata,

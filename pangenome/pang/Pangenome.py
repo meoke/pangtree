@@ -14,7 +14,6 @@ from arguments.PangenomeParameters import ConsensusAlgorithm, FastaComplementati
 from consensus.SimplePOAConsensusGenerator import SimplePOAConsensusGenerator
 from consensus.TreePOAConsensusGenerator import TreePOAConsensusGenerator
 
-# detailed_logger = loggingtools.get_logger("details")
 global_logger = loggingtools.get_logger("")
 
 

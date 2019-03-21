@@ -1,9 +1,10 @@
 from typing import NewType
 
 from Bio import Entrez
+from Bio import SeqIO
 
 from fasta_providers.FastaProvider import FastaProvider
-from tools import loggingtools
+from tools import loggingtools, pathtools
 
 EntrezSequenceID = NewType("EntrezSequenceID", str)
 
@@ -32,3 +33,16 @@ class FromEntrezFastaProvider(FastaProvider):
             raise Exception(f"Cannot download from Entrez sequence of ID: {sequenceID}") from ex
 
 
+class FastaCache:
+    def __init__(self, parent_dir):
+        self.parent_dir = parent_dir
+        self.cache_dir = pathtools.get_child_path(parent_dir, ".fastacache")
+
+    def cache_dir_exists(self):
+        return pathtools.dir_exists(self.cache_dir)
+
+    def create_cahce_dir(self) -> None:
+        pathtools.create_dir(self.cache_dir)
+
+    def save_to_cache(self, seq_id, sequence)-> None:
+        cache_filename = f"{seq_id}.fasta"
