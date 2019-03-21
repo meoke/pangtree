@@ -38,9 +38,7 @@ class PangenomeParameters:
                  fasta_complementation_option: Optional[FastaComplementationOption],
                  missing_nucleotide_symbol: Optional[str], local_fasta_dirpath: Optional[Path],
                  max_cutoff_option: Optional[MaxCutoffOption], node_cutoff_option: Optional[NodeCutoffOption],
-                 verbose: bool,
-                 quiet: bool,
-                 email_address: str):
+                 verbose: bool, quiet: bool, email_address: str, cache: bool):
         self.multialignment_file_content = multialignment_file_content
         self.multialignment_file_path = multialignment_file_path
         self.metadata_file_content = metadata_file_content
@@ -51,6 +49,7 @@ class PangenomeParameters:
         self.not_dag = not_dag
         self.fasta_complementation_option = fasta_complementation_option
         self.email_address = email_address
+        self.cache = cache
         self.missing_nucleotide_symbol = missing_nucleotide_symbol or '?'
         self.local_fasta_dirpath = local_fasta_dirpath
 
@@ -176,4 +175,8 @@ class PangenomeParameters:
         search_range: {self.search_range}
         node_cutoff_option: {self.node_cutoff_option}
         multiplier: {self.multiplier}
-        re_consensus: {self.re_consensus}"""
+        re_consensus: {self.re_consensus},
+        quiet: {self.quiet},
+        verbose: {self.verbose},
+        e-mail: {self.email_address},
+        cache: {self.cache}"""

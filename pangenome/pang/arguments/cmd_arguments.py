@@ -181,6 +181,10 @@ def _get_parser() -> argparse.ArgumentParser:
                    type=_email_address,
                    help='E-mail address requiered when Fasta Complementation Option is \"NCBI\" '
                         'as using Entrez API obligates the user to pass e-mail address.')
+    p.add_argument('-cache',
+                   action='store_true',
+                   help='Used if Fasta Complementation Option is \"NCBI\" '
+                        'Stores sequences downloaded from NCBI on local disc and enables reusing them between use of this program.')
     p.add_argument('-missing_n',
                    type=str,
                    help='If fasta_complementation is NO, a custom symbol for missing nucleotides can be specified.'
@@ -242,5 +246,6 @@ def create_pangenome_parameters() -> PangenomeParameters:
             node_cutoff_option=args.node,
             verbose=args.verbose,
             quiet=args.quiet,
-            email_address=args.email
+            email_address=args.email,
+            cache=args.cache
         )
