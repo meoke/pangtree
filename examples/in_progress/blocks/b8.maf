@@ -1,0 +1,18 @@
+##maf version=1
+## parallel blocks
+#dlaczego algorytm mafgraph dokłada tu krawędź z bloku 1 do 3 dla t2?
+a degree=2
+s t1 0 5 + 20 ACTGG
+s t2 0 5 + 20 ACTGG
+
+a degree=2
+s t1 5 5 + 20 ACTGG
+s t2 10 5 + 20 ACTGG
+
+a degree=2
+s t1 10 5 + 20 ACTGG
+s t2 5 5 + 20 ACTGG
+
+a degree=2
+s t1 15 5 + 20 ACTGG
+s t2 15 5 + 20 ACTGG

@@ -1,0 +1,16 @@
+##maf version=1
+
+a degree=2
+s t1 0 3 + 12 ACT
+s t2 0 3 + 13 ACT
+s t3 0 2 + 11 A-T
+
+a degree=2
+s t1 3 2 + 12 GA
+s t2 8 2 - 13 GG
+s t3 7 2 - 11 GG
+
+a degree=2
+s t1 5 7 + 12 C-TGAAAA
+s t2 5 8 + 13 CATGAACT
+s t3 4 7 + 11 CATG-AAT
