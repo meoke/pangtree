@@ -196,7 +196,13 @@ def _get_parser() -> argparse.ArgumentParser:
                    type=float,
                    default=1,
                    help='Tree consensus algorithm parameter.'
-                        'When finding compatibilities cutoff, their values are raised to the power o p.')
+                        'When deciding about consensus node split, the compatibilities are raised to the power o p.'
+                        'It enables to change the linear meaing of compatibility values.'
+                        'For p from range [0,1] it decreases distances between small compatibilities and '
+                        'increases distances between the bigger ones.'
+                        'For p > 1 it increases distances between small compatibilities and '
+                        'decreases distances between the bigger ones.'
+                   )
     p.add_argument('-max',
                    default=MaxCutoffOption.MAX2,
                    type=_max_cutoff_option,
@@ -247,5 +253,6 @@ def create_pangenome_parameters() -> PangenomeParameters:
             verbose=args.verbose,
             quiet=args.quiet,
             email_address=args.email,
-            cache=args.cache
+            cache=args.cache,
+            p=args.p
         )

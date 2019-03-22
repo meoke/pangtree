@@ -38,7 +38,7 @@ class PangenomeParameters:
                  fasta_complementation_option: Optional[FastaComplementationOption],
                  missing_nucleotide_symbol: Optional[str], local_fasta_dirpath: Optional[Path],
                  max_cutoff_option: Optional[MaxCutoffOption], node_cutoff_option: Optional[NodeCutoffOption],
-                 verbose: bool, quiet: bool, email_address: str, cache: bool):
+                 verbose: bool, quiet: bool, email_address: str, cache: bool, p: float):
         self.multialignment_file_content = multialignment_file_content
         self.multialignment_file_path = multialignment_file_path
         self.metadata_file_content = metadata_file_content
@@ -67,6 +67,7 @@ class PangenomeParameters:
         self.re_consensus = re_consensus
         self.verbose = verbose
         self.quiet = quiet
+        self.p = p
 
         self._validate()
 
@@ -179,4 +180,5 @@ class PangenomeParameters:
         quiet: {self.quiet},
         verbose: {self.verbose},
         e-mail: {self.email_address},
-        cache: {self.cache}"""
+        cache: {self.cache},
+        p: {self.p}"""

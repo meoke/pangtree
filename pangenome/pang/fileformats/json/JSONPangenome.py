@@ -22,6 +22,8 @@ class JSONProgramParameters:
         self.not_dag: bool = params.not_dag
         self.fasta_complementation_option: FastaComplementationOption = str(params.fasta_complementation_option)
         self.local_fasta_dirpath: str = str(params.local_fasta_dirpath)
+        self.p: float = params.p
+        self.email: str = params.email_address
 
 
 class JSONNode:
@@ -123,11 +125,11 @@ class JSONPangenome:
                                               name=f"CONSENSUS{consensus_node.consensus_id}",
                                               parent=consensus_node.parent_node_id,
                                               children=consensus_node.children_nodes_ids,
-                                              comp_to_all_sequences=consensus_node.compatibilities_to_all,
+                                              comp_to_all_sequences={seq_id: comp.value for seq_id, comp in consensus_node.compatibilities_to_all.items()},
                                               sequences_ids=[paths_str_id_to_int_id[seq_id]
                                                              for seq_id in consensus_node.sequences_ids],
                                               nodes_ids=consensus_node.consensus_path,
-                                              mincomp=consensus_node.mincomp)
+                                              mincomp=consensus_node.mincomp.value)
                                 for consensus_node in pangenome.consensuses_tree.nodes]
         else:
             self.consensuses = []

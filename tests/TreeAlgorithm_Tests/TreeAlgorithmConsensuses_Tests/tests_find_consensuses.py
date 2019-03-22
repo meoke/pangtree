@@ -6,7 +6,6 @@ from ddt import ddt
 from tests.context import Node, Pangraph
 from tests.context import make_nucleobase as n
 from tests.context import TreePOAConsensusGenerator, MAX1, MAX2, NODE1, NODE2, NODE3, NODE4
-from tests.context import Compatibility
 
 @ddt
 class FindConsensusesTests(unittest.TestCase):
@@ -76,9 +75,10 @@ class FindConsensusesTests(unittest.TestCase):
 
         consensuses_generator = TreePOAConsensusGenerator(max_node_strategy=MAX2(),
                                                           node_cutoff_strategy=NODE3(),
-                                                          stop=Compatibility(0.99),
+                                                          stop=0.99,
                                                           re_consensus=True,
-                                                          blosum_path=self.blosum_path
+                                                          blosum_path=self.blosum_path,
+                                                          p=1
                                                           )
         consensuses_generator.get_consensuses_tree(pangraph=self.pangraph,
                                                    output_dir=Path("TreeAlgorithm_Tests/TreeAlgorithmConsensuses_Tests/output"),

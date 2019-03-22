@@ -2,6 +2,7 @@ from io import StringIO
 from typing import List, Dict
 import numpy as np
 
+from pangraph.CompatibilityToPath import CompatibilityToPath
 from pangraph.PangraphBuilders.PangraphBuilderBase import PangraphBuilderBase
 from pangraph.PangraphBuilders.PangraphBuilderFromDAG import PangraphBuilderFromDAG
 from pangraph.PangraphBuilders.PangraphBuilderFromMAF import PangraphBuilderFromMAF
@@ -39,8 +40,9 @@ class Pangraph:
     def _build(self, builder: PangraphBuilderBase, build_input: str):
         builder.build(StringIO(build_input), self)
 
-    def get_compatibilities(self, sequences_ids: List[SequenceID], consensus: List[NodeID]):
-        compatibilities = dict()
+    def get_compatibilities(self, sequences_ids: List[SequenceID], consensus: List[NodeID], p: float) -> \
+            Dict[SequenceID, CompatibilityToPath]:
+        compatibilities= dict()
         for seq_id in sequences_ids:
             try:
                 sequence_paths = self.paths[seq_id]
@@ -50,7 +52,7 @@ class Pangraph:
                 sequence_path = sequence_paths[0]
             else:
                 sequence_path = [node_id for path in sequence_paths for node_id in path]
-            compatibilities[seq_id] = len(set(sequence_path).intersection(set(consensus)))/len(sequence_path)
+            compatibilities[seq_id] = CompatibilityToPath(len(set(sequence_path).intersection(set(consensus)))/len(sequence_path), p)
         return compatibilities
 
     def get_sequence_nodes_count(self, seq_id):

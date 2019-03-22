@@ -36,7 +36,7 @@ class MaxCutoffStrategiesTests(unittest.TestCase):
         (.4, [.3, .4, .8], [0.4, 0.45])
         )
     @unpack
-    def test_max1_strategy(self, expected_cutoff, compatibiliteis, cutoff_search_range):
+    def test_max1_strategy_p_1(self, expected_cutoff, compatibiliteis, cutoff_search_range):
         max1_strategy = MAX1(cutoff_search_range)
         actual_cutoff = max1_strategy.find_max_cutoff(compatibiliteis).cutoff
         self.assertEqual(actual_cutoff, expected_cutoff)

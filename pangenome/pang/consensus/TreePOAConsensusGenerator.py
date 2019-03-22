@@ -3,11 +3,12 @@ from collections import deque
 from typing import List, Dict, Tuple
 
 from consensus.ConsensusesTree import ConsensusesTree
-from consensus.ConsensusNode import ConsensusNode, Compatibility, ConsensusNodeID
+from consensus.ConsensusNode import ConsensusNode, ConsensusNodeID
 from consensus.FindCutoff import FindMaxCutoff, FindNodeCutoff
 from consensus.exceptions import TreeConsensusGenerationException
 from pangraph.Pangraph import Pangraph
 from pangraph.custom_types import SequenceID, NodeID
+from pangraph.CompatibilityToPath import CompatibilityToPath
 import consensus.top_consensus as top_consensus
 from tools import loggingtools
 
@@ -20,16 +21,18 @@ class TreePOAConsensusGenerator:
                  max_node_strategy: FindMaxCutoff,
                  node_cutoff_strategy: FindNodeCutoff,
                  blosum_path: Path,
-                 stop: Compatibility,
-                 re_consensus: bool):
+                 stop: float,
+                 re_consensus: bool,
+                 p: float):
         self.max_node_strategy: FindMaxCutoff = max_node_strategy
         self.node_cutoff_strategy: FindNodeCutoff = node_cutoff_strategy
         self.blosum_path: Path = blosum_path
-        self.stop: Compatibility = stop
+        self.stop: float = CompatibilityToPath(stop, p)
         self.re_consensus: bool = re_consensus
         self.pangraph: Pangraph = None
         self.output_dir: Path = None
         self.consensuses_tree: ConsensusesTree = None
+        self.p: float = p
 
 
 
@@ -58,7 +61,8 @@ class TreePOAConsensusGenerator:
 
             for child in children_nodes:
                 child.compatibilities_to_all = pangraph.get_compatibilities(sequences_ids=[*pangraph.paths.keys()],
-                                                                            consensus=child.consensus_path)
+                                                                            consensus=child.consensus_path,
+                                                                            p=self.p)
                 node.children_nodes_ids.append(child.consensus_id)
                 self.consensuses_tree.nodes.append(child)
                 if not self.node_is_ready(child):
@@ -88,7 +92,8 @@ class TreePOAConsensusGenerator:
                                                 name="root")
         all_pangraph_sequences_ids = [*self.pangraph.paths.keys()]
         compatibilities = self.pangraph.get_compatibilities(sequences_ids=all_pangraph_sequences_ids,
-                                                            consensus=consensus_path)
+                                                            consensus=consensus_path,
+                                                            p=self.p)
         consensus_node = ConsensusNode(sequences_ids=all_pangraph_sequences_ids,
                                        consensus_id=ConsensusNodeID(0),
                                        mincomp=self.get_mincomp(all_pangraph_sequences_ids, compatibilities),
@@ -112,7 +117,7 @@ class TreePOAConsensusGenerator:
     def get_children_nodes(self, node: ConsensusNode) -> List[ConsensusNode]:
         children_nodes: List[ConsensusNode] = []
         not_assigned_sequences_ids: List[SequenceID] = node.sequences_ids
-        so_far_cutoffs: List[Compatibility] = []
+        so_far_cutoffs: List[CompatibilityToPath] = []
         detailed_logger.info(f"Getting children nodes for consensus node {node.consensus_id}...")
 
         while not_assigned_sequences_ids:
@@ -120,14 +125,16 @@ class TreePOAConsensusGenerator:
             consensus_path = self.get_top_consensus(sequences_ids=not_assigned_sequences_ids,
                                                     name=f"{node.consensus_id}_{len(so_far_cutoffs)}_all")
             compatibilities_to_consensus = self.pangraph.get_compatibilities(sequences_ids=not_assigned_sequences_ids,
-                                                                             consensus=consensus_path)
+                                                                             consensus=consensus_path,
+                                                                             p=self.p)
 
             max_sequences_ids = self.get_max_compatible_sequences_ids(compatibilities_to_consensus, splitted_node_id=node.consensus_id)
             max_consensus_path = self.get_top_consensus(sequences_ids=max_sequences_ids,
                                                         name=f"{node.consensus_id}_{len(so_far_cutoffs)}_max")
 
             comps_to_max_consensus = self.pangraph.get_compatibilities(sequences_ids=not_assigned_sequences_ids,
-                                                                       consensus=max_consensus_path)
+                                                                       consensus=max_consensus_path,
+                                                                       p=self.p)
             qualified_sequences_ids, node_cutoff = self.get_qualified_sequences_ids_and_cutoff(
                 compatibilities_to_max_c=comps_to_max_consensus,
                 so_far_cutoffs=so_far_cutoffs, splitted_node_id=node.consensus_id)
@@ -149,7 +156,7 @@ class TreePOAConsensusGenerator:
 
         return children_nodes
 
-    def get_max_compatible_sequences_ids(self, compatibilities_to_consensus: Dict[SequenceID, Compatibility], splitted_node_id) ->\
+    def get_max_compatible_sequences_ids(self, compatibilities_to_consensus: Dict[SequenceID, CompatibilityToPath], splitted_node_id) ->\
             List[SequenceID]:
         max_cutoff = self.max_node_strategy.find_max_cutoff([*compatibilities_to_consensus.values()])
         tresholds_logger.info(f"Splitting {splitted_node_id}; MAX; {compatibilities_to_consensus}; {max_cutoff.cutoff}; {max_cutoff.explanation}")
@@ -158,9 +165,9 @@ class TreePOAConsensusGenerator:
         return max_sequences_ids
 
     def get_qualified_sequences_ids_and_cutoff(self,
-                                               compatibilities_to_max_c: Dict[SequenceID, Compatibility],
-                                               so_far_cutoffs: List[Compatibility], splitted_node_id) \
-            -> Tuple[List[SequenceID], Compatibility]:
+                                               compatibilities_to_max_c: Dict[SequenceID, CompatibilityToPath],
+                                               so_far_cutoffs: List[CompatibilityToPath], splitted_node_id) \
+            -> Tuple[List[SequenceID], CompatibilityToPath]:
         node_cutoff = self.node_cutoff_strategy.find_node_cutoff(compatibilities=[*compatibilities_to_max_c.values()],
                                                                  so_far_cutoffs=so_far_cutoffs)
         tresholds_logger.info(f"Splitting {splitted_node_id}; NODE; {compatibilities_to_max_c}; {node_cutoff.cutoff}; {node_cutoff.explanation}")
@@ -171,7 +178,7 @@ class TreePOAConsensusGenerator:
 
     def get_mincomp(self,
                     node_sequences_ids: List[SequenceID],
-                    comps_to_consensus: Dict[SequenceID, Compatibility]) -> Compatibility:
+                    comps_to_consensus: Dict[SequenceID, CompatibilityToPath]) -> CompatibilityToPath:
         compatibilities_of_node_sequences = [comp
                                              for seq_id, comp
                                              in comps_to_consensus.items()
@@ -182,8 +189,8 @@ class TreePOAConsensusGenerator:
         return min(compatibilities_of_node_sequences)
 
     def get_sequences_ids_above_cutoff(self,
-                                       compatibilities: Dict[SequenceID, Compatibility],
-                                       cutoff: Compatibility) ->\
+                                       compatibilities: Dict[SequenceID, CompatibilityToPath],
+                                       cutoff: CompatibilityToPath) ->\
             List[SequenceID]:
         return [seq_id for seq_id, comp in compatibilities.items() if comp >= cutoff]
 
@@ -193,7 +200,7 @@ class TreePOAConsensusGenerator:
         possible_compatibilities = {seq_id: [] for seq_id in all_sequences_ids}
         current_compatibilities_assignment = {}
         for consensus in children_nodes:
-            seq_id_to_comp = self.pangraph.get_compatibilities(all_sequences_ids, consensus.consensus_path)
+            seq_id_to_comp = self.pangraph.get_compatibilities(all_sequences_ids, consensus.consensus_path, self.p)
             for seq_id, comp in seq_id_to_comp.items():
                 possible_compatibilities[seq_id].append((consensus.consensus_id, comp))
             for seq_id in consensus.sequences_ids:
@@ -228,7 +235,7 @@ class TreePOAConsensusGenerator:
             if not child.sequences_ids:
                 to_remove.append(i)
             else:
-                new_compatibilities = self.pangraph.get_compatibilities(child.sequences_ids, child.consensus_path)
+                new_compatibilities = self.pangraph.get_compatibilities(child.sequences_ids, child.consensus_path, self.p)
                 child.mincomp = min([comp for seq_id, comp in new_compatibilities.items()])
         for r in sorted(to_remove, reverse=True):
             del children_nodes[r]

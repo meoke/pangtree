@@ -8,7 +8,7 @@ from tests.context import SequenceID
 from tests.context import ConsensusNode
 from tests.context import TreePOAConsensusGenerator
 from tests.context import MAX1, NODE4
-from tests.context import Compatibility
+from tests.context import CompatibilityToPath
 
 @ddt
 class TreeAlgorithm_Reconsensus_Test(unittest.TestCase):
@@ -43,14 +43,14 @@ class TreeAlgorithm_Reconsensus_Test(unittest.TestCase):
     def test_should_switch_sequences_between_consensuses(self):
         consensus0_path = [0,1,2,3]
         consensus1_path=[7,8,9,10,11]
-        original_consensus_nodes = [ConsensusNode(sequences_ids=['testseq1'], consensus_id=0, mincomp=0, consensus_path=consensus0_path),
-                              ConsensusNode(sequences_ids=['testseq0'], consensus_id=1, mincomp=0, consensus_path=consensus1_path)]
+        original_consensus_nodes = [ConsensusNode(sequences_ids=['testseq1'], consensus_id=0, mincomp=CompatibilityToPath(0,1), consensus_path=consensus0_path),
+                              ConsensusNode(sequences_ids=['testseq0'], consensus_id=1, mincomp=CompatibilityToPath(0,1), consensus_path=consensus1_path)]
 
-        tree_generator = TreePOAConsensusGenerator(MAX1([0,1]),NODE4(),"",stop=Compatibility(0.99), re_consensus=True)
+        tree_generator = TreePOAConsensusGenerator(MAX1([0,1]),NODE4(),"",stop=0.99, re_consensus=True, p=1)
 
         tree_generator.pangraph = self.pangraph
-        expected_reordered = [ConsensusNode(sequences_ids=['testseq0'], consensus_id=0, mincomp=0.571428571, consensus_path=consensus0_path),
-                              ConsensusNode(sequences_ids=['testseq1'], consensus_id=1, mincomp=0.625, consensus_path=consensus1_path)]
+        expected_reordered = [ConsensusNode(sequences_ids=['testseq0'], consensus_id=0, mincomp=CompatibilityToPath(0.571428571,1), consensus_path=consensus0_path),
+                              ConsensusNode(sequences_ids=['testseq1'], consensus_id=1, mincomp=CompatibilityToPath(0.625,1), consensus_path=consensus1_path)]
 
         actual_reorderd = tree_generator.reorder_consensuses(original_consensus_nodes)
         self.assertEqual(expected_reordered, actual_reorderd)
@@ -59,13 +59,13 @@ class TreeAlgorithm_Reconsensus_Test(unittest.TestCase):
     def test_should_remove_one_consensus_node(self):
         consensus0_path = [0,1,2,3,4, 5, 7,8,9]
         consensus1_path=[]
-        original_consensus_nodes = [ConsensusNode(sequences_ids=['testseq0'], consensus_id=0, mincomp=0.857142857, consensus_path=consensus0_path),
-                                    ConsensusNode(sequences_ids=['testseq1'], consensus_id=1, mincomp=0, consensus_path=consensus1_path)]
+        original_consensus_nodes = [ConsensusNode(sequences_ids=['testseq0'], consensus_id=0, mincomp=CompatibilityToPath(0.857142857, 1), consensus_path=consensus0_path),
+                                    ConsensusNode(sequences_ids=['testseq1'], consensus_id=1, mincomp=CompatibilityToPath(0,1), consensus_path=consensus1_path)]
 
-        tree_generator = TreePOAConsensusGenerator(MAX1([0,1]),NODE4(),"",stop=Compatibility(0.99), re_consensus=True)
+        tree_generator = TreePOAConsensusGenerator(MAX1([0,1]),NODE4(),"",stop=0.99, re_consensus=True, p=1)
 
         tree_generator.pangraph = self.pangraph
-        expected_reordered = [ConsensusNode(sequences_ids=['testseq0', 'testseq1'], consensus_id=0, mincomp=0.375, consensus_path=consensus0_path)]
+        expected_reordered = [ConsensusNode(sequences_ids=['testseq0', 'testseq1'], consensus_id=0, mincomp=CompatibilityToPath(0.375,1), consensus_path=consensus0_path)]
 
         actual_reorderd = tree_generator.reorder_consensuses(original_consensus_nodes)
         self.assertEqual(expected_reordered, actual_reorderd)

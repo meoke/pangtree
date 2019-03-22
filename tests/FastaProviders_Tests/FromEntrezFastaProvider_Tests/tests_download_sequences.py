@@ -8,6 +8,7 @@ from tests.context import FromEntrezFastaProvider
 from tests.context import pathtools
 
 @ddt
+@unittest.skip("slow tests - internet connection required")
 class FromEntrezFastaProviderTest_DownloadSequences(unittest.TestCase):
 
     def test_1_download_AB050936v1_first_eleven_nucleotides(self):

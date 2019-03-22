@@ -10,6 +10,7 @@ from tests.context import pathtools
 
 
 @ddt
+@unittest.skip("slow test - internet connection required")
 class FromEntrezFastaProviderTest_FastaCache(unittest.TestCase):
 
     def test_1_download_sequence_and_save_to_cache(self):

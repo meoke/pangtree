@@ -7,6 +7,7 @@ from consensus.FindCutoff import MAX1, MAX2, FindMaxCutoff, FindNodeCutoff, NODE
 from metadata.MultialignmentMetadata import MultialignmentMetadata
 from fasta_providers.FromEntrezFastaProvider import FromEntrezFastaProvider
 from fasta_providers.FromZIPFastaProvider import FromZIPSystemProvider
+from pangraph.CompatibilityToPath import CompatibilityToPath
 from pangraph.Pangraph import Pangraph
 from tools import pathtools, loggingtools
 from arguments.PangenomeParameters import ConsensusAlgorithm, FastaComplementationOption, MaxCutoffOption, \
@@ -97,7 +98,8 @@ class Pangenome:
                 node_cutoff_strategy=self._get_node_cutoff_strategy(),
                 blosum_path=self.params.blosum_file_path,
                 stop=self.params.stop,
-                re_consensus=self.params.re_consensus
+                re_consensus=self.params.re_consensus,
+                p=self.params.p
             )
             self.consensuses_tree = consensus_generator.get_consensuses_tree(
                 pangraph=self.pangraph,
