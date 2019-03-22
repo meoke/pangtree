@@ -55,3 +55,18 @@ class TreeAlgorithm_Reconsensus_Test(unittest.TestCase):
         actual_reorderd = tree_generator.reorder_consensuses(original_consensus_nodes)
         self.assertEqual(expected_reordered, actual_reorderd)
 
+
+    def test_should_remove_one_consensus_node(self):
+        consensus0_path = [0,1,2,3,4, 5, 7,8,9]
+        consensus1_path=[]
+        original_consensus_nodes = [ConsensusNode(sequences_ids=['testseq0'], consensus_id=0, mincomp=0.857142857, consensus_path=consensus0_path),
+                                    ConsensusNode(sequences_ids=['testseq1'], consensus_id=1, mincomp=0, consensus_path=consensus1_path)]
+
+        tree_generator = TreePOAConsensusGenerator(MAX1([0,1]),NODE4(),"",stop=Compatibility(0.99), re_consensus=True)
+
+        tree_generator.pangraph = self.pangraph
+        expected_reordered = [ConsensusNode(sequences_ids=['testseq0', 'testseq1'], consensus_id=0, mincomp=0.375, consensus_path=consensus0_path)]
+
+        actual_reorderd = tree_generator.reorder_consensuses(original_consensus_nodes)
+        self.assertEqual(expected_reordered, actual_reorderd)
+

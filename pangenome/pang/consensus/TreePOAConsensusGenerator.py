@@ -133,7 +133,7 @@ class TreePOAConsensusGenerator:
                 so_far_cutoffs=so_far_cutoffs, splitted_node_id=node.consensus_id)
             consensus_node = ConsensusNode(parent_node_id=node.consensus_id,
                                            sequences_ids=qualified_sequences_ids,
-                                           consensus_id=ConsensusNodeID(len(self.consensuses_tree.nodes) + len(so_far_cutoffs)),
+                                           consensus_id=self.consensuses_tree.get_max_node_id() + len(so_far_cutoffs)+1,
                                            mincomp=self.get_mincomp(node_sequences_ids=qualified_sequences_ids,
                                                                     comps_to_consensus=comps_to_max_consensus),
                                            consensus_path=max_consensus_path)
