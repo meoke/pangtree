@@ -9,10 +9,11 @@ from pangenome.pang.metadata.SequenceMetadata import SequenceMetadata
 
 from pangenome.pang.pangraph.Node import Node
 from pangenome.pang.pangraph.Pangraph import Pangraph
-from pangenome.pang.pangraph.FastaSource import FastaSource
-from pangenome.pang.pangraph.FastaSource import FastaFileSystemSource
-from pangenome.pang.pangraph.PangraphBuilder.PangraphBuilderFromDAG import PangraphBuilderFromDAG
-from pangenome.pang.pangraph.PangraphBuilder.PangraphBuilderFromMAF import PangraphBuilderFromMAF
+from pangenome.pang.fasta_providers.FastaProvider import FastaProvider
+from pangenome.pang.fasta_providers.FromZIPFastaProvider import FromZIPSystemProvider
+from pangenome.pang.fasta_providers.FromEntrezFastaProvider import FromEntrezFastaProvider
+from pangenome.pang.pangraph.PangraphBuilders.PangraphBuilderFromDAG import PangraphBuilderFromDAG
+from pangenome.pang.pangraph.PangraphBuilders.PangraphBuilderFromMAF import PangraphBuilderFromMAF
 from pangenome.pang.pangraph.PangraphToFilesConverters.PangraphToPO import PangraphToPO, NodePO, SequencePO
 from pangenome.pang.pangraph.custom_types import SequenceID
 from pangenome.pang.pangraph.custom_types import make_nucleobase, Nucleobase
@@ -23,7 +24,9 @@ from pangenome.pang.fileformats.maf.reader import maf_to_dagmaf
 
 from pangenome.pang.consensus.TreePOAConsensusGenerator import TreePOAConsensusGenerator
 from pangenome.pang.consensus.FindCutoff import MAX1, MAX2, NODE1, NODE2, NODE3, NODE4
-from pangenome.pang.consensus.TreePOAConsensusGenerator import Compatibility
 from pangenome.pang.consensus.top_consensus import get_top_consensus, PangraphPO_Translator
+
+from pangenome.pang.pangraph.CompatibilityToPath import CompatibilityToPath
+from pangenome.pang.consensus.ConsensusNode import ConsensusNode
 
 from pangenome.pang.tools import pathtools

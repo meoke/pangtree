@@ -12,3 +12,8 @@ class ConsensusesTree:
             if node.consensus_id == node_id:
                 return node
         raise ConsensusesTreeException("No consensus with given ID.")
+
+    def get_max_node_id(self):
+        if len(self.nodes) == 0:
+            return -1
+        return max([node.consensus_id for node in self.nodes])

@@ -7,13 +7,18 @@ from mafgraph.graph.Arc import Arc
 
 from fileformats.maf.DAGMaf import DAGMaf
 from fileformats.maf.reader import maf_to_dagmaf
-from pangraph.FastaSource import FastaSource
+from fasta_providers.FastaProvider import FastaProvider
 from pangraph.Node import Node
-from pangraph.PangraphBuilder.PangraphBuilderBase import PangraphBuilderBase
+from pangraph.PangraphBuilders.PangraphBuilderBase import PangraphBuilderBase
 from pangraph.exceptions import NoSequenceInfo, SequenceBuildingException
 from pangraph.custom_types import ColumnID, SequenceID, NodeID, BlockID, Sequence, Nucleobase, make_nucleobase
 from metadata.MultialignmentMetadata import MultialignmentMetadata
 from mafgraph.mafreader import start_position
+
+from tools import loggingtools
+
+global_logger = loggingtools.get_global_logger()
+detailed_logger = loggingtools.get_logger("details")
 
 MafSequenceID = NewType('MafSequenceID', str)
 
@@ -34,7 +39,7 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
     def __init__(self,
                  genomes_info: MultialignmentMetadata,
                  missing_nucleotide_symbol: str,
-                 fasta_source: Optional[FastaSource] = None):
+                 fasta_source: Optional[FastaProvider] = None):
         super().__init__(genomes_info)
         self.pangraph = None
         self.dagmaf: DAGMaf = None
@@ -48,7 +53,7 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
         if self.complement_sequences:
             self.full_sequences: Dict[SequenceID, Sequence] = self.get_sequences(fasta_source)
 
-    def get_sequences(self, fasta_source: FastaSource) -> Dict[SequenceID, Sequence]:
+    def get_sequences(self, fasta_source: FastaProvider) -> Dict[SequenceID, Sequence]:
         return {
             SequenceID(seq_id): Sequence(fasta_source.get_source(sequenceID=self.genomes_info.get_entrez_name(seq_id)))
             for seq_id in self.sequences_ids
@@ -146,7 +151,7 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
             raise SequenceBuildingException("Cannot find path with specified last node id.")
 
     def process_block(self, block: Block) -> None:
-        print(f"Process block {block.id}")
+        global_logger.info(f"Processing block {block.id}...")
         current_node_id = self.get_max_node_id()
         block_width = len(block.alignment[0].seq)
         paths_join_info = self.get_paths_join_info(block)

@@ -1,10 +1,13 @@
 from Bio import AlignIO
 from io import StringIO
 from pangraph.Node import Node
-from pangraph.PangraphBuilder.PangraphBuilderBase import PangraphBuilderBase
+from pangraph.PangraphBuilders.PangraphBuilderBase import PangraphBuilderBase
 from metadata.MultialignmentMetadata import MultialignmentMetadata
 from pangraph.custom_types import NodeID, SequenceID, Nucleobase, ColumnID, BlockID, make_nucleobase
+from tools import loggingtools
 
+global_logger = loggingtools.get_global_logger()
+detailed_logger = loggingtools.get_logger("details")
 
 class PangraphBuilderFromMAF(PangraphBuilderBase):
     def __init__(self, genomes_info: MultialignmentMetadata):
@@ -18,6 +21,7 @@ class PangraphBuilderFromMAF(PangraphBuilderBase):
         current_node_id = NodeID(-1)
         column_id = ColumnID(-1)
         for block_id, block in enumerate(input_content):
+            global_logger.info(f"Processing block {block_id}...")
             block_width = len(block[0].seq)
 
             for col in range(block_width):

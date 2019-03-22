@@ -1,10 +1,8 @@
 import os
 from typing import Optional
 
-from io import StringIO
 from enum import Enum
 from pathlib import Path
-
 
 
 class ConsensusAlgorithm(Enum):
@@ -32,27 +30,15 @@ class NodeCutoffOption(Enum):
 
 
 class PangenomeParameters:
-    def __init__(self,
-                 multialignment_file_content: str,
-                 multialignment_file_path: Path,
-                 metadata_file_content: Optional[str],
-                 metadata_file_path: Optional[Path],
-                 blosum_file_path: Optional[Path],
-                 output_path: Path,
-                 generate_fasta: bool,
-                 consensus_type: ConsensusAlgorithm,
-                 hbmin: float,
-                 search_range: Optional[list],
-                 multiplier: Optional[float],
-                 stop: Optional[float],
-                 re_consensus: Optional[bool],
-                 not_dag: bool,
+    def __init__(self, multialignment_file_content: str, multialignment_file_path: Path,
+                 metadata_file_content: Optional[str], metadata_file_path: Optional[Path],
+                 blosum_file_path: Optional[Path], output_path: Path, generate_fasta: bool,
+                 consensus_type: ConsensusAlgorithm, hbmin: float, search_range: Optional[list],
+                 multiplier: Optional[float], stop: Optional[float], re_consensus: Optional[bool], not_dag: bool,
                  fasta_complementation_option: Optional[FastaComplementationOption],
-                 missing_nucleotide_symbol: Optional[str],
-                 local_fasta_dirpath: Optional[Path],
-                 max_cutoff_option: Optional[MaxCutoffOption],
-                 node_cutoff_option: Optional[NodeCutoffOption]
-                 ):
+                 missing_nucleotide_symbol: Optional[str], local_fasta_dirpath: Optional[Path],
+                 max_cutoff_option: Optional[MaxCutoffOption], node_cutoff_option: Optional[NodeCutoffOption],
+                 verbose: bool, quiet: bool, email_address: str, cache: bool, p: float):
         self.multialignment_file_content = multialignment_file_content
         self.multialignment_file_path = multialignment_file_path
         self.metadata_file_content = metadata_file_content
@@ -62,6 +48,8 @@ class PangenomeParameters:
 
         self.not_dag = not_dag
         self.fasta_complementation_option = fasta_complementation_option
+        self.email_address = email_address
+        self.cache = cache
         self.missing_nucleotide_symbol = missing_nucleotide_symbol or '?'
         self.local_fasta_dirpath = local_fasta_dirpath
 
@@ -77,6 +65,9 @@ class PangenomeParameters:
         self.node_cutoff_option = node_cutoff_option
         self.multiplier = multiplier
         self.re_consensus = re_consensus
+        self.verbose = verbose
+        self.quiet = quiet
+        self.p = p
 
         self._validate()
 
@@ -106,6 +97,10 @@ class PangenomeParameters:
             raise Exception("Unspecified path to direction with fasta files, "
                             "while FastaComplementationOption.LocalFasta was chosen. "
                             "Use FastaComplementationOption.No or FastaComplementationOption.NCBI instead.")
+
+        if self.fasta_complementation_option is FastaComplementationOption.NCBI and self.email_address is None:
+            raise Exception("Unspecified email address. "
+                            "Email address is requiered if FastaComplementationOption.NCBI was chosen.")
 
         if self.consensus_type is None:
             raise Exception("Unspecified consensus algorithm. "
@@ -159,8 +154,31 @@ class PangenomeParameters:
         else:
             raise Exception("Error while a try of finding symbol for missing nucletides.")
 
-
     def _get_default_blosum_path(self):
         return Path(os.path.abspath(__file__)).joinpath('../../bin/blosum80.mat').resolve()
 
-
+    def __str__(self):
+        return f"""
+        Pangenome parameters:
+        multialignment_file_path: {self.multialignment_file_path}
+        metadata_file_path: {self.metadata_file_path}
+        blosum_file_path: {self.blosum_file_path}
+        output_path: {self.output_path}
+        not_dag: {self.not_dag}
+        fasta_complementation_option: {self.fasta_complementation_option}
+        missing_nucleotide_symbol: {self.missing_nucleotide_symbol}
+        local_fasta_dirpath: {self.local_fasta_dirpath}
+        generate_fasta: {self.generate_fasta}
+        consensus_type: {self.consensus_type}
+        hbmin: {self.hbmin}
+        stop: {self.stop}
+        max_cutoff_option: {self.max_cutoff_option}
+        search_range: {self.search_range}
+        node_cutoff_option: {self.node_cutoff_option}
+        multiplier: {self.multiplier}
+        re_consensus: {self.re_consensus},
+        quiet: {self.quiet},
+        verbose: {self.verbose},
+        e-mail: {self.email_address},
+        cache: {self.cache},
+        p: {self.p}"""

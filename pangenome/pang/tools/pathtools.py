@@ -1,4 +1,3 @@
-from io import StringIO
 from pathlib import Path
 import shutil
 
@@ -20,7 +19,7 @@ def create_child_dir(parent_path: Path, child_dir_name: str, add_timestamp: bool
 def create_default_output_dir(parrent_path: Path) -> Path:
     """Creates timestamped child dir under parent path"""
 
-    output_dir_prefix = 'pang_output'
+    output_dir_prefix = '../../output/pang_output'
     current_time = _get_current_time()
     output_dir_name = "_".join([output_dir_prefix, current_time])
     return create_child_dir(parrent_path, output_dir_name)
@@ -44,8 +43,8 @@ def remove_dir_if_empty(dir_path: Path) -> bool:
         return True
 
 
-def get_child_file_path(directory: Path, file_name: str) -> Path:
-    return directory.joinpath(file_name)
+def get_child_path(directory: Path, child_name: str) -> Path:
+    return directory.joinpath(child_name)
 
 
 def _get_current_time() -> str:
@@ -59,3 +58,9 @@ def get_file_content(path: Path) -> str:
         return input_file.read()
 
 
+def dir_exists(dir_path):
+    return dir_path.exists() and dir_path.is_dir()
+
+
+def create_dir(cache_dir: Path):
+    cache_dir.mkdir()

@@ -15,8 +15,8 @@ def get_top_consensus(pangraph: Pangraph,
                       output_dir: Path,
                       file_prefix: str,
                       blosum_path) -> List[NodeID]:
-    poa_input_path = pathtools.get_child_file_path(output_dir, f"{file_prefix}_in_pangenome.po")
-    poa_output_path = pathtools.get_child_file_path(output_dir, f"{file_prefix}_out_pangenome.po")
+    poa_input_path = pathtools.get_child_path(output_dir, f"{file_prefix}_in_pangenome.po")
+    poa_output_path = pathtools.get_child_path(output_dir, f"{file_prefix}_out_pangenome.po")
 
     s = PangraphPO_Translator(pangraph, sequences_ids)
     poa_input_content = s.get_input_po_content()

@@ -2,14 +2,17 @@ from io import StringIO
 from typing import List, Dict
 import numpy as np
 
-from pangraph.PangraphBuilder.PangraphBuilderBase import PangraphBuilderBase
-from pangraph.PangraphBuilder.PangraphBuilderFromDAG import PangraphBuilderFromDAG
-from pangraph.PangraphBuilder.PangraphBuilderFromMAF import PangraphBuilderFromMAF
-from pangraph.FastaSource import FastaSource
+from pangraph.CompatibilityToPath import CompatibilityToPath
+from pangraph.PangraphBuilders.PangraphBuilderBase import PangraphBuilderBase
+from pangraph.PangraphBuilders.PangraphBuilderFromDAG import PangraphBuilderFromDAG
+from pangraph.PangraphBuilders.PangraphBuilderFromMAF import PangraphBuilderFromMAF
+from fasta_providers.FastaProvider import FastaProvider
 from metadata.MultialignmentMetadata import MultialignmentMetadata
+from tools import loggingtools
 from .Node import Node
 from .custom_types import NodeID, SequenceID, Nucleobase
 
+global_logger = loggingtools.get_logger("")
 
 class Pangraph:
     def __init__(self):
@@ -22,21 +25,24 @@ class Pangraph:
 
     def build_from_maf_firstly_converted_to_dag(self,
                                                 mafcontent: str,
-                                                fasta_source: FastaSource,
+                                                fasta_source: FastaProvider,
                                                 genomes_info: MultialignmentMetadata,
                                                 missing_nucleotide_symbol: str="?"):
+        global_logger.info("Building pangraph from MAF firstly converted to DAG...")
         builder: PangraphBuilderBase = PangraphBuilderFromDAG(genomes_info, missing_nucleotide_symbol, fasta_source)
         self._build(builder, mafcontent)
 
     def build_from_maf(self, mafcontent: str, genomes_info: MultialignmentMetadata):
+        global_logger.info("Building pangraph from raw MAF")
         builder: PangraphBuilderBase = PangraphBuilderFromMAF(genomes_info)
         self._build(builder, mafcontent)
 
     def _build(self, builder: PangraphBuilderBase, build_input: str):
         builder.build(StringIO(build_input), self)
 
-    def get_compatibilities(self, sequences_ids: List[SequenceID], consensus: List[NodeID]):
-        compatibilities = dict()
+    def get_compatibilities(self, sequences_ids: List[SequenceID], consensus: List[NodeID], p: float) -> \
+            Dict[SequenceID, CompatibilityToPath]:
+        compatibilities= dict()
         for seq_id in sequences_ids:
             try:
                 sequence_paths = self.paths[seq_id]
@@ -46,7 +52,7 @@ class Pangraph:
                 sequence_path = sequence_paths[0]
             else:
                 sequence_path = [node_id for path in sequence_paths for node_id in path]
-            compatibilities[seq_id] = len(set(sequence_path).intersection(set(consensus)))/len(sequence_path)
+            compatibilities[seq_id] = CompatibilityToPath(len(set(sequence_path).intersection(set(consensus)))/len(sequence_path), p)
         return compatibilities
 
     def get_sequence_nodes_count(self, seq_id):
@@ -77,3 +83,6 @@ class Pangraph:
             normalized_sources_weights_dict = {path: int((weight - min_weight)/diff_weight*100)
                                                for path, weight in unweighted_sources_weights.items()}
         return normalized_sources_weights_dict
+
+    def get_sequences_ids(self) -> List[SequenceID]:
+        return [*self.paths.keys()]

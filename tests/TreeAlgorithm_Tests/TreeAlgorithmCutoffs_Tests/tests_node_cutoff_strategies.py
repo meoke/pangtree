@@ -38,13 +38,13 @@ class NodeCutoffStrategiesTests(unittest.TestCase):
     @unpack
     def test_node1_strategy(self, expected_cutoff, compatibilites, multiplier):
         node1_strategy: NODE1 = NODE1(multiplier)
-        actual_cutoff = node1_strategy.find_node_cutoff(compatibilites, [])
+        actual_cutoff = node1_strategy.find_node_cutoff(compatibilites, []).cutoff
         self.assertEqual(actual_cutoff, expected_cutoff)
 
     def test_node1_no_compatibilities(self):
         with self.assertRaises(ValueError) as err:
-            node1_strategy: NODE1 = NODE1(0)
-            _ = node1_strategy.find_node_cutoff([], [])
+            node1_strategy: NODE1 = NODE1(1)
+            _ = node1_strategy.find_node_cutoff([], []).cutoff
             self.assertEqual(str(err.exception), f"Empty compatibilities list. Cannot find cutoff.")
 
     @data(
@@ -53,9 +53,9 @@ class NodeCutoffStrategiesTests(unittest.TestCase):
     @unpack
     def test_node2_strategy_guard_greater_than_all_comps(self, expected_cutoff, compatibilities, so_far_cutoffs, multiplier):
         node2_strategy = NODE2(multiplier)
-        actual_cutoff = node2_strategy.find_node_cutoff(compatibilities, so_far_cutoffs)
+        actual_cutoff = node2_strategy.find_node_cutoff(compatibilities, so_far_cutoffs).cutoff
         node1_strategy = NODE1(multiplier)
-        node1_strategy_cutoff = node1_strategy.find_node_cutoff(compatibilities, so_far_cutoffs)
+        node1_strategy_cutoff = node1_strategy.find_node_cutoff(compatibilities, so_far_cutoffs).cutoff
         self.assertEqual(actual_cutoff, expected_cutoff)
         self.assertEqual(actual_cutoff, node1_strategy_cutoff)
 
@@ -75,13 +75,13 @@ class NodeCutoffStrategiesTests(unittest.TestCase):
     @unpack
     def test_node2_strategy(self, expected_cutoff, compatibilities, so_far_cutoffs, multiplier):
         node2_strategy = NODE2(multiplier)
-        actual_cutoff = node2_strategy.find_node_cutoff(compatibilities, so_far_cutoffs)
+        actual_cutoff = node2_strategy.find_node_cutoff(compatibilities, so_far_cutoffs).cutoff
         self.assertEqual(expected_cutoff, actual_cutoff)
 
     def test_node2_no_compatibilities(self):
         with self.assertRaises(ValueError) as err:
             node2_strategy: NODE2 = NODE2(1)
-            _ = node2_strategy.find_node_cutoff([], [])
+            _ = node2_strategy.find_node_cutoff([], []).cutoff
             self.assertEqual(str(err.exception), f"Empty compatibilities list. Cannot find cutoff.")
 
     @data(
@@ -91,9 +91,9 @@ class NodeCutoffStrategiesTests(unittest.TestCase):
     @unpack
     def test_node3_strategy_empty_level_guards(self, expected_cutoff, compatibilities, so_far_cutoffs):
         node3_strategy = NODE3()
-        actual_cutoff = node3_strategy.find_node_cutoff(compatibilities, so_far_cutoffs)
+        actual_cutoff = node3_strategy.find_node_cutoff(compatibilities, so_far_cutoffs).cutoff
         max2_strategy = MAX2()
-        max2_strategy_cutoff = max2_strategy.find_max_cutoff(compatibilities)
+        max2_strategy_cutoff = max2_strategy.find_max_cutoff(compatibilities).cutoff
         self.assertEqual(actual_cutoff, expected_cutoff)
         self.assertEqual(actual_cutoff, max2_strategy_cutoff)
 
@@ -115,13 +115,13 @@ class NodeCutoffStrategiesTests(unittest.TestCase):
     @unpack
     def test_node3_strategy(self, expected_cutoff, compatibilities, so_far_cutoffs):
         node3_strategy = NODE3()
-        actual_cutoff = node3_strategy.find_node_cutoff(compatibilities, so_far_cutoffs)
+        actual_cutoff = node3_strategy.find_node_cutoff(compatibilities, so_far_cutoffs).cutoff
         self.assertEqual(expected_cutoff, actual_cutoff)
 
     def test_node3_strategy_no_compatibilities(self):
         with self.assertRaises(ValueError) as err:
             node3_strategy: NODE3 = NODE3()
-            _ = node3_strategy.find_node_cutoff([], [])
+            _ = node3_strategy.find_node_cutoff([], []).cutoff
             self.assertEqual(str(err.exception), f"Empty compatibilities list. Cannot find cutoff.")
 
     @data(
@@ -133,16 +133,16 @@ class NodeCutoffStrategiesTests(unittest.TestCase):
     @unpack
     def test_node4_strategy_empty_level_guards(self, expected_cutoff, compatibilities):
         node4_strategy = NODE4()
-        actual_cutoff = node4_strategy.find_node_cutoff(compatibilities, [])
+        actual_cutoff = node4_strategy.find_node_cutoff(compatibilities, []).cutoff
         max2_strategy = MAX2()
-        max2_strategy_cutoff = max2_strategy.find_max_cutoff(compatibilities)
+        max2_strategy_cutoff = max2_strategy.find_max_cutoff(compatibilities).cutoff
         self.assertEqual(actual_cutoff, expected_cutoff)
         self.assertEqual(actual_cutoff, max2_strategy_cutoff)
 
     def test_node4_no_compatibilities(self):
         with self.assertRaises(ValueError) as err:
             node3_strategy: NODE4 = NODE4()
-            _ = node3_strategy.find_node_cutoff([], [])
+            _ = node3_strategy.find_node_cutoff([], []).cutoff
             self.assertEqual(str(err.exception), f"Empty compatibilities list. Cannot find cutoff.")
 
 

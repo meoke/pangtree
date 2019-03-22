@@ -36,27 +36,27 @@ class MaxCutoffStrategiesTests(unittest.TestCase):
         (.4, [.3, .4, .8], [0.4, 0.45])
         )
     @unpack
-    def test_max1_strategy(self, expected_cutoff, compatibiliteis, cutoff_search_range):
+    def test_max1_strategy_p_1(self, expected_cutoff, compatibiliteis, cutoff_search_range):
         max1_strategy = MAX1(cutoff_search_range)
-        actual_cutoff = max1_strategy.find_max_cutoff(compatibiliteis)
+        actual_cutoff = max1_strategy.find_max_cutoff(compatibiliteis).cutoff
         self.assertEqual(actual_cutoff, expected_cutoff)
 
     def test_max1_no_compatibilities(self):
         with self.assertRaises(ValueError) as err:
             max1_strategy = MAX1([0, 1])
-            _ = max1_strategy.find_max_cutoff([])
+            _ = max1_strategy.find_max_cutoff([]).cutoff
             self.assertEqual(str(err.exception), f"Empty compatibilities list. Finding max cutoff is not possible.")
 
     def test_max_1_incorrect_search_range_order(self):
         with self.assertRaises(ValueError) as err:
             max1_strategy = MAX1([1, 0])
-            _ = max1_strategy.find_max_cutoff([0.2, 0.3])
+            _ = max1_strategy.find_max_cutoff([0.2, 0.3]).cutoff
             self.assertEqual(str(err.exception), "For cutoff search range [x, y] x must be <= y.")
 
     def test_max_1_incorrect_search_range_length(self):
         with self.assertRaises(ValueError) as err:
             max1_strategy = MAX1([0, 0.5, 1])
-            _ = max1_strategy.find_max_cutoff([0.2, 0.3])
+            _ = max1_strategy.find_max_cutoff([0.2, 0.3]).cutoff
             self.assertEqual(str(err.exception), "Cutoff search range must have length 2.")
 
     @data(
@@ -92,7 +92,7 @@ class MaxCutoffStrategiesTests(unittest.TestCase):
     @unpack
     def test_max2_strategy(self, expected_cutoff, compatibilities):
         max2_strategy = MAX2()
-        actual_cutoff = max2_strategy.find_max_cutoff(compatibilities)
+        actual_cutoff = max2_strategy.find_max_cutoff(compatibilities).cutoff
         self.assertEqual(actual_cutoff, expected_cutoff)
 
 

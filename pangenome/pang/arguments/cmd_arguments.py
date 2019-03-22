@@ -1,4 +1,5 @@
 import argparse
+import re
 from os import getcwd
 from pathlib import Path
 from typing import Union, Dict
@@ -42,6 +43,15 @@ def _float_0_1(arg: str) -> float:
     if v < 0 or v > 1:
         raise argparse.ArgumentTypeError(f"This argument must be in range [0,1].")
     return v
+
+
+def _email_address(arg: str) -> str:
+    """Check if provided e-mail address is correct."""
+    match = re.match('^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$', arg)
+    if match != None:
+        return arg
+    else:
+        raise argparse.ArgumentTypeError(f"Incorrect e-mail address ({arg}) was passed.")
 
 
 def _fasta_complementation_option(arg_fasta_complementation: str) -> FastaComplementationOption:
@@ -146,7 +156,7 @@ def _get_parser() -> argparse.ArgumentParser:
                         'Value of node compatibility above which the node is no more split.')
     p.add_argument('-re_consensus',
                    action='store_true',
-                   default=True,
+                   default=False,
                    help='Tree POA algorithm parameter.'
                         'Set if after producing children nodes, sequences should be moved to'
                         ' siblings nodes if compatibility to its consensus is higher.')
@@ -167,6 +177,14 @@ def _get_parser() -> argparse.ArgumentParser:
                         'Don\'t use this argument if you want the pangraph to be build without full sequences.'
                         'Pass "ncbi" if you want to download the lacking fragments from ncbi'
                         'Pass "local" if you want to use fasta from local file system.')
+    p.add_argument('-email',
+                   type=_email_address,
+                   help='E-mail address requiered when Fasta Complementation Option is \"NCBI\" '
+                        'as using Entrez API obligates the user to pass e-mail address.')
+    p.add_argument('-cache',
+                   action='store_true',
+                   help='Used if Fasta Complementation Option is \"NCBI\" '
+                        'Stores sequences downloaded from NCBI on local disc and enables reusing them between use of this program.')
     p.add_argument('-missing_n',
                    type=str,
                    help='If fasta_complementation is NO, a custom symbol for missing nucleotides can be specified.'
@@ -178,7 +196,13 @@ def _get_parser() -> argparse.ArgumentParser:
                    type=float,
                    default=1,
                    help='Tree consensus algorithm parameter.'
-                        'When finding compatibilities cutoff, their values are raised to the power o p.')
+                        'When deciding about consensus node split, the compatibilities are raised to the power o p.'
+                        'It enables to change the linear meaing of compatibility values.'
+                        'For p from range [0,1] it decreases distances between small compatibilities and '
+                        'increases distances between the bigger ones.'
+                        'For p > 1 it increases distances between small compatibilities and '
+                        'decreases distances between the bigger ones.'
+                   )
     p.add_argument('-max',
                    default=MaxCutoffOption.MAX2,
                    type=_max_cutoff_option,
@@ -189,6 +213,14 @@ def _get_parser() -> argparse.ArgumentParser:
                    type=_node_cutoff_option,
                    help='Specify which strategy - NODE1 (1), NODE2 (2), NODE3 (3) or NODE4 (4) use '
                         'for finding max cutoff (see details in README.md)')
+    p.add_argument('-v', '--verbose',
+                   action='store_true',
+                   default=False,
+                   help='Set if detailed log files must be produced.')
+    p.add_argument('-q', '--quiet',
+                   action='store_true',
+                   default=False,
+                   help='Set to turn off console logging .')
     return p
 
 
@@ -217,5 +249,10 @@ def create_pangenome_parameters() -> PangenomeParameters:
             missing_nucleotide_symbol=args.missing_n,
             local_fasta_dirpath=args.fasta_dir,
             max_cutoff_option=args.max,
-            node_cutoff_option=args.node
+            node_cutoff_option=args.node,
+            verbose=args.verbose,
+            quiet=args.quiet,
+            email_address=args.email,
+            cache=args.cache,
+            p=args.p
         )

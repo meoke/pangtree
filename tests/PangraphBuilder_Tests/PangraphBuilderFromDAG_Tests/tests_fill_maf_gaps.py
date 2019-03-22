@@ -4,7 +4,7 @@ from ddt import ddt
 from tests.context import Node
 from tests.context import make_nucleobase as n
 from tests.context import pathtools
-from tests.context import FastaSource
+from tests.context import FastaProvider
 from tests.context import MultialignmentMetadata
 
 from tests.PangraphBuilder_Tests.PangraphBuilder_Tests import PangraphBuilderTests
@@ -12,7 +12,7 @@ from tests.PangraphBuilder_Tests.PangraphBuilder_Tests import PangraphBuilderTes
 
 @ddt
 class PangraphBuilderFromDAGTest_FillMafGaps(PangraphBuilderTests):
-    class FakeFastaSource(FastaSource):
+    class FakeFastaSource(FastaProvider):
         def __init__(self):
             self.sources = {
                 "seq0": "",
