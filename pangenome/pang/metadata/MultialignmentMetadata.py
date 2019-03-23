@@ -25,8 +25,13 @@ class MultialignmentMetadata:
 
     def _read_metadata_csv(self, csv_content):
         global_logger.info("Reading metadata...")
+
+        csv_erros = self.check_csv_correctness(csv_content)
+        if csv_erros is not None:
+            raise Exception(csv_erros)
+
         try:
-            metadata_df = pd.read_csv(StringIO(csv_content),sep=',',error_bad_lines=False)
+            metadata_df = pd.read_csv(StringIO(csv_content),sep=',',error_bad_lines=True)
         except Exception as e:
             raise Exception("Error when reading csv metadata.") from e
 
@@ -34,6 +39,11 @@ class MultialignmentMetadata:
             metadata_df = metadata_df.set_index('seqid')
         except Exception as e:
             raise Exception("No \'seqid\' column in csv metadata.")
+
+        seqid_column_values = metadata_df.index
+        if sorted(set(seqid_column_values)) != sorted(seqid_column_values):
+            raise Exception("Not unique values seqid column in metadata file. Make them unique.")
+
 
         return metadata_df
 
@@ -46,8 +56,16 @@ class MultialignmentMetadata:
             self.metadata_df = pd.DataFrame.from_dict(seq_id_to_full_mafname)
             self.metadata_df = self.metadata_df.set_index('seqid')
         else:
-            self.metadata_df['mafname'] = self.metadata_df.index.map(lambda seqid: self._get_mafname(SequenceID(seqid), names_in_maf))
-        #todo check for any differences between metadata and sequences in maf and check if no column contains "CONSENSUS" and if all are unique
+            if 'mafname' not in list(self.metadata_df):
+                self.metadata_df['mafname']= None
+            for seq_id_mafname in seq_id_to_full_mafname:
+                seq_id=seq_id_mafname['seqid']
+                mafname=seq_id_mafname['mafname']
+                if seq_id in self.metadata_df.index:
+                    self.metadata_df.loc[seq_id, 'mafname'] = mafname
+                else:
+                    self.metadata_df.loc[seq_id, 'mafname'] = mafname
+        #todo check if no column contains "CONSENSUS" - do we need this?
 
     def get_seq_metadata_as_dict(self, seq_id: SequenceID) -> Dict[str, Any]:
         try:
@@ -66,7 +84,7 @@ class MultialignmentMetadata:
     def get_seqid_from_mafname(mafname):
         splitted = mafname.split('.')
         if (len(splitted) > 1):
-            return splitted[1]
+            return ".".join(splitted[1:])
         elif len(splitted) == 1:
             return splitted[0]
 
@@ -86,3 +104,13 @@ class MultialignmentMetadata:
                 guessed_entrez_name = seqid[0:version_start] + "." + seqid[version_start+1:]
         detailed_logger.info(f"{seqid} translated to {guessed_entrez_name}")
         return EntrezSequenceID(guessed_entrez_name)
+
+    def check_csv_correctness(self, csv_content):
+        if not csv_content:
+            return "Empty csv file."
+        csv_content = StringIO(csv_content)
+        header=csv_content.readline().split(',')
+        for i, line in enumerate(csv_content):
+            if len(line.split(',')) != len(header):
+                return f"CSV metadata error. Different fields number in line {i} than in header line."
+        return None
