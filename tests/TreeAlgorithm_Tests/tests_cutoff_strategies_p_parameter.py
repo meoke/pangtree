@@ -15,6 +15,7 @@ from tests.context import ConsensusNode
 from tests.context import TreePOAConsensusGenerator
 from tests.context import MAX1, NODE4
 from tests.context import CompatibilityToPath
+from tests.context import DataType
 
 @ddt
 class CutoffDependingOnPParameter_Tests(unittest.TestCase):
@@ -40,7 +41,7 @@ class CutoffDependingOnPParameter_Tests(unittest.TestCase):
             'testseq3': [[10, 11, 12, 3, 4, 5, 6, 7, 8, 9]],
             'testseq4': [[10, 11, 2, 3, 4, 5, 6, 7, 8, 9]]
         }
-        self.pangraph = Pangraph()
+        self.pangraph = Pangraph(DataType.Nucleotides)
         self.pangraph.nodes = nodes
         self.pangraph.paths = paths
 

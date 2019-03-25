@@ -23,7 +23,7 @@ class Pangenome:
         self.params = pangenome_parameters
 
         self.genomes_info: MultialignmentMetadata= self._build_genomes_info()
-        self.pangraph: Pangraph = Pangraph()
+        self.pangraph: Pangraph = Pangraph(pangenome_parameters.datatype)
         self.dagmaf = None
         self.consensuses_tree: ConsensusesTree= None
         self.missing_nucleotide_symbol = self.params.missing_nucleotide_symbol

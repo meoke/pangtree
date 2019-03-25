@@ -4,6 +4,8 @@ from typing import Optional
 from enum import Enum
 from pathlib import Path
 
+from pangraph.DataType import DataType
+
 
 class ConsensusAlgorithm(Enum):
     NO = 0
@@ -38,9 +40,11 @@ class PangenomeParameters:
                  fasta_complementation_option: Optional[FastaComplementationOption],
                  missing_nucleotide_symbol: Optional[str], local_fasta_dirpath: Optional[Path],
                  max_cutoff_option: Optional[MaxCutoffOption], node_cutoff_option: Optional[NodeCutoffOption],
-                 verbose: bool, quiet: bool, email_address: str, cache: bool, p: float):
+                 verbose: bool, quiet: bool, email_address: str, cache: bool, p: float, datatype: DataType):
         self.multialignment_file_content = multialignment_file_content
         self.multialignment_file_path = multialignment_file_path
+        self.datatype = datatype
+
         self.metadata_file_content = metadata_file_content
         self.metadata_file_path = metadata_file_path
         self.blosum_file_path = blosum_file_path or self._get_default_blosum_path()
@@ -157,6 +161,9 @@ class PangenomeParameters:
     def _get_default_blosum_path(self):
         return Path(os.path.abspath(__file__)).joinpath('../../bin/blosum80.mat').resolve()
 
+    def __repr__(self):
+        return "\n".join([f"{name}: {value}" for name, value in self.__dict__.items()])
+
     def __str__(self):
         return f"""
         Pangenome parameters:
@@ -181,4 +188,5 @@ class PangenomeParameters:
         verbose: {self.verbose},
         e-mail: {self.email_address},
         cache: {self.cache},
-        p: {self.p}"""
+        p: {self.p},
+        datatype: {self.datatype}"""

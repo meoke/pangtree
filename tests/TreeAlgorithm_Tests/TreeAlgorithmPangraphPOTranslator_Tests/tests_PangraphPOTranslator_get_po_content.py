@@ -7,6 +7,7 @@ from tests.context import Node
 from tests.context import make_nucleobase as n
 from tests.context import NodePO, SequencePO
 from tests.context import SequenceID
+from tests.context import DataType
 
 @ddt
 class PangraphPOTranslator_get_po_content_Test(unittest.TestCase):
@@ -35,7 +36,7 @@ class PangraphPOTranslator_get_po_content_Test(unittest.TestCase):
             'testseq2': [[2, 4, 7, 9, 11, 12]],
             'testseq3': [[2, 4, 8, 9, 11, 12, 14]]
         }
-        self.pangraph = Pangraph()
+        self.pangraph = Pangraph(DataType.Nucleotides)
         self.pangraph.nodes = nodes
         self.pangraph.paths = paths
 
@@ -129,7 +130,7 @@ class PangraphPOTranslator_get_po_content_Test(unittest.TestCase):
         paths = {
             'testseq1': [[0, 1, 2, 3, 4]]
         }
-        expected_pangraph = Pangraph()
+        expected_pangraph = Pangraph(DataType.Nucleotides)
         expected_pangraph.nodes = nodes
         expected_pangraph.paths = paths
 
@@ -170,7 +171,7 @@ class PangraphPOTranslator_get_po_content_Test(unittest.TestCase):
             'seq1': [[0, 2]],
             'seq2': [[0, 1, 2]]
         }
-        pangraph = Pangraph()
+        pangraph = Pangraph(DataType.Nucleotides)
         pangraph.nodes = pangraph_nodes
         pangraph.paths = pangraph_paths_to_nodes_ids
 
@@ -208,7 +209,7 @@ class PangraphPOTranslator_get_po_content_Test(unittest.TestCase):
             'seq1': [[0, 2]],
             'seq2': [[0, 1, 2]]
         }
-        pangraph = Pangraph()
+        pangraph = Pangraph(DataType.Nucleotides)
         pangraph.nodes = pangraph_nodes
         pangraph.paths = pangraph_paths_to_nodes_ids
 
@@ -246,7 +247,7 @@ class PangraphPOTranslator_get_po_content_Test(unittest.TestCase):
             'seq1': [[0, 1, 3]],
             'seq2': [[0, 2, 3]]
         }
-        pangraph = Pangraph()
+        pangraph = Pangraph(DataType.Nucleotides)
         pangraph.nodes = pangraph_nodes
         pangraph.paths = pangraph_paths_to_nodes_ids
 
@@ -291,7 +292,7 @@ class PangraphPOTranslator_get_po_content_Test(unittest.TestCase):
             'seq1': [[0, 2, 3, 4, 7, 8]],
             'seq2': [[1, 2, 5, 6, 7, 8]]
         }
-        pangraph = Pangraph()
+        pangraph = Pangraph(DataType.Nucleotides)
         pangraph.nodes = pangraph_nodes
         pangraph.paths = pangraph_paths_to_nodes_ids
 

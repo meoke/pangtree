@@ -10,7 +10,7 @@ def read(path: Path) -> Pangraph:
     with open(path) as po_input:
         po_lines = po_input.readlines()
 
-    p = Pangraph()
+    p = Pangraph(pangenome_parameters.datatype)
     nodes, sequences_to_nodes_ids, consensuses_to_nodes_ids = extract_pangraph(po_lines)
     p.update_nodes(new_nodes=nodes)
     p.set_paths(max_nodes_count=len(nodes), paths_to_node_ids=sequences_to_nodes_ids)

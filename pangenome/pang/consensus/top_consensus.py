@@ -86,7 +86,7 @@ class PangraphPO_Translator:
             node.in_nodes = sorted(node.in_nodes)
 
         p_to_po = PangraphToPO()
-        return p_to_po.get_po_file_content(po_nodes, po_sequences)
+        return p_to_po.get_po_file_content(po_nodes, po_sequences, self.pangraph.datatype)
 
     def _get_aligned_node(self, old_node_id: NodeID, sorted_nodes_ids_to_keep: List[NodeID]) -> Union[NodeID, None]:
         aligned_to = self.pangraph.nodes[old_node_id].aligned_to

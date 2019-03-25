@@ -9,13 +9,13 @@ from tests.context import PangraphBuilderFromDAG
 from Bio import AlignIO
 
 from tests.context import PangraphBuilderFromMAF
-
+from tests.context import DataType
 
 class PangraphBuilderTests(unittest.TestCase):
     @staticmethod
     def setup_pangraph_from_maf_firstly_converted_to_dag(maf_path, metadata, fasta_source : Optional[FastaProvider] = None):
         mafcontent = PangraphBuilderTests.get_file_content(maf_path)
-        pangraph = Pangraph()
+        pangraph = Pangraph(DataType.Nucleotides)
         builder = PangraphBuilderFromDAG(genomes_info=metadata,
                                          missing_nucleotide_symbol="?",
                                          fasta_source=fasta_source)
@@ -25,14 +25,14 @@ class PangraphBuilderTests(unittest.TestCase):
     @staticmethod
     def setup_pangraph_from_maf(maf_path, metadata):
         mafalignment = PangraphBuilderTests.get_file_content(maf_path)
-        pangraph = Pangraph()
+        pangraph = Pangraph(DataType.Nucleotides)
         builder = PangraphBuilderFromMAF(metadata)
         builder.build(mafalignment, pangraph)
         return pangraph
 
     @staticmethod
     def setup_pangraph(expected_nodes, expected_paths):
-        pangraph = Pangraph()
+        pangraph = Pangraph(DataType.Nucleotides)
         pangraph.nodes = expected_nodes
         pangraph.paths = expected_paths
         return pangraph

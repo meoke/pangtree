@@ -9,6 +9,7 @@ from tests.context import ConsensusNode
 from tests.context import TreePOAConsensusGenerator
 from tests.context import MAX1, NODE4
 from tests.context import CompatibilityToPath
+from tests.context import DataType
 
 @ddt
 class TreeAlgorithm_Reconsensus_Test(unittest.TestCase):
@@ -36,7 +37,7 @@ class TreeAlgorithm_Reconsensus_Test(unittest.TestCase):
             'testseq0': [[0, 1, 2, 3, 4, 5, 6]],
             'testseq1': [[7, 8, 9, 10, 11, 12, 13, 14]]
         }
-        self.pangraph = Pangraph()
+        self.pangraph = Pangraph(DataType.Nucleotides)
         self.pangraph.nodes = nodes
         self.pangraph.paths = paths
 

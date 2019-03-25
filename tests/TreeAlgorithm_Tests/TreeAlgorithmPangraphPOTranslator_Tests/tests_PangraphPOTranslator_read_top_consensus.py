@@ -6,6 +6,7 @@ from tests.context import Pangraph
 from tests.context import Node
 from tests.context import make_nucleobase as n
 from tests.context import NodePO, SequencePO
+from tests.context import DataType
 
 @ddt
 class PangraphPOTranslator_read_top_consensus_Test(unittest.TestCase):
@@ -34,7 +35,7 @@ class PangraphPOTranslator_read_top_consensus_Test(unittest.TestCase):
             'testseq2': [[2, 4, 7, 9, 11, 12]],
             'testseq3': [[2, 4, 8, 9, 11, 12, 14]]
         }
-        self.pangraph = Pangraph()
+        self.pangraph = Pangraph(DataType.Nucleotides)
         self.pangraph.nodes = nodes
         self.pangraph.paths = paths
 

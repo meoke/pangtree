@@ -11,17 +11,20 @@ from metadata.MultialignmentMetadata import MultialignmentMetadata
 from tools import loggingtools
 from .Node import Node
 from .custom_types import NodeID, SequenceID, Nucleobase
+from .DataType import DataType
 
 global_logger = loggingtools.get_logger("")
 
 class Pangraph:
-    def __init__(self):
+    def __init__(self, datatype: DataType):
         self.nodes: List[Node] = []
         self.paths: Dict[SequenceID, List[List[NodeID]]] = {}
+        self.datatype: DataType = datatype
 
     def __eq__(self, other):
         return (self.nodes == other.nodes and
-                self.paths == other.paths)
+                self.paths == other.paths and
+                self.datatype == other.datatype)
 
     def build_from_maf_firstly_converted_to_dag(self,
                                                 mafcontent: str,
