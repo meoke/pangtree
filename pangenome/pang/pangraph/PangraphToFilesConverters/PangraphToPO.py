@@ -76,9 +76,9 @@ class PangraphToPO:
             raise Exception("No nodes info to write in PO file.")
         i = 0
 
-        if datatype == DataType.Proteins:
+        if datatype.value == DataType.Proteins.value:
             _get_node_code = PangraphToPO._get_protein_node_code
-        elif datatype == DataType.Nucleotides:
+        elif datatype.value == DataType.Nucleotides.value:
             _get_node_code = PangraphToPO._get_nucleotides_node_code
         else:
             raise Exception("Unknown data type. Cannot create PO file.")
