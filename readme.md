@@ -1,7 +1,10 @@
 # Pang
 
-[POL]
-Narzędzie służące do analizy i wizualizacji uliniowienia wielu sekwencji genetycznej. Implementuje ideę pangenomeu [Ref. 1](https://doi.org/10.1093/bib/bbw089), konstruuje drzewo filogenetyczne i określa consensus dla każdego węzła. 
+
+Narzędzie służące do analizy i wizualizacji uliniowienia wielu sekwencji genetycznych. Implementuje ideę pangenomeu ([Ref. 1](https://doi.org/10.1093/bib/bbw089)) poprzez grafową reprezentację multiuliniowienia oraz konstrukcję drzewa filogenetycznego wraz z kompromisową sekwencją dla każdego węzła. 
+
+Tool for analysis and visualisation of multiple sequence alignment. It implements the idea of pan-genome ([Ref. 1](https://doi.org/10.1093/bib/bbw089)) by representing the multialginment as a graph and construction of a phylogenetic tree joined with an agreed sequence for every node.
+
 
 ## Getting Started
 
@@ -11,31 +14,41 @@ These instructions will get you a copy of the project up and running on your loc
 
 What things you need to install the software and how to install them
 
-```
-Give examples
-```
+To use Pang via command line:
+* [BioPython](https://biopython.org/)
+* [numpy](http://www.numpy.org/)
+* [jsonpickle](http://jsonpickle.github.io/)
+* [Mafgraph](https://github.com/anialisiecka/Mafgraph)
+* [DDT](https://github.com/txels/ddt)
+* [pandas](https://pandas.pydata.org/)
+* [networkx](https://networkx.github.io/)
+
+To use also visualisations (via web browser):
+* [plotly](https://plot.ly)
+* [flask](http://flask.pocoo.org/)
+* [dash, dash-core-components, dash-html-components, dash-table](https://dash.plot.ly/)
+
 
 ### Installing
 
-A step by step series of examples that tell you how to get a development env running
-
-Say what the step will be
-
 ```
-Give the example
+TBA setup
 ```
 
-And repeat
-
+#### Quick installation check - using terminal
 ```
-until finished
+python3 pang/main.py --multialignment ../examples/Fabricated/f.maf -- metadata ../examples/Fabricated/f_metadata.csv -consensus tree -v
 ```
-
-End with an example of getting some data out of the system or using it for a little demo
+#### Quick installation check - using web browser
+Run:
+```
+python3 run_dash_app.py
+```
+Open web browser (Google Chrome is recommended) and go to http://127.0.0.1:8056/
 
 ## Running the tests
 
-Explain how to run the automated tests for this system
+python -m unittest discover -s tests -p '*_test.py'
 
 ### Break down into end to end tests
 
