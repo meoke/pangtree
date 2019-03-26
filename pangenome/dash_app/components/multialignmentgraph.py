@@ -80,7 +80,6 @@ def get_scattergls(x_pos: List[int], y_pos: List[int], customdata: List[str], la
         customdata=customdata,
         mode='text',
         text=labels,
-        marker=None,
         textfont=dict(
             size=12
         )

@@ -21,7 +21,7 @@ def cleanup(params: PangenomeParameters)-> None:
 def main():
     program_parameters = cmd_arguments.create_pangenome_parameters()
     if program_parameters.quiet:
-        loggingtools.remove_consoleHandler_from_logger("")
+        loggingtools.remove_console_handler_from_logger("")
 
     start = time.clock()
     try:

@@ -55,7 +55,7 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
 
     def get_sequences(self, fasta_source: FastaProvider) -> Dict[SequenceID, Sequence]:
         return {
-            SequenceID(seq_id): Sequence(fasta_source.get_source(sequenceID=self.genomes_info.get_entrez_name(seq_id)))
+            SequenceID(seq_id): Sequence(fasta_source.get_source(sequence_id=self.genomes_info.get_entrez_name(seq_id)))
             for seq_id in self.sequences_ids
         }
 
@@ -100,7 +100,7 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
             if first_block_sinfo.start != 0:
                 self.complement_sequence_starting_nodes(seq_id, first_block_sinfo)
 
-    def get_missing_nucleotide(self, seq_id: SequenceID, i:int) -> Nucleobase:
+    def get_missing_nucleotide(self, seq_id: SequenceID, i: int) -> Nucleobase:
         if self.complement_sequences:
             return make_nucleobase(self.full_sequences[seq_id][i])
         return self.missing_nucleotide_symbol
@@ -194,7 +194,6 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
 
     def get_correct_edge_type(self, block, edge: Arc) -> Tuple[int, int]:
         return edge.edge_type
-
 
     def should_join_with_last_node(self, edge_type: Tuple[int, int]) -> bool:
         if edge_type == (1, 1) or edge_type == (1, -1):

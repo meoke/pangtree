@@ -12,6 +12,7 @@ Sequence = NewType('Sequence', str)
 
 Nucleobase = NewType('Nucleobase', bytes)
 
+
 def make_nucleobase(x: str) -> Nucleobase:
     if len(x) == 0:
         raise Exception("Empty string for nucleobase.")

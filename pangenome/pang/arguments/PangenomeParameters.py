@@ -82,20 +82,17 @@ class PangenomeParameters:
         if self.output_path is None:
             raise Exception("Unspecified output path.")
 
-        if self.fasta_complementation_option is FastaComplementationOption.NO and \
-                self.missing_nucleotide_symbol is not None:
+        if self.fasta_complementation_option == FastaComplementationOption.NO:
             try:
-                self._blosum_contains_missing_nucl_symbol(blosum_path= self.blosum_file_path,
-                                                          missing_nucleotide_symbol = self.missing_nucleotide_symbol)
+                self._blosum_contains_missing_nucl_symbol(blosum_path=self.blosum_file_path,
+                                                          missing_nucleotide_symbol=self.missing_nucleotide_symbol)
             except Exception as e:
-                raise Exception(f"The BLOSUM does not contain "
-                                f"symbol specified for missing nucleotides ({self.missing_nucleotide_symbol}.") from e
-        elif self.fasta_complementation_option is FastaComplementationOption.NO and \
-            self.missing_nucleotide_symbol is None:
-            try:
-                self._blosum_contains_missing_nucl_symbol(missing_nucleotide_symbol = self.missing_nucleotide_symbol)
-            except Exception as e:
-                raise Exception("The BLOSUM does not contain default symbol for missing nucleotides (\'?\').") from e
+                if self.missing_nucleotide_symbol is not None:
+                    raise Exception(f"The BLOSUM file does not contain symbol "
+                                    f"specified for missing nucleotides ({self.missing_nucleotide_symbol}.") from e
+                else:
+                    raise Exception("The BLOSUM file does not contain default symbol"
+                                    " for missing nucleotides (\'?\').") from e
 
         if self.fasta_complementation_option is FastaComplementationOption.LOCAL and self.local_fasta_dirpath is None:
             raise Exception("Unspecified path to direction with fasta files, "

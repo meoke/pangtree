@@ -110,9 +110,9 @@ class JSONPangenome:
 
         paths_str_id_to_int_id = {seq_id: i for i, seq_id in enumerate(sorted(pangenome.pangraph.paths.keys()))}
         if pangenome.pangraph.paths:
-            self.sequences = [JSONSequence(sequence_int_id = i,
-                                           sequence_str_id = seq_id,
-                                           metadata = pangenome.genomes_info.get_seq_metadata_as_dict(seq_id),
+            self.sequences = [JSONSequence(sequence_int_id=i,
+                                           sequence_str_id=seq_id,
+                                           metadata=pangenome.genomes_info.get_seq_metadata_as_dict(seq_id),
                                            nodes_ids=list(itertools.chain.from_iterable(
                                                pangenome.pangraph.paths[seq_id]))
                                            )
@@ -125,9 +125,12 @@ class JSONPangenome:
                                               name=f"CONSENSUS{consensus_node.consensus_id}",
                                               parent=consensus_node.parent_node_id,
                                               children=consensus_node.children_nodes_ids,
-                                              comp_to_all_sequences={seq_id: comp.value for seq_id, comp in consensus_node.compatibilities_to_all.items()},
+                                              comp_to_all_sequences={seq_id: comp.value
+                                                                     for seq_id, comp in
+                                                                     consensus_node.compatibilities_to_all.items()},
                                               sequences_ids=[paths_str_id_to_int_id[seq_id]
-                                                             for seq_id in consensus_node.sequences_ids],
+                                                             for seq_id in
+                                                             consensus_node.sequences_ids],
                                               nodes_ids=consensus_node.consensus_path,
                                               mincomp=consensus_node.mincomp.value)
                                 for consensus_node in pangenome.consensuses_tree.nodes]

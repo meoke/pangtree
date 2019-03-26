@@ -102,7 +102,8 @@ class NODE1(FindNodeCutoff):
         return FindCutoffResult(cutoff, reason)
 
     @staticmethod
-    def get_value_following_first_gap_greater_than_required_gap(sorted_comp: List[CompatibilityToPath], required_gap: float) -> CompatibilityToPath:
+    def get_value_following_first_gap_greater_than_required_gap(sorted_comp: List[CompatibilityToPath],
+                                                                required_gap: float) -> CompatibilityToPath:
         if len(sorted_comp) == 1:
             return sorted_comp[0]
         distances = np.array([sorted_comp[i + 1] - sorted_comp[i] for i in range(len(sorted_comp) - 1)])

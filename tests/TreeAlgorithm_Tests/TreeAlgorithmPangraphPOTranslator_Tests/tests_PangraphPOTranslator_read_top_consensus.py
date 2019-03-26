@@ -1,7 +1,7 @@
 import unittest
 from ddt import ddt
 import numpy as np
-from tests.context import PangraphPO_Translator
+from tests.context import PangraphPOTranslator
 from tests.context import Pangraph
 from tests.context import Node
 from tests.context import make_nucleobase as n
@@ -40,7 +40,7 @@ class PangraphPOTranslator_read_top_consensus_Test(unittest.TestCase):
         self.pangraph.paths = paths
 
     def test_seq1_only_in_input(self):
-        translator = PangraphPO_Translator(self.pangraph, ['testseq1'])
+        translator = PangraphPOTranslator(self.pangraph, ['testseq1'])
         _ = translator.get_input_po_content()
 
         poa_output =["VERSION=pangenome\n",

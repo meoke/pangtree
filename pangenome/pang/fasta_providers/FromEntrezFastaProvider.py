@@ -23,33 +23,33 @@ class FromEntrezFastaProvider(FastaProvider):
         self.fasta_cache = FastaCache(Path(os.getcwd()))
         self.use_cache = use_cache
 
-    def get_source(self, sequenceID: EntrezSequenceID, start: int = None, end: int = None) -> str:
-        sequence_is_cached = self.fasta_cache.sequence_cached(sequenceID)
+    def get_source(self, sequence_id: EntrezSequenceID, start: int = None, end: int = None) -> str:
+        sequence_is_cached = self.fasta_cache.sequence_cached(sequence_id)
         if self.use_cache and sequence_is_cached:
-            sequence = self.fasta_cache.read_from_cache(sequenceID)
+            sequence = self.fasta_cache.read_from_cache(sequence_id)
         elif self.use_cache and not sequence_is_cached:
-            sequence = self.download_from_ncbi(sequenceID, start, end)
-            self.fasta_cache.save_to_cache(sequenceID, sequence)
+            sequence = self.download_from_ncbi(sequence_id, start, end)
+            self.fasta_cache.save_to_cache(sequence_id, sequence)
         else:
-            sequence = self.download_from_ncbi(sequenceID, start, end)
+            sequence = self.download_from_ncbi(sequence_id, start, end)
         return sequence
 
-    def download_from_ncbi(self, sequenceID:EntrezSequenceID, start: int, end: int) -> Sequence:
-        detailed_logger.info(f"Downloading from entrez sequence {sequenceID}...")
+    def download_from_ncbi(self, sequence_id: EntrezSequenceID, start: int, end: int) -> Sequence:
+        detailed_logger.info(f"Downloading from entrez sequence {sequence_id}...")
         try:
             if start is not None and end is not None:
                 handle = Entrez.efetch(db="nucleotide",
-                                       id=sequenceID,
+                                       id=sequence_id,
                                        rettype="fasta",
                                        retmode="text",
                                        seq_start=start,
                                        seq_stop=end)
             else:
-                handle = Entrez.efetch(db="nucleotide", id=sequenceID, rettype="fasta", retmode="text")
+                handle = Entrez.efetch(db="nucleotide", id=sequence_id, rettype="fasta", retmode="text")
             fasta_content = self.get_raw_sequence_from_fasta(handle)
             return fasta_content
         except Exception as ex:
-            raise Exception(f"Cannot download from Entrez sequence of ID: {sequenceID}") from ex
+            raise Exception(f"Cannot download from Entrez sequence of ID: {sequence_id}") from ex
 
 
 class FastaCache:
@@ -88,10 +88,10 @@ class FastaCache:
     def get_cached_filename(self, seq_id):
         return f"{seq_id}.fasta"
 
-    def sequence_cached(self, sequenceID):
+    def sequence_cached(self, sequence_id):
         if not self.cache_dir_exists():
             return False
-        expected_fasta_file_name = self.get_cached_filepath(sequenceID)
+        expected_fasta_file_name = self.get_cached_filepath(sequence_id)
         fasta_files_in_cache_dir = self.cache_dir.glob("*.fasta")
         if expected_fasta_file_name in [*fasta_files_in_cache_dir]:
             return True

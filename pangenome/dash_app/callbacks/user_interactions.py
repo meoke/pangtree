@@ -1,7 +1,6 @@
 import shutil
 from base64 import b64decode
 from pathlib import Path
-
 import jsonpickle
 
 from Pangenome import Pangenome
@@ -11,6 +10,7 @@ from ..server import app
 from dash.dependencies import Input, Output, State
 from ..layout.layout_ids import *
 import json
+
 
 @app.callback(
     Output(id_last_clicked_hidden, 'children'),
@@ -36,6 +36,7 @@ def update_last_clicked_info(pang_n_clicks: int, load_pangenome_n_clicks: int, l
                                "load": last_clicked_info["load"]+1,
                                "action": "load"}
     return json.dumps(new_clicked_info)
+
 
 @app.callback(
     Output(id_pangenome_hidden, 'children'),
@@ -92,16 +93,20 @@ def call_pang(last_clicked_jsonified: str,
     else:
         return ""
 
+
 def get_jsonified_pangenome_from_jsonpangenomefile(jsonpangenomefile_stream) -> str:
     content_type, content_string = jsonpangenomefile_stream.split(',')
     jsonified_pangenome = b64decode(content_string).decode('ascii')
     return jsonified_pangenome
 
+
 def run_pangenome_algorithm(pangenome_parameters: PangenomeParameters) -> str:
     raise NotImplementedError("Run pangenome algorithm")
 
+
 def get_jsonpangenome_from_pangenome(pangenome: Pangenome, pangenome_parameters: PangenomeParameters) -> JSONPangenome:
     return JSONPangenome(pangenome, pangenome_parameters)
+
 
 def save_jsonifiedpangenome_to_file(jsonified_pangenome: str) -> Path:
     raise NotImplementedError("save_jsonifiedpangenome_to_file")
@@ -110,9 +115,11 @@ def save_jsonifiedpangenome_to_file(jsonified_pangenome: str) -> Path:
         json_output.write(jsonified_pangenome)
     return jsonpath
 
+
 def get_jsonified_pangenome_from_jsonpangenome(jsonpangenome: JSONPangenome) -> str:
     jsonpickle.set_encoder_option('simplejson', indent=4)
-    return jsonpickle.encode(jsonpangenome, unpicklable=True)
+    return jsonpickle.encode(jsonpangenome)
+
 
 def decode_content(content: str) -> str:
     if not content:

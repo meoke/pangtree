@@ -48,8 +48,9 @@ def _float_0_1(arg: str) -> float:
 
 def _email_address(arg: str) -> str:
     """Check if provided e-mail address is correct."""
+
     match = re.match('^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$', arg)
-    if match != None:
+    if match is not None:
         return arg
     else:
         raise argparse.ArgumentTypeError(f"Incorrect e-mail address ({arg}) was passed.")
@@ -105,6 +106,7 @@ def _data_type(data_type: str) -> DataType:
         return dt
     except KeyError:
         raise argparse.ArgumentError("Data type parsing error.")
+
 
 class _RangeArgAction(argparse.Action):
     """Command line argument \'range\' (\'-r\') validation"""
@@ -204,7 +206,8 @@ def _get_parser() -> argparse.ArgumentParser:
     p.add_argument('-cache',
                    action='store_true',
                    help='Used if Fasta Complementation Option is \"NCBI\" '
-                        'Stores sequences downloaded from NCBI on local disc and enables reusing them between use of this program.')
+                        'Stores sequences downloaded from NCBI on local disc.'
+                        'They are reused between uses of this program.')
     p.add_argument('-missing_n',
                    type=str,
                    help='If fasta_complementation is NO, a custom symbol for missing nucleotides can be specified.'

@@ -9,6 +9,7 @@ from tools import loggingtools
 global_logger = loggingtools.get_global_logger()
 detailed_logger = loggingtools.get_logger("details")
 
+
 class PangraphBuilderFromMAF(PangraphBuilderBase):
     def __init__(self, genomes_info: MultialignmentMetadata):
         super().__init__(genomes_info)
@@ -49,11 +50,11 @@ class PangraphBuilderFromMAF(PangraphBuilderBase):
         self.pangraph = pangraph
 
     def add_node_do_sequence(self, maf_seq_id: SequenceID, node_id: NodeID):
-        seqID = self.get_seq_id(maf_seq_id)
-        if self.pangraph.paths[seqID]:
-            self.pangraph.paths[seqID][-1].append(node_id)
+        seq_id = self.get_seq_id(maf_seq_id)
+        if self.pangraph.paths[seq_id]:
+            self.pangraph.paths[seq_id][-1].append(node_id)
         else:
-            self.pangraph.paths[seqID].append([node_id])
+            self.pangraph.paths[seq_id].append([node_id])
 
     def add_node(self,
                  node_id: NodeID,

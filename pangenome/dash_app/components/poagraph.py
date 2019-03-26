@@ -1,19 +1,21 @@
-from typing import List, Dict
+from typing import List, Dict, Union
 
 from fileformats.json.JSONPangenome import JSONPangenome
 import plotly.graph_objs as go
 
 y_pos_dict = {'A': 40, 'C': 35, 'G': 30, 'T': 25, 'N': 20, 'W': 10, '?': 5, 'n': 2}
 
-def get_data(jsonpangenome: JSONPangenome) -> Dict:
-    poagraph_data = {"nodes": {},
-                     "paths": {}}
+PointsDict = Dict[str, Union[List[int], List[str]]]
+Path = Dict[str, Union[List[int], List[str]]]
+PathsDict = Dict[int, Path]
+PoagraphData = Dict[str, Union[PointsDict, PathsDict]]
 
 
-
-    poagraph_data["nodes"] = {"x": [node.column_id for node in jsonpangenome.nodes],
-                              "y": [y_pos_dict[node.nucleobase] for node in jsonpangenome.nodes],
-                              "base": [node.nucleobase for node in jsonpangenome.nodes]}
+def get_data(jsonpangenome: JSONPangenome) -> PoagraphData:
+    poagraph_data: PoagraphData = {"nodes": {"x": [node.column_id for node in jsonpangenome.nodes],
+                                             "y": [y_pos_dict[node.nucleobase] for node in jsonpangenome.nodes],
+                                             "base": [node.nucleobase for node in jsonpangenome.nodes]},
+                                   "paths": {}}
 
     for sequence in jsonpangenome.sequences:
         poagraph_data["paths"][sequence.sequence_int_id] = {
