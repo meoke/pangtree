@@ -25,7 +25,7 @@ class FromEntrezFastaProviderTest_DownloadSequences(unittest.TestCase):
         fasta_provider = FromEntrezFastaProvider(email_address="paulina-ph@wp.pl", use_cache=False)
         sequence_id=""
         with self.assertRaises(Exception) as err:
-            actual_sequence = fasta_provider.download_from_ncbi(sequence_id, 0, 11)
+            actual_sequence = fasta_provider._download_from_ncbi(sequence_id, 0, 11)
             self.assertEqual(str(err), f"Cannot download from Entrez sequence of ID: {sequence_id}")
 
 

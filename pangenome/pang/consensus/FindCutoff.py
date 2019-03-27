@@ -1,5 +1,5 @@
 from abc import ABC
-from typing import List
+from typing import List, Optional
 import numpy as np
 
 from pangraph.CompatibilityToPath import CompatibilityToPath
@@ -46,7 +46,7 @@ class FindNodeCutoff(FindCutoff):
 
 
 class MAX1(FindMaxCutoff):
-    def __init__(self, cutoff_search_range: List[CompatibilityToPath]):
+    def __init__(self, cutoff_search_range: List[float]):
         super().__init__()
         if len(cutoff_search_range) != 2:
             raise ValueError("Cutoff search range must have length 2.")
@@ -102,7 +102,8 @@ class NODE1(FindNodeCutoff):
         return FindCutoffResult(cutoff, reason)
 
     @staticmethod
-    def get_value_following_first_gap_greater_than_required_gap(sorted_comp: List[CompatibilityToPath], required_gap: float) -> CompatibilityToPath:
+    def get_value_following_first_gap_greater_than_required_gap(sorted_comp: List[CompatibilityToPath],
+                                                                required_gap: float) -> Optional[CompatibilityToPath]:
         if len(sorted_comp) == 1:
             return sorted_comp[0]
         distances = np.array([sorted_comp[i + 1] - sorted_comp[i] for i in range(len(sorted_comp) - 1)])

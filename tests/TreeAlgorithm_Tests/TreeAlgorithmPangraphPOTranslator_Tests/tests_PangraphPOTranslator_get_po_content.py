@@ -1,12 +1,13 @@
 import unittest
 from ddt import ddt
 import numpy as np
-from tests.context import PangraphPO_Translator
+from tests.context import PangraphPOTranslator
 from tests.context import Pangraph
 from tests.context import Node
 from tests.context import make_nucleobase as n
 from tests.context import NodePO, SequencePO
 from tests.context import SequenceID
+from tests.context import DataType
 
 @ddt
 class PangraphPOTranslator_get_po_content_Test(unittest.TestCase):
@@ -35,7 +36,7 @@ class PangraphPOTranslator_get_po_content_Test(unittest.TestCase):
             'testseq2': [[2, 4, 7, 9, 11, 12]],
             'testseq3': [[2, 4, 8, 9, 11, 12, 14]]
         }
-        self.pangraph = Pangraph()
+        self.pangraph = Pangraph(DataType.Nucleotides)
         self.pangraph.nodes = nodes
         self.pangraph.paths = paths
 
@@ -63,7 +64,7 @@ class PangraphPOTranslator_get_po_content_Test(unittest.TestCase):
 
         expected_nodes_ids_mapping = {0: 0, 1: 1, 2: 3, 3: 5, 4: 6, 5: 9, 6: 10, 7: 11, 8: 13}
 
-        translator = PangraphPO_Translator(self.pangraph, ['testseq0', 'testseq1'])
+        translator = PangraphPOTranslator(self.pangraph, ['testseq0', 'testseq1'])
         actual_po_content = translator.get_input_po_content()
         expected_po_content = "VERSION=pangenome\n"\
                                "NAME=pangenome\n"\
@@ -99,7 +100,7 @@ class PangraphPOTranslator_get_po_content_Test(unittest.TestCase):
         ]
         expected_nodes_ids_mapping = {0: 2, 1: 4, 2: 8, 3: 9, 4: 11, 5: 12, 6: 14}
 
-        translator = PangraphPO_Translator(self.pangraph, ['testseq3'])
+        translator = PangraphPOTranslator(self.pangraph, ['testseq3'])
         actual_po_content = translator.get_input_po_content()
         expected_po_content = "VERSION=pangenome\n" \
                               "NAME=pangenome\n" \
@@ -129,7 +130,7 @@ class PangraphPOTranslator_get_po_content_Test(unittest.TestCase):
         paths = {
             'testseq1': [[0, 1, 2, 3, 4]]
         }
-        expected_pangraph = Pangraph()
+        expected_pangraph = Pangraph(DataType.Nucleotides)
         expected_pangraph.nodes = nodes
         expected_pangraph.paths = paths
 
@@ -145,7 +146,7 @@ class PangraphPOTranslator_get_po_content_Test(unittest.TestCase):
             SequencePO(name='testseq1', nodes_count=5, weight=100, consensus_id=-1, start_node_id=0)
         ]
 
-        translator = PangraphPO_Translator(self.pangraph, ['testseq1'])
+        translator = PangraphPOTranslator(self.pangraph, ['testseq1'])
         actual_po_content = translator.get_input_po_content()
         expected_po_content = "VERSION=pangenome\n" \
                               "NAME=pangenome\n" \
@@ -170,7 +171,7 @@ class PangraphPOTranslator_get_po_content_Test(unittest.TestCase):
             'seq1': [[0, 2]],
             'seq2': [[0, 1, 2]]
         }
-        pangraph = Pangraph()
+        pangraph = Pangraph(DataType.Nucleotides)
         pangraph.nodes = pangraph_nodes
         pangraph.paths = pangraph_paths_to_nodes_ids
 
@@ -185,7 +186,7 @@ class PangraphPOTranslator_get_po_content_Test(unittest.TestCase):
         }
         expected_nodes_ids_mapping = {0: 0, 1: 1, 2: 2}
 
-        translator = PangraphPO_Translator(pangraph, ['seq2'])
+        translator = PangraphPOTranslator(pangraph, ['seq2'])
         actual_po_content = translator.get_input_po_content()
         expected_po_content = "VERSION=pangenome\n" \
                               "NAME=pangenome\n" \
@@ -208,7 +209,7 @@ class PangraphPOTranslator_get_po_content_Test(unittest.TestCase):
             'seq1': [[0, 2]],
             'seq2': [[0, 1, 2]]
         }
-        pangraph = Pangraph()
+        pangraph = Pangraph(DataType.Nucleotides)
         pangraph.nodes = pangraph_nodes
         pangraph.paths = pangraph_paths_to_nodes_ids
 
@@ -222,7 +223,7 @@ class PangraphPOTranslator_get_po_content_Test(unittest.TestCase):
         }
         expected_nodes_ids_mapping = {0: 0, 1: 2}
 
-        translator = PangraphPO_Translator(pangraph, ['seq1'])
+        translator = PangraphPOTranslator(pangraph, ['seq1'])
         actual_po_content = translator.get_input_po_content()
         expected_po_content = "VERSION=pangenome\n" \
                               "NAME=pangenome\n" \
@@ -246,7 +247,7 @@ class PangraphPOTranslator_get_po_content_Test(unittest.TestCase):
             'seq1': [[0, 1, 3]],
             'seq2': [[0, 2, 3]]
         }
-        pangraph = Pangraph()
+        pangraph = Pangraph(DataType.Nucleotides)
         pangraph.nodes = pangraph_nodes
         pangraph.paths = pangraph_paths_to_nodes_ids
 
@@ -261,7 +262,7 @@ class PangraphPOTranslator_get_po_content_Test(unittest.TestCase):
         }
         expected_nodes_ids_mapping = {0: 0, 1: 2, 2: 3}
 
-        translator = PangraphPO_Translator(pangraph, ['seq2'])
+        translator = PangraphPOTranslator(pangraph, ['seq2'])
         actual_po_content = translator.get_input_po_content()
         expected_po_content = "VERSION=pangenome\n" \
                               "NAME=pangenome\n" \
@@ -291,7 +292,7 @@ class PangraphPOTranslator_get_po_content_Test(unittest.TestCase):
             'seq1': [[0, 2, 3, 4, 7, 8]],
             'seq2': [[1, 2, 5, 6, 7, 8]]
         }
-        pangraph = Pangraph()
+        pangraph = Pangraph(DataType.Nucleotides)
         pangraph.nodes = pangraph_nodes
         pangraph.paths = pangraph_paths_to_nodes_ids
 
@@ -313,7 +314,7 @@ class PangraphPOTranslator_get_po_content_Test(unittest.TestCase):
         ]
         expected_nodes_ids_mapping = {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8}
 
-        translator = PangraphPO_Translator(pangraph, [SequenceID('seq1'), SequenceID('seq2')])
+        translator = PangraphPOTranslator(pangraph, [SequenceID('seq1'), SequenceID('seq2')])
         actual_po_content = translator.get_input_po_content()
         expected_po_content = "VERSION=pangenome\n" \
                               "NAME=pangenome\n" \

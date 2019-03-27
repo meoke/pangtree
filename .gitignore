@@ -103,21 +103,13 @@ ENV/
 #PyCharm
 .idea/*
 
-tests_old/files/*/converted*
-tests_old/files/*/result*
-tests_old/files/*/test*
-examples_old/mycoplasma/*/*/consensus/*
-tests_old/files/mycoplasma_po/consensus
-tests_old/files/mycoplasma_po
-tests_old/files/mycoplasmsa_po/mycoplasma.po
-inne/*
 *.xml
 *.iml
 
-inne/*
-pang_output*
+output*
 
 tests/TreeAlgorithm_Tests/TreeAlgorithmConsensuses_Tests/output/*
-examples/new/ebola/consensus/*.po
-examples/new/fabricated/consensus/*.po
 pangenome/pang/.fastacache
+examples/Balibase/output/consensus/*.po
+examples/Balibase/output/consensus/0_0_max_out_pangenome.po
+readme.md

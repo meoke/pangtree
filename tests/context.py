@@ -24,9 +24,10 @@ from pangenome.pang.fileformats.maf.reader import maf_to_dagmaf
 
 from pangenome.pang.consensus.TreePOAConsensusGenerator import TreePOAConsensusGenerator
 from pangenome.pang.consensus.FindCutoff import MAX1, MAX2, NODE1, NODE2, NODE3, NODE4
-from pangenome.pang.consensus.top_consensus import get_top_consensus, PangraphPO_Translator
+from pangenome.pang.consensus.top_consensus import get_top_consensus, PangraphPOTranslator
 
 from pangenome.pang.pangraph.CompatibilityToPath import CompatibilityToPath
+from pangenome.pang.pangraph.DataType import DataType
 from pangenome.pang.consensus.ConsensusNode import ConsensusNode
 
 from pangenome.pang.tools import pathtools

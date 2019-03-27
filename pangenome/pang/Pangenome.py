@@ -7,7 +7,6 @@ from consensus.FindCutoff import MAX1, MAX2, FindMaxCutoff, FindNodeCutoff, NODE
 from metadata.MultialignmentMetadata import MultialignmentMetadata
 from fasta_providers.FromEntrezFastaProvider import FromEntrezFastaProvider
 from fasta_providers.FromZIPFastaProvider import FromZIPSystemProvider
-from pangraph.CompatibilityToPath import CompatibilityToPath
 from pangraph.Pangraph import Pangraph
 from tools import pathtools, loggingtools
 from arguments.PangenomeParameters import ConsensusAlgorithm, FastaComplementationOption, MaxCutoffOption, \
@@ -22,10 +21,10 @@ class Pangenome:
     def __init__(self, pangenome_parameters: PangenomeParameters):
         self.params = pangenome_parameters
 
-        self.genomes_info: MultialignmentMetadata= self._build_genomes_info()
-        self.pangraph: Pangraph = Pangraph()
+        self.genomes_info: MultialignmentMetadata = self._build_genomes_info()
+        self.pangraph: Pangraph = Pangraph(pangenome_parameters.datatype)
         self.dagmaf = None
-        self.consensuses_tree: ConsensusesTree= None
+        self.consensuses_tree: ConsensusesTree = None
         self.missing_nucleotide_symbol = self.params.missing_nucleotide_symbol
 
         self.config_logging()
@@ -34,9 +33,9 @@ class Pangenome:
 
     def config_logging(self):
         if self.params.verbose:
-            loggingtools.add_fileHandler_to_logger(self.params.output_path, "details", "details.log",
-                                                   propagate=False)
-            loggingtools.add_fileHandler_to_logger(self.params.output_path, "", "details.log", propagate=False)
+            loggingtools.add_file_handler_to_logger(self.params.output_path, "details", "details.log",
+                                                    propagate=False)
+            loggingtools.add_file_handler_to_logger(self.params.output_path, "", "details.log", propagate=False)
 
     def run(self):
         """Creates Pangraph and runs required algorithms."""
@@ -64,20 +63,20 @@ class Pangenome:
                             "Should be of type FastaComplementationOption."
                             "Cannot build pangraph.")
 
-        self.genomes_info.feed_with_maf_data(self._get_sequences_names_from_maf(self.params.multialignment_file_content))
+        self.genomes_info.feed_with_maf_data(self._get_sequences_names_from_maf(self.params.
+                                                                                multialignment_file_content))
         self.pangraph.build_from_maf_firstly_converted_to_dag(mafcontent=self.params.multialignment_file_content,
                                                               fasta_source=fasta_source,
                                                               genomes_info=self.genomes_info,
                                                               missing_nucleotide_symbol=self.missing_nucleotide_symbol)
 
     def build_from_maf(self):
-        self.genomes_info.feed_with_maf_data(self._get_sequences_names_from_maf(self.params.multialignment_file_content))
+        self.genomes_info.feed_with_maf_data(self._get_sequences_names_from_maf(self.params.
+                                                                                multialignment_file_content))
         self.pangraph.build_from_maf(self.params.multialignment_file_content, self.genomes_info)
 
-
-
     def generate_fasta_files_to_directory(self):
-        output_dir = pathtools.create_child_dir(self.params.output_path, 'fasta')
+        _ = pathtools.create_child_dir(self.params.output_path, 'fasta')
         raise NotImplementedError("Generate fasta files not implemented!")
 
     def generate_consensus(self):

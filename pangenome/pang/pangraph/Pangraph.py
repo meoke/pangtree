@@ -10,24 +10,28 @@ from fasta_providers.FastaProvider import FastaProvider
 from metadata.MultialignmentMetadata import MultialignmentMetadata
 from tools import loggingtools
 from .Node import Node
-from .custom_types import NodeID, SequenceID, Nucleobase
+from .custom_types import NodeID, SequenceID
+from .DataType import DataType
 
 global_logger = loggingtools.get_logger("")
 
+
 class Pangraph:
-    def __init__(self):
+    def __init__(self, datatype: DataType):
         self.nodes: List[Node] = []
         self.paths: Dict[SequenceID, List[List[NodeID]]] = {}
+        self.datatype: DataType = datatype
 
     def __eq__(self, other):
         return (self.nodes == other.nodes and
-                self.paths == other.paths)
+                self.paths == other.paths and
+                self.datatype == other.datatype)
 
     def build_from_maf_firstly_converted_to_dag(self,
                                                 mafcontent: str,
                                                 fasta_source: FastaProvider,
                                                 genomes_info: MultialignmentMetadata,
-                                                missing_nucleotide_symbol: str="?"):
+                                                missing_nucleotide_symbol: str = "?"):
         global_logger.info("Building pangraph from MAF firstly converted to DAG...")
         builder: PangraphBuilderBase = PangraphBuilderFromDAG(genomes_info, missing_nucleotide_symbol, fasta_source)
         self._build(builder, mafcontent)
@@ -42,7 +46,7 @@ class Pangraph:
 
     def get_compatibilities(self, sequences_ids: List[SequenceID], consensus: List[NodeID], p: float) -> \
             Dict[SequenceID, CompatibilityToPath]:
-        compatibilities= dict()
+        compatibilities = dict()
         for seq_id in sequences_ids:
             try:
                 sequence_paths = self.paths[seq_id]
@@ -52,7 +56,8 @@ class Pangraph:
                 sequence_path = sequence_paths[0]
             else:
                 sequence_path = [node_id for path in sequence_paths for node_id in path]
-            compatibilities[seq_id] = CompatibilityToPath(len(set(sequence_path).intersection(set(consensus)))/len(sequence_path), p)
+            compatibilities[seq_id] = CompatibilityToPath(len(set(sequence_path).intersection(set(consensus))) /
+                                                          len(sequence_path), p)
         return compatibilities
 
     def get_sequence_nodes_count(self, seq_id):

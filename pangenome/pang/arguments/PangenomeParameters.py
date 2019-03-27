@@ -4,6 +4,8 @@ from typing import Optional
 from enum import Enum
 from pathlib import Path
 
+from pangraph.DataType import DataType
+
 
 class ConsensusAlgorithm(Enum):
     NO = 0
@@ -38,9 +40,11 @@ class PangenomeParameters:
                  fasta_complementation_option: Optional[FastaComplementationOption],
                  missing_nucleotide_symbol: Optional[str], local_fasta_dirpath: Optional[Path],
                  max_cutoff_option: Optional[MaxCutoffOption], node_cutoff_option: Optional[NodeCutoffOption],
-                 verbose: bool, quiet: bool, email_address: str, cache: bool, p: float):
+                 verbose: bool, quiet: bool, email_address: str, cache: bool, p: float, datatype: DataType):
         self.multialignment_file_content = multialignment_file_content
         self.multialignment_file_path = multialignment_file_path
+        self.datatype = datatype
+
         self.metadata_file_content = metadata_file_content
         self.metadata_file_path = metadata_file_path
         self.blosum_file_path = blosum_file_path or self._get_default_blosum_path()
@@ -78,20 +82,17 @@ class PangenomeParameters:
         if self.output_path is None:
             raise Exception("Unspecified output path.")
 
-        if self.fasta_complementation_option is FastaComplementationOption.NO and \
-                self.missing_nucleotide_symbol is not None:
+        if self.fasta_complementation_option == FastaComplementationOption.NO:
             try:
-                self._blosum_contains_missing_nucl_symbol(blosum_path= self.blosum_file_path,
-                                                          missing_nucleotide_symbol = self.missing_nucleotide_symbol)
+                self._blosum_contains_missing_nucl_symbol(blosum_path=self.blosum_file_path,
+                                                          missing_nucleotide_symbol=self.missing_nucleotide_symbol)
             except Exception as e:
-                raise Exception(f"The BLOSUM does not contain "
-                                f"symbol specified for missing nucleotides ({self.missing_nucleotide_symbol}.") from e
-        elif self.fasta_complementation_option is FastaComplementationOption.NO and \
-            self.missing_nucleotide_symbol is None:
-            try:
-                self._blosum_contains_missing_nucl_symbol(missing_nucleotide_symbol = self.missing_nucleotide_symbol)
-            except Exception as e:
-                raise Exception("The BLOSUM does not contain default symbol for missing nucleotides (\'?\').") from e
+                if self.missing_nucleotide_symbol is not None:
+                    raise Exception(f"The BLOSUM file does not contain symbol "
+                                    f"specified for missing nucleotides ({self.missing_nucleotide_symbol}.") from e
+                else:
+                    raise Exception("The BLOSUM file does not contain default symbol"
+                                    " for missing nucleotides (\'?\').") from e
 
         if self.fasta_complementation_option is FastaComplementationOption.LOCAL and self.local_fasta_dirpath is None:
             raise Exception("Unspecified path to direction with fasta files, "
@@ -144,18 +145,28 @@ class PangenomeParameters:
                                              missing_nucleotide_symbol: str):
         with open(blosum_path) as b:
             blosum_lines = b.readlines()
+        if not blosum_lines:
+            raise Exception("Empty blosum file. Provide a valid blosum file or use te default one.")
+
+        blosum_symbols_line = None
         for blosum_line in blosum_lines:
             if len(blosum_line) > 0 and blosum_line[0] == " ":
                 blosum_symbols_line = blosum_line
                 break
+        if not blosum_symbols_line:
+            raise Exception("Cannot find the horizontal line of symbols in blosum file. "
+                            "It should begin with a whitespace.")
         blosum_symbols = str.strip(blosum_symbols_line).split(" ")
         if missing_nucleotide_symbol in blosum_symbols:
             return True
         else:
-            raise Exception("Error while a try of finding symbol for missing nucletides.")
+            raise Exception("Cannot find symbol used as missing base in blosum file.")
 
     def _get_default_blosum_path(self):
         return Path(os.path.abspath(__file__)).joinpath('../../bin/blosum80.mat').resolve()
+
+    def __repr__(self):
+        return "\n".join([f"{name}: {value}" for name, value in self.__dict__.items()])
 
     def __str__(self):
         return f"""
@@ -181,4 +192,5 @@ class PangenomeParameters:
         verbose: {self.verbose},
         e-mail: {self.email_address},
         cache: {self.cache},
-        p: {self.p}"""
+        p: {self.p},
+        datatype: {self.datatype}"""

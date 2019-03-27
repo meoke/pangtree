@@ -18,7 +18,7 @@ def get_top_consensus(pangraph: Pangraph,
     poa_input_path = pathtools.get_child_path(output_dir, f"{file_prefix}_in_pangenome.po")
     poa_output_path = pathtools.get_child_path(output_dir, f"{file_prefix}_out_pangenome.po")
 
-    s = PangraphPO_Translator(pangraph, sequences_ids)
+    s = PangraphPOTranslator(pangraph, sequences_ids)
     poa_input_content = s.get_input_po_content()
     with open(poa_input_path, 'w') as poa_input:
         poa_input.write(poa_input_content)
@@ -33,7 +33,7 @@ def get_top_consensus(pangraph: Pangraph,
     return top_consensus
 
 
-class PangraphPO_Translator:
+class PangraphPOTranslator:
     def __init__(self, pangraph: Pangraph, sequences_ids: List[SequenceID]):
         self.pangraph: Pangraph = pangraph
         self.sequences_ids: List[SequenceID] = sequences_ids
@@ -86,7 +86,7 @@ class PangraphPO_Translator:
             node.in_nodes = sorted(node.in_nodes)
 
         p_to_po = PangraphToPO()
-        return p_to_po.get_po_file_content(po_nodes, po_sequences)
+        return p_to_po.get_po_file_content(po_nodes, po_sequences, self.pangraph.datatype)
 
     def _get_aligned_node(self, old_node_id: NodeID, sorted_nodes_ids_to_keep: List[NodeID]) -> Union[NodeID, None]:
         aligned_to = self.pangraph.nodes[old_node_id].aligned_to
@@ -132,14 +132,13 @@ class PangraphPO_Translator:
         if detailed_consens0_info is None:
             raise Exception("Cannot find sequence with name \"CONSENS0\" in output po file.")
 
-
         detailed_info = self._extract_line_value(detailed_consens0_info).split(' ')
         consens0_nodes_count = int(detailed_info[0])
         consensus_name = f"S{top_consensus_expected_id}"
         first_node_line_id = 5 + paths_count * 2
         old_node_id = 0
         new_node_id = 0
-        consensus_path : List[NodeID] = [None] * consens0_nodes_count
+        consensus_path: List[NodeID] = [None] * consens0_nodes_count
         for file_position in range(first_node_line_id, len(poa_output_lines)):
             if consensus_name in poa_output_lines[file_position]:
                 consensus_path[old_node_id] = self.new_to_old[new_node_id]

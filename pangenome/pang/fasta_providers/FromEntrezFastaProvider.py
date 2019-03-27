@@ -23,33 +23,33 @@ class FromEntrezFastaProvider(FastaProvider):
         self.fasta_cache = FastaCache(Path(os.getcwd()))
         self.use_cache = use_cache
 
-    def get_source(self, sequenceID: EntrezSequenceID, start: int = None, end: int = None) -> str:
-        sequence_is_cached = self.fasta_cache.sequence_cached(sequenceID)
+    def get_source(self, sequence_id: EntrezSequenceID, start: int = None, end: int = None) -> str:
+        sequence_is_cached = self.fasta_cache.sequence_is_cached(sequence_id)
         if self.use_cache and sequence_is_cached:
-            sequence = self.fasta_cache.read_from_cache(sequenceID)
+            sequence = self.fasta_cache.read_from_cache(sequence_id)
         elif self.use_cache and not sequence_is_cached:
-            sequence = self.download_from_ncbi(sequenceID, start, end)
-            self.fasta_cache.save_to_cache(sequenceID, sequence)
+            sequence = self._download_from_ncbi(sequence_id, start, end)
+            self.fasta_cache.save_to_cache(sequence_id, sequence)
         else:
-            sequence = self.download_from_ncbi(sequenceID, start, end)
+            sequence = self._download_from_ncbi(sequence_id, start, end)
         return sequence
 
-    def download_from_ncbi(self, sequenceID:EntrezSequenceID, start: int, end: int) -> Sequence:
-        detailed_logger.info(f"Downloading from entrez sequence {sequenceID}...")
+    def _download_from_ncbi(self, sequence_id: EntrezSequenceID, start: int, end: int) -> Sequence:
+        detailed_logger.info(f"Downloading from entrez sequence {sequence_id}...")
         try:
             if start is not None and end is not None:
                 handle = Entrez.efetch(db="nucleotide",
-                                       id=sequenceID,
+                                       id=sequence_id,
                                        rettype="fasta",
                                        retmode="text",
                                        seq_start=start,
                                        seq_stop=end)
             else:
-                handle = Entrez.efetch(db="nucleotide", id=sequenceID, rettype="fasta", retmode="text")
+                handle = Entrez.efetch(db="nucleotide", id=sequence_id, rettype="fasta", retmode="text")
             fasta_content = self.get_raw_sequence_from_fasta(handle)
             return fasta_content
         except Exception as ex:
-            raise Exception(f"Cannot download from Entrez sequence of ID: {sequenceID}") from ex
+            raise Exception(f"Cannot download from Entrez sequence of ID: {sequence_id}") from ex
 
 
 class FastaCache:
@@ -57,7 +57,7 @@ class FastaCache:
         self.parent_dir = parent_dir
         self.cache_dir = pathtools.get_child_path(parent_dir, ".fastacache")
 
-    def cache_dir_exists(self):
+    def cache_dir_exists(self) -> bool:
         return pathtools.dir_exists(self.cache_dir)
 
     def create_cache_dir(self) -> None:
@@ -67,7 +67,7 @@ class FastaCache:
         else:
             detailed_logger.warning("Cannot create .fastacache directory, as it already exists.")
 
-    def save_to_cache(self, seq_id, sequence)-> None:
+    def save_to_cache(self, seq_id: EntrezSequenceID, sequence: Sequence)-> None:
         detailed_logger.info(f"Caching sequence {seq_id}...")
         if not self.cache_dir_exists():
             self.create_cache_dir()
@@ -75,23 +75,20 @@ class FastaCache:
         with open(cache_filename, 'w') as fasta_file_handle:
             SeqIO.write(SeqRecord(seq=Seq(sequence), id=seq_id, description="cached"), fasta_file_handle, "fasta")
 
-    def read_from_cache(self, seq_id):
+    def read_from_cache(self, seq_id: EntrezSequenceID) -> Sequence:
         detailed_logger.info(f"Reading {seq_id} from cache...")
         cache_filepath = self.get_cached_filepath(seq_id)
         with open(cache_filepath) as fasta_handle:
             seq = SeqIO.read(fasta_handle, "fasta")
-        return seq.seq
+        return Sequence(seq.seq)
 
-    def get_cached_filepath(self, seq_id):
-        return pathtools.get_child_path(self.cache_dir, self.get_cached_filename(seq_id))
+    def get_cached_filepath(self, seq_id: EntrezSequenceID) -> Path:
+        return pathtools.get_child_path(self.cache_dir, f"{seq_id}.fasta")
 
-    def get_cached_filename(self, seq_id):
-        return f"{seq_id}.fasta"
-
-    def sequence_cached(self, sequenceID):
+    def sequence_is_cached(self, sequence_id: EntrezSequenceID) -> bool:
         if not self.cache_dir_exists():
             return False
-        expected_fasta_file_name = self.get_cached_filepath(sequenceID)
+        expected_fasta_file_name = self.get_cached_filepath(sequence_id)
         fasta_files_in_cache_dir = self.cache_dir.glob("*.fasta")
         if expected_fasta_file_name in [*fasta_files_in_cache_dir]:
             return True

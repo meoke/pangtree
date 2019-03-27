@@ -21,9 +21,9 @@ class PangraphBuilderFromDAGTest_FillMafGapsWithN(PangraphBuilderTests):
                 "seq3": "",
                 "seq4": ""}
 
-        def get_source(self, sequenceID: str, start: int = None, end: int = None) -> str:
+        def get_source(self, sequence_id: str, start: int = None, end: int = None) -> str:
             try:
-                return self.sources[sequenceID][start:end]
+                return self.sources[sequence_id][start:end]
             except KeyError:
                 raise Exception("No record found with given id!")
 

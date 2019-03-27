@@ -5,6 +5,7 @@ from tools import loggingtools
 
 global_logger = loggingtools.get_global_logger()
 
+
 class SimplePOAConsensusGenerator:
     def __init__(self, hbmin: float, blosum_path: Path):
         self.hbmin: float = hbmin

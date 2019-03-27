@@ -1,0 +1,117 @@
+seqid,protein,gene,organism,order,family,genus
+1o20_A,,,,,,
+PROA_CLOAB,Gamma-glutamyl phosphate reductase,proA,Clostridium acetobutylicum,,,
+PROA_CLOTE,Gamma-glutamyl phosphate reductase,proA,Clostridium tetani,,,
+PROA_CLOPE,Gamma-glutamyl phosphate reductase,proA,Clostridium perfringens,,,
+PROA_THETN,Gamma-glutamyl phosphate reductase,proA,Caldanaerobacter subterraneus subsp. tengcongensis,,,
+PROA_ENTFA,Gamma-glutamyl phosphate reductase,proA,Enterococcus faecalis,,,
+PROA_LACPL,Gamma-glutamyl phosphate reductase,proA,Lactobacillus plantarum,,,
+PROA_LISIN,Gamma-glutamyl phosphate reductase,proA,Listeria innocua serovar 6a,,,
+PROA_BACHD,Gamma-glutamyl phosphate reductase,proA,Bacillus halodurans,,,
+PROA_BACSU,Gamma-glutamyl phosphate reductase,proA,Bacillus subtilis,,,
+PROA_OCEIH,Gamma-glutamyl phosphate reductase,proA,Oceanobacillus iheyensis,,,
+PROA_BACAN,Gamma-glutamyl phosphate reductase,proA,Bacillus anthracis,,,
+PROA_STRMU,Gamma-glutamyl phosphate reductase,proA,Streptococcus mutans serotype c,,,
+PROA_STRTR,Gamma-glutamyl phosphate reductase,proA,Streptococcus thermophilus,,,
+PROA_STRP3,Gamma-glutamyl phosphate reductase,proA,Streptococcus pyogenes serotype M3,,,
+PROA_STRA3,Gamma-glutamyl phosphate reductase,proA,Streptococcus agalactiae serotype III,,,
+PROA_LACLA,Gamma-glutamyl phosphate reductase,proA,Lactococcus lactis subsp. lactis,,,
+PROA_AQUAE,Gamma-glutamyl phosphate reductase,proA,Aquifex aeolicus,,,
+PROA_GLOVI,Gamma-glutamyl phosphate reductase,proA,Gloeobacter violaceus,,,
+PROA_BIFLO,Gamma-glutamyl phosphate reductase,proA,Bifidobacterium longum,,,
+PROA_NEIMA,Gamma-glutamyl phosphate reductase,proA,Neisseria meningitidis serogroup A / serotype 4A,,,
+PROA_STRPN,Gamma-glutamyl phosphate reductase,proA,Streptococcus pneumoniae serotype 4,,,
+PROA_PSEAE,Gamma-glutamyl phosphate reductase,proA,Pseudomonas aeruginosa,,,
+PROA_PSEPK,Gamma-glutamyl phosphate reductase,proA,Pseudomonas putida,,,
+PROA_CHRVO,Gamma-glutamyl phosphate reductase,proA,Chromobacterium violaceum,,,
+PROA_NITEU,Gamma-glutamyl phosphate reductase,proA,Nitrosomonas europaea,,,
+PROA_RALSO,Gamma-glutamyl phosphate reductase,proA,Ralstonia solanacearum,,,
+PROA_BORBR,Gamma-glutamyl phosphate reductase,proA,Bordetella bronchiseptica,Burkholderiales,Alcaligenaceae,Bordetella
+PROA_RHILO,Gamma-glutamyl phosphate reductase,proA,Mesorhizobium japonicum,Rhizobiales,Phyllobacteriaceae,Mesorhizobium
+PROA_BRUME,Gamma-glutamyl phosphate reductase,proA,Brucella melitensis biotype 1,Rhizobiales,Brucellaceae,Brucella
+PROA_AGRT5,Gamma-glutamyl phosphate reductase,proA,Agrobacterium fabrum,Rhizobiales,Rhizobiaceae,Agrobacterium
+PROA_RHIME,Gamma-glutamyl phosphate reductase,proA,Rhizobium meliloti,Rhizobiales,Rhizobiaceae,Sinorhizobium
+PROA_BRAJA,Gamma-glutamyl phosphate reductase,proA,Bradyrhizobium diazoefficiens,Rhizobiales,Bradyrhizobiaceae,Bradyrhizobium
+PROA_CAUCR,Gamma-glutamyl phosphate reductase,proA,Caulobacter vibrioides,Caulobacterales,Caulobacteraceae,Caulobacter
+PROA_RHOBA,Gamma-glutamyl phosphate reductase,proA,Rhodopirellula baltica,Planctomycetales,Planctomycetaceae,Rhodopirellula
+PROA_MEIRU,Gamma-glutamyl phosphate reductase,proA,Meiothermus ruber,Thermales,Thermaceae,Meiothermus
+PROA_THET2,Gamma-glutamyl phosphate reductase,proA,Thermus thermophilus,Thermales,Thermaceae,Thermus
+PROA_XANAC,Gamma-glutamyl phosphate reductase,proA,Xanthomonas axonopodis,Xanthomonadales,Xanthomonadaceae,Xanthomonas
+PROA_XYLFA,Gamma-glutamyl phosphate reductase,proA,Xylella fastidiosa,Xanthomonadales,Xanthomonadaceae,Xylella
+PROA_WOLSU,Gamma-glutamyl phosphate reductase,proA,Wolinella succinogenes,Campylobacterales,Helicobacteraceae,Wolinella
+PROA_LEPIN,Gamma-glutamyl phosphate reductase,proA,Leptospira interrogans serogroup Icterohaemorrhagiae serovar Lai,Leptospirales,Leptospiraceae,Leptospira
+PROA_MYCLE,Gamma-glutamyl phosphate reductase,proA,Mycobacterium leprae (strain TN),Corynebacteriales,Mycobacteriaceae,Mycobacterium
+PROA_COREF,Gamma-glutamyl phosphate reductase,proA,Corynebacterium efficiens,Corynebacteriales,Corynebacteriaceae,Corynebacterium
+PROA_STRAW,Gamma-glutamyl phosphate reductase,proA,Streptomyces avermitilis,Streptomycetales,Streptomycetaceae,Streptomyces
+PROA_ECO57,Gamma-glutamyl phosphate reductase,proA,Escherichia coli O157:H7,Enterobacterales,Enterobacteriaceae,Escherichia
+PROA_PHOLL,Gamma-glutamyl phosphate reductase,proA,Photorhabdus luminescens subsp. laumondii,Enterobacterales,Morganellaceae,Photorhabdus
+PROA_SERMA,Gamma-glutamyl phosphate reductase,proA,Serratia marcescens,Enterobacterales,Yersiniaceae,Serratia
+PROA_HAEIN,Gamma-glutamyl phosphate reductase,proA,Haemophilus influenzae,Pasteurellales,Pasteurellaceae,Haemophilus
+PROA_PASMU,Gamma-glutamyl phosphate reductase,proA,Pasteurella multocida,Pasteurellales,Pasteurellaceae,Pasteurella
+PROA_VIBCH,Gamma-glutamyl phosphate reductase,proA,Vibrio cholerae serotype O1,Vibrionales,Vibrionaceae,Vibrio
+PROA_SHEON,Gamma-glutamyl phosphate reductase,proA,Shewanella oneidensis,Alteromonadales,Shewanellaceae,Shewanella
+PROA_DEIRA,Gamma-glutamyl phosphate reductase,proA,Deinococcus radiodurans,Deinococcales,Deinococcaceae,Deinococcus
+PROA_TREPA,Gamma-glutamyl phosphate reductase,proA,Treponema pallidum,Spirochaetales,Spirochaetaceae,Treponema
+PROA_CHLTE,Gamma-glutamyl phosphate reductase,proA,Chlorobaculum tepidum,Chlorobiales,Chlorobiaceae,Chlorobaculum
+PROA_BACTN,Gamma-glutamyl phosphate reductase,proA,Bacteroides thetaiotaomicron,Bacteroidales,Bacteroidaceae,Bacteroides
+PROA_CAMJE,Gamma-glutamyl phosphate reductase,proA,Campylobacter jejuni subsp. jejuni serotype O:2,Campylobacterales,Campylobacteraceae,Campylobacter
+PROA_HELHP,Gamma-glutamyl phosphate reductase,proA,Helicobacter hepaticus,Campylobacterales,Helicobacteraceae,Helicobacter
+PROA_SYNEL,Gamma-glutamyl phosphate reductase,proA,Thermosynechococcus elongatus,Synechococcales,Synechococcaceae,Thermosynechococcus
+PROA_ANASP,Gamma-glutamyl phosphate reductase,proA,Nostoc sp.,Nostocales,Nostocaceae,Nostoc
+PROA_SYNY3,Gamma-glutamyl phosphate reductase,proA,Synechocystis sp.,Synechococcales,Merismopediaceae,Synechocystis
+PROA_SYNPX,Gamma-glutamyl phosphate reductase,proA,Synechococcus sp.,Synechococcales,Synechococcaceae,Synechococcus
+PROA_PROMM,Gamma-glutamyl phosphate reductase,proA,Prochlorococcus marinus,Synechococcales,Prochloraceae,Prochlorococcus
+PROA_PROMA,Gamma-glutamyl phosphate reductase,proA,Prochlorococcus marinus,Synechococcales,Prochloraceae,Prochlorococcus
+PROA_PROMP,Gamma-glutamyl phosphate reductase,proA,Prochlorococcus marinus subsp. pastoris,Synechococcales,Prochloraceae,Prochlorococcus
+PROA_METAC,Gamma-glutamyl phosphate reductase,proA,Methanosarcina acetivorans,Methanosarcinales,Methanosarcinaceae,Methanosarcina
+P5CS_MESCR,Delta-1-pyrroline-5-carboxylate synthase,P5CS,Mesembryanthemum crystallinum,,,
+P5CS_ACTCH,Delta-1-pyrroline-5-carboxylate synthase,NA,Actinidia deliciosa (Kiwi),,,
+P5CS_VIGAC,Delta-1-pyrroline-5-carboxylate synthase,NA,Vigna aconitifolia (Moth bean),,,
+P5CS_ORYSA,Delta-1-pyrroline-5-carboxylate synthase 1,P5CS1,Oryza sativa subsp. japonica (Rice),,,
+P5C1_ARATH,Delta-1-pyrroline-5-carboxylate synthase A,P5CSA,Arabidopsis thaliana (Mouse-ear cress),,,
+P5CS_HUMAN,Delta-1-pyrroline-5-carboxylate synthase,ALDH18A1,Homo sapiens (Human),,,
+P5CS_CAEEL,Probable delta-1-pyrroline-5-carboxylate synthase,alh-13,,,,
+1ad3_A,,,,,,
+1a4s_A,,,,,,
+1a4z_A,,,,,,
+1uzb_A,,,,,,
+1euh_A,,,,,,
+1ky8_A,,,,,,
+ROCA_OCEIH,1-pyrroline-5-carboxylate dehydrogenase,rocA,Oceanobacillus iheyensis,Bacillales,Bacillaceae,Oceanobacillus
+ROCA_STAAM,1-pyrroline-5-carboxylate dehydrogenase,rocA,Staphylococcus aureus,Bacillales,Staphylococcaceae,Staphylococcus
+DHAY_YEAST,Aldehyde dehydrogenase 2,ALD2,Saccharomyces cerevisiae (Baker's yeast),Saccharomycetales,Saccharomycetaceae,Saccharomyces
+DHAG_HUMAN,4-trimethylaminobutyraldehyde dehydrogenase,ALDH9A1,Homo sapiens (Human),,,
+DHA9_POLMI,Aldehyde dehydrogenase 9,ALDH9,Polyandrocarpa misakiensis (Tunicate),,,
+DHA1_BOVIN,Retinal dehydrogenase 1,ALDH1A1,Bos taurus (Bovine),,,
+DHA6_HUMAN,Aldehyde dehydrogenase family 1 member A3,ALDH1A3,Homo sapiens (Human),,,
+DHA5_HUMAN,Aldehyde dehydrogenase X,ALDH1B1,Homo sapiens (Human),,,
+DHAL_ENCBU,Aldehyde dehydrogenase,ALDH,Enchytraeus buchholzi (Grindal worm),,,
+DHAB_ARATH,Betaine aldehyde dehydrogenase 1,ALDH10A8,Arabidopsis thaliana (Mouse-ear cress),,,
+DHAB_AMAHP,Betaine aldehyde dehydrogenase,BADH4,Amaranthus hypochondriacus,,,
+DHAL_BACST,Aldehyde dehydrogenase,aldHT,Geobacillus stearothermophilus (Bacillus stearothermophilus),Bacillales,Bacillaceae,Geobacillus
+DHAL_ALTAL,Aldehyde dehydrogenase,ALTA10,Alternaria alternata,Pleosporales,Pleosporaceae,Alternaria
+YF19_SCHPO,Putative aldehyde dehydrogenase-like protein C9E9.09c,SPAC9E9.09c,Schizosaccharomyces pombe,,,
+DHA2_YEAST,Aldehyde dehydrogenase [NAD(P)+] 1,ALD2,Saccharomyces cerevisiae,Saccharomycetales,Saccharomycetaceae,Saccharomyces
+DHAM_LEITA,Aldehyde dehydrogenase,ALDH2,Leishmania tarentolae,Trypanosomatidae,Leishmaniinae,Leishmania
+DMPC_PSEUF,2-hydroxymuconic semialdehyde dehydrogenase,dmpC,Pseudomonas sp.,,,
+DHAL_ECOLI,NADP/NAD-dependent aldehyde dehydrogenase PuuC,puuC,Escherichia coli (strain K12),Enterobacterales,Enterobacteriaceae,Escherichia
+FEAB_ECOLI,Phenylacetaldehyde dehydrogenase,feaB,Escherichia coli (strain K12),Enterobacterales,Enterobacteriaceae,Escherichia
+DHAL_AGABI,Aldehyde dehydrogenase,aldA,Agaricus bisporus,Agaricales,Agaricaceae,Agaricus
+ALDB_ECOLI,Aldehyde dehydrogenase B,aldB,Escherichia coli (strain K12),Enterobacterales,Enterobacteriaceae,Escherichia
+ALDA_ECOLI,Lactaldehyde dehydrogenase,aldA,Escherichia coli (strain K12),Enterobacterales,Enterobacteriaceae,Escherichia
+XYLC_PSEPU,Benzaldehyde dehydrogenase [NAD(+)],xylC,Pseudomonas putida,Pseudomonadales,Pseudomonadaceae,Pseudomonas
+NAHF_PSESP,Salicylaldehyde dehydrogenase,doxF,Pseudomonas sp.,,,
+ROCA_BACAN,1-pyrroline-5-carboxylate dehydrogenase,rocA,Bacillus anthracis,Bacillales,Bacillaceae,Bacillus
+ROCA_BACSU,1-pyrroline-5-carboxylate dehydrogenase,rocA,Bacillus subtilis (strain 168),Bacillales,Bacillaceae,Bacillus
+ROC1_BACHD,1-pyrroline-5-carboxylate dehydrogenase 1,rocA1,Bacillus halodurans,Bacillales,Bacillaceae,Bacillus
+ROC2_BACSU,1-pyrroline-5-carboxylate dehydrogenase 2,putC,Bacillus subtilis,Bacillales,Bacillaceae,Bacillus
+PUT2_EMENI,Delta-1-pyrroline-5-carboxylate dehydrogenase,prnC,Emericella nidulans,Eurotiales,Aspergillaceae,Aspergillus
+DHAB_RHIME,NAD/NADP-dependent betaine aldehyde dehydrogenase 1,betB1,Rhizobium meliloti,Rhizobiales,Rhizobiaceae,Sinorhizobium
+DHA2_HUMAN,Retinal dehydrogenase 2,ALDH1A2,Homo sapiens (Human),,,
+DHAB_HORVU,Betaine aldehyde dehydrogenase,NA,Hordeum vulgare (Barley),,,
+DHA1_BACSU,Alpha-ketoglutaric semialdehyde dehydrogenase,gucD,Bacillus subtilis,Bacillales,Bacillaceae,Bacillus
+DHAL_ASPNG,Aldehyde dehydrogenase,aldA,Aspergillus niger,Eurotiales,Aspergillaceae,Aspergillus
+DHA6_YEAST,Magnesium-activated aldehyde dehydrogenase,ALD6,Saccharomyces cerevisiae,Saccharomycetales,Saccharomycetaceae,Saccharomyces
+DHAB_BACSU,Betaine aldehyde dehydrogenase,gbsA,Bacillus subtilis,Bacillales,Bacillaceae,Bacillus
+DHAB_SCHPO,Probable betaine aldehyde dehydrogenase,meu8,Schizosaccharomyces pombe,Schizosaccharomycetales,Schizosaccharomycetaceae,Schizosaccharomyces
+YDCW_ECOLI,Gamma-aminobutyraldehyde dehydrogenase,prr,Escherichia coli (strain K12),Enterobacterales,Enterobacteriaceae,Escherichia

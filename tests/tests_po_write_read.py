@@ -10,6 +10,7 @@ from tests.context import MultialignmentMetadata
 from tests.context import SequenceMetadata
 from tests.context import make_nucleobase as n
 import tests.helper_show_diffs as diff
+from tests.context import DataType
 
 
 def get_pangraph1() -> (Pangraph, List[str]):
@@ -39,7 +40,7 @@ def get_pangraph1() -> (Pangraph, List[str]):
         'testseq2': [[3, 4, 6, 7, 10, 12, 14, 17]],
         'testseq3': [[11, 13, 14, 15]]
     }
-    pangraph = Pangraph()
+    pangraph = Pangraph(DataType.Nucleotides)
     pangraph.nodes = nodes
     pangraph.paths = paths_to_node_ids
 
@@ -97,7 +98,7 @@ def get_pangraph_with_consensuses() -> (Pangraph, List[str]):
         'CONSENS0': [[0, 3, 4, 5, 7, 8]],
         'CONSENS1': [[1, 2, 4, 5, 6, 8]]
     }
-    pangraph = Pangraph()
+    pangraph = Pangraph(DataType.Nucleotides)
     pangraph.nodes = nodes
     pangraph.paths = sequences_paths_to_node_ids
     # pangraph.set_consensuses(len(nodes), consensuses_paths_to_node_ids)

@@ -19,7 +19,7 @@ def save_to_file(output_dir: Path, pangenome: Pangenome):
     json_path = pathtools.get_child_path(output_dir, "pangenome.json")
     jsonpickle.set_encoder_options('simplejson', indent=4)
     with open(json_path, 'w') as json_output:
-        json_output.write(jsonpickle.encode(jsonpoagraph, unpicklable=True))
+        json_output.write(jsonpickle.encode(jsonpoagraph))
     return json_path
 
 #

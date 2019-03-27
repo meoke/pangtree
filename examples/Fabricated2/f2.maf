@@ -1,8 +1,0 @@
-#maf version=1 scoring=roast.v3.3",
-a score=1
-s seq0 0 16 + 16 AGTGG-CGCAGCACGCT-
-s seq1 0 16 + 16 AGTCG-CGCTGGACGCT-
-s seq2 0 17 + 17 AGTTGTCGCCGCACGCT-
-s seq3 0 16 + 16 CGTAGT-GCCGGACATT-
-s seq4 0 17 + 17 T-TTACACCGTACGTACC
-s seq5 0 17 + 17 T-TGACACCGTATGTAGC

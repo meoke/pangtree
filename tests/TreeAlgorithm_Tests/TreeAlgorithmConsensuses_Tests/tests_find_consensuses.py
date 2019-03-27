@@ -6,6 +6,7 @@ from ddt import ddt
 from tests.context import Node, Pangraph
 from tests.context import make_nucleobase as n
 from tests.context import TreePOAConsensusGenerator, MAX1, MAX2, NODE1, NODE2, NODE3, NODE4
+from tests.context import DataType
 
 @ddt
 class FindConsensusesTests(unittest.TestCase):
@@ -69,7 +70,7 @@ class FindConsensusesTests(unittest.TestCase):
             'seq4': [[2, 4, 8, 9, 11, 13, 15, 17, 20, 23, 24, 28, 31, 34, 35, 38, 41]],
             'seq5': [[2, 4, 7, 9, 11, 13, 15, 17, 20, 23, 24, 29, 31, 34, 35, 39, 41]]
         }
-        self.pangraph = Pangraph()
+        self.pangraph = Pangraph(DataType.Nucleotides)
         self.pangraph.nodes = nodes
         self.pangraph.paths = paths
 

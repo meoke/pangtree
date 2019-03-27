@@ -9,6 +9,7 @@ from arguments.PangenomeParameters import FastaComplementationOption
 from arguments.PangenomeParameters import PangenomeParameters
 from arguments.PangenomeParameters import ConsensusAlgorithm
 from arguments.PangenomeParameters import MaxCutoffOption, NodeCutoffOption
+from pangraph.DataType import DataType
 from tools.pathtools import create_default_output_dir
 
 ArgType = Union[str, float, str, Path]
@@ -47,8 +48,9 @@ def _float_0_1(arg: str) -> float:
 
 def _email_address(arg: str) -> str:
     """Check if provided e-mail address is correct."""
-    match = re.match('^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$', arg)
-    if match != None:
+
+    match = re.match(r'^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$', arg)
+    if match is not None:
         return arg
     else:
         raise argparse.ArgumentTypeError(f"Incorrect e-mail address ({arg}) was passed.")
@@ -87,7 +89,23 @@ def _node_cutoff_option(node_cutoff_option: str) -> NodeCutoffOption:
     try:
         return NodeCutoffOption[node_cutoff_option.upper()]
     except KeyError:
-        raise argparse.ArgumentError()
+        raise argparse.ArgumentError("Node cutoff option parsing error.")
+
+
+def _data_type(data_type: str) -> DataType:
+    """Converts command line argument to DataType"""
+    if data_type == "p":
+        data_type_full_name = "Proteins"
+    elif data_type == "n":
+        data_type_full_name = "Nucleotides"
+    else:
+        raise argparse.ArgumentError("Unknown data type. \'p\' for proteins or \'n\' for nucleotides available.")
+
+    try:
+        dt = DataType[data_type_full_name]
+        return dt
+    except KeyError:
+        raise argparse.ArgumentError("Data type parsing error.")
 
 
 class _RangeArgAction(argparse.Action):
@@ -109,7 +127,11 @@ def _get_parser() -> argparse.ArgumentParser:
                    type=_file_arg,
                    required=True,
                    help='Path to the mulitalignment file. Accepted formats: .maf, .po.')
-    p.add_argument('--data', '-d',
+    p.add_argument('--datatype',
+                   type=_data_type,
+                   default=DataType.Nucleotides,
+                   help='Input type: \'n\' for nucleotides, \'p\' for protieins.')
+    p.add_argument('--metadata',
                    type=_file_arg,
                    help='Path to the csv file with genomes specification. See... examples\\Ebola\\ebola_metadata.csv')
     p.add_argument('--blosum',
@@ -184,7 +206,8 @@ def _get_parser() -> argparse.ArgumentParser:
     p.add_argument('-cache',
                    action='store_true',
                    help='Used if Fasta Complementation Option is \"NCBI\" '
-                        'Stores sequences downloaded from NCBI on local disc and enables reusing them between use of this program.')
+                        'Stores sequences downloaded from NCBI on local disc.'
+                        'They are reused between uses of this program.')
     p.add_argument('-missing_n',
                    type=str,
                    help='If fasta_complementation is NO, a custom symbol for missing nucleotides can be specified.'
@@ -229,12 +252,12 @@ def create_pangenome_parameters() -> PangenomeParameters:
 
     parser = _get_parser()
     args = parser.parse_args()
-    metadata_content = pathtools.get_file_content(args.data) if args.data else None
+    metadata_content = pathtools.get_file_content(args.metadata) if args.metadata else None
     return PangenomeParameters(
             multialignment_file_content=pathtools.get_file_content(args.multialignment),
             multialignment_file_path=args.multialignment,
             metadata_file_content=metadata_content,
-            metadata_file_path=args.data,
+            metadata_file_path=args.metadata,
             blosum_file_path=args.blosum,
             output_path=args.output,
             generate_fasta=args.fasta,
@@ -254,5 +277,6 @@ def create_pangenome_parameters() -> PangenomeParameters:
             quiet=args.quiet,
             email_address=args.email,
             cache=args.cache,
-            p=args.p
+            p=args.p,
+            datatype=args.datatype
         )
