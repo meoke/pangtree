@@ -64,3 +64,8 @@ def dir_exists(dir_path):
 
 def create_dir(cache_dir: Path):
     cache_dir.mkdir()
+
+
+def save_to_file(file_content: str, po_file_path: Path) -> None:
+    with open(po_file_path, 'w') as output:
+        output.write(file_content)

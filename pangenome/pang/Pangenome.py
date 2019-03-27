@@ -7,6 +7,7 @@ from pangraph.Pangraph import Pangraph
 from pangraph.PangraphBuilders.PangraphBuilderFromDAG import PangraphBuilderFromDAG
 from pangraph.PangraphBuilders.PangraphBuilderFromMAF import PangraphBuilderFromMAF
 from pangraph.PangraphBuilders.PangraphBuilderFromPO import PangraphBuilderFromPO
+from pangraph.PangraphToFilesConverters.PangraphToPO import PangraphToPO
 from tools import pathtools, loggingtools
 from arguments.PangenomeParameters import ConsensusAlgorithm, FastaComplementationOption, MaxCutoffOption, \
     NodeCutoffOption, PangenomeParameters
@@ -37,6 +38,9 @@ class Pangenome:
         global_logger.info("Run Pangenome...")
 
         self._build_pangraph_and_update_metadata()
+
+        if self.params.output_po:
+            self._generate_po_file()
 
         if self.params.generate_fasta:
             self._generate_fasta_files_to_directory()
@@ -156,6 +160,11 @@ class Pangenome:
     def _build_genomes_info(self):
         return MultialignmentMetadata(self.params.metadata_file_content)
 
+    def _generate_po_file(self) -> None:
+        pangraph_to_po = PangraphToPO()
+        po_file_content = pangraph_to_po.get_po_file_content_from_pangraph(self.pangraph)
+        po_file_path = pathtools.get_child_path(self.params.output_path, "pangraph.po")
+        pathtools.save_to_file(po_file_content, po_file_path)
 
 
 

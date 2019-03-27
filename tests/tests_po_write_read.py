@@ -9,7 +9,6 @@ from tests.context import pathtools
 from tests.context import MultialignmentMetadata
 from tests.context import SequenceMetadata
 from tests.context import make_base as n
-import tests.helper_show_diffs as diff
 from tests.context import DataType
 
 @ddt

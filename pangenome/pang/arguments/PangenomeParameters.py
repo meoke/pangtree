@@ -47,7 +47,8 @@ class PangenomeParameters:
                  fasta_complementation_option: Optional[FastaComplementationOption],
                  missing_nucleotide_symbol: Optional[str], local_fasta_dirpath: Optional[Path],
                  max_cutoff_option: Optional[MaxCutoffOption], node_cutoff_option: Optional[NodeCutoffOption],
-                 verbose: bool, quiet: bool, email_address: str, cache: bool, p: float, datatype: DataType):
+                 verbose: bool, quiet: bool, email_address: str, cache: bool, p: float, datatype: DataType,
+                 output_po: bool):
         self.multialignment_file_content = multialignment_file_content
         self.multialignment_file_path = multialignment_file_path
         self.multialignment_format = self._infer_multialignment_format(multialignment_file_path)
@@ -57,6 +58,7 @@ class PangenomeParameters:
         self.metadata_file_path = metadata_file_path
         self.blosum_file_path = blosum_file_path or self._get_default_blosum_path()
         self.output_path = output_path
+        self.output_po = output_po
 
         self.raw_maf = raw_maf
         self.fasta_complementation_option = fasta_complementation_option
@@ -196,6 +198,7 @@ class PangenomeParameters:
         metadata_file_path: {self.metadata_file_path}
         blosum_file_path: {self.blosum_file_path}
         output_path: {self.output_path}
+        output_po: {self.output_po}
         not_dag: {self.raw_maf}
         fasta_complementation_option: {self.fasta_complementation_option}
         missing_nucleotide_symbol: {self.missing_nucleotide_symbol}
