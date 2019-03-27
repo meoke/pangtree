@@ -2,7 +2,7 @@ import unittest
 from ddt import ddt
 
 from tests.context import Node
-from tests.context import make_nucleobase as n
+from tests.context import make_base as n
 from tests.context import pathtools
 from tests.context import FastaProvider
 from tests.context import MultialignmentMetadata

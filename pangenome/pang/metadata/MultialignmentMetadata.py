@@ -2,6 +2,7 @@ import re
 
 import pandas as pd
 
+from arguments.PangenomeParameters import MultialignmentFormat
 from fasta_providers.FromEntrezFastaProvider import EntrezSequenceID
 from pangraph.custom_types import SequenceID
 from typing import Dict, List, Any
@@ -49,21 +50,26 @@ class MultialignmentMetadata:
     def get_all_sequences_ids(self):
         return [SequenceID(seq_id) for seq_id in self.metadata_df.index.tolist()]
 
-    def feed_with_maf_data(self, names_in_maf: List[str]) -> None:
-        seq_id_to_full_mafname = [{'seqid': MultialignmentMetadata.get_seqid_from_mafname(mafname), 'mafname': mafname}
-                                  for mafname in names_in_maf]
-        if self.metadata_df is None:
-            self.metadata_df = pd.DataFrame.from_records(seq_id_to_full_mafname, index='seqid')
+    def feed_with_multialignment_data(self,
+                                      sequences_names: List[str],
+                                      mutlialignment_format: MultialignmentFormat) -> None:
+        if mutlialignment_format.value == MultialignmentFormat.MAF.value:
+            infer_seqid_from_input = MultialignmentMetadata.get_seqid_from_mafname
         else:
-            if 'mafname' not in list(self.metadata_df):
-                self.metadata_df['mafname'] = None
-            for seq_id_mafname in seq_id_to_full_mafname:
-                seq_id = seq_id_mafname['seqid']
-                mafname = seq_id_mafname['mafname']
-                if seq_id in self.metadata_df.index:
-                    self.metadata_df.loc[seq_id, 'mafname'] = mafname
-                else:
-                    self.metadata_df.loc[seq_id, 'mafname'] = mafname
+            def infer_seqid_from_input(seqid): return seqid
+
+        original_seqid_column_name = f"{mutlialignment_format.name.lower()}name"
+        metadata_to_insert = [{'seqid': infer_seqid_from_input(seq_name), original_seqid_column_name: seq_name}
+                              for seq_name in sequences_names]
+        if self.metadata_df is None:
+            self.metadata_df = pd.DataFrame.from_records(metadata_to_insert, index='seqid')
+        else:
+            if original_seqid_column_name not in list(self.metadata_df):
+                self.metadata_df[original_seqid_column_name] = None
+            for seq_id_original_name in metadata_to_insert:
+                seq_id = seq_id_original_name['seqid']
+                original_name = seq_id_original_name[original_seqid_column_name]
+                self.metadata_df.loc[seq_id, original_seqid_column_name] = original_name
         # todo check if no column contains "CONSENSUS" - do we need this?
 
     def get_seq_metadata_as_dict(self, seq_id: SequenceID) -> Dict[str, Any]:

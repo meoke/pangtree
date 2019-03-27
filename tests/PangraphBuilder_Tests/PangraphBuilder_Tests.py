@@ -8,7 +8,7 @@ from tests.context import Pangraph
 from tests.context import PangraphBuilderFromDAG
 from Bio import AlignIO
 
-from tests.context import PangraphBuilderFromMAF
+from tests.context import PangraphBuilderFromMAF, PangraphBuilderFromPO
 from tests.context import DataType
 
 class PangraphBuilderTests(unittest.TestCase):
@@ -17,7 +17,7 @@ class PangraphBuilderTests(unittest.TestCase):
         mafcontent = PangraphBuilderTests.get_file_content(maf_path)
         pangraph = Pangraph(DataType.Nucleotides)
         builder = PangraphBuilderFromDAG(genomes_info=metadata,
-                                         missing_nucleotide_symbol="?",
+                                         missing_base_symbol="?",
                                          fasta_source=fasta_source)
         builder.build(mafcontent, pangraph)
         return pangraph
@@ -87,3 +87,11 @@ class PangraphBuilderTests(unittest.TestCase):
                 print(f"Sequence {seq_id} differs in expected and actual paths!")
                 print(f"Expected: {paths}")
                 print(f"Actual: {actual_paths[seq_id]}")
+
+    @staticmethod
+    def setup_pangraph_from_po(po_path, metadata):
+        poalignment = PangraphBuilderTests.get_file_content(po_path)
+        pangraph = Pangraph(DataType.Nucleotides)
+        builder = PangraphBuilderFromPO(genomes_info=metadata, missing_base_symbol="?")
+        builder.build(poalignment, pangraph)
+        return pangraph

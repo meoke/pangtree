@@ -4,7 +4,7 @@ from pathlib import Path
 
 from ddt import ddt
 from tests.context import Node, Pangraph
-from tests.context import make_nucleobase as n
+from tests.context import make_base as n
 from tests.context import TreePOAConsensusGenerator, MAX1, MAX2, NODE1, NODE2, NODE3, NODE4
 from tests.context import DataType
 

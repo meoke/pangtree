@@ -93,12 +93,12 @@ class PangraphToPO:
         return start_at + i
 
     @staticmethod
-    def _get_protein_node_code(nucleobase: bytes) -> str:
-        return nucleobase.decode("ASCII").upper()
+    def _get_protein_node_code(base: bytes) -> str:
+        return base.decode("ASCII").upper()
 
     @staticmethod
-    def _get_nucleotides_node_code(nucleobase: bytes) -> str:
-        return nucleobase.decode("ASCII").lower()
+    def _get_nucleotides_node_code(base: bytes) -> str:
+        return base.decode("ASCII").lower()
 
     def _get_in_nodes_info(self, in_nodes: List[NodeID]) -> str:
         return "".join([f'L{i}' for i in in_nodes])

@@ -8,6 +8,7 @@ from pangraph.PangraphBuilders.PangraphBuilderFromDAG import PangraphBuilderFrom
 from pangraph.PangraphBuilders.PangraphBuilderFromMAF import PangraphBuilderFromMAF
 from fasta_providers.FastaProvider import FastaProvider
 from metadata.MultialignmentMetadata import MultialignmentMetadata
+from pangraph.PangraphBuilders.PangraphBuilderFromPO import PangraphBuilderFromPO
 from tools import loggingtools
 from .Node import Node
 from .custom_types import NodeID, SequenceID
@@ -40,6 +41,11 @@ class Pangraph:
         global_logger.info("Building pangraph from raw MAF")
         builder: PangraphBuilderBase = PangraphBuilderFromMAF(genomes_info)
         self._build(builder, mafcontent)
+
+    def build_from_po(self, pocontent: str, genomes_info: MultialignmentMetadata, missing_nucleotide_symbol: str):
+        global_logger.info("Building pangraph from PO...")
+        builder: PangraphBuilderBase = PangraphBuilderFromPO(genomes_info, missing_nucleotide_symbol)
+        self._build(builder, pocontent)
 
     def _build(self, builder: PangraphBuilderBase, build_input: str):
         builder.build(StringIO(build_input), self)
@@ -91,3 +97,5 @@ class Pangraph:
 
     def get_sequences_ids(self) -> List[SequenceID]:
         return [*self.paths.keys()]
+
+

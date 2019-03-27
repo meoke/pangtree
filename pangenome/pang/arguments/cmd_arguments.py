@@ -267,7 +267,7 @@ def create_pangenome_parameters() -> PangenomeParameters:
             multiplier=args.multiplier,
             stop=args.stop,
             re_consensus=args.re_consensus,
-            not_dag=args.not_dag,
+            raw_maf=args.not_dag,
             fasta_complementation_option=args.fasta_complementation,
             missing_nucleotide_symbol=args.missing_n,
             local_fasta_dirpath=args.fasta_dir,

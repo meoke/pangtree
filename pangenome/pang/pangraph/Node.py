@@ -1,10 +1,10 @@
-from pangraph.custom_types import NodeID, Nucleobase, BlockID, ColumnID
+from pangraph.custom_types import NodeID, Base, BlockID, ColumnID
 
 
 class Node:
     def __init__(self,
                  node_id: NodeID,
-                 base: Nucleobase,
+                 base: Base,
                  aligned_to: NodeID,
                  column_id: ColumnID = None,
                  block_id: BlockID = None):

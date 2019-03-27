@@ -3,7 +3,7 @@ from ddt import ddt
 
 from tests.context import MultialignmentMetadata
 from tests.context import Node
-from tests.context import make_nucleobase as n
+from tests.context import make_base as n
 from tests.context import pathtools
 
 from tests.PangraphBuilder_Tests.PangraphBuilder_Tests import PangraphBuilderTests

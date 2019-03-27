@@ -19,7 +19,7 @@ class JSONProgramParameters:
         self.multiplier: float = params.multiplier
         self.stop: float = params.stop
         self.re_consensus: bool = params.re_consensus
-        self.not_dag: bool = params.not_dag
+        self.not_dag: bool = params.raw_maf
         self.fasta_complementation_option: FastaComplementationOption = str(params.fasta_complementation_option)
         self.local_fasta_dirpath: str = str(params.local_fasta_dirpath)
         self.p: float = params.p
@@ -27,9 +27,9 @@ class JSONProgramParameters:
 
 
 class JSONNode:
-    def __init__(self, node_id: int, nucleobase: str, column_id: int, block_id: int, aligned_to: int):
+    def __init__(self, node_id: int, base: str, column_id: int, block_id: int, aligned_to: int):
         self.id = node_id
-        self.nucleobase = nucleobase
+        self.base = base
         self.column_id = column_id
         self.block_id = block_id
         self.aligned_to = aligned_to
@@ -100,7 +100,7 @@ class JSONPangenome:
 
         if pangenome.pangraph.nodes:
             self.nodes = [JSONNode(node_id=node.id,
-                                   nucleobase=node.base.decode("ASCII"),
+                                   base=node.base.decode("ASCII"),
                                    column_id=node.column_id,
                                    block_id=node.block_id,
                                    aligned_to=node.aligned_to)
