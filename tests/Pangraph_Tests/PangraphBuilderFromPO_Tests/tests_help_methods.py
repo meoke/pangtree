@@ -2,13 +2,14 @@ import unittest
 from ddt import ddt, data, unpack
 
 from tests.context import PangraphBuilderFromPO
-from tests.PangraphBuilder_Tests.PangraphBuilder_Tests import PangraphBuilderTests
+from tests.Pangraph_Tests.Pangraph_Tests import PangraphTests
 
 
 @ddt
-class PangraphBuilderFromPOTest_HelpMethods(PangraphBuilderTests):
+class PangraphBuilderFromPOTest_HelpMethods(PangraphTests):
 
     def test_extract_line_value(self):
+        # todo tests
         pass
 
 

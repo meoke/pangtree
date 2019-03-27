@@ -11,10 +11,10 @@ from Bio import AlignIO
 from tests.context import PangraphBuilderFromMAF, PangraphBuilderFromPO
 from tests.context import DataType
 
-class PangraphBuilderTests(unittest.TestCase):
+class PangraphTests(unittest.TestCase):
     @staticmethod
     def setup_pangraph_from_maf_firstly_converted_to_dag(maf_path, metadata, fasta_source : Optional[FastaProvider] = None):
-        mafcontent = PangraphBuilderTests.get_file_content(maf_path)
+        mafcontent = PangraphTests.get_file_content(maf_path)
         pangraph = Pangraph(DataType.Nucleotides)
         builder = PangraphBuilderFromDAG(genomes_info=metadata,
                                          missing_base_symbol="?",
@@ -24,7 +24,7 @@ class PangraphBuilderTests(unittest.TestCase):
 
     @staticmethod
     def setup_pangraph_from_maf(maf_path, metadata):
-        mafalignment = PangraphBuilderTests.get_file_content(maf_path)
+        mafalignment = PangraphTests.get_file_content(maf_path)
         pangraph = Pangraph(DataType.Nucleotides)
         builder = PangraphBuilderFromMAF(metadata)
         builder.build(mafalignment, pangraph)
@@ -60,12 +60,12 @@ class PangraphBuilderTests(unittest.TestCase):
     @staticmethod
     def show_pangraph_differences(actual_pangraph, expected_pangraph):
         print("Nodes differences: ")
-        PangraphBuilderTests.show_nodes_differences(actual_pangraph.nodes,
-                                                  expected_pangraph.nodes)
+        PangraphTests.show_nodes_differences(actual_pangraph.nodes,
+                                             expected_pangraph.nodes)
 
         print("Paths differences: ")
-        PangraphBuilderTests.show_paths_differences(actual_pangraph.paths,
-                                                  expected_pangraph.paths)
+        PangraphTests.show_paths_differences(actual_pangraph.paths,
+                                             expected_pangraph.paths)
 
     @staticmethod
     def show_nodes_differences(actual_nodes, expected_nodes):
@@ -90,8 +90,14 @@ class PangraphBuilderTests(unittest.TestCase):
 
     @staticmethod
     def setup_pangraph_from_po(po_path, metadata):
-        poalignment = PangraphBuilderTests.get_file_content(po_path)
+        poalignment = PangraphTests.get_file_content(po_path)
         pangraph = Pangraph(DataType.Nucleotides)
         builder = PangraphBuilderFromPO(genomes_info=metadata, missing_base_symbol="?")
         builder.build(poalignment, pangraph)
         return pangraph
+
+    @staticmethod
+    def get_file_content_as_str(path: Path):
+
+        with open(path) as input_file:
+            return input_file.read()

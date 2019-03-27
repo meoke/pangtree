@@ -1,29 +1,29 @@
 import unittest
 from ddt import ddt
 
-from tests.PangraphBuilder_Tests.PangraphBuilder_Tests import PangraphBuilderTests
+from tests.Pangraph_Tests.Pangraph_Tests import PangraphTests
 
 from tests.context import make_base as n
 from tests.context import Node
 from tests.context import MultialignmentMetadata
-from tests.context import MultialignmentFormat
+from tests.context import PangraphToPO
 from tools import pathtools
 
 
 @ddt
-class PangraphBuilderFromPOTest_BuildPangraph(PangraphBuilderTests):
+class PangraphBuilderFromPOTest_BuildPangraph(PangraphTests):
 
     def setUp(self):
         self.seq_metadata = MultialignmentMetadata(
-            pathtools.get_file_content("PangraphBuilder_Tests/seq_metadata.csv"))
+            pathtools.get_file_content("Pangraph_Tests/seq_metadata.csv"))
 
-    def test_1(self):
-        po_path = "PangraphBuilder_Tests/" \
-                   "PangraphBuilderFromPO_Tests/" \
-                   "files_build_pangraph/" \
-                   "test_1.po"
+    def test_1_typical_pangraph(self):
+        expected_po_content_path = "Pangraph_Tests/" \
+                                   "PangraphBuilderFromPO_Tests/" \
+                                   "files_build_pangraph/" \
+                                   "test_1.po"
 
-        expected_nodes = [Node(node_id=0, base=n('A'), aligned_to=1),
+        pangraph_nodes = [Node(node_id=0, base=n('A'), aligned_to=1),
                           Node(node_id=1, base=n('G'), aligned_to=0),
                           Node(node_id=2, base=n('C'), aligned_to=3),
                           Node(node_id=3, base=n('G'), aligned_to=2),
@@ -43,24 +43,27 @@ class PangraphBuilderFromPOTest_BuildPangraph(PangraphBuilderTests):
                           Node(node_id=17, base=n('G'), aligned_to=15)
                          ]
 
-        expected_paths = {
+        pangraph_paths = {
             'seq0': [[0, 2, 4, 6, 7, 8, 12, 14, 16]],
             'seq1': [[1, 2, 5, 6, 7, 9]],
             'seq2': [[3, 4, 6, 7, 10, 12, 14, 17]],
             'seq3': [[11, 13, 14, 15]]
         }
 
-        expected_pangraph = PangraphBuilderTests.setup_pangraph(expected_nodes, expected_paths)
-        actual_pangraph = PangraphBuilderTests.setup_pangraph_from_po(po_path, self.seq_metadata)
-        self.assertEqual(expected_pangraph, actual_pangraph)
+        pangraph = PangraphTests.setup_pangraph(pangraph_nodes, pangraph_paths)
+        pangraph_to_po = PangraphToPO()
+        actual_po_content = pangraph_to_po.get_po_file_content_from_pangraph(pangraph)
 
-    def test_2(self):
-        po_path = "PangraphBuilder_Tests/" \
-                   "PangraphBuilderFromPO_Tests/" \
-                   "files_build_pangraph/" \
-                   "test_2.po"
+        expected_po_content = PangraphTests.get_file_content_as_str(expected_po_content_path)
+        self.assertEqual(expected_po_content, actual_po_content)
 
-        expected_nodes = [Node(node_id=0, base=n('C'), aligned_to=1),
+    def test_2_consensuses_and_empty_sequences(self):
+        expected_po_content_path = "Pangraph_Tests/" \
+                                   "PangraphBuilderFromPO_Tests/" \
+                                   "files_build_pangraph/" \
+                                   "test_2.po"
+
+        pangraph_nodes = [Node(node_id=0, base=n('C'), aligned_to=1),
                           Node(node_id=1, base=n('T'), aligned_to=0),
                           Node(node_id=2, base=n('A'), aligned_to=3),
                           Node(node_id=3, base=n('G'), aligned_to=2),
@@ -71,7 +74,7 @@ class PangraphBuilderFromPOTest_BuildPangraph(PangraphBuilderTests):
                           Node(node_id=8, base=n('G'), aligned_to=None)
                           ]
 
-        expected_paths = {
+        pangraph_paths = {
             'seq0': [[0, 3, 4, 5, 6, 8]],
             'seq1': [[1, 2, 4, 5, 7, 8]],
             'seq2': [[]],
@@ -79,10 +82,13 @@ class PangraphBuilderFromPOTest_BuildPangraph(PangraphBuilderTests):
             'CONSENS0': [[0, 3, 4, 5, 7, 8]],
             'CONSENS1': [[1, 2, 4, 5, 6, 8]]
         }
-        self.seq_metadata.feed_with_multialignment_data(["CONSENS0", "CONSENS1"], MultialignmentFormat.PO)
-        expected_pangraph = PangraphBuilderTests.setup_pangraph(expected_nodes, expected_paths)
-        actual_pangraph = PangraphBuilderTests.setup_pangraph_from_po(po_path, self.seq_metadata)
-        self.assertEqual(expected_pangraph, actual_pangraph)
+        pangraph = PangraphTests.setup_pangraph(pangraph_nodes, pangraph_paths)
+        pangraph_to_po = PangraphToPO()
+        actual_po_content = pangraph_to_po.get_po_file_content_from_pangraph(pangraph)
+
+        expected_po_content = PangraphTests.get_file_content_as_str(expected_po_content_path)
+        self.assertEqual(expected_po_content, actual_po_content)
+
 
 
 if __name__ == '__main__':

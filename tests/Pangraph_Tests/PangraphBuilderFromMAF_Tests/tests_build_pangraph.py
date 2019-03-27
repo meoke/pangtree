@@ -1,7 +1,7 @@
 import unittest
 from ddt import ddt
 
-from tests.PangraphBuilder_Tests.PangraphBuilder_Tests import PangraphBuilderTests
+from tests.Pangraph_Tests.Pangraph_Tests import PangraphTests
 
 from tests.context import make_base as n
 from tests.context import Node
@@ -10,14 +10,14 @@ from tools import pathtools
 
 
 @ddt
-class PangraphBuilderFromMAFTest_BuildPangraph(PangraphBuilderTests):
+class PangraphBuilderFromMAFTest_BuildPangraph(PangraphTests):
 
     def setUp(self):
         self.seq_metadata = MultialignmentMetadata(
-            pathtools.get_file_content("PangraphBuilder_Tests/seq_metadata.csv"))
+            pathtools.get_file_content("Pangraph_Tests/seq_metadata.csv"))
 
     def test_1_messy_sequences(self):
-        maf_path = "PangraphBuilder_Tests/" \
+        maf_path = "Pangraph_Tests/" \
                    "PangraphBuilderFromMAF_Tests/" \
                    "files_build_pangraph/" \
                    "test_1_messy_sequences.maf"
@@ -45,8 +45,8 @@ class PangraphBuilderFromMAFTest_BuildPangraph(PangraphBuilderTests):
             "seq2": [[0, 2, 5, 6, 7, 10, 11, 12, 14]],
             "seq3": []
         }
-        expected_pangraph = PangraphBuilderTests.setup_pangraph(expected_nodes, expected_paths)
-        actual_pangraph = PangraphBuilderTests.setup_pangraph_from_maf(maf_path, self.seq_metadata)
+        expected_pangraph = PangraphTests.setup_pangraph(expected_nodes, expected_paths)
+        actual_pangraph = PangraphTests.setup_pangraph_from_maf(maf_path, self.seq_metadata)
         self.assertEqual(expected_pangraph, actual_pangraph)
 
 
