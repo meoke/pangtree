@@ -49,7 +49,7 @@ def _float_0_1(arg: str) -> float:
 def _email_address(arg: str) -> str:
     """Check if provided e-mail address is correct."""
 
-    match = re.match('^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$', arg)
+    match = re.match(r'^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$', arg)
     if match is not None:
         return arg
     else:

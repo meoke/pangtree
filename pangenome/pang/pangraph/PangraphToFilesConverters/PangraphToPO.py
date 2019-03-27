@@ -6,7 +6,7 @@ from pangraph.custom_types import NodeID
 
 class NodePO:
     def __init__(self,
-                 base: int,
+                 base: bytes,
                  aligned_to: NodeID,
                  in_nodes: List[NodeID],
                  sequences_ids: List[int]):
@@ -34,7 +34,7 @@ class PangraphToPO:
     def get_po_file_content(self, po_nodes: List[NodePO], po_sequences: List[SequencePO], datatype: DataType) -> str:
         self.po_nodes = po_nodes
         self.po_sequences = po_sequences
-        self.po_lines = [None] * self.get_po_file_lines_count()
+        self.po_lines = [""] * self.get_po_file_lines_count()
 
         last_position = self._write_introduction()
         last_position = self._write_sequences_info(start_at=last_position+1)
@@ -93,11 +93,11 @@ class PangraphToPO:
         return start_at + i
 
     @staticmethod
-    def _get_protein_node_code(nucleobase: int) -> str:
+    def _get_protein_node_code(nucleobase: bytes) -> str:
         return nucleobase.decode("ASCII").upper()
 
     @staticmethod
-    def _get_nucleotides_node_code(nucleobase: int) -> str:
+    def _get_nucleotides_node_code(nucleobase: bytes) -> str:
         return nucleobase.decode("ASCII").lower()
 
     def _get_in_nodes_info(self, in_nodes: List[NodeID]) -> str:

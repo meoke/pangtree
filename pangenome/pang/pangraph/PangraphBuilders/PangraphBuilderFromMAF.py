@@ -91,5 +91,6 @@ class PangraphBuilderFromMAF(PangraphBuilderBase):
             return seq_id[1]
         elif len(seq_id) == 1:
             return seq_id[0]
-            raise Exception(f"Sequence {maf_seq_id} has incorrect format [].seqid.")
+        raise Exception(f"Sequence {maf_seq_id} has incorrect format. "
+                        f"It should be \'[anything here].[seqid]\' or \'[seqid]\'.")
 

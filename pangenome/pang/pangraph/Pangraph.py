@@ -46,7 +46,7 @@ class Pangraph:
 
     def get_compatibilities(self, sequences_ids: List[SequenceID], consensus: List[NodeID], p: float) -> \
             Dict[SequenceID, CompatibilityToPath]:
-        compatibilities= dict()
+        compatibilities = dict()
         for seq_id in sequences_ids:
             try:
                 sequence_paths = self.paths[seq_id]

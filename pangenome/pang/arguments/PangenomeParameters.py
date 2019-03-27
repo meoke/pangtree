@@ -145,15 +145,22 @@ class PangenomeParameters:
                                              missing_nucleotide_symbol: str):
         with open(blosum_path) as b:
             blosum_lines = b.readlines()
+        if not blosum_lines:
+            raise Exception("Empty blosum file. Provide a valid blosum file or use te default one.")
+
+        blosum_symbols_line = None
         for blosum_line in blosum_lines:
             if len(blosum_line) > 0 and blosum_line[0] == " ":
                 blosum_symbols_line = blosum_line
                 break
+        if not blosum_symbols_line:
+            raise Exception("Cannot find the horizontal line of symbols in blosum file. "
+                            "It should begin with a whitespace.")
         blosum_symbols = str.strip(blosum_symbols_line).split(" ")
         if missing_nucleotide_symbol in blosum_symbols:
             return True
         else:
-            raise Exception("Error while a try of finding symbol for missing nucletides.")
+            raise Exception("Cannot find symbol used as missing base in blosum file.")
 
     def _get_default_blosum_path(self):
         return Path(os.path.abspath(__file__)).joinpath('../../bin/blosum80.mat').resolve()

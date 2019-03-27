@@ -7,7 +7,6 @@ from consensus.FindCutoff import MAX1, MAX2, FindMaxCutoff, FindNodeCutoff, NODE
 from metadata.MultialignmentMetadata import MultialignmentMetadata
 from fasta_providers.FromEntrezFastaProvider import FromEntrezFastaProvider
 from fasta_providers.FromZIPFastaProvider import FromZIPSystemProvider
-from pangraph.CompatibilityToPath import CompatibilityToPath
 from pangraph.Pangraph import Pangraph
 from tools import pathtools, loggingtools
 from arguments.PangenomeParameters import ConsensusAlgorithm, FastaComplementationOption, MaxCutoffOption, \
@@ -76,9 +75,8 @@ class Pangenome:
                                                                                 multialignment_file_content))
         self.pangraph.build_from_maf(self.params.multialignment_file_content, self.genomes_info)
 
-
     def generate_fasta_files_to_directory(self):
-        output_dir = pathtools.create_child_dir(self.params.output_path, 'fasta')
+        _ = pathtools.create_child_dir(self.params.output_path, 'fasta')
         raise NotImplementedError("Generate fasta files not implemented!")
 
     def generate_consensus(self):

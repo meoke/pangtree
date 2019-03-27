@@ -113,7 +113,7 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
             current_node_id += 1
             missing_nucleotide = self.get_missing_nucleotide(seq_id, i)
             self.add_node(node_id=current_node_id,
-                          nucleobase=missing_nucleotide,
+                          base=missing_nucleotide,
                           aligned_to=None,
                           column_id=column_id,
                           block_id=None)
@@ -130,12 +130,12 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
 
     def add_node(self,
                  node_id: NodeID,
-                 nucleobase: Nucleobase,
-                 aligned_to: NodeID,
+                 base: Nucleobase,
+                 aligned_to: Optional[NodeID],
                  column_id: ColumnID,
-                 block_id: BlockID) -> None:
+                 block_id: Optional[BlockID]) -> None:
         self.pangraph.nodes.append(Node(node_id=node_id,
-                                        base=nucleobase,
+                                        base=base,
                                         aligned_to=aligned_to,
                                         column_id=column_id,
                                         block_id=block_id))
@@ -166,7 +166,7 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
                 current_node_id += 1
                 maf_seqs_id = [seq_id for seq_id, n in sequence_name_to_nucleotide.items() if n == nucl]
                 self.add_node(node_id=current_node_id,
-                              nucleobase=make_nucleobase(nucl),
+                              base=make_nucleobase(nucl),
                               aligned_to=self.get_next_aligned_node_id(i, column_nodes_ids),
                               column_id=self.column_id,
                               block_id=block.id)
@@ -178,8 +178,8 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
         self.add_block_out_edges_to_free_edges(block, paths_join_info)
         self.manage_endings(block, paths_join_info)
 
-    def get_paths_join_info(self, block: Block) -> Dict[SequenceID, NodeID]:
-        paths_join_info: Dict[SequenceID, NodeID] = dict()
+    def get_paths_join_info(self, block: Block) -> Dict[SequenceID, Optional[NodeID]]:
+        paths_join_info: Dict[SequenceID, Optional[NodeID]] = dict()
         for seq in block.alignment:
             seq_id = self.get_seq_id(seq.id)
             paths_join_info[seq_id] = None
@@ -192,7 +192,7 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
         current_columns_ids = [node.column_id for node in self.pangraph.nodes]
         return max(current_columns_ids) if current_columns_ids else ColumnID(-1)
 
-    def get_correct_edge_type(self, block, edge: Arc) -> Tuple[int, int]:
+    def get_correct_edge_type(self, edge: Arc) -> Tuple[int, int]:
         return edge.edge_type
 
     def should_join_with_last_node(self, edge_type: Tuple[int, int]) -> bool:
@@ -230,7 +230,7 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
                 current_node_id += 1
                 missing_nucleotide = self.get_missing_nucleotide(seq_id, i)
                 self.add_node(node_id=current_node_id,
-                              nucleobase=missing_nucleotide,
+                              base=missing_nucleotide,
                               aligned_to=None,
                               column_id=column_id,
                               block_id=None)
@@ -253,7 +253,7 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
 
     def add_block_out_edges_to_free_edges(self, block: Block, join_info: Dict[SequenceID, NodeID]):
         for edge in block.out_edges:
-            edge_type = self.get_correct_edge_type(block, edge)
+            _ = self.get_correct_edge_type(edge)
             for seq in edge.sequences:
                 seq_id = self.get_seq_id(seq[0].seq_id)
                 last_node_id = self.complement_sequence_middles_if_needed(block=block,
@@ -320,7 +320,7 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
             current_node_id += 1
             missing_nucleotide = self.get_missing_nucleotide(seq_id, i)
             self.add_node(node_id=current_node_id,
-                          nucleobase=missing_nucleotide,
+                          base=missing_nucleotide,
                           aligned_to=None,
                           column_id=column_id,
                           block_id=None)
