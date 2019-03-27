@@ -14,6 +14,9 @@ class Node:
         self.column_id = column_id
         self.block_id = block_id
 
+    def get_base(self):
+        return self.base.decode("ASCII")
+
     def __eq__(self, other):
         return (self.id == other.id
                 and self.base == other.base
@@ -27,5 +30,6 @@ class Node:
             f"aligned_to: {self.aligned_to}, " \
             f"column_id: {self.column_id}, " \
             f"block_id: {self.block_id}"
+
 
 

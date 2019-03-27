@@ -11,7 +11,7 @@ from tools import pathtools
 
 
 @ddt
-class PangraphBuilderFromPOTest_BuildPangraph(PangraphTests):
+class PangraphSaverToPOTest_BuildPangraph(PangraphTests):
 
     def setUp(self):
         self.seq_metadata = MultialignmentMetadata(

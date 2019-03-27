@@ -14,7 +14,7 @@ from arguments.PangenomeParameters import ConsensusAlgorithm, FastaComplementati
 from consensus.SimplePOAConsensusGenerator import SimplePOAConsensusGenerator
 from consensus.TreePOAConsensusGenerator import TreePOAConsensusGenerator
 from arguments.PangenomeParameters import MultialignmentFormat
-
+import fileformats.fasta as fileformats_fasta
 
 global_logger = loggingtools.get_logger("")
 
@@ -99,8 +99,17 @@ class Pangenome:
                                     missing_nucleotide_symbol=self.missing_nucleotide_symbol)
 
     def _generate_fasta_files_to_directory(self):
-        _ = pathtools.create_child_dir(self.params.output_path, 'fasta')
-        raise NotImplementedError("Generate fasta files not implemented!")
+        global_logger.info("Generating fasta file with all sequences...")
+        pangraph_fasta_file_content = fileformats_fasta.pangraph_to_fasta(self.pangraph)
+        pangraph_fasta_file_path = pathtools.get_child_path(self.params.output_path, "sequences.fasta")
+        pathtools.save_to_file(pangraph_fasta_file_content, pangraph_fasta_file_path)
+
+        if self.consensuses_tree:
+            global_logger.info("Generating fasta file with all consensues sequences...")
+            consensuses_fasta_file_content = fileformats_fasta.consensuses_tree_to_fasta(self.pangraph,
+                                                                                         self.consensuses_tree)
+            consensuses_fasta_file_path = pathtools.get_child_path(self.params.output_path, "consensues.fasta")
+            pathtools.save_to_file(consensuses_fasta_file_content, consensuses_fasta_file_path)
 
     def _generate_consensus(self):
         output_dir = pathtools.create_child_dir(self.params.output_path, 'consensus')

@@ -7,7 +7,6 @@ from tests.context import Pangraph
 from tests.context import Node
 from tests.context import pathtools
 from tests.context import MultialignmentMetadata
-from tests.context import SequenceMetadata
 from tests.context import make_base as n
 from tests.context import DataType
 

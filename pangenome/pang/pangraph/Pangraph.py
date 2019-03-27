@@ -98,4 +98,7 @@ class Pangraph:
     def get_sequences_ids(self) -> List[SequenceID]:
         return [*self.paths.keys()]
 
+    def path_is_empty(self, seq_id):
+        return sum(len(path) for path in self.paths[seq_id]) == 0
+
 
