@@ -176,13 +176,13 @@ class PangenomeParameters:
         return Path(os.path.abspath(__file__)).joinpath('../../bin/blosum80.mat').resolve()
 
     def _infer_multialignment_format(self, multialignment_file_path: Path) -> MultialignmentFormat:
-        multialignment_file_extension = multialignment_file_path.suffix[1:]
-        if multialignment_file_path == '':
+        multialignment_file_extension = multialignment_file_path.suffix
+        if multialignment_file_extension == '':
             raise Exception("Cannot recognize mutlialignment file format. Append extension to file name. "
                             "Available file formats: maf, po, json.")
         else:
             try:
-                return MultialignmentFormat[multialignment_file_extension.upper()]
+                return MultialignmentFormat[multialignment_file_extension[1:].upper()]
             except KeyError:
                 raise Exception("Unknown mutlialignment file format. "
                                 "Available file formats: maf, po, json.")

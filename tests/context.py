@@ -11,7 +11,7 @@ from pangenome.pang.metadata.MultialignmentMetadata import MultialignmentMetadat
 from pangenome.pang.pangraph.Node import Node
 from pangenome.pang.pangraph.Pangraph import Pangraph
 from pangenome.pang.fasta_providers.FastaProvider import FastaProvider
-from pangenome.pang.fasta_providers.FromZIPFastaProvider import FromZIPSystemProvider
+from pangenome.pang.fasta_providers.FromFileFastaProvider import FromFileFastaProvider
 from pangenome.pang.fasta_providers.FromEntrezFastaProvider import FromEntrezFastaProvider
 from pangenome.pang.pangraph.PangraphBuilders.PangraphBuilderFromDAG import PangraphBuilderFromDAG
 from pangenome.pang.pangraph.PangraphBuilders.PangraphBuilderFromMAF import PangraphBuilderFromMAF

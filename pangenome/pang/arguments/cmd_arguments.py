@@ -216,9 +216,9 @@ def _get_parser() -> argparse.ArgumentParser:
                    type=str,
                    help='If fasta_complementation is NO, a custom symbol for missing nucleotides can be specified.'
                         'Make sure it is included in BLOSUM matrix you use.')
-    p.add_argument('-fasta_dir',
-                   type=_dir_arg,
-                   help='Local directory with fasta files used to complement missing parts of sequences in maf file.')
+    p.add_argument('--fasta_source_file', '-f',
+                   type=_file_arg(),
+                   help='ZIP archive with fasta files used to complement missing parts of sequences in maf file.')
     p.add_argument('-p',
                    type=float,
                    default=1,
