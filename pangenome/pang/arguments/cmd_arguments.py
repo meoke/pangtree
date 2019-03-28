@@ -217,7 +217,7 @@ def _get_parser() -> argparse.ArgumentParser:
                    help='If fasta_complementation is NO, a custom symbol for missing nucleotides can be specified.'
                         'Make sure it is included in BLOSUM matrix you use.')
     p.add_argument('--fasta_source_file', '-f',
-                   type=_file_arg(),
+                   type=_file_arg,
                    help='ZIP archive with fasta files used to complement missing parts of sequences in maf file.')
     p.add_argument('-p',
                    type=float,
@@ -248,6 +248,10 @@ def _get_parser() -> argparse.ArgumentParser:
                    action='store_true',
                    default=False,
                    help='Set to turn off console logging .')
+    p.add_argument('-output_with_nodes',
+                   action='store_true',
+                   default=False,
+                   help='Set if output json should include nodes (it significantly increases file size).')
     return p
 
 
@@ -275,7 +279,7 @@ def create_pangenome_parameters() -> PangenomeParameters:
             raw_maf=args.not_dag,
             fasta_complementation_option=args.fasta_complementation,
             missing_nucleotide_symbol=args.missing_n,
-            local_fasta_dirpath=args.fasta_dir,
+            fasta_source_file=args.fasta_source_file,
             max_cutoff_option=args.max,
             node_cutoff_option=args.node,
             verbose=args.verbose,
@@ -283,5 +287,6 @@ def create_pangenome_parameters() -> PangenomeParameters:
             email_address=args.email,
             cache=args.cache,
             p=args.p,
-            datatype=args.datatype
+            datatype=args.datatype,
+            output_with_nodes=args.output_with_nodes
         )

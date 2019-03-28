@@ -80,10 +80,10 @@ def call_pang(last_clicked_jsonified: str,
                                      output_path=output_path, generate_fasta=fasta_option, consensus_type="",
                                      hbmin=hbmin_value, search_range=r_value, multiplier=multiplier_value,
                                      stop=stop_value, re_consensus=re_consensus_value, raw_maf="",
-                                     fasta_complementation_option="", missing_nucleotide_symbol="",
-                                     local_fasta_dirpath="", max_cutoff_option="", node_cutoff_option="", verbose=True,
-                                     quiet=True, email_address="paulina-ph@wp.pl", cache=False, p=1,
-                                     datatype="")
+                                     fasta_complementation_option="", missing_nucleotide_symbol="", fasta_source_file="",
+                                     max_cutoff_option="", node_cutoff_option="", verbose=True, quiet=True,
+                                     email_address="paulina-ph@wp.pl", cache=False, p=1, datatype="", output_po="",
+                                     output_with_nodes=True)
         pangenome = run_pangenome_algorithm(params)
         jsonpangenome = get_jsonpangenome_from_pangenome(pangenome, params)
         jsonified_pangenome = get_jsonified_pangenome_from_jsonpangenome(jsonpangenome)

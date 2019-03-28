@@ -21,7 +21,7 @@ class JSONProgramParameters:
         self.re_consensus: bool = params.re_consensus
         self.not_dag: bool = params.raw_maf
         self.fasta_complementation_option: FastaComplementationOption = str(params.fasta_complementation_option)
-        self.local_fasta_dirpath: str = str(params.local_fasta_dirpath)
+        self.local_fasta_dirpath: str = str(params.fasta_source_file)
         self.p: float = params.p
         self.email: str = params.email_address
 
@@ -98,7 +98,7 @@ class JSONPangenome:
         else:
             self.dagmaf = []
 
-        if pangenome.pangraph.nodes:
+        if pangenome.pangraph.nodes and program_parameters.output_with_nodes:
             self.nodes = [JSONNode(node_id=node.id,
                                    base=node.base.decode("ASCII"),
                                    column_id=node.column_id,
@@ -114,7 +114,7 @@ class JSONPangenome:
                                            sequence_str_id=seq_id,
                                            metadata=pangenome.genomes_info.get_seq_metadata_as_dict(seq_id),
                                            nodes_ids=list(itertools.chain.from_iterable(
-                                               pangenome.pangraph.paths[seq_id]))
+                                               pangenome.pangraph.paths[seq_id])) if program_parameters.output_with_nodes else []
                                            )
                               for i, seq_id in enumerate(sorted(pangenome.genomes_info.get_all_sequences_ids()))]
         else:
@@ -131,7 +131,7 @@ class JSONPangenome:
                                               sequences_ids=[paths_str_id_to_int_id[seq_id]
                                                              for seq_id in
                                                              consensus_node.sequences_ids],
-                                              nodes_ids=consensus_node.consensus_path,
+                                              nodes_ids=consensus_node.consensus_path if program_parameters.output_with_nodes else [],
                                               mincomp=consensus_node.mincomp.value)
                                 for consensus_node in pangenome.consensuses_tree.nodes]
         else:
