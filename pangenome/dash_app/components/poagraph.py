@@ -13,14 +13,14 @@ PoagraphData = Dict[str, Union[PointsDict, PathsDict]]
 
 def get_data(jsonpangenome: JSONPangenome) -> PoagraphData:
     poagraph_data: PoagraphData = {"nodes": {"x": [node.column_id for node in jsonpangenome.nodes],
-                                             "y": [y_pos_dict[node.nucleobase] for node in jsonpangenome.nodes],
-                                             "base": [node.nucleobase for node in jsonpangenome.nodes]},
+                                             "y": [y_pos_dict[node.base] for node in jsonpangenome.nodes],
+                                             "base": [node.base for node in jsonpangenome.nodes]},
                                    "paths": {}}
 
     for sequence in jsonpangenome.sequences:
         poagraph_data["paths"][sequence.sequence_int_id] = {
             "x": [jsonpangenome.nodes[node_id].column_id for node_id in sequence.nodes_ids],
-            "y": [y_pos_dict[jsonpangenome.nodes[node_id].nucleobase] for node_id in sequence.nodes_ids],
+            "y": [y_pos_dict[jsonpangenome.nodes[node_id].base] for node_id in sequence.nodes_ids],
             "name": sequence.sequence_str_id
         }
 

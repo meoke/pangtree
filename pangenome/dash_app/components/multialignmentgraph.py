@@ -12,7 +12,7 @@ def get_data(jsonpangenome: JSONPangenome) -> Dict:
             "x": [jsonpangenome.nodes[node_id].column_id for node_id in sequence.nodes_ids],
             "y": [-sequence.sequence_int_id] * len(sequence.nodes_ids),
             "nodes_ids": [node_id for node_id in sequence.nodes_ids],
-            "nodes_bases": [jsonpangenome.nodes[node_id].nucleobase for node_id in sequence.nodes_ids],
+            "nodes_bases": [jsonpangenome.nodes[node_id].base for node_id in sequence.nodes_ids],
             "info": []
         }
     return multialignmentgraph_data

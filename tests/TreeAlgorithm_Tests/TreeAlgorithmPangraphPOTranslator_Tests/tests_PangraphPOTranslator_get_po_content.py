@@ -4,7 +4,7 @@ import numpy as np
 from tests.context import PangraphPOTranslator
 from tests.context import Pangraph
 from tests.context import Node
-from tests.context import make_nucleobase as n
+from tests.context import make_base as n
 from tests.context import NodePO, SequencePO
 from tests.context import SequenceID
 from tests.context import DataType

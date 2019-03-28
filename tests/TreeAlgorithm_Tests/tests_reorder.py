@@ -3,7 +3,7 @@ from ddt import ddt
 import numpy as np
 from tests.context import Pangraph
 from tests.context import Node
-from tests.context import make_nucleobase as n
+from tests.context import make_base as n
 from tests.context import SequenceID
 from tests.context import ConsensusNode
 from tests.context import TreePOAConsensusGenerator

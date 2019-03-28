@@ -31,26 +31,36 @@ class NodeCutoffOption(Enum):
     NODE4 = 4
 
 
+class MultialignmentFormat(Enum):
+    MAF = 0
+    PO = 1
+    JSON = 2
+
+    
 class PangenomeParameters:
     def __init__(self, multialignment_file_content: str, multialignment_file_path: Path,
                  metadata_file_content: Optional[str], metadata_file_path: Optional[Path],
                  blosum_file_path: Optional[Path], output_path: Path, generate_fasta: bool,
                  consensus_type: ConsensusAlgorithm, hbmin: float, search_range: Optional[list],
-                 multiplier: Optional[float], stop: Optional[float], re_consensus: Optional[bool], not_dag: bool,
+                 multiplier: Optional[float], stop: Optional[float], re_consensus: Optional[bool],
+                 raw_maf: Optional[bool],
                  fasta_complementation_option: Optional[FastaComplementationOption],
                  missing_nucleotide_symbol: Optional[str], local_fasta_dirpath: Optional[Path],
                  max_cutoff_option: Optional[MaxCutoffOption], node_cutoff_option: Optional[NodeCutoffOption],
-                 verbose: bool, quiet: bool, email_address: str, cache: bool, p: float, datatype: DataType):
+                 verbose: bool, quiet: bool, email_address: str, cache: bool, p: float, datatype: DataType,
+                 output_po: bool):
         self.multialignment_file_content = multialignment_file_content
         self.multialignment_file_path = multialignment_file_path
+        self.multialignment_format = self._infer_multialignment_format(multialignment_file_path)
         self.datatype = datatype
 
         self.metadata_file_content = metadata_file_content
         self.metadata_file_path = metadata_file_path
         self.blosum_file_path = blosum_file_path or self._get_default_blosum_path()
         self.output_path = output_path
+        self.output_po = output_po
 
-        self.not_dag = not_dag
+        self.raw_maf = raw_maf
         self.fasta_complementation_option = fasta_complementation_option
         self.email_address = email_address
         self.cache = cache
@@ -165,6 +175,18 @@ class PangenomeParameters:
     def _get_default_blosum_path(self):
         return Path(os.path.abspath(__file__)).joinpath('../../bin/blosum80.mat').resolve()
 
+    def _infer_multialignment_format(self, multialignment_file_path: Path) -> MultialignmentFormat:
+        multialignment_file_extension = multialignment_file_path.suffix
+        if multialignment_file_extension == '':
+            raise Exception("Cannot recognize mutlialignment file format. Append extension to file name. "
+                            "Available file formats: maf, po, json.")
+        else:
+            try:
+                return MultialignmentFormat[multialignment_file_extension[1:].upper()]
+            except KeyError:
+                raise Exception("Unknown mutlialignment file format. "
+                                "Available file formats: maf, po, json.")
+
     def __repr__(self):
         return "\n".join([f"{name}: {value}" for name, value in self.__dict__.items()])
 
@@ -172,10 +194,12 @@ class PangenomeParameters:
         return f"""
         Pangenome parameters:
         multialignment_file_path: {self.multialignment_file_path}
+        mutlialignment_format: {self.multialignment_format}
         metadata_file_path: {self.metadata_file_path}
         blosum_file_path: {self.blosum_file_path}
         output_path: {self.output_path}
-        not_dag: {self.not_dag}
+        output_po: {self.output_po}
+        not_dag: {self.raw_maf}
         fasta_complementation_option: {self.fasta_complementation_option}
         missing_nucleotide_symbol: {self.missing_nucleotide_symbol}
         local_fasta_dirpath: {self.local_fasta_dirpath}
@@ -194,3 +218,4 @@ class PangenomeParameters:
         cache: {self.cache},
         p: {self.p},
         datatype: {self.datatype}"""
+

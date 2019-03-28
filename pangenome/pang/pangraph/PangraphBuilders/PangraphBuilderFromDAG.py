@@ -2,6 +2,7 @@ from io import StringIO
 from collections import namedtuple
 from typing import Dict, Tuple, List, Optional, NewType
 
+from Bio import AlignIO
 from mafgraph.graph import Block
 from mafgraph.graph.Arc import Arc
 
@@ -11,7 +12,7 @@ from fasta_providers.FastaProvider import FastaProvider
 from pangraph.Node import Node
 from pangraph.PangraphBuilders.PangraphBuilderBase import PangraphBuilderBase
 from pangraph.exceptions import NoSequenceInfo, SequenceBuildingException
-from pangraph.custom_types import ColumnID, SequenceID, NodeID, BlockID, Sequence, Nucleobase, make_nucleobase
+from pangraph.custom_types import ColumnID, SequenceID, NodeID, BlockID, Sequence, Base, make_base
 from metadata.MultialignmentMetadata import MultialignmentMetadata
 from mafgraph.mafreader import start_position
 
@@ -38,7 +39,7 @@ Edge = namedtuple('Edge', ['seq_id',
 class PangraphBuilderFromDAG(PangraphBuilderBase):
     def __init__(self,
                  genomes_info: MultialignmentMetadata,
-                 missing_nucleotide_symbol: str,
+                 missing_base_symbol: str,
                  fasta_source: Optional[FastaProvider] = None):
         super().__init__(genomes_info)
         self.pangraph = None
@@ -47,7 +48,7 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
         self.seqs_info: Dict[SequenceID, SequenceInfo] = None
         self.column_id: ColumnID = None
         self.complement_sequences: bool = True if fasta_source else False
-        self.missing_nucleotide_symbol: Nucleobase = make_nucleobase(missing_nucleotide_symbol)
+        self.missing_nucleotide_symbol: Base = make_base(missing_base_symbol)
         self.genomes_info: MultialignmentMetadata = genomes_info
 
         if self.complement_sequences:
@@ -100,9 +101,9 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
             if first_block_sinfo.start != 0:
                 self.complement_sequence_starting_nodes(seq_id, first_block_sinfo)
 
-    def get_missing_nucleotide(self, seq_id: SequenceID, i: int) -> Nucleobase:
+    def get_missing_nucleotide(self, seq_id: SequenceID, i: int) -> Base:
         if self.complement_sequences:
-            return make_nucleobase(self.full_sequences[seq_id][i])
+            return make_base(self.full_sequences[seq_id][i])
         return self.missing_nucleotide_symbol
 
     def complement_sequence_starting_nodes(self, seq_id: SequenceID, first_block_sinfo: SequenceInfo) -> None:
@@ -130,7 +131,7 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
 
     def add_node(self,
                  node_id: NodeID,
-                 base: Nucleobase,
+                 base: Base,
                  aligned_to: Optional[NodeID],
                  column_id: ColumnID,
                  block_id: Optional[BlockID]) -> None:
@@ -166,7 +167,7 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
                 current_node_id += 1
                 maf_seqs_id = [seq_id for seq_id, n in sequence_name_to_nucleotide.items() if n == nucl]
                 self.add_node(node_id=current_node_id,
-                              base=make_nucleobase(nucl),
+                              base=make_base(nucl),
                               aligned_to=self.get_next_aligned_node_id(i, column_nodes_ids),
                               column_id=self.column_id,
                               block_id=block.id)
@@ -352,3 +353,9 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
     def get_seq_id(self, maf_seq_id: MafSequenceID):
         return MultialignmentMetadata.get_seqid_from_mafname(maf_seq_id)
 
+    @staticmethod
+    def get_sequences_names(multialignment_file_content: str) -> List[str]:
+        maf = [*AlignIO.parse(StringIO(multialignment_file_content), "maf")]
+
+        names_from_maf = {seq.id for block in maf for seq in block}
+        return list(names_from_maf)

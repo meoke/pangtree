@@ -150,6 +150,10 @@ def _get_parser() -> argparse.ArgumentParser:
     p.add_argument('-fasta',
                    action='store_true',
                    help='Set if fasta files for consensuses must be produced.')
+    p.add_argument('-output_po',
+                   action='store_true',
+                   default=False,
+                   help='Set if po file with entire pangraph (without any consensuses) must be produced.')
     p.add_argument('-consensus',
                    type=_consensus_algorithm_option,
                    default=ConsensusAlgorithm.NO,
@@ -212,9 +216,9 @@ def _get_parser() -> argparse.ArgumentParser:
                    type=str,
                    help='If fasta_complementation is NO, a custom symbol for missing nucleotides can be specified.'
                         'Make sure it is included in BLOSUM matrix you use.')
-    p.add_argument('-fasta_dir',
-                   type=_dir_arg,
-                   help='Local directory with fasta files used to complement missing parts of sequences in maf file.')
+    p.add_argument('--fasta_source_file', '-f',
+                   type=_file_arg(),
+                   help='ZIP archive with fasta files used to complement missing parts of sequences in maf file.')
     p.add_argument('-p',
                    type=float,
                    default=1,
@@ -260,6 +264,7 @@ def create_pangenome_parameters() -> PangenomeParameters:
             metadata_file_path=args.metadata,
             blosum_file_path=args.blosum,
             output_path=args.output,
+            output_po=args.output_po,
             generate_fasta=args.fasta,
             consensus_type=args.consensus,
             hbmin=args.hbmin,
@@ -267,7 +272,7 @@ def create_pangenome_parameters() -> PangenomeParameters:
             multiplier=args.multiplier,
             stop=args.stop,
             re_consensus=args.re_consensus,
-            not_dag=args.not_dag,
+            raw_maf=args.not_dag,
             fasta_complementation_option=args.fasta_complementation,
             missing_nucleotide_symbol=args.missing_n,
             local_fasta_dirpath=args.fasta_dir,

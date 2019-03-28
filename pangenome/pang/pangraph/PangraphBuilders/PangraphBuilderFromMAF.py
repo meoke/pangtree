@@ -1,9 +1,11 @@
+from typing import List
+
 from Bio import AlignIO
 from io import StringIO
 from pangraph.Node import Node
 from pangraph.PangraphBuilders.PangraphBuilderBase import PangraphBuilderBase
 from metadata.MultialignmentMetadata import MultialignmentMetadata
-from pangraph.custom_types import NodeID, SequenceID, Nucleobase, ColumnID, BlockID, make_nucleobase
+from pangraph.custom_types import NodeID, SequenceID, Base, ColumnID, BlockID, make_base
 from tools import loggingtools
 
 global_logger = loggingtools.get_global_logger()
@@ -27,20 +29,20 @@ class PangraphBuilderFromMAF(PangraphBuilderBase):
 
             for col in range(block_width):
                 column_id += 1
-                sequence_name_to_nucleotide = {SequenceID(seq.id): seq[col] for seq in block}
+                sequence_id_to_nucleotide = {SequenceID(seq.id): seq[col] for seq in block}
                 nodes_codes = sorted([*(
-                    set([nucleotide for nucleotide in sequence_name_to_nucleotide.values()])).difference({'-'})])
+                    set([nucleotide for nucleotide in sequence_id_to_nucleotide.values()])).difference({'-'})])
                 column_nodes_ids = [current_node_id + i + 1 for i, _ in enumerate(nodes_codes)]
 
                 for i, nucl in enumerate(nodes_codes):
                     current_node_id += 1
                     self.add_node(node_id=current_node_id,
-                                  nucleobase=make_nucleobase(nucl),
+                                  base=make_base(nucl),
                                   aligned_to=self.get_next_aligned_node_id(i, column_nodes_ids),
                                   column_id=ColumnID(column_id),
                                   block_id=BlockID(block_id))
 
-                    for sequence, nucleotide in sequence_name_to_nucleotide.items():
+                    for sequence, nucleotide in sequence_id_to_nucleotide.items():
                         if nucleotide == nucl:
                             self.add_node_do_sequence(maf_seq_id=sequence, node_id=current_node_id)
 
@@ -58,12 +60,12 @@ class PangraphBuilderFromMAF(PangraphBuilderBase):
 
     def add_node(self,
                  node_id: NodeID,
-                 nucleobase: Nucleobase,
+                 base: Base,
                  aligned_to: NodeID,
                  column_id: ColumnID,
                  block_id: BlockID) -> None:
         self.pangraph.nodes.append(Node(node_id=node_id,
-                                        base=nucleobase,
+                                        base=base,
                                         aligned_to=aligned_to,
                                         column_id=column_id,
                                         block_id=block_id))
@@ -85,12 +87,18 @@ class PangraphBuilderFromMAF(PangraphBuilderBase):
 
         return nodes_count
 
-    def get_seq_id(self, maf_seq_id):
+    def get_seq_id(self, maf_seq_id: SequenceID) -> SequenceID:
         seq_id = maf_seq_id.split('.')
         if len(seq_id) == 2:
-            return seq_id[1]
+            return SequenceID(seq_id[1])
         elif len(seq_id) == 1:
-            return seq_id[0]
+            return SequenceID(seq_id[0])
         raise Exception(f"Sequence {maf_seq_id} has incorrect format. "
                         f"It should be \'[anything here].[seqid]\' or \'[seqid]\'.")
 
+    @staticmethod
+    def get_sequences_names(multialignment_file_content: str) -> List[str]:
+        maf = [*AlignIO.parse(StringIO(multialignment_file_content), "maf")]
+
+        names_from_maf = {seq.id for block in maf for seq in block}
+        return list(names_from_maf)

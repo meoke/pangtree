@@ -1,6 +1,7 @@
-from typing import List
+from typing import List, Tuple, Callable
 
 from pangraph.DataType import DataType
+from pangraph.Pangraph import Pangraph
 from pangraph.custom_types import NodeID
 
 
@@ -31,10 +32,14 @@ class PangraphToPO:
         self.po_sequences: List[SequencePO] = None
         self.po_lines: List[str] = None
 
+    def get_po_file_content_from_pangraph(self, pangraph: Pangraph):
+        po_nodes, po_sequences = PangraphToPO.convert_to_po_input_data(pangraph)
+        return self.get_po_file_content(po_nodes, po_sequences, pangraph.datatype)
+
     def get_po_file_content(self, po_nodes: List[NodePO], po_sequences: List[SequencePO], datatype: DataType) -> str:
         self.po_nodes = po_nodes
         self.po_sequences = po_sequences
-        self.po_lines = [""] * self.get_po_file_lines_count()
+        self.po_lines = [""] * self._get_po_file_lines_count()
 
         last_position = self._write_introduction()
         last_position = self._write_sequences_info(start_at=last_position+1)
@@ -42,7 +47,43 @@ class PangraphToPO:
 
         return "\n".join(self.po_lines)
 
-    def get_po_file_lines_count(self) -> int:
+    @staticmethod
+    def convert_to_po_input_data(pangraph: Pangraph) -> Tuple[List[NodePO], List[SequencePO]]:
+        po_nodes = []
+        po_sequences = []
+        sequences_weights = pangraph.get_sequences_weights(pangraph.get_sequences_ids())
+
+        for node in pangraph.nodes:
+            po_nodes.append(NodePO(base=node.base,
+                                   aligned_to=node.aligned_to,
+                                   in_nodes=set(),
+                                   sequences_ids=[]))
+
+        seq_int_id = -1
+        for seq_id, paths in pangraph.paths.items():
+            nodes_count = sum([len(path) for path in paths])
+            if nodes_count == 0:
+                continue
+            seq_int_id += 1
+            po_sequences.append(SequencePO(name=seq_id,
+                                           nodes_count=nodes_count,
+                                           weight=sequences_weights[seq_id],
+                                           consensus_id=-1,
+                                           start_node_id=paths[0][0]))
+            for path in paths:
+                previous_node_id = None
+                for node_id in path:
+                    po_nodes[node_id].sequences_ids.append(seq_int_id)
+                    if previous_node_id is not None:
+                        po_nodes[node_id].in_nodes.add(previous_node_id)
+                    previous_node_id = node_id
+
+        for node in po_nodes:
+            node.in_nodes = list(node.in_nodes)
+
+        return po_nodes, po_sequences
+
+    def _get_po_file_lines_count(self) -> int:
         const_lines_count = 5
         source_lines_count = 2 * len(self.po_sequences)
         nodes_lines_count = len(self.po_nodes)
@@ -76,12 +117,7 @@ class PangraphToPO:
             raise Exception("No nodes info to write in PO file.")
         i = 0
 
-        if datatype.value == DataType.Proteins.value:
-            _get_node_code = PangraphToPO._get_protein_node_code
-        elif datatype.value == DataType.Nucleotides.value:
-            _get_node_code = PangraphToPO._get_nucleotides_node_code
-        else:
-            raise Exception("Unknown data type. Cannot create PO file.")
+        _get_node_code = PangraphToPO.get_node_code_conversion_function(datatype)
 
         for node in self.po_nodes:
             self.po_lines[start_at + i] = "".join([_get_node_code(node.base),
@@ -93,12 +129,21 @@ class PangraphToPO:
         return start_at + i
 
     @staticmethod
-    def _get_protein_node_code(nucleobase: bytes) -> str:
-        return nucleobase.decode("ASCII").upper()
+    def get_node_code_conversion_function(datatype: DataType) -> Callable[[bytes], str]:
+        if datatype.value == DataType.Proteins.value:
+            return PangraphToPO._get_protein_node_code
+        elif datatype.value == DataType.Nucleotides.value:
+            return PangraphToPO._get_nucleotides_node_code
+        else:
+            raise Exception("Unknown data type. Cannot create PO file.")
 
     @staticmethod
-    def _get_nucleotides_node_code(nucleobase: bytes) -> str:
-        return nucleobase.decode("ASCII").lower()
+    def _get_protein_node_code(base: bytes) -> str:
+        return base.decode("ASCII").upper()
+
+    @staticmethod
+    def _get_nucleotides_node_code(base: bytes) -> str:
+        return base.decode("ASCII").lower()
 
     def _get_in_nodes_info(self, in_nodes: List[NodeID]) -> str:
         return "".join([f'L{i}' for i in in_nodes])

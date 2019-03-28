@@ -3,22 +3,22 @@ from ddt import ddt
 
 from tests.context import MultialignmentMetadata
 from tests.context import Node
-from tests.context import make_nucleobase as n
+from tests.context import make_base as n
 from tests.context import pathtools
 
-from tests.PangraphBuilder_Tests.PangraphBuilder_Tests import PangraphBuilderTests
+from tests.Pangraph_Tests.Pangraph_Tests import PangraphTests
 
 
 @ddt
-class PangraphBuilderFromDAGTest_BuildPangraph(PangraphBuilderTests):
+class PangraphBuilderFromDAGTest_BuildPangraph(PangraphTests):
     @classmethod
     def setUpClass(cls):
         cls.seq_metadata = MultialignmentMetadata(
-            pathtools.get_file_content("PangraphBuilder_Tests/seq_metadata.csv"))
+            pathtools.get_file_content("Pangraph_Tests/seq_metadata.csv"))
         cls.fasta_source = None
 
     def test_00_simple(self):
-        maf_path = "PangraphBuilder_Tests/PangraphBuilderFromDAG_Tests/build_pangraph/test_0_simple.maf"
+        maf_path = "Pangraph_Tests/PangraphBuilderFromDAG_Tests/build_pangraph/test_0_simple.maf"
         expected_nodes = [
             Node(node_id=0, base=n('A'), aligned_to=None),
             Node(node_id=1, base=n('C'), aligned_to=None),
@@ -38,12 +38,12 @@ class PangraphBuilderFromDAGTest_BuildPangraph(PangraphBuilderTests):
             "seq2": [],
             "seq3": []
         }
-        expected_pangraph = PangraphBuilderTests.setup_pangraph(expected_nodes, expected_paths)
-        actual_pangraph = PangraphBuilderTests.setup_pangraph_from_maf_firstly_converted_to_dag(maf_path, self.seq_metadata, self.fasta_source)
+        expected_pangraph = PangraphTests.setup_pangraph(expected_nodes, expected_paths)
+        actual_pangraph = PangraphTests.setup_pangraph_from_maf_firstly_converted_to_dag(maf_path, self.seq_metadata, self.fasta_source)
         self.compare_pangraphs(actual_pangraph=actual_pangraph, expected_pangraph=expected_pangraph)
 
     def test_01_reversed_seq_in_one_block(self):
-        maf_path = "PangraphBuilder_Tests/PangraphBuilderFromDAG_Tests/build_pangraph/test_1_reversed_seq_in_one_block.maf"
+        maf_path = "Pangraph_Tests/PangraphBuilderFromDAG_Tests/build_pangraph/test_1_reversed_seq_in_one_block.maf"
         expected_nodes = [
             Node(node_id=0, base=n('A'), aligned_to=1),
             Node(node_id=1, base=n('G'), aligned_to=0),
@@ -63,12 +63,12 @@ class PangraphBuilderFromDAGTest_BuildPangraph(PangraphBuilderTests):
             "seq2": [],
             "seq3": []
         }
-        expected_pangraph = PangraphBuilderTests.setup_pangraph(expected_nodes, expected_paths)
-        actual_pangraph = PangraphBuilderTests.setup_pangraph_from_maf_firstly_converted_to_dag(maf_path, self.seq_metadata, self.fasta_source)
+        expected_pangraph = PangraphTests.setup_pangraph(expected_nodes, expected_paths)
+        actual_pangraph = PangraphTests.setup_pangraph_from_maf_firstly_converted_to_dag(maf_path, self.seq_metadata, self.fasta_source)
         self.compare_pangraphs(actual_pangraph=actual_pangraph, expected_pangraph=expected_pangraph)
 
     def test_02_seq_starts_in_second_block(self):
-        maf_path = "PangraphBuilder_Tests/PangraphBuilderFromDAG_Tests/build_pangraph/test_2_seq_starts_in_second_block.maf"
+        maf_path = "Pangraph_Tests/PangraphBuilderFromDAG_Tests/build_pangraph/test_2_seq_starts_in_second_block.maf"
         expected_nodes = [
             Node(node_id=0, base=n('C'), aligned_to=None),
             Node(node_id=1, base=n('T'), aligned_to=None),
@@ -87,12 +87,12 @@ class PangraphBuilderFromDAGTest_BuildPangraph(PangraphBuilderTests):
             "seq2": [[3, 4, 6, 8]],
             "seq3": []
         }
-        expected_pangraph = PangraphBuilderTests.setup_pangraph(expected_nodes, expected_paths)
-        actual_pangraph = PangraphBuilderTests.setup_pangraph_from_maf_firstly_converted_to_dag(maf_path, self.seq_metadata, self.fasta_source)
+        expected_pangraph = PangraphTests.setup_pangraph(expected_nodes, expected_paths)
+        actual_pangraph = PangraphTests.setup_pangraph_from_maf_firstly_converted_to_dag(maf_path, self.seq_metadata, self.fasta_source)
         self.compare_pangraphs(actual_pangraph=actual_pangraph, expected_pangraph=expected_pangraph)
 
     def test_03_edge_not_from_last_node_in_block(self):
-        maf_path = "PangraphBuilder_Tests/PangraphBuilderFromDAG_Tests/build_pangraph/test_3_edge_not_from_last_node_in_block.maf"
+        maf_path = "Pangraph_Tests/PangraphBuilderFromDAG_Tests/build_pangraph/test_3_edge_not_from_last_node_in_block.maf"
         expected_nodes = [
             Node(node_id=0, base=n('A'), aligned_to=None),
             Node(node_id=1, base=n('C'), aligned_to=None),
@@ -111,12 +111,12 @@ class PangraphBuilderFromDAGTest_BuildPangraph(PangraphBuilderTests):
             "seq3": []
         }
 
-        expected_pangraph = PangraphBuilderTests.setup_pangraph(expected_nodes, expected_pats)
-        actual_pangraph = PangraphBuilderTests.setup_pangraph_from_maf_firstly_converted_to_dag(maf_path, self.seq_metadata, self.fasta_source)
+        expected_pangraph = PangraphTests.setup_pangraph(expected_nodes, expected_pats)
+        actual_pangraph = PangraphTests.setup_pangraph_from_maf_firstly_converted_to_dag(maf_path, self.seq_metadata, self.fasta_source)
         self.compare_pangraphs(actual_pangraph=actual_pangraph, expected_pangraph=expected_pangraph)
 
     def test_04_single_block_no_nucleotides(self):
-        maf_path = "PangraphBuilder_Tests/PangraphBuilderFromDAG_Tests/build_pangraph/test_4_single_block_no_nucleotides.maf"
+        maf_path = "Pangraph_Tests/PangraphBuilderFromDAG_Tests/build_pangraph/test_4_single_block_no_nucleotides.maf"
         expected_nodes = []
 
         expected_paths = {
@@ -126,12 +126,12 @@ class PangraphBuilderFromDAGTest_BuildPangraph(PangraphBuilderTests):
             "seq3": []
         }
 
-        expected_pangraph = PangraphBuilderTests.setup_pangraph(expected_nodes, expected_paths)
-        actual_pangraph = PangraphBuilderTests.setup_pangraph_from_maf_firstly_converted_to_dag(maf_path, self.seq_metadata, self.fasta_source)
+        expected_pangraph = PangraphTests.setup_pangraph(expected_nodes, expected_paths)
+        actual_pangraph = PangraphTests.setup_pangraph_from_maf_firstly_converted_to_dag(maf_path, self.seq_metadata, self.fasta_source)
         self.compare_pangraphs(actual_pangraph=actual_pangraph, expected_pangraph=expected_pangraph)
 
     def test_05_single_block_single_nucletodide(self):
-        maf_path = "PangraphBuilder_Tests/PangraphBuilderFromDAG_Tests/build_pangraph/test_5_single_block_single_nucletodide.maf"
+        maf_path = "Pangraph_Tests/PangraphBuilderFromDAG_Tests/build_pangraph/test_5_single_block_single_nucletodide.maf"
         expected_nodes = [Node(node_id=0, base=n('A'), aligned_to=None)]
 
         expected_paths = {
@@ -141,12 +141,12 @@ class PangraphBuilderFromDAGTest_BuildPangraph(PangraphBuilderTests):
             "seq3": [[0]]
         }
 
-        expected_pangraph = PangraphBuilderTests.setup_pangraph(expected_nodes, expected_paths)
-        actual_pangraph = PangraphBuilderTests.setup_pangraph_from_maf_firstly_converted_to_dag(maf_path, self.seq_metadata, self.fasta_source)
+        expected_pangraph = PangraphTests.setup_pangraph(expected_nodes, expected_paths)
+        actual_pangraph = PangraphTests.setup_pangraph_from_maf_firstly_converted_to_dag(maf_path, self.seq_metadata, self.fasta_source)
         self.compare_pangraphs(actual_pangraph=actual_pangraph, expected_pangraph=expected_pangraph)
 
     def test_06_1st_block_separates_into_2_branches_which_connect_in_3rd_block(self):
-        maf_path = "PangraphBuilder_Tests/PangraphBuilderFromDAG_Tests/build_pangraph/" \
+        maf_path = "Pangraph_Tests/PangraphBuilderFromDAG_Tests/build_pangraph/" \
                    "test_6_1st_block_separates_into_2_branches_which_connect_in_3rd_block.maf"
         expected_nodes = [Node(node_id=0, base=n('A'), aligned_to=1),
                           Node(node_id=1, base=n('C'), aligned_to=2),
@@ -169,12 +169,12 @@ class PangraphBuilderFromDAGTest_BuildPangraph(PangraphBuilderTests):
             "seq3": []
         }
 
-        expected_pangraph = PangraphBuilderTests.setup_pangraph(expected_nodes, expected_paths)
-        actual_pangraph = PangraphBuilderTests.setup_pangraph_from_maf_firstly_converted_to_dag(maf_path, self.seq_metadata, self.fasta_source)
+        expected_pangraph = PangraphTests.setup_pangraph(expected_nodes, expected_paths)
+        actual_pangraph = PangraphTests.setup_pangraph_from_maf_firstly_converted_to_dag(maf_path, self.seq_metadata, self.fasta_source)
         self.compare_pangraphs(actual_pangraph=actual_pangraph, expected_pangraph=expected_pangraph)
 
     def test_07_inactive_edges_due_to_reversed_seqs(self):
-        maf_path = "PangraphBuilder_Tests/PangraphBuilderFromDAG_Tests/build_pangraph/test_7_inactive_edges_due_to_reversed_seqs.maf"
+        maf_path = "Pangraph_Tests/PangraphBuilderFromDAG_Tests/build_pangraph/test_7_inactive_edges_due_to_reversed_seqs.maf"
         expected_nodes = [
                             Node(node_id=0, base=n('A'), aligned_to=None),
                             Node(node_id=1, base=n('C'), aligned_to=None),
@@ -201,12 +201,12 @@ class PangraphBuilderFromDAGTest_BuildPangraph(PangraphBuilderTests):
             "seq3": [[0, 2], [3, 5], [6, 7, 8, 9, 11, 12, 15]]
         }
 
-        expected_pangraph = PangraphBuilderTests.setup_pangraph(expected_nodes, expected_paths)
-        actual_pangraph = PangraphBuilderTests.setup_pangraph_from_maf_firstly_converted_to_dag(maf_path, self.seq_metadata, self.fasta_source)
+        expected_pangraph = PangraphTests.setup_pangraph(expected_nodes, expected_paths)
+        actual_pangraph = PangraphTests.setup_pangraph_from_maf_firstly_converted_to_dag(maf_path, self.seq_metadata, self.fasta_source)
         self.compare_pangraphs(actual_pangraph=actual_pangraph, expected_pangraph=expected_pangraph)
 
     def test_08_reversed_block(self):
-        maf_path = "PangraphBuilder_Tests/PangraphBuilderFromDAG_Tests/build_pangraph/test_8_reversed_block.maf"
+        maf_path = "Pangraph_Tests/PangraphBuilderFromDAG_Tests/build_pangraph/test_8_reversed_block.maf"
         expected_nodes = [
                             Node(node_id=0, base=n('C'), aligned_to=None),
                             Node(node_id=1, base=n('A'), aligned_to=None),
@@ -228,12 +228,12 @@ class PangraphBuilderFromDAGTest_BuildPangraph(PangraphBuilderTests):
             "seq3": [[0, 1, 2, 3, 4, 6, 7, 9]]
         }
 
-        expected_pangraph = PangraphBuilderTests.setup_pangraph(expected_nodes, expected_paths)
-        actual_pangraph = PangraphBuilderTests.setup_pangraph_from_maf_firstly_converted_to_dag(maf_path, self.seq_metadata, self.fasta_source)
+        expected_pangraph = PangraphTests.setup_pangraph(expected_nodes, expected_paths)
+        actual_pangraph = PangraphTests.setup_pangraph_from_maf_firstly_converted_to_dag(maf_path, self.seq_metadata, self.fasta_source)
         self.compare_pangraphs(actual_pangraph=actual_pangraph, expected_pangraph=expected_pangraph)
 
     def test_09_inactive_edges_but_all_strands_plus(self):
-        maf_path = "PangraphBuilder_Tests/PangraphBuilderFromDAG_Tests/build_pangraph/" \
+        maf_path = "Pangraph_Tests/PangraphBuilderFromDAG_Tests/build_pangraph/" \
                    "test_9_inactive_edges_but_all_strands_plus.maf"
         expected_nodes = [
             Node(node_id=0, base=n('A'), aligned_to=None),
@@ -268,12 +268,12 @@ class PangraphBuilderFromDAGTest_BuildPangraph(PangraphBuilderTests):
         }
 
 
-        expected_pangraph = PangraphBuilderTests.setup_pangraph(expected_nodes, expected_paths)
-        actual_pangraph = PangraphBuilderTests.setup_pangraph_from_maf_firstly_converted_to_dag(maf_path, self.seq_metadata, self.fasta_source)
+        expected_pangraph = PangraphTests.setup_pangraph(expected_nodes, expected_paths)
+        actual_pangraph = PangraphTests.setup_pangraph_from_maf_firstly_converted_to_dag(maf_path, self.seq_metadata, self.fasta_source)
         self.compare_pangraphs(actual_pangraph=actual_pangraph, expected_pangraph=expected_pangraph)
 
     def test_10_parallel_blocks_1st_and_2nd_merge_into_3rd(self):
-        maf_path = "PangraphBuilder_Tests/PangraphBuilderFromDAG_Tests/build_pangraph/"\
+        maf_path = "Pangraph_Tests/PangraphBuilderFromDAG_Tests/build_pangraph/"\
                 "test_10_parallel_blocks_1st_and_2nd_merge_into_3rd.maf"
 
         expected_nodes = [
@@ -311,8 +311,8 @@ class PangraphBuilderFromDAGTest_BuildPangraph(PangraphBuilderTests):
             "seq3": [[1, 2, 3, 5, 6, 13, 14, 17, 20, 22]]
         }
 
-        expected_pangraph = PangraphBuilderTests.setup_pangraph(expected_nodes, expected_paths)
-        actual_pangraph = PangraphBuilderTests.setup_pangraph_from_maf_firstly_converted_to_dag(maf_path,
+        expected_pangraph = PangraphTests.setup_pangraph(expected_nodes, expected_paths)
+        actual_pangraph = PangraphTests.setup_pangraph_from_maf_firstly_converted_to_dag(maf_path,
                                                                                                 self.seq_metadata,
                                                                                                 self.fasta_source)
         self.compare_pangraphs(actual_pangraph=actual_pangraph, expected_pangraph=expected_pangraph)

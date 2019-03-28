@@ -1,0 +1,4 @@
+>consensus0|mincomp=0.5|sequences_count=4|children=[1, 2]
+ACTGGACC
+>consensus1|mincomp=?|sequences_count=3|children=[]
+ACGGGTCG

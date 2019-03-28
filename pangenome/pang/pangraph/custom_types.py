@@ -10,13 +10,13 @@ BlockID = NewType('BlockID', int)
 
 Sequence = NewType('Sequence', str)
 
-Nucleobase = NewType('Nucleobase', bytes)
+Base = NewType('Base', bytes)
 
 
-def make_nucleobase(x: str) -> Nucleobase:
+def make_base(x: str) -> Base:
     if len(x) == 0:
-        raise Exception("Empty string for nucleobase.")
+        raise Exception("Empty string for base.")
     if len(x) > 1:
-        raise Exception("Nucleobase string mus thave length 1.")
-    return Nucleobase(str.encode(x))
+        raise Exception("Base string mus thave length 1.")
+    return Base(str.encode(x))
 
