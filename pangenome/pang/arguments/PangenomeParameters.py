@@ -43,45 +43,51 @@ class PangenomeParameters:
                  blosum_file_path: Optional[Path], output_path: Path, generate_fasta: bool,
                  consensus_type: ConsensusAlgorithm, hbmin: float, search_range: Optional[list],
                  multiplier: Optional[float], stop: Optional[float], re_consensus: Optional[bool],
-                 raw_maf: Optional[bool],
-                 fasta_complementation_option: Optional[FastaComplementationOption],
-                 missing_nucleotide_symbol: Optional[str], local_fasta_dirpath: Optional[Path],
+                 raw_maf: Optional[bool], fasta_complementation_option: Optional[FastaComplementationOption],
+                 missing_base_symbol: Optional[str], fasta_source_file: Optional[Path],
                  max_cutoff_option: Optional[MaxCutoffOption], node_cutoff_option: Optional[NodeCutoffOption],
                  verbose: bool, quiet: bool, email_address: str, cache: bool, p: float, datatype: DataType,
-                 output_po: bool):
+                 output_po: bool, output_with_nodes: Optional[bool]):
+        # input data
         self.multialignment_file_content = multialignment_file_content
         self.multialignment_file_path = multialignment_file_path
         self.multialignment_format = self._infer_multialignment_format(multialignment_file_path)
         self.datatype = datatype
-
         self.metadata_file_content = metadata_file_content
         self.metadata_file_path = metadata_file_path
         self.blosum_file_path = blosum_file_path or self._get_default_blosum_path()
+
+        # output spec
         self.output_path = output_path
         self.output_po = output_po
+        self.generate_fasta = generate_fasta
+        self.output_with_nodes = output_with_nodes
+        self.verbose = verbose
+        self.quiet = quiet
 
+        # build spec
         self.raw_maf = raw_maf
         self.fasta_complementation_option = fasta_complementation_option
         self.email_address = email_address
         self.cache = cache
-        self.missing_nucleotide_symbol = missing_nucleotide_symbol or '?'
-        self.local_fasta_dirpath = local_fasta_dirpath
+        self.missing_base_symbol = missing_base_symbol or '?'
+        self.fasta_source_file = fasta_source_file
 
-        self.generate_fasta = generate_fasta
-
+        # consensus spec
         self.consensus_type = consensus_type
-
         self.hbmin = hbmin
 
-        self.stop = stop
         self.max_cutoff_option = max_cutoff_option
         self.search_range = search_range
+
         self.node_cutoff_option = node_cutoff_option
         self.multiplier = multiplier
+
+        self.stop = stop
         self.re_consensus = re_consensus
-        self.verbose = verbose
-        self.quiet = quiet
         self.p = p
+
+
 
         self._validate()
 
@@ -95,16 +101,16 @@ class PangenomeParameters:
         if self.fasta_complementation_option == FastaComplementationOption.NO:
             try:
                 self._blosum_contains_missing_nucl_symbol(blosum_path=self.blosum_file_path,
-                                                          missing_nucleotide_symbol=self.missing_nucleotide_symbol)
+                                                          missing_nucleotide_symbol=self.missing_base_symbol)
             except Exception as e:
-                if self.missing_nucleotide_symbol is not None:
+                if self.missing_base_symbol is not None:
                     raise Exception(f"The BLOSUM file does not contain symbol "
-                                    f"specified for missing nucleotides ({self.missing_nucleotide_symbol}.") from e
+                                    f"specified for missing nucleotides ({self.missing_base_symbol}.") from e
                 else:
                     raise Exception("The BLOSUM file does not contain default symbol"
                                     " for missing nucleotides (\'?\').") from e
 
-        if self.fasta_complementation_option is FastaComplementationOption.LOCAL and self.local_fasta_dirpath is None:
+        if self.fasta_complementation_option is FastaComplementationOption.LOCAL and self.fasta_source_file is None:
             raise Exception("Unspecified path to direction with fasta files, "
                             "while FastaComplementationOption.LocalFasta was chosen. "
                             "Use FastaComplementationOption.No or FastaComplementationOption.NCBI instead.")
@@ -201,8 +207,8 @@ class PangenomeParameters:
         output_po: {self.output_po}
         not_dag: {self.raw_maf}
         fasta_complementation_option: {self.fasta_complementation_option}
-        missing_nucleotide_symbol: {self.missing_nucleotide_symbol}
-        local_fasta_dirpath: {self.local_fasta_dirpath}
+        missing_nucleotide_symbol: {self.missing_base_symbol}
+        fasta_source_file: {self.fasta_source_file}
         generate_fasta: {self.generate_fasta}
         consensus_type: {self.consensus_type}
         hbmin: {self.hbmin}

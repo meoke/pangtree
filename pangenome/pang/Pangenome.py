@@ -2,7 +2,7 @@ from consensus.ConsensusesTree import ConsensusesTree
 from consensus.FindCutoff import MAX1, MAX2, FindMaxCutoff, FindNodeCutoff, NODE1, NODE2, NODE3, NODE4
 from metadata.MultialignmentMetadata import MultialignmentMetadata
 from fasta_providers.FromEntrezFastaProvider import FromEntrezFastaProvider
-from fasta_providers.FromZIPFastaProvider import FromFileProvider
+from fasta_providers.FromFileFastaProvider import FromFileFastaProvider
 from pangraph.Pangraph import Pangraph
 from pangraph.PangraphBuilders.PangraphBuilderFromDAG import PangraphBuilderFromDAG
 from pangraph.PangraphBuilders.PangraphBuilderFromMAF import PangraphBuilderFromMAF
@@ -27,7 +27,7 @@ class Pangenome:
         self.pangraph: Pangraph = Pangraph(pangenome_parameters.datatype)
         self.dagmaf = None
         self.consensuses_tree: ConsensusesTree = None
-        self.missing_nucleotide_symbol = self.params.missing_nucleotide_symbol
+        self.missing_nucleotide_symbol = self.params.missing_base_symbol
 
         self._config_logging()
 
@@ -69,7 +69,7 @@ class Pangenome:
         elif self.params.fasta_complementation_option is FastaComplementationOption.NCBI:
             fasta_source = FromEntrezFastaProvider(self.params.email_address, self.params.cache)
         elif self.params.fasta_complementation_option is FastaComplementationOption.LOCAL:
-            fasta_source = FromFileProvider(self.params.local_fasta_dirpath)
+            fasta_source = FromFileFastaProvider(self.params.local_fasta_dirpath)
         else:
             raise Exception("Not known fasta complementation option. "
                             "Should be of type FastaComplementationOption."

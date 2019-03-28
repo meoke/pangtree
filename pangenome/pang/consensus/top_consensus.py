@@ -70,7 +70,7 @@ class PangraphPOTranslator:
                                    start_node_id=self.old_to_new[
                                        self.pangraph.paths[self.seq_new_to_old[new_seq_id]][0][0]]
                                    )
-                        for new_seq_id in range(len(paths_to_keep))]
+                        for new_seq_id in range(len(self.sequences_ids))]
 
         for seq_id in self.sequences_ids:
             new_seq_id = self.seq_old_to_new[seq_id]
