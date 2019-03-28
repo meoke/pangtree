@@ -27,7 +27,7 @@ class Pangenome:
         self.pangraph: Pangraph = Pangraph(pangenome_parameters.datatype)
         self.dagmaf = None
         self.consensuses_tree: ConsensusesTree = None
-        self.missing_nucleotide_symbol = self.params.missing_nucleotide_symbol
+        self.missing_nucleotide_symbol = self.params.missing_base_symbol
 
         self._config_logging()
 

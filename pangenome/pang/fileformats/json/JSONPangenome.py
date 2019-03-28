@@ -7,23 +7,43 @@ from pangraph.custom_types import NodeID
 
 class JSONProgramParameters:
     def __init__(self, params: PangenomeParameters):
+        # input data
         self.multialignment_file_path: str = str(params.multialignment_file_path)
+        self.multialignment_format: str = str(params.multialignment_format)
+
+        self.datatype: str = str(params.datatype)
         self.metadata_file_path: str = str(params.metadata_file_path)
+        self.blosum_file_path: str = str(params.blosum_file_path)
+
+        # output spec
         self.output_path: str = str(params.output_path)
+        self.output_po: bool = params.output_po
         self.generate_fasta: bool = params.generate_fasta
+        self.output_with_nodes = params.output_with_nodes
+        self.verbose = params.verbose
+        self.quiet = params.quiet
+
+        # build spec
+        self.raw_maf: bool = params.raw_maf
+        self.fasta_complementation_option: FastaComplementationOption = str(params.fasta_complementation_option)
+        self.email: str = params.email_address
+        self.cache: bool = params.cache
+        self.missing_base_symbol: str = params.missing_base_symbol
+        self.fasta_source_file: str = params.fasta_source_file
+
+        # consensus spec
         self.consensus_type: str = str(params.consensus_type)
-        self.max_cutoff_strategy = params.max_cutoff_option
-        self.node_cutoff_strategy = params.node_cutoff_option
         self.hbmin: float = params.hbmin
-        self.r: float = params.search_range
+
+        self.max_cutoff_strategy = params.max_cutoff_option
+        self.search_range = params.search_range
+
+        self.node_cutoff_strategy = params.node_cutoff_option
         self.multiplier: float = params.multiplier
+
         self.stop: float = params.stop
         self.re_consensus: bool = params.re_consensus
-        self.not_dag: bool = params.raw_maf
-        self.fasta_complementation_option: FastaComplementationOption = str(params.fasta_complementation_option)
-        self.local_fasta_dirpath: str = str(params.fasta_source_file)
         self.p: float = params.p
-        self.email: str = params.email_address
 
 
 class JSONNode:

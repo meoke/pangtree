@@ -92,7 +92,7 @@ class NODE1(FindNodeCutoff):
             reason = "Single compatibility"
         else:
             sorted_comp = sorted(compatibilities)
-            mean_distance = (sorted_comp[-1] - sorted_comp[0]) / (len(sorted_comp) - 1)
+            mean_distance = (sorted_comp[-1] - sorted_comp[0]).value / (len(sorted_comp) - 1)
             required_gap = mean_distance * self.multiplier
             cutoff = NODE1.get_value_following_first_gap_greater_than_required_gap(sorted_comp, required_gap)
             reason = "Value after mean_distance * multiplier"
@@ -106,7 +106,7 @@ class NODE1(FindNodeCutoff):
                                                                 required_gap: float) -> Optional[CompatibilityToPath]:
         if len(sorted_comp) == 1:
             return sorted_comp[0]
-        distances = np.array([sorted_comp[i + 1] - sorted_comp[i] for i in range(len(sorted_comp) - 1)])
+        distances = np.array([(sorted_comp[i + 1] - sorted_comp[i]).value for i in range(len(sorted_comp) - 1)])
         if any(distances >= required_gap):
             a = np.where(distances >= required_gap)[0][0] + 1
             return sorted_comp[a]
@@ -135,7 +135,7 @@ class NODE2(FindNodeCutoff):
                 reason = "guard > max(compatibilities), use node 1."
             else:
                 sorted_comp = sorted(sorted_comp + [guard])
-                mean_distance = (sorted_comp[-1] - sorted_comp[0]) / (len(sorted_comp) - 1)
+                mean_distance = (sorted_comp[-1] - sorted_comp[0]).value / (len(sorted_comp) - 1)
                 required_gap = mean_distance * self.multiplier
                 if sorted_comp.count(guard) > 1:
                     cutoff_search_area = [c for c in sorted_comp if c <= guard]

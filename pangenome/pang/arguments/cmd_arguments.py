@@ -278,7 +278,7 @@ def create_pangenome_parameters() -> PangenomeParameters:
             re_consensus=args.re_consensus,
             raw_maf=args.not_dag,
             fasta_complementation_option=args.fasta_complementation,
-            missing_nucleotide_symbol=args.missing_n,
+            missing_base_symbol=args.missing_n,
             fasta_source_file=args.fasta_source_file,
             max_cutoff_option=args.max,
             node_cutoff_option=args.node,

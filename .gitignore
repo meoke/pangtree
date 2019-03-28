@@ -110,6 +110,4 @@ output*
 
 tests/TreeAlgorithm_Tests/TreeAlgorithmConsensuses_Tests/output/*
 pangenome/pang/.fastacache
-examples/Balibase/output/consensus/*.po
-examples/Balibase/output/consensus/0_0_max_out_pangenome.po
 readme.md

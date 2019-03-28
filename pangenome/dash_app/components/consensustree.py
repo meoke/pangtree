@@ -1,5 +1,7 @@
 from collections import deque
 from typing import Dict, List, Tuple, Set, Any
+
+import math
 import plotly.graph_objs as go
 import pandas as pd
 
@@ -27,8 +29,9 @@ def get_consensustree(jsonpangenome: JSONPangenome) -> nx.DiGraph:
                             show_in_table=True,
                             hidden=False,
                             children_consensuses=consensus.children,
+                            # mincomp=consensus.mincomp ** (1/jsonpangenome.program_parameters.p),
                             mincomp=consensus.mincomp,
-                            is_leaf = node_is_leaf)
+                            is_leaf=node_is_leaf)
         if consensus.parent is not None:
             tree_graph.add_edge(consensus.parent, consensus.node_id, weight=len(consensus.sequences_ids))
 
