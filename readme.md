@@ -52,43 +52,25 @@ python -m unittest discover -s tests -p '*_test.py'
 
 ### Break down into end to end tests
 
-Explain what these tests test and why
-
-```
-Give an example
-```
 
 ### And coding style tests
 
-Explain what these tests test and why
-
-```
-Give an example
-```
 
 ## Deployment
 
-Add additional notes about how to deploy this on a live system
+
 
 ## Built With
 
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
 
 ## Contributing
 
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
 
 ## Authors
 
-* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
-
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
 
 ## License
 
@@ -121,59 +103,121 @@ Główne funkcjonalności:
 graphviz
 graphviz-dev
 ## Użycie programu
-usage: pang [-h] --multialignment MULTIALIGNMENT --data DATA [--output OUTPUT]
-            [-fasta] [-vis] [-consensus {simple,tree}] [-hbmin HBMIN] [-r R R]
-            [-multiplier MULTIPLIER] [-stop STOP] [-re_consensus]
-
-Consensus generation and visulization of Pangenome
-
-optional arguments:
-
+``
   **-h, --help**            show this help message and exit
-  
-  **--multialignment MULTIALIGNMENT, -m MULTIALIGNMENT**
+
+  --multialignment MULTIALIGNMENT, -m MULTIALIGNMENT
                         Path to the mulitalignment file. Accepted formats:
                         .maf, .po.
-                        
-  **--data DATA, -d DATA**  Path to the json file with genomes specification.
-                        See... examples\Ebola\ebola_metadata.json
-                        
-  **--output OUTPUT, -o OUTPUT**
+
+  --datatype DATATYPE   Input type: 'n' for nucleotides, 'p' for protieins.
+  
+  --metadata METADATA   Path to the csv file with genomes specification.
+                        See... examples\Ebola\ebola_metadata.csv
+  
+  --blosum BLOSUM       Path to the BLOSUM matrix used in consensus generation
+                        algorithm.If fasta_complementation option is NO and a
+                        custom symbol is provided, the matrix specified here
+                        must include this symbol.If fasta_complementation
+                        option is NO and a custom symbol is not provided, the
+                        matrix specified here must include symbol '?' as this
+                        is the default symbol for missing nucleotide.
+  
+  --output OUTPUT, -o OUTPUT
                         Output directory path.
-                        
-  **-fasta**                Set if fasta files must be produced.
   
-  **-vis**                  Set if visualization must be produced.
+  -fasta                Set if fasta files for consensuses must be produced.
   
-  **-consensus {simple,tree}**
-                        Set if consensus must be generated. Algorithms to
-                        choose: 'simple' or 'tree'.
-                        
-  **-hbmin HBMIN**          Simple POA algorithm parameter. The minimum value of
-                        sequence compatibility to generated consensus
-                        
-  **-r R R**                Tree POA algorithm parameter.Specify what part of
+  -output_po            Set if po file with entire pangraph (without any
+                        consensuses) must be produced.
+  
+  -consensus CONSENSUS  Set if consensus must be generated. Values to choose:
+                        'simple' or 'tree'.
+  
+  -hbmin HBMIN          Simple POA algorithm parameter. The minimum value of
+                        sequence compatibility to generated consensus.
+  
+  -r R R                Tree POA algorithm parameter.Specify what part of
                         sorted capabilities should be searched for node
                         cutoff. E.g. [0.2,0.8]
-                        
-  **-multiplier MULTIPLIER**
-                        Tree POA algorithm parameter. The greater it is, the more granular the tree is.
-                        
-  **-stop STOP**            Tree POA algorithm parameter.Value of node
+  
+  -multiplier MULTIPLIER
+                        Tree POA algorithm parameter.Cutoff value for node
+                        parameter. The greater it is, the more granular the
+                        tree is.
+  
+  -stop STOP            Tree POA algorithm parameter.Value of node
                         compatibility above which the node is no more split.
-                        
-
-  **-re_consensus**         Tree POA algorithm parameter.Set if after producing
+  
+  -re_consensus         Tree POA algorithm parameter.Set if after producing
                         children nodes, sequences should be moved to siblings
                         nodes if compatibility to its consensus is higher.
-                        
+  
+  -not_dag              Pangraph building from maf file parameter.Set if the
+                        maf content must not be transformed to DAG when
+                        building pangraph. Pangraph that was build in this way
+                        provides consensuses tree the consensuses do not
+                        reflect the real life sequences.
+  
+  -fasta_complementation FASTA_COMPLEMENTATION
+                        Pangraph building from maf file parameter. Ignored
+                        when -not_dag parameter is set.Maf file usually
+                        contains not full sequences but only parts of them,
+                        aligned to each other. To build an exact pangraph the
+                        full sequences must be retrieved from: ncbi or local
+                        file system. Don't use this argument if you want the
+                        pangraph to be build without full sequences.Pass
+                        "ncbi" if you want to download the lacking fragments
+                        from ncbiPass "local" if you want to use fasta from
+                        local file system.
+  
+  -email EMAIL          E-mail address requiered when Fasta Complementation
+                        Option is "NCBI" as using Entrez API obligates the
+                        user to pass e-mail address.
+  
+  -cache                Used if Fasta Complementation Option is "NCBI" Stores
+                        sequences downloaded from NCBI on local disc.They are
+                        reused between uses of this program.
+  
+  -missing_n MISSING_N  If fasta_complementation is NO, a custom symbol for
+                        missing nucleotides can be specified.Make sure it is
+                        included in BLOSUM matrix you use.
+  
+  --fasta_source_file FASTA_SOURCE_FILE, -f FASTA_SOURCE_FILE
+                        ZIP archive with fasta files used to complement
+                        missing parts of sequences in maf file.
+  
+  -p P                  Tree consensus algorithm parameter.When deciding about
+                        consensus node split, the compatibilities are raised
+                        to the power o p.It enables to change the linear
+                        meaing of compatibility values.For p from range [0,1]
+                        it decreases distances between small compatibilities
+                        and increases distances between the bigger ones.For p
+                        > 1 it increases distances between small
+                        compatibilities and decreases distances between the
+                        bigger ones.
+  
+  -max MAX              Specify which strategy - MAX1 or MAX2 use for finding
+                        max cutoff (see details in README.md)
+  
+  -node NODE            Specify which strategy - NODE1 (1), NODE2 (2), NODE3
+                        (3) or NODE4 (4) use for finding max cutoff (see
+                        details in README.md)
+  
+  -v, --verbose         Set if detailed log files must be produced.
+  
+  -q, --quiet           Set to turn off console logging .
+  
+  -output_with_nodes    Set if output json should include nodes (it
+                        significantly increases file size).
 
+``
 ## Przykłady
-python3 pang -m examples/Fabricated/f.maf -d examples/Fabricated/f_metadata.json -consensus tree
+python3 pang examples/Fabricated/f.maf -d examples/Fabricated/f_metadata.json -consensus tree
                         
 ## Opisy funkcjonalności
 ### Konstrukcja poagraphu
-Input: plik .maf (Multialignment Alignment Format)
+Input: plik .maf (Multialignment Alignment Format) lub .po
 
 Output: plik .po 
 
@@ -189,19 +233,10 @@ TBA
 
 ### Założenia
 ##### Input
-- *poagraph* - kosntruowany przez program z pliku .maf
-- *cutoff_search_range* - Wśród posortowanych wartości compatibilities poszukiwany jest próg odcięcia, czyli taka wartość compatibility, poniżej której sekwencje nie są przydzielane do danego węzła. *cutoff_search_range* określa, w której części listy wartość będzie poszukiwana. Np. dla [0.2, 0.5, 0.8, 0.9, 0.95] i *cutoff_search_range* = [0.5, 1], próg odcięcia będzie szukany wśród [0.8, 0.9, 0.95]
-- *multiplier* - Próg odcięcia jest liczony wg procedury: oblicz średnią odległość między wartościami compatibilities i znajdź pierwszą odległość, która tę średnią*multiplier przekracza.
-- *stop* - compatibility węzła, przy osiągnięciu którego węzeł nie jest już dzielony
-- *re_consensus* - przełącznik. Jeśli ma wartość True, to po wygenerowaniu dzieci danego węzła dokonywane jest sprawdzenie, czy sekwencje nie powinny przynależeć do innego węzła spośród rodzeństwa, niż zostały pierwotnie przypisane.
+TBA
 
 ##### Output:
-- lista consensusów
-- drzewo, w którym każdy węzeł zawiera:
-    - ID consensusu, któremu odpowiada ten węzeł
-    - listę sekwencji, które zostały zakwalifikowane do tego węzła (consensusu)
-    - listę compatibilities sekwencji pangraphu do consensusu tego węzła
-    - minimalne compatibility wśród sekwencji zakwalifikowanych do tego węzła
+TBA
 
 ##### Algorytm
 Drzewo jest budowane w porządku Breadth First. Pseudo-Python-Code:
@@ -236,7 +271,7 @@ def get_children(node):
         the_most_compatible_sequences = sequences > max_cutoff
         
         max_consensus = poa(Pangraph(the_most_compatible_sequences))
-        compatibilities = get_compatibilities(node.sequences, max_consensus)
+        compatibilities = get_compatibilities(node.sequences, max_consensus)**p
         
         node_cutoff = find_node_cutoff(compatibilities)
         compatible_sequences = sequences > node_cutoff
@@ -248,19 +283,6 @@ def get_children(node):
         nodes.move_sequences_if_needed()
     return nodes
     
-def find_max_cutoff(compatibilities):
-    sc = sorted(compatibilities)
-    search_range_values = get_search_range(sc, cutoff_search_range)
-    max_d = get_max_distance(sorted(search_range_values))
-    (c1, c2) = get_first_pair_with_distance_greater_than_max_d(search_range_values, max_d)
-    return c2
-    
-def find_node_cutoff(compatibilites):
-    sc = sorted(compatibilities)
-    avg_d = get_average_distance(compatibilites)
-    d = avg_d * multiplier
-    (c1, c2) = get_first_pair_with_distance_greater_than_d(sc, d)
-    return c2
 ```
 
 Słowny opis podziału węzła **N** (odpowiada get_children, uruchamiane tylko gdy w węźle istnieje sekwencja 
