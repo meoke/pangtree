@@ -109,5 +109,4 @@ ENV/
 
 tests/TreeAlgorithm_Tests/TreeAlgorithmConsensuses_Tests/output/*
 pangenome/pang/.fastacache
-readme.md
 /output/
