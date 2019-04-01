@@ -1,242 +1,42 @@
 # Pang
 
-
-Narzędzie służące do analizy i wizualizacji uliniowienia wielu sekwencji genetycznych. Implementuje ideę pangenomeu ([Ref. 1](https://doi.org/10.1093/bib/bbw089)) poprzez grafową reprezentację multiuliniowienia oraz konstrukcję drzewa filogenetycznego wraz z kompromisową sekwencją dla każdego węzła. 
-
 Tool for analysis and visualisation of multiple sequence alignment. It implements the idea of pan-genome ([Ref. 1](https://doi.org/10.1093/bib/bbw089)) by representing the multialginment as a graph and construction of a phylogenetic tree joined with an agreed sequence for every node.
+
+[PL]
+Narzędzie służące do analizy i wizualizacji uliniowienia wielu sekwencji genetycznych. Implementuje ideę pangenomeu ([Ref. 1](https://doi.org/10.1093/bib/bbw089)) poprzez grafową reprezentację multiuliniowienia oraz konstrukcję drzewa filogenetycznego z kompromisową sekwencją dla każdego węzła. 
 
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
-
 ### Prerequisites
 
-What things you need to install the software and how to install them
-
-To use Pang via command line:
+Running:
 * [BioPython](https://biopython.org/)
+* [Mafgraph](https://github.com/anialisiecka/Mafgraph)
 * [numpy](http://www.numpy.org/)
 * [jsonpickle](http://jsonpickle.github.io/)
-* [Mafgraph](https://github.com/anialisiecka/Mafgraph)
-* [DDT](https://github.com/txels/ddt)
-* [pandas](https://pandas.pydata.org/)
-* [networkx](https://networkx.github.io/)
 
-To use also visualisations (via web browser):
-* [plotly](https://plot.ly)
-* [flask](http://flask.pocoo.org/)
-* [dash, dash-core-components, dash-html-components, dash-table](https://dash.plot.ly/)
+Testing:
+* [DDT](https://github.com/txels/ddt)
 
 
 ### Installing
 
 ```
-TBA setup
+TBA
 ```
 
-#### Quick installation check - using terminal
+### Quick installation check
+
+```python3 -m pangenome --multialignment data/Fabricated/f.maf --metadata data/Fabricated/f_metadata.csv```
+
+## Idea and algorithm description 
+
+SECTION UNDER DEVELOPMENT
 ```
-python3 pang/main.py --multialignment ../examples/Fabricated/f.maf -- metadata ../examples/Fabricated/f_metadata.csv -consensus tree -v
-```
-#### Quick installation check - using web browser
-Run:
-```
-python3 run_dash_app.py
-```
-Open web browser (Google Chrome is recommended) and go to http://127.0.0.1:8056/
-
-## Running the tests
-
-python -m unittest discover -s tests -p '*_test.py'
-
-### Break down into end to end tests
-
-
-### And coding style tests
-
-
-## Deployment
-
-
-
-## Built With
-
-
-## Contributing
-
-
-## Versioning
-
-
-## Authors
-
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
-
-## Acknowledgments
-
-### Bibliography
-1. [**Computational pan-genomics: status, promises and challenges**](https://doi.org/10.1093/bib/bbw089) 
-The Computational Pan-Genomics Consortium. Briefings in Bioinformatics, Volume 19, Issue 1, January 2018, Pages 118–135 
-
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc
-
-
-Pang - narzędzie służące do analizy i wizualizacji uliniowienia wielu sekwencji genetycznej. Implementuje ideę pangenomeu [
-
-Główne funkcjonalności:
-* 
-
-## Wymagania
-* [BioPython](https://biopython.org/)
-* [numpy](http://www.numpy.org/)
-* [jsonpickle](http://jsonpickle.github.io/)
-* [Mafgraph-todo]()
-* [Unittest](https://docs.python.org/3/library/unittest.html)
-* [DDT](https://github.com/txels/ddt)
-
-graphviz
-graphviz-dev
-## Użycie programu
-``
-  **-h, --help**            show this help message and exit
-
-  --multialignment MULTIALIGNMENT, -m MULTIALIGNMENT
-                        Path to the mulitalignment file. Accepted formats:
-                        .maf, .po.
-
-  --datatype DATATYPE   Input type: 'n' for nucleotides, 'p' for protieins.
-  
-  --metadata METADATA   Path to the csv file with genomes specification.
-                        See... examples\Ebola\ebola_metadata.csv
-  
-  --blosum BLOSUM       Path to the BLOSUM matrix used in consensus generation
-                        algorithm.If fasta_complementation option is NO and a
-                        custom symbol is provided, the matrix specified here
-                        must include this symbol.If fasta_complementation
-                        option is NO and a custom symbol is not provided, the
-                        matrix specified here must include symbol '?' as this
-                        is the default symbol for missing nucleotide.
-  
-  --output OUTPUT, -o OUTPUT
-                        Output directory path.
-  
-  -fasta                Set if fasta files for consensuses must be produced.
-  
-  -output_po            Set if po file with entire pangraph (without any
-                        consensuses) must be produced.
-  
-  -consensus CONSENSUS  Set if consensus must be generated. Values to choose:
-                        'simple' or 'tree'.
-  
-  -hbmin HBMIN          Simple POA algorithm parameter. The minimum value of
-                        sequence compatibility to generated consensus.
-  
-  -r R R                Tree POA algorithm parameter.Specify what part of
-                        sorted capabilities should be searched for node
-                        cutoff. E.g. [0.2,0.8]
-  
-  -multiplier MULTIPLIER
-                        Tree POA algorithm parameter.Cutoff value for node
-                        parameter. The greater it is, the more granular the
-                        tree is.
-  
-  -stop STOP            Tree POA algorithm parameter.Value of node
-                        compatibility above which the node is no more split.
-  
-  -re_consensus         Tree POA algorithm parameter.Set if after producing
-                        children nodes, sequences should be moved to siblings
-                        nodes if compatibility to its consensus is higher.
-  
-  -not_dag              Pangraph building from maf file parameter.Set if the
-                        maf content must not be transformed to DAG when
-                        building pangraph. Pangraph that was build in this way
-                        provides consensuses tree the consensuses do not
-                        reflect the real life sequences.
-  
-  -fasta_complementation FASTA_COMPLEMENTATION
-                        Pangraph building from maf file parameter. Ignored
-                        when -not_dag parameter is set.Maf file usually
-                        contains not full sequences but only parts of them,
-                        aligned to each other. To build an exact pangraph the
-                        full sequences must be retrieved from: ncbi or local
-                        file system. Don't use this argument if you want the
-                        pangraph to be build without full sequences.Pass
-                        "ncbi" if you want to download the lacking fragments
-                        from ncbiPass "local" if you want to use fasta from
-                        local file system.
-  
-  -email EMAIL          E-mail address requiered when Fasta Complementation
-                        Option is "NCBI" as using Entrez API obligates the
-                        user to pass e-mail address.
-  
-  -cache                Used if Fasta Complementation Option is "NCBI" Stores
-                        sequences downloaded from NCBI on local disc.They are
-                        reused between uses of this program.
-  
-  -missing_n MISSING_N  If fasta_complementation is NO, a custom symbol for
-                        missing nucleotides can be specified.Make sure it is
-                        included in BLOSUM matrix you use.
-  
-  --fasta_source_file FASTA_SOURCE_FILE, -f FASTA_SOURCE_FILE
-                        ZIP archive with fasta files used to complement
-                        missing parts of sequences in maf file.
-  
-  -p P                  Tree consensus algorithm parameter.When deciding about
-                        consensus node split, the compatibilities are raised
-                        to the power o p.It enables to change the linear
-                        meaing of compatibility values.For p from range [0,1]
-                        it decreases distances between small compatibilities
-                        and increases distances between the bigger ones.For p
-                        > 1 it increases distances between small
-                        compatibilities and decreases distances between the
-                        bigger ones.
-  
-  -max MAX              Specify which strategy - MAX1 or MAX2 use for finding
-                        max cutoff (see details in README.md)
-  
-  -node NODE            Specify which strategy - NODE1 (1), NODE2 (2), NODE3
-                        (3) or NODE4 (4) use for finding max cutoff (see
-                        details in README.md)
-  
-  -v, --verbose         Set if detailed log files must be produced.
-  
-  -q, --quiet           Set to turn off console logging .
-  
-  -output_with_nodes    Set if output json should include nodes (it
-                        significantly increases file size).
-
-``
-## Przykłady
-python3 pang examples/Fabricated/f.maf -d examples/Fabricated/f_metadata.json -consensus tree
-                        
-## Opisy funkcjonalności
-### Konstrukcja poagraphu
-Input: plik .maf (Multialignment Alignment Format) lub .po
-
-Output: plik .po 
-
 Konstrukcja grafu:
 ![konstrukcja](docs/images/pangraph_construcion.png "Pangraph construction")
 
-### Wizualizacja
-TBA
-### Generowanie consensusów
-#### Simple
-TBA
-#### Tree
-
-### Założenia
-##### Input
-TBA
-
-##### Output:
-TBA
 
 ##### Algorytm
 Drzewo jest budowane w porządku Breadth First. Pseudo-Python-Code:
@@ -284,7 +84,7 @@ def get_children(node):
     return nodes
     
 ```
-
+```
 Słowny opis podziału węzła **N** (odpowiada get_children, uruchamiane tylko gdy w węźle istnieje sekwencja 
 o compatibility do consensusu w tym węźle o wartości niższej niż **STOP** ):
 
@@ -357,3 +157,107 @@ przypisanych sekwencji (wg *poa*) jako **C**.
     do consensusów utworzonych przy podziale **N**, najwyższa jest ta, która jest związana z consensusem, 
     do którego ta sekwencja została przyporządkowana. 
     Jeśli nie, przyporządkuj tę sekwencję do consensusu, do którego comptibility jest najwyższe.
+```
+
+## Usage
+
+1. Import package **pangenome** to your Python program. Check [API documentation]().
+
+or
+
+2. Use **pangenome** from command line with following arguments:
+
+python3 -m pangenome [args]
+
+| Name  | CLI | Required | Description
+| ------------- | ------------- | ------- | ----------
+| Arguments affecting poagraph build process: |
+| MULTIALIGNMENT  | --multialignment, -m  | Yes | Path to the mulitalignment file (.maf or .po)
+| DATATYPE  | --datatype  | No, default = 'n' | Possible values: 'n' (nucleotides), 'p' (proteins).
+| METADATA | --metadata | No | Optional information about sequences in csv format. The only required column: \'seqid\' and its value must match multialignment files identifiers as described in *Sequence Naming Convention* (below). Example: data\Ebola\ebola_metadata.csv
+| RAW_MAF | -raw_maf | No, default=False | Build poagraph without transforming multialignment (maf) to DAG. Poagraph build in this way does not reflect real life sequences.
+| FASTA_COMPLEMENTATION | -fasta_complementation | No, default=NCBI | Nucleotides/proteins source if any are missed in the multialignment. Possible values: 'NCBI', 'FILE', 'NO'
+| MISSING_NUCLEOTIDE | -missing_n | No, default='?' | Symbol for missing nucleotides, used if FASTA_COMPLEMENTATION is 'NO'.
+| EMAIL | -email | Yes if FASTA_COMPLEMENTATION='NCBI' | E-mail address for NCBI API, used if FASTA_COMPLEMENTATION is 'NCBI'.
+| CACHE | -cache | No, default='Yes' | If True, sequences downloaded from NCBI are stored on local disc and reused between program calls, used if Fasta Complementation Option is 'NCBI'
+| FASTA_FILE | -fasta_source_file | Yes if FASTA_COMPLEMENTATION='FILE' | Path to fasta file or zipped fasta files with whole sequences present in multialignment, used if FASTA_COMPLEMENTATION is 'FILE'.
+| Arguments affecting consensuses tree algorithm: |
+| CONSENSUS | -consensus | No, default='TREE' | Possible values: 'TREE' (tree algorithm), 'POA' (poa algorithm)
+| BLOSUM | --blosum | No, default=bin\blosum80.mat |  Path to the blosum file which is used in consensus algorithm. Blosum file must include MISSING_NUCLEOTIDE. |
+| HBMIN | -hbmin | No, defaUlt=0.9 | 'POA' parameter. The minimum value of sequence compatibility to generated consensus.
+| STOP | -stop | No, default=0.99 | 'TREE' parameter. Minimum value of compatibility in tree leaves.
+| MAX | -max | No, default=MAX2 | 'TREE' parameter. Max cutoff finding strategy. Available values: 'MAX1', 'MAX2'.
+| NODE | -node | No, default=NODE3 | 'NODE' parameter. Node cutoff finding strategy. Available values: 'NODE1', 'NODE2', 'NODE3', 'NODE4'
+| R | -r | No, default=[0,1] | 'MAX1' parameter. Specifies what part of sorted capabilities should be searched for node cutoff. Format: '[a, b]' where a, b in [0, 1] and a < b. 
+| MULTIPLIER | -multiplier | No, default=1 | 'NODE1' and 'NODE2' parameter. It controls the size of gaps for node cutoff. The greater it is, the more granular the tree is.
+| P | -p | No, default=1 | 'TREE' parameter. It changes the linear meaning of compatiblities during cutoff finding because the compatibilities are raised to the power o P. For p from range [0,1] it decreases distances between small compatibilities and increases distances between the bigger ones.For p > 1 it increases distances between small compatibilities and decreases distances between the bigger ones.
+| Arguments affecting output format: |
+| OUTPUT_DIR | --output, -o | No, default=timestamped folder in current working directory | Output directory path.
+| VERBOSE | --verbose, -v | No, default=False | Set if detailed log files must be produced.
+| QUIET | --quiet, -q | No, default=False | Set to turn off console logging.
+| FASTA | --fasta | No, default=False | Set to create fasta files with consensuses.
+| PO | -po | No, default=False | Set to create po file with multialignment (without consensuses).
+| INCLUDE_PATHS | -output_with_paths | No, default=False | Set if output json should include paths (it significantly increases file size).
+
+#### Sequence Naming Convention
+
+[anything before first dot is ignored].[everything after first dot (also other dots) is interpreted as seqid]
+
+### Example use cases
+1. Build poagraph using default settings (transform to DAG, download missing nucleotides from NCBI) and save to .po file :
+```
+python3 -m data\Ebola\Ebola.maf -po
+```
+will produce:
+
+- pangenome.json
+- poagraph.po
+
+2. Generate consensuses tree, use metadata, detailed logging and default algorithm settings.
+```
+python3 -m data\Ebola\Ebola.maf -metadata data\Ebola\Ebola.maf' -consensus tree -v
+```
+will produce:
+
+- pangenome.json
+- details.log
+- consensus/
+    - tresholds.csv
+    - *.po files from internal calls to poa software*
+
+
+## Development
+
+### Documentation
+```
+TBA
+```
+### Running the tests
+```
+python -m unittest discover -s tests -p '*_test.py'
+```
+
+### Contributing
+```
+TBA
+```
+
+
+## Authors
+This software is developed with support of [OPUS 11 scientific project of National Science Centre:  Incorporating genomic variation information 
+into DNA sequencing data analysis](https://www.mimuw.edu.pl/~dojer/rmg/)
+
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+
+## Bibliography
+1. [**Computational pan-genomics: status, promises and challenges**](https://doi.org/10.1093/bib/bbw089) 
+The Computational Pan-Genomics Consortium. Briefings in Bioinformatics, Volume 19, Issue 1, January 2018, Pages 118–135.
+
+2. [**Multiple sequence alignment using partial order graphs**](https://doi.org/10.1093/bioinformatics/18.3.452) Christopher Lee,  Catherine Grasso,  Mark F. Sharlow.
+Bioinformatics, Volume 18, Issue 3, March 2002, Pages 452–464.
+
+
+                        
