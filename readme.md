@@ -31,132 +31,90 @@ TBA
 ```python3 -m pangenome --multialignment data/Fabricated/f.maf --metadata data/Fabricated/f_metadata.csv```
 
 ## Idea and algorithm description 
+[Pan-genome](https://en.wikipedia.org/wiki/Pan-genome) is a gene data structure being able to store multiple genomes with related data and be efficiently processed. This is a challenging bioinformatics task not only to design a pan-genome itself but also the algorithms it can be put into.
 
-SECTION UNDER DEVELOPMENT
+The idea of using partial order graphs as multiple sequence alignment representation (hereafter: *poagraph*) is introduced in [Ref. 2](https://doi.org/10.1093/bioinformatics/18.3.452). Such a graph can be constructed from an ordinary alignment in the following way:
+
+![konstrukcja](docs/images/Poagraph.png "Pangraph construction")
+
+POA is not only a graph design but also an algorithm for finding consensuses in such a graph. As part of the above mentioned article, this algorithm implementation - software called [poa](https://sourceforge.net/projects/poamsa/) - was published. 
+
+*Pangenome* uses them both - the data structure (poagraph) and the software (poa). It builds a poagraph from .maf ([Multiple Sequence Alignment](https://genome.ucsc.edu/FAQ/FAQformat.html#format5)) or .po (poa specific format, example: data/Fabricated/f.po) file, runs Consensus Tree Algorithm (poa extension, described below) and saves result in json file. This file can visualized in web-browser using [poaviz](https://github.com/meoke/pangviz).
+
+### Pangenome flow diagram:
+![pangenome_flow](docs/block_diagrams/Program.png "Pangenome flow")
+
+### Poagraph construction
+Poagraph construction from .po file is straightforward, as this format directly describes Poagraph as defined in poa. Poagraph construction from .po:
+![poagraph_construction](docs/block_diagrams/Build_poagraph_from_po.png "Poagraph construction from po")
+
+Poagraph construction from .maf is trickier as this format does not ensure DAG and may not include all nucleotides/proteins from aligned sequences. Solution to the first problem is transforming the multialignment to DAG using [Mafgraph](https://github.com/anialisiecka/Mafgraph) and to the second one - complementing missing symbols from NCBI or local fasta files. Poagraph consruction from .maf:
+
+![poagraph_construction](docs/block_diagrams/Build_poagraph_from_maf.png "Poagraph construction from maf")
+
+### Consensuses finding
+
+Representing a bunch of genomes using single sequence is a well-known problem ([Ref. 3](https://doi.org/10.1016/0895-7177(93)90117-H)). Poa software finds consensus paths in multialignment file but its application can be extended. A part of this project is Tree Consensus Generation algorithm. It iteratively calls poa using sub-Poagraphs. As a results a tree (ConsensusTree) is generated where every node contains:
+- consensus path (appointed in original Poagraph)
+- list of sequences it represents + compatibility value for every sequence (it expresses how similar is the consensus to the sequence)
+- minimum compatibility - the mimimum of compatibilties assigned to node sequences.
+
+Consensus tree algorithm diagram:
+
+![consensus_tree_alg](docs/block_diagrams/Generate_consensus_tree.png "Consensus tree algorithm diagram")
+
+Get children nodes details diagram:
+
+![consensus_tree_alg_get_children](docs/block_diagrams/Generate_consensus_get_children_nodes.png "Get children nodes details diagram")
+
+An important part of this algorithm is defing node cutoff - compatibility value which demarcates sequences qualified to a node. There are different strategies available:
 ```
-Konstrukcja grafu:
-![konstrukcja](docs/images/pangraph_construcion.png "Pangraph construction")
-
-
-##### Algorytm
-Drzewo jest budowane w porządku Breadth First. Pseudo-Python-Code:
-
-```Python
-sequences = pangraph.all_sequences
-nodes_to_process = [TreeNode(sequences)]
-while nodes_to_process:
-    subtree_root = nodes_to_process.pop()
-    children_nodes = get_children(subtree_root)
-    if len(children_nodes.sequences) == 1:
-        break
-    for child in children_nodes:
-        subtree_root.children.append(child)
-        
-        if node_ready(child):
-            nodes_to_process.append(child)
-            
-def node_ready(node):
-    if node.min_compatibility <= stop:
-        return True
-    return False
-    
-def get_children(node):
-    sequences = node.sequences
-    nodes = []
-    while sequences:
-        consensus = poa(Pangraph(sequences))
-        compatibilities = get_compatibilities(sequences, consensus)
-        
-        max_cutoff = find_max_cutoff(compatibilities)
-        the_most_compatible_sequences = sequences > max_cutoff
-        
-        max_consensus = poa(Pangraph(the_most_compatible_sequences))
-        compatibilities = get_compatibilities(node.sequences, max_consensus)**p
-        
-        node_cutoff = find_node_cutoff(compatibilities)
-        compatible_sequences = sequences > node_cutoff
-        
-        nodes.append(TreeNode(compatible_sequences))
-        sequences = sequences - compatible_sequences
-    
-    if re_consensus:
-        nodes.move_sequences_if_needed()
-    return nodes
-    
+MAX:
+- **MAX1** (parameter: cutoff_search_range)
+    - uporządkuj rosnąco compatibilities
+    - znajdź największą różnicę występującą pomiędzy dwoma kolejnymi compatibility **Ci**, **Cj** na przedziale *cutoff_search_range*, gdzie przedział wyznacza indeksy na uporządkowanej liście compatibilities
+     - **cutoff** = **Cj**
+- **MAX2**
+    - uporządkuj rosnąco compatibilities
+    - znajdź największą różnicę występującą pomiędzy dwoma kolejnymi compatibility **Ci**, **Cj**
+    - **cutoff** = **Cj**
 ```
 ```
-Słowny opis podziału węzła **N** (odpowiada get_children, uruchamiane tylko gdy w węźle istnieje sekwencja 
-o compatibility do consensusu w tym węźle o wartości niższej niż **STOP** ):
-
-1. **level_guards** - pusta lista
-2. Uruchom *poa* na wszystkich sekwencjach w węźle, weź consensus z o największej liczbie 
-przypisanych sekwencji (wg *poa*) jako **C**.
-3. Policz compatibility **C** z wszystkimi sekwencjami w tym węźle i podnieś wartości do potęgi **p**. 
-4. Znajdź próg odcięcia **P1** wśród compatibilities policzonych w 3.:
-    - Strategia MAX1 *(oryginalna)* [parametry: cutoff_search_range]
-        - uporządkuj rosnąco compatibilities
-        - znajdź największą różnicę występującą pomiędzy dwoma kolejnymi compatibility **Ci**, **Cj** na przedziale
-         *cutoff_search_range*, gdzie przedział określa indeksy na uporządkowanej liście compatibilities
-        - **P1** = **Cj**
-    - Strategia MAX2 *(usunięcie *cutoff_search_range*, bo jego działanie jest tożsame z parametrem *stop*)* [brak parametrów]
-        - uporządkuj rosnąco compatibilities
-        - znajdź największą różnicę występującą pomiędzy dwoma kolejnymi compatibility **Ci**, **Cj**
-        - **P1** = **Cj**
-5. **max_sequences** - sekwencje, których compatibility do **C** przekracza **P1**
-6. Uruchom *poa* na **max_sequences**, weź consensus o największej liczbie przypisanych sekwencji jako **C_MAX**.
-7. Policz compatibility **C_MAX** z wszystkimi sekwencjami w tym węźle.
-8. Znajdź próg odcięcia **P2** wśród posortowanych compatibilities policzonych w 7.:
-    - Strategia NODE1 (oryginalna) [parametry: multiplier]
-        - policz średnią odległość między compatibilities
-        - uporządkuj compatibilities rosnąco
-        - znajdź pierwsze takie **Ci**, **Cj**, pomiędzy którymi odległość jest większa niż
-         średnia odległość * *multiplier*. Jeśli nie istnieją, ponów wyszukiwanie dla multiplier = 1. 
-        - **P2** = **Cj**
-    - Strategia NODE2 (z level guardem) [parametry: level_guards, multiplier]
-        - IF lista **level_guards** jest pusta:
+NODE:
+- **NODE1** [parameter: multiplier]
+    - uporządkuj compatibilities rosnąco
+    - policz średnią odległość między compatibilities
+    - znajdź pierwsze takie **Ci**, **Cj**, pomiędzy którymi odległość jest większa niż średnia odległość * *multiplier*. Jeśli nie istnieją, ponów wyszukiwanie dla multiplier = 1. 
+    - **cutoff** = **Cj**
+ - **NODE2** (with level guards: compatibilites of sibling nodes) [parameter: multiplier]
+    - IF lista **level_guards** jest pusta:
+        - użyj NODE1
+    - ELSE
+        - guard = min(**level_guards**)
+        - IF guard <= wszystkie compatibilities:
+            - **cutoff** = min(compatibilities)
+        - ELIF guard > wszystkie compatibilities:
             - użyj NODE1
         - ELSE
-            - guard = min(**level_guards**)
-            - IF guard <= wszystkie compatibilities:
-                - **P2** = min(compatibilities)
-            - ELIF guard > wszystkie compatibilities:
-                - użyj NODE1
-            - ELSE
-                - dodaj guard do compatibilities 
-                - uporządkuj compatibilities rosnąco
-                - policz średnią odległość między compatibilities
-                - usuń guard z compatibilities (nie ma sensu zwracać go jako wynik, 
-                jeśli nie było go oryginalnie wśród compatibilities)
-                - wśród compatibilities nie większych niż guard znajdź pierwsze takie **Ci**, **Cj**, pomiędzy którymi odległość 
-                jest większa niż średnia odległość * *multiplier*
-                - jeśli nie ma takich **Ci**, **Cj**:
-                    - **P2** = pierwsze compatibility większe niż guard
-    - Strategia NODE3 (z level guardem, uproszczona) [parametry: level_guards]
-        - IF lista **level_guards** jest pusta:
-            - użyj strategii MAX2
-        - ELSE
-            - guard = min(**level_guards**)
-            - IF guard <= wszystkie compatibilities:
-                - **P2** = min(compatibilities)
-            - ELSE
-                - search_boundary = indeks pierwszego compatibility większego niż guard 
-                albo max(compatibilities) (gdy guard > wszystkie compatibilities)
-                - użyj strategii MAX2 na przedziale [0, search_boundary]
-    - Strategia NODE4 (bardzo uproszczona) [brak parametrów]
+            - dodaj guard do compatibilities 
+            - uporządkuj compatibilities rosnąco
+            - policz średnią odległość między compatibilities
+            - usuń guard z compatibilities (nie ma sensu zwracać go jako wynik jeśli nie było go oryginalnie wśród compatibilities)
+            - wśród compatibilities nie większych niż guard znajdź pierwsze takie **Ci**, **Cj**, pomiędzy którymi odległość jest większa niż średnia odległość * *multiplier*
+            - jeśli nie ma takich **Ci**, **Cj**:
+            - **cutoff** = pierwsze compatibility większe niż guard
+- **NODE3** (with level guards)
+    - IF lista **level_guards** jest pusta:
         - użyj strategii MAX2
-9. **node_sequences** - sekwencje, których compatibility do **C_MAX** (policzone w 7.) przekracza **P2**
-10. Parametry uzyskanego węzła consensusowego (dziecka **N**):
-    - ID consensusu **C_MAX**
-    - sekwencje **node_sequences**
-    - minimalne compatibility wśród compatibilities **node_sequences** do **C_MAX**
-11. Z węzła **N** usuń **node_sequences**
-12. Zapisz **P2** do **level_guards**
-13. Jeśli pozostały jakieś sekwencje w węźle **N** - idź do 2.
-14. Jeśli **re_consensus**:
-    - Dla każdej sekwencji, która należała początkowo do **N**, sprawdź, czy spośród wartości compatibilities 
-    do consensusów utworzonych przy podziale **N**, najwyższa jest ta, która jest związana z consensusem, 
-    do którego ta sekwencja została przyporządkowana. 
-    Jeśli nie, przyporządkuj tę sekwencję do consensusu, do którego comptibility jest najwyższe.
+    - ELSE
+        - guard = min(**level_guards**)
+        - IF guard <= wszystkie compatibilities:
+            - **cutoff** = min(compatibilities)
+        - ELSE
+            - search_boundary = indeks pierwszego compatibility większego niż guard albo max(compatibilities) (gdy guard > wszystkie compatibilities)
+            - użyj strategii MAX2 na przedziale [0, search_boundary]
+- **NODE4**
+    - użyj MAX2
 ```
 
 ## Usage
@@ -182,7 +140,7 @@ python3 -m pangenome [args]
 | CACHE | -cache | No, default='Yes' | If True, sequences downloaded from NCBI are stored on local disc and reused between program calls, used if Fasta Complementation Option is 'NCBI'
 | FASTA_FILE | -fasta_source_file | Yes if FASTA_COMPLEMENTATION='FILE' | Path to fasta file or zipped fasta files with whole sequences present in multialignment, used if FASTA_COMPLEMENTATION is 'FILE'.
 | Arguments affecting consensuses tree algorithm: |
-| CONSENSUS | -consensus | No, default='TREE' | Possible values: 'TREE' (tree algorithm), 'POA' (poa algorithm)
+| CONSENSUS | -consensus | No | Possible values: 'TREE' (tree algorithm), 'POA' (poa algorithm)
 | BLOSUM | --blosum | No, default=bin\blosum80.mat |  Path to the blosum file which is used in consensus algorithm. Blosum file must include MISSING_NUCLEOTIDE. |
 | HBMIN | -hbmin | No, defaUlt=0.9 | 'POA' parameter. The minimum value of sequence compatibility to generated consensus.
 | STOP | -stop | No, default=0.99 | 'TREE' parameter. Minimum value of compatibility in tree leaves.
@@ -259,5 +217,7 @@ The Computational Pan-Genomics Consortium. Briefings in Bioinformatics, Volume 1
 2. [**Multiple sequence alignment using partial order graphs**](https://doi.org/10.1093/bioinformatics/18.3.452) Christopher Lee,  Catherine Grasso,  Mark F. Sharlow.
 Bioinformatics, Volume 18, Issue 3, March 2002, Pages 452–464.
 
+3. [**The computation of consensus patterns in DNA sequences**](https://doi.org/10.1016/0895-7177(93)90117-H) William H.E.DayF.R.McMorris. Mathematical and Computer Modelling
+Volume 17, Issue 10, May 1993, Pages 49-52
 
                         
