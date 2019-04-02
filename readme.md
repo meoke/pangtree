@@ -28,7 +28,7 @@ TBA
 
 ### Quick installation check
 
-```python pangenome/pangenome.py --multialignment data/Fabricated/f.maf --metadata data/Fabricated/f_metadata.csv```
+```python -m pangenome --multialignment data/Fabricated/f.maf --metadata data/Fabricated/f_metadata.csv```
 
 ## Idea and algorithm description 
 [Pan-genome](https://en.wikipedia.org/wiki/Pan-genome) is a gene data structure being able to store multiple genomes with related data and be efficiently processed. This is a challenging bioinformatics task not only to design a pan-genome itself but also the algorithms it can be put into.
@@ -125,7 +125,7 @@ or
 
 2. Use **pangenome** from command line with following arguments:
 
-python3 -m pangenome [args]
+python -m pangenome [args]
 
 | Name  | CLI | Required | Description
 | ------------- | ------------- | ------- | ----------
@@ -164,7 +164,7 @@ python3 -m pangenome [args]
 ### Example use cases
 1. Build poagraph using default settings (transform to DAG, download missing nucleotides from NCBI) and save to .po file :
 ```
-python pangenome/pangenome.py -m data/Ebola/Ebola.maf -po
+python -m pangenome -m data/Ebola/Ebola.maf -po
 
 ```
 will produce:
@@ -174,7 +174,7 @@ will produce:
 
 2. Generate consensuses tree, use metadata, detailed logging and default algorithm settings.
 ```
-python pangenome/pangenome.py -m data/Ebola/Ebola.maf -metadata data/Ebola/Ebola.maf' -consensus tree -v
+python -m pangenome -m data/Ebola/Ebola.maf -metadata data/Ebola/Ebola.maf -consensus tree -v
 ```
 will produce:
 
