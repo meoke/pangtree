@@ -1,4 +1,4 @@
-from typing import Optional, Any, List, Tuple, Dict
+from typing import Optional, List, Tuple
 
 from Bio import AlignIO
 from Bio.Align import MultipleSeqAlignment
@@ -49,11 +49,11 @@ def get_poagraph(maf: Maf, metadata: MetadataCSV) -> Tuple[List[Node], Sequences
 def _init_poagraph(alignment: _ParsedMaf, metadata: MetadataCSV) -> Tuple[List[Node], Sequences]:
     maf_sequences_ids = _get_sequences_ids(alignment)
     metadata_sequences_ids = metadata.get_all_sequences_ids() if metadata else []
-    initial_sequences: Sequences = Sequences({seq_id:
-                                                  Sequence(seqid=seq_id,
-                                                           paths=[],
-                                                           seqmetadata=metadata.get_sequence_metadata(seq_id) if metadata else {})
-                         for seq_id in set(maf_sequences_ids + metadata_sequences_ids)})
+    initial_sequences: Sequences = Sequences({seq_id: Sequence(seqid=seq_id,
+                                                               paths=[],
+                                                               seqmetadata=metadata.get_sequence_metadata(seq_id)
+                                                               if metadata else {})
+                                              for seq_id in set(maf_sequences_ids + metadata_sequences_ids)})
 
     return [], initial_sequences
 

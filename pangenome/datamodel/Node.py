@@ -1,6 +1,6 @@
 from typing import NewType, Optional
 
-from .builders import PoagraphBuildException
+from .builders.PoagraphBuildException import PoagraphBuildException
 
 NodeID = NewType('NodeID', int)
 ColumnID = NewType('ColumnID', int)
@@ -26,7 +26,7 @@ class Node:
                  aligned_to: Optional[NodeID],
                  column_id: ColumnID = None,
                  block_id: BlockID = None):
-        self.id: Node = node_id
+        self.node_id: NodeID = node_id
         self.base: Base = base
         self.aligned_to: NodeID = aligned_to
         self.column_id: ColumnID = column_id
@@ -36,7 +36,7 @@ class Node:
         return self.base.value.decode("ASCII")
 
     def __eq__(self, other: 'Node'):
-        return (self.id == other.id
+        return (self.node_id == other.node_id
                 and self.base == other.base
                 and self.aligned_to == other.aligned_to
                 # and self.column_id == other.column_id
@@ -44,7 +44,7 @@ class Node:
 
     def __str__(self):
         return \
-            f"id: {self.id}, " \
+            f"id: {self.node_id}, " \
             f"base: {self.get_base()}, " \
             f"aligned_to: {self.aligned_to}, " \
             f"column_id: {self.column_id}, " \

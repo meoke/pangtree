@@ -8,7 +8,6 @@ from .DAGMaf import DAGMaf
 from .fasta_providers.FastaProvider import FastaProvider
 
 
-
 class Poagraph:
     def __init__(self,
                  nodes: List[Node],
@@ -30,7 +29,8 @@ class Poagraph:
         return poagraph
 
     @classmethod
-    def build_from_dagmaf(cls, dagmaf: DAGMaf, fasta_provider: FastaProvider, metadata: Optional[MetadataCSV]) -> 'Poagraph':
+    def build_from_dagmaf(cls, dagmaf: DAGMaf, fasta_provider: FastaProvider, metadata: Optional[MetadataCSV])\
+            -> 'Poagraph':
         return cls('nodes dagmaf', 'paths dagaf')
 
     @classmethod

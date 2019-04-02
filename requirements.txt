@@ -3,13 +3,4 @@ numpy
 jsonpickle
 ddt
 
-plotly
-flask
-dash
-dash-core-components
-dash-html-components
-dash-table
-pandas
-networkx
-# pygraphviz
 # Mafgraph-https://github.com/anialisiecka/Mafgraph

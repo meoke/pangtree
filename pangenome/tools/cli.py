@@ -56,9 +56,9 @@ def _cli_file_arg(arg: str, constructor: Callable[[StringIO, Optional[Path]], T]
     except InvalidPath:
         raise argparse.ArgumentTypeError(f"File {arg} does not exist or is not a file.")
     with open(arg) as infile:
-        filecontent = StringIO(infile.read())
+        file_content = StringIO(infile.read())
         try:
-            return constructor(filecontent, filepath)
+            return constructor(file_content, filepath)
         except PoagraphBuildException as p:
             raise argparse.ArgumentError("Incorrect file content") from p
 
@@ -89,7 +89,7 @@ def get_parser() -> argparse.ArgumentParser:
     p.add_argument('--multialignment', '-m',
                    type=_maf_file,
                    required=True,
-                   help='Path to the mulitalignment file. ' + inspect.getdoc(Maf))
+                   help='Path to the multialignment file. ' + inspect.getdoc(Maf))
     p.add_argument('--datatype',
                    type=_data_type,
                    default=DataType.Nucleotides,
@@ -185,7 +185,7 @@ def get_parser() -> argparse.ArgumentParser:
 #                    default=1,
 #                    help='Tree consensus algorithm parameter.'
 #                         'When deciding about consensus node split, the compatibilities are raised to the power o p.'
-#                         'It enables to change the linear meaing of compatibility values.'
+#                         'It enables to change the linear meaning of compatibility values.'
 #                         'For p from range [0,1] it decreases distances between small compatibilities and '
 #                         'increases distances between the bigger ones.'
 #                         'For p > 1 it increases distances between small compatibilities and '

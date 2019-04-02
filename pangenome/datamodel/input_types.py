@@ -13,10 +13,10 @@ class InputError(Exception):
 class Maf:
     """todo"""
 
-    def __init__(self, filecontent: StringIO, filename: Optional[Path]):
+    def __init__(self, file_content: StringIO, filename: Optional[Path]):
         self.filename = filename
-        self._raise_exception_if_incorrect(filecontent)
-        self.filecontent = filecontent
+        self._raise_exception_if_incorrect(file_content)
+        self.filecontent = file_content
 
     @staticmethod
     def _raise_exception_if_incorrect(filecontent):
@@ -61,6 +61,7 @@ class MetadataCSV:
     def get_sequence_metadata(self, seq_id):
         return self.metadata[seq_id]
 
+
 class Po:
     """todo"""
 
@@ -78,6 +79,6 @@ class Po:
 class MissingSymbol:
     """todo"""
 
-    def __init__(self, symbol: str) -> 'MissingSymbol':
+    def __init__(self, symbol: str):
         if len(symbol) != 1:
             raise InputError('Missing symbol must be a single character.')

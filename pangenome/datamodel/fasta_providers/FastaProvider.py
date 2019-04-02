@@ -18,7 +18,7 @@ class FastaProviderOption(Enum):
     def get_description():
         return 'Pangraph building from maf file parameter. Ignored when -not_dag parameter is set.'\
                'Maf file usually contains not full sequences but only parts of them, aligned to each other. '\
-               'To build an exact pangraph the full sequences must be retrieved from: ncbi or local file system. '\
+               'To build an exact pangraph the full sequences must be retrieved from: ncbi or local file system. '
 
 
 class EmailAddress:
@@ -35,6 +35,7 @@ class EmailAddress:
     def get_description():
         return 'E-mail address requiered when Fasta Provider Option is \"NCBI\" ' \
                'as Entrez API obligates the user to pass e-mail address.'
+
 
 class FastaProvider(abc.ABC):
     @abc.abstractmethod

@@ -61,7 +61,8 @@ class Maf2poagraphTests(unittest.TestCase):
                               [],
                               pSeq.SequenceMetadata({'group': '2'}))
         }
-        actual_nodes, actual_sequences = maf2poagraph.get_poagraph(Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
+        actual_nodes, actual_sequences = maf2poagraph.get_poagraph(Maf(pathtools.get_file_content_stringio(maf_path),
+                                                                       maf_path),
                                                                    self.metadatacsv)
 
         self.assertEqual(expected_nodes, actual_nodes)
