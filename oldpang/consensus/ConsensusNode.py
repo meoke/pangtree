@@ -1,6 +1,6 @@
 from typing import List, Dict, NewType
-from data.custom_types import SequenceID, NodeID
-from data.CompatibilityToPath import CompatibilityToPath
+from datamodel.custom_types import SequenceID, NodeID
+from datamodel.CompatibilityToPath import CompatibilityToPath
 
 ConsensusNodeID = NewType('ConsensusNodeID', int)
 

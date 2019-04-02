@@ -1,9 +1,8 @@
-from typing import Optional, List, Dict
+from typing import Optional, List
 
-from data.DataType import DataType
-from data.Node import Node
-from data.Sequence import SequenceID, Sequence
-from data.builders import maf2poagraph
+from .DataType import DataType, Sequences
+from .Node import Node
+from .builders import maf2poagraph
 from .input_types import Po, Maf, MetadataCSV
 from .DAGMaf import DAGMaf
 from .fasta_providers.FastaProvider import FastaProvider
@@ -13,7 +12,7 @@ from .fasta_providers.FastaProvider import FastaProvider
 class Poagraph:
     def __init__(self,
                  nodes: List[Node],
-                 sequences: Dict[SequenceID, Sequence],
+                 sequences: Sequences,
                  datatype: Optional[DataType] = DataType.Nucleotides):
         self.nodes = nodes
         self.sequences = sequences

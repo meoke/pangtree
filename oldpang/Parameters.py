@@ -4,7 +4,7 @@ from typing import Optional
 from enum import Enum
 from pathlib import Path
 
-from data.DataType import DataType
+from datamodel.DataType import DataType
 
 
 class ConsensusAlgorithm(Enum):

@@ -2,10 +2,10 @@ from typing import List
 
 from Bio import AlignIO
 from io import StringIO
-from data.Node import Node
-from data.PangraphBuilders.PangraphBuilderBase import PangraphBuilderBase
+from datamodel.Node import Node
+from datamodel.PangraphBuilders.PangraphBuilderBase import PangraphBuilderBase
 from metadata.MultialignmentMetadata import MultialignmentMetadata
-from data.custom_types import NodeID, SequenceID, Base, ColumnID, BlockID, make_base
+from datamodel.custom_types import NodeID, SequenceID, Base, ColumnID, BlockID, make_base
 from tools import loggingtools
 
 global_logger = loggingtools.get_global_logger()

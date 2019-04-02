@@ -58,6 +58,9 @@ def get_file_content(path: Path) -> str:
         return input_file.read()
 
 
+
+
+
 def dir_exists(dir_path):
     return dir_path.exists() and dir_path.is_dir()
 

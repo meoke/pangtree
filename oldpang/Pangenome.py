@@ -3,11 +3,11 @@ from consensus.FindCutoff import MAX1, MAX2, FindMaxCutoff, FindNodeCutoff, NODE
 from metadata.MultialignmentMetadata import MultialignmentMetadata
 from fasta_providers.FromEntrezFastaProvider import FromEntrezFastaProvider
 from fasta_providers.FromFileFastaProvider import FromFileFastaProvider
-from data.Pangraph import Pangraph
-from data.PangraphBuilders.PangraphBuilderFromDAG import PangraphBuilderFromDAG
-from data.PangraphBuilders.PangraphBuilderFromMAF import PangraphBuilderFromMAF
-from data.PangraphBuilders.PangraphBuilderFromPO import PangraphBuilderFromPO
-from data.PangraphToFilesConverters.PangraphToPO import PangraphToPO
+from datamodel.Pangraph import Pangraph
+from datamodel.PangraphBuilders.PangraphBuilderFromDAG import PangraphBuilderFromDAG
+from datamodel.PangraphBuilders.PangraphBuilderFromMAF import PangraphBuilderFromMAF
+from datamodel.PangraphBuilders.PangraphBuilderFromPO import PangraphBuilderFromPO
+from datamodel.PangraphToFilesConverters.PangraphToPO import PangraphToPO
 from tools import pathtools, loggingtools
 from PangenomeParameters import ConsensusAlgorithm, FastaComplementationOption, MaxCutoffOption, \
     NodeCutoffOption, PangenomeParameters

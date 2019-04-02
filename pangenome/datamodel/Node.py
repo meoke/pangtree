@@ -1,6 +1,6 @@
-from typing import NewType
+from typing import NewType, Optional
 
-from data.builders import PoagraphBuildException
+from .builders import PoagraphBuildException
 
 NodeID = NewType('NodeID', int)
 ColumnID = NewType('ColumnID', int)
@@ -15,19 +15,22 @@ class Base:
             raise PoagraphBuildException("Base string must have length 1.")
         self.value = str.encode(b)
 
+    def __eq__(self, other: 'Base'):
+        return other and self.value.__eq__(other.value)
+
 
 class Node:
     def __init__(self,
                  node_id: NodeID,
                  base: Base,
-                 aligned_to: NodeID,
+                 aligned_to: Optional[NodeID],
                  column_id: ColumnID = None,
                  block_id: BlockID = None):
-        self.id = node_id
-        self.base = base
-        self.aligned_to = aligned_to
-        self.column_id = column_id
-        self.block_id = block_id
+        self.id: Node = node_id
+        self.base: Base = base
+        self.aligned_to: NodeID = aligned_to
+        self.column_id: ColumnID = column_id
+        self.block_id: BlockID = block_id
 
     def get_base(self):
         return self.base.value.decode("ASCII")
@@ -36,7 +39,7 @@ class Node:
         return (self.id == other.id
                 and self.base == other.base
                 and self.aligned_to == other.aligned_to
-                and self.column_id == other.column_id
+                # and self.column_id == other.column_id
                 and self.block_id == other.block_id)
 
     def __str__(self):
@@ -46,3 +49,6 @@ class Node:
             f"aligned_to: {self.aligned_to}, " \
             f"column_id: {self.column_id}, " \
             f"block_id: {self.block_id}"
+
+    def __repr__(self):
+        return self.__str__()

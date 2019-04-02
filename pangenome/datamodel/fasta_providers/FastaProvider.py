@@ -8,8 +8,10 @@ class FastaProviderException(Exception):
 
 
 class FastaProviderOption(Enum):
+    """todo"""
+
     NO = 0
-    ENTREZ = 1
+    NCBI = 1
     FILE = 2
 
     @staticmethod
@@ -20,6 +22,8 @@ class FastaProviderOption(Enum):
 
 
 class EmailAddress:
+    """todo"""
+
     def __init__(self, email_address: str):
         match = re.match(r'^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$', email_address)
         if match is not None:

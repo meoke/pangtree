@@ -1,5 +1,5 @@
 from consensus.ConsensusesTree import ConsensusesTree
-from data.Pangraph import Pangraph
+from datamodel.Pangraph import Pangraph
 
 
 def pangraph_to_fasta(pangraph: Pangraph) -> str:

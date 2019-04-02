@@ -2,7 +2,7 @@ import itertools
 from typing import List, Dict
 from Pangenome import Pangenome
 from PangenomeParameters import PangenomeParameters, FastaComplementationOption
-from data.custom_types import NodeID
+from datamodel.custom_types import NodeID
 
 
 class JSONProgramParameters:

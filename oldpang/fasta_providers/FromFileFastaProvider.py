@@ -6,7 +6,7 @@ from typing import Dict
 from Bio import SeqIO
 
 from fasta_providers.FastaProvider import FastaProvider
-from data.custom_types import SequenceID, Sequence
+from datamodel.custom_types import SequenceID, Sequence
 
 
 class FromFileFastaProvider(FastaProvider):

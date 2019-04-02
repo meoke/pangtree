@@ -2,7 +2,7 @@ from abc import ABC
 from typing import List, Optional
 import numpy as np
 
-from data.CompatibilityToPath import CompatibilityToPath
+from datamodel.CompatibilityToPath import CompatibilityToPath
 
 
 class FindCutoffResult:

@@ -4,7 +4,7 @@ import pandas as pd
 
 from arguments.PangenomeParameters import MultialignmentFormat
 from fasta_providers.FromEntrezFastaProvider import EntrezSequenceID
-from data.custom_types import SequenceID
+from datamodel.custom_types import SequenceID
 from typing import Dict, List, Any
 from io import StringIO
 

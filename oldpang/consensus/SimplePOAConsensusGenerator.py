@@ -1,6 +1,6 @@
 from pathlib import Path
 from consensus.ConsensusesTree import ConsensusesTree
-from data.Pangraph import Pangraph
+from datamodel.Pangraph import Pangraph
 from tools import loggingtools
 
 global_logger = loggingtools.get_global_logger()

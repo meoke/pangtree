@@ -9,7 +9,7 @@ from PangenomeParameters import FastaComplementationOption
 from PangenomeParameters import PangenomeParameters
 from PangenomeParameters import ConsensusAlgorithm
 from PangenomeParameters import MaxCutoffOption, NodeCutoffOption
-from data.DataType import DataType
+from datamodel.DataType import DataType
 from tools.pathtools import create_default_output_dir
 
 ArgType = Union[str, float, str, Path]

@@ -6,9 +6,9 @@ from consensus.ConsensusesTree import ConsensusesTree
 from consensus.ConsensusNode import ConsensusNode, ConsensusNodeID
 from consensus.FindCutoff import FindMaxCutoff, FindNodeCutoff
 from consensus.exceptions import TreeConsensusGenerationException
-from data.Pangraph import Pangraph
-from data.custom_types import SequenceID, NodeID
-from data.CompatibilityToPath import CompatibilityToPath
+from datamodel.Pangraph import Pangraph
+from datamodel.custom_types import SequenceID, NodeID
+from datamodel.CompatibilityToPath import CompatibilityToPath
 import consensus.top_consensus as top_consensus
 from tools import loggingtools
 

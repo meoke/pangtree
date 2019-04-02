@@ -1,8 +1,8 @@
 from typing import List, Tuple, Callable
 
-from data.DataType import DataType
-from data.Pangraph import Pangraph
-from data.custom_types import NodeID
+from datamodel.DataType import DataType
+from datamodel.Pangraph import Pangraph
+from datamodel.custom_types import NodeID
 
 
 class NodePO:

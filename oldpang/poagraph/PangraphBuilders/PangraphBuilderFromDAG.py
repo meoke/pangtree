@@ -9,10 +9,10 @@ from mafgraph.graph.Arc import Arc
 from fileformats.maf.DAGMaf import DAGMaf
 from fileformats.maf.reader import maf_to_dagmaf
 from fasta_providers.FastaProvider import FastaProvider
-from data.Node import Node
-from data.PangraphBuilders.PangraphBuilderBase import PangraphBuilderBase
-from data.exceptions import NoSequenceInfo, SequenceBuildingException
-from data.custom_types import ColumnID, SequenceID, NodeID, BlockID, Sequence, Base, make_base
+from datamodel.Node import Node
+from datamodel.PangraphBuilders.PangraphBuilderBase import PangraphBuilderBase
+from datamodel.exceptions import NoSequenceInfo, SequenceBuildingException
+from datamodel.custom_types import ColumnID, SequenceID, NodeID, BlockID, Sequence, Base, make_base
 from metadata.MultialignmentMetadata import MultialignmentMetadata
 from mafgraph.mafreader import start_position
 

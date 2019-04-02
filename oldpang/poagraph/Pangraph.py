@@ -2,13 +2,13 @@ from io import StringIO
 from typing import List, Dict
 import numpy as np
 
-from data.CompatibilityToPath import CompatibilityToPath
-from data.PangraphBuilders.PangraphBuilderBase import PangraphBuilderBase
-from data.PangraphBuilders.PangraphBuilderFromDAG import PangraphBuilderFromDAG
-from data.PangraphBuilders.PangraphBuilderFromMAF import PangraphBuilderFromMAF
+from datamodel.CompatibilityToPath import CompatibilityToPath
+from datamodel.PangraphBuilders.PangraphBuilderBase import PangraphBuilderBase
+from datamodel.PangraphBuilders.PangraphBuilderFromDAG import PangraphBuilderFromDAG
+from datamodel.PangraphBuilders.PangraphBuilderFromMAF import PangraphBuilderFromMAF
 from fasta_providers.FastaProvider import FastaProvider
 from metadata.MultialignmentMetadata import MultialignmentMetadata
-from data.PangraphBuilders.PangraphBuilderFromPO import PangraphBuilderFromPO
+from datamodel.PangraphBuilders.PangraphBuilderFromPO import PangraphBuilderFromPO
 from tools import loggingtools
 from .Node import Node
 from .custom_types import NodeID, SequenceID

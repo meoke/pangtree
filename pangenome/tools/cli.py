@@ -1,19 +1,25 @@
 import argparse
+import inspect
+from io import StringIO
 from pathlib import Path
-from typing import TypeVar, Callable
+from typing import TypeVar, Callable, Optional
 
-from data.DataType import DataType
-from data.builders import PoagraphBuildException
-from data.fasta_providers.FastaProvider import FastaProviderOption, EmailAddress
-from data.input_types import Maf, MetadataCSV
+from datamodel.DataType import DataType
+from datamodel.builders import PoagraphBuildException
+from datamodel.fasta_providers.FastaProvider import FastaProviderOption, EmailAddress
+from datamodel.input_types import Maf, MetadataCSV
 
 
-def _file_arg(path: str) -> Path:
+class InvalidPath(Exception):
+    pass
+
+
+def _get_path_if_valid(path: str) -> Path:
     """Check if path exists."""
 
     file_path = Path(path)
     if not file_path.is_file():
-        raise argparse.ArgumentTypeError(f"File {path} does not exist or is not a file.")
+        raise InvalidPath(f"{file_path}")
     return file_path
 
 
@@ -44,13 +50,34 @@ def _fasta_provider_option(arg_fasta_provider_option: str) -> FastaProviderOptio
 T = TypeVar('T')
 
 
+def _cli_file_arg(arg: str, constructor: Callable[[StringIO, Optional[Path]], T]) -> T:
+    try:
+        filepath = _get_path_if_valid(arg)
+    except InvalidPath:
+        raise argparse.ArgumentTypeError(f"File {arg} does not exist or is not a file.")
+    with open(arg) as infile:
+        filecontent = StringIO(infile.read())
+        try:
+            return constructor(filecontent, filepath)
+        except PoagraphBuildException as p:
+            raise argparse.ArgumentError("Incorrect file content") from p
+
+
+def _maf_file(x: str) -> Maf:
+    return _cli_file_arg(x, Maf)
+
+
+def _metadata_file(x: str) -> MetadataCSV:
+    return _cli_file_arg(x, MetadataCSV)
+
+
 def cli_arg(constructor: Callable[[str], T]) -> Callable[[str], T]:
-    def c(x):
+    def _c(x):
         try:
             return constructor(x)
         except PoagraphBuildException as p:
-            raise argparse.ArgumentError("Incorrect argument") from p
-    return c
+            raise argparse.ArgumentError(f"Incorrect argument {x}") from p
+    return _c
 
 
 def get_parser() -> argparse.ArgumentParser:
@@ -60,16 +87,16 @@ def get_parser() -> argparse.ArgumentParser:
                                 description='This software builds poagraph and generates consensuses.',
                                 epilog='For more information check github.com/meoke/pang')
     p.add_argument('--multialignment', '-m',
-                   type=_file_arg,
+                   type=_maf_file,
                    required=True,
-                   help='Path to the mulitalignment file. ' + Maf.get_parameter_description())
+                   help='Path to the mulitalignment file. ' + inspect.getdoc(Maf))
     p.add_argument('--datatype',
                    type=_data_type,
                    default=DataType.Nucleotides,
-                   help='\'n\' for nucleotides, \'p\' for protieins. ' + DataType.get_description())
+                   help='\'n\' for nucleotides, \'p\' for proteins. ' + inspect.getdoc(DataType))
     p.add_argument('--metadata',
-                   type=_file_arg,
-                   help='Path to the csv file. ' + MetadataCSV.get_descriprion())
+                   type=_metadata_file,
+                   help='Path to the csv file. ' + inspect.getdoc(MetadataCSV))
     p.add_argument('-raw_maf',
                    action='store_true',
                    default=False,
@@ -78,12 +105,12 @@ def get_parser() -> argparse.ArgumentParser:
                         'Poagraph that was build in this way provides consensuses tree but the consensuses do not '
                         'reflect the real life sequences.')
     p.add_argument('-fasta_complementation',
-                   default=FastaProviderOption.ENTREZ,
                    type=_fasta_provider_option,
-                   help='\'ncbi\' for NCBI, \'file\' for file. ' + FastaProviderOption.get_description())
+                   default=FastaProviderOption.NCBI,
+                   help='\'ncbi\' for NCBI, \'file\' for file. ' + inspect.getdoc(FastaProviderOption))
     p.add_argument('-email',
                    type=cli_arg(EmailAddress),
-                   help=EmailAddress.get_description())
+                   help=inspect.getdoc(EmailAddress))
 
 #     p.add_argument('-cache',
 #                    action='store_true',

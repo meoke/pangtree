@@ -1,4 +1,4 @@
-from data.custom_types import NodeID, Base, BlockID, ColumnID
+from datamodel.custom_types import NodeID, Base, BlockID, ColumnID
 
 
 class Node:
