@@ -1,7 +1,7 @@
 from argparse import Namespace
 
 from datamodel.fasta_providers import FastaProvider
-from datamodel.fasta_providers.ConstSymbol import ConstSymbolProvider
+from datamodel.fasta_providers.ConstSymbolProvider import ConstSymbolProvider
 from datamodel.fasta_providers.FromNCBI import FromNCBI
 from datamodel.fasta_providers.FromFile import FromFile
 
@@ -10,7 +10,7 @@ def get_fasta_provider(args: Namespace) -> FastaProvider:
     if args.fasta_provider is None:
         return ConstSymbolProvider(args.missing_symbol)
     elif args.fasta_provider == 'ncbi':
-        if args.email_address is None:
+        if args.email is None:
             raise Exception("Email address must be specified. It must be provided when fasta source is \'ncbi\'.")
         use_cache = args.cache if args.cache else False
         return FromNCBI(args.email_address, use_cache)

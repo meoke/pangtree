@@ -3,6 +3,7 @@ import unittest
 from ...context import ConstSymbolProvider, MissingSymbol, InputError
 from ...context import pSeq, pNode
 
+
 class ConstSymbolProviderTests(unittest.TestCase):
 
     def test_1_no_symbol_provided(self):

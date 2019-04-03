@@ -13,14 +13,14 @@ class SequenceID:
     def __init__(self, sequence_id: str, skip_part_before_dot=True):
         if not skip_part_before_dot:
             self.value = sequence_id
-
-        splitted = sequence_id.split('.')
-        if len(splitted) > 1:
-            self.value = ".".join(splitted[1:])
-        elif len(splitted) == 1:
-            self.value = splitted[0]
         else:
-            raise PoagraphBuildException("Sequence ID cannot be empty.")
+            splitted = sequence_id.split('.')
+            if len(splitted) > 1:
+                self.value = ".".join(splitted[1:])
+            elif len(splitted) == 1:
+                self.value = splitted[0]
+            else:
+                raise PoagraphBuildException("Sequence ID cannot be empty.")
 
     def __str__(self):
         return f"{self.value}"

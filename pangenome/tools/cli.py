@@ -6,7 +6,8 @@ from typing import TypeVar, Callable, Optional, Union
 
 from datamodel.DataType import DataType
 from datamodel.builders import PoagraphBuildException
-from datamodel.fasta_providers.FastaProvider import FastaProviderOption, EmailAddress, FastaProvider, UseCache
+from datamodel.fasta_providers.FastaProvider import FastaProviderOption, FastaProvider, UseCache
+from datamodel.fasta_providers.FromNCBI import EmailAddress
 from datamodel.input_types import Maf, MetadataCSV, Po, MissingSymbol
 
 
@@ -122,9 +123,8 @@ def get_parser() -> argparse.ArgumentParser:
                         'reflect the real life sequences.')
     p.add_argument('-fasta_provider',
                    # type=_fasta_provider_option,
-                   default='ncbi',
                    choices=['ncbi', 'file'],
-                   help='\'ncbi\' for NCBI, \'file\' for file. ' + inspect.getdoc(FastaProvider))
+                   help='\'ncbi\' for NCBI, \'file\' for file. MISSING_SYMBOL will be used if not set. ' + inspect.getdoc(FastaProvider))
     p.add_argument('-email',
                    type=cli_arg(EmailAddress),
                    help=inspect.getdoc(EmailAddress))
@@ -133,7 +133,9 @@ def get_parser() -> argparse.ArgumentParser:
                    help='Set if fastas downloaded from ncbi should be cached locally in .fastacache folder. '
                         + inspect.getdoc(UseCache))
     p.add_argument('-missing_symbol',
+                   metavar='MISSING_SYMBOL',
                    type=cli_arg(MissingSymbol),
+                   default=MissingSymbol(),
                    help=inspect.getdoc(MissingSymbol))
     p.add_argument('--fasta_file', '-f',
                    type=_get_path_if_valid,

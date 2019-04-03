@@ -1,6 +1,6 @@
 import abc
-import re
 from enum import Enum
+from io import StringIO
 
 from datamodel.Sequence import SequenceID
 
@@ -15,18 +15,6 @@ class FastaProviderOption(Enum):
     NO = 0
     NCBI = 1
     FILE = 2
-
-
-class EmailAddress:
-    """E-mail address requiered when Fasta Provider Option is \"NCBI\"
-       as Entrez API obligates the user to pass e-mail address."""
-
-    def __init__(self, email_address: str):
-        match = re.match(r'^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$', email_address)
-        if match is not None:
-            self.value = email_address
-        else:
-            raise FastaProviderException(f"Incorrect e-mail address ({email_address}).")
 
 
 class UseCache:
@@ -44,3 +32,8 @@ class FastaProvider(abc.ABC):
     @abc.abstractmethod
     def get_base(self, sequence_id: SequenceID, i: int):
         pass
+
+    @staticmethod
+    def get_raw_sequence_from_fasta(fasta_handle: StringIO) -> str:
+        _ = fasta_handle.readline()
+        return fasta_handle.read().replace('\n', '')

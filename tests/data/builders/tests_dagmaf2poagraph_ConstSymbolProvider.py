@@ -18,7 +18,7 @@ class DAGMaf2PoagraphConstSymbolProviderTests(unittest.TestCase):
     def setUp(self):
         metadata_path = Path("tests/data/seq_metadata.csv")
         self.metadatacsv = MetadataCSV(pathtools.get_file_content_stringio(metadata_path), metadata_path)
-        self.maf_files_dir = 'tests/data/fasta_providers/maf_files_with_gaps/'
+        self.maf_files_dir = 'tests/data/builders/maf_files_with_gaps/'
         self.missing_n = MissingSymbol()
 
     def test_1_missing_sequence_start(self):
@@ -85,7 +85,7 @@ class DAGMaf2PoagraphConstSymbolProviderTests(unittest.TestCase):
             pNode.Node(node_id=nid(12), base=pNode.Base(self.missing_n.value), aligned_to=None),
         ]
 
-        expected_sequences = {
+        expected_sequences = pSeq.Sequences({
             pSeq.SequenceID('seq0'):
                 pSeq.Sequence(pSeq.SequenceID('seq0'),
                               [],
@@ -102,7 +102,7 @@ class DAGMaf2PoagraphConstSymbolProviderTests(unittest.TestCase):
                 pSeq.Sequence(pSeq.SequenceID('seq3'),
                               [],
                               pSeq.SequenceMetadata({'group': '2'}))
-        }
+        })
         expected_poagraph = pPoagraph.Poagraph(expected_nodes, expected_sequences)
         actual_poagraph = pPoagraph.Poagraph.build_from_dagmaf(
             Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
@@ -136,7 +136,7 @@ class DAGMaf2PoagraphConstSymbolProviderTests(unittest.TestCase):
             pNode.Node(node_id=nid(11), base=pNode.Base('T'), aligned_to=None)
         ]
 
-        expected_sequences = {
+        expected_sequences = pSeq.Sequences({
             pSeq.SequenceID('seq0'):
                 pSeq.Sequence(pSeq.SequenceID('seq0'),
                               [],
@@ -153,7 +153,7 @@ class DAGMaf2PoagraphConstSymbolProviderTests(unittest.TestCase):
                 pSeq.Sequence(pSeq.SequenceID('seq3'),
                               [],
                               pSeq.SequenceMetadata({'group': '2'}))
-        }
+        })
         expected_poagraph = pPoagraph.Poagraph(expected_nodes, expected_sequences)
         actual_poagraph = pPoagraph.Poagraph.build_from_dagmaf(
             Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
@@ -185,7 +185,7 @@ class DAGMaf2PoagraphConstSymbolProviderTests(unittest.TestCase):
 
         ]
 
-        expected_sequences = {
+        expected_sequences = pSeq.Sequences({
             pSeq.SequenceID('seq0'):
                 pSeq.Sequence(pSeq.SequenceID('seq0'),
                               [],
@@ -202,7 +202,7 @@ class DAGMaf2PoagraphConstSymbolProviderTests(unittest.TestCase):
                 pSeq.Sequence(pSeq.SequenceID('seq3'),
                               [],
                               pSeq.SequenceMetadata({'group': '2'}))
-        }
+        })
         expected_poagraph = pPoagraph.Poagraph(expected_nodes, expected_sequences)
         actual_poagraph = pPoagraph.Poagraph.build_from_dagmaf(
             Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
@@ -234,7 +234,7 @@ class DAGMaf2PoagraphConstSymbolProviderTests(unittest.TestCase):
             pNode.Node(node_id=nid(11), base=pNode.Base('T'), aligned_to=None)
         ]
 
-        expected_sequences = {
+        expected_sequences = pSeq.Sequences({
             pSeq.SequenceID('seq0'):
                 pSeq.Sequence(pSeq.SequenceID('seq0'),
                               [],
@@ -252,7 +252,7 @@ class DAGMaf2PoagraphConstSymbolProviderTests(unittest.TestCase):
                 pSeq.Sequence(pSeq.SequenceID('seq3'),
                               [],
                               pSeq.SequenceMetadata({'group': '2'}))
-        }
+        })
         expected_poagraph = pPoagraph.Poagraph(expected_nodes, expected_sequences)
         actual_poagraph = pPoagraph.Poagraph.build_from_dagmaf(
             Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
@@ -285,7 +285,7 @@ class DAGMaf2PoagraphConstSymbolProviderTests(unittest.TestCase):
 
         ]
 
-        expected_sequences = {
+        expected_sequences = pSeq.Sequences({
             pSeq.SequenceID('seq0'):
                 pSeq.Sequence(pSeq.SequenceID('seq0'),
                               [],
@@ -303,7 +303,7 @@ class DAGMaf2PoagraphConstSymbolProviderTests(unittest.TestCase):
                 pSeq.Sequence(pSeq.SequenceID('seq3'),
                               [],
                               pSeq.SequenceMetadata({'group': '2'}))
-        }
+        })
         expected_poagraph = pPoagraph.Poagraph(expected_nodes, expected_sequences)
         actual_poagraph = pPoagraph.Poagraph.build_from_dagmaf(
             Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
@@ -335,7 +335,7 @@ class DAGMaf2PoagraphConstSymbolProviderTests(unittest.TestCase):
             pNode.Node(node_id=nid(11), base=pNode.Base('T'), aligned_to=nid(10)),
         ]
 
-        expected_sequences = {
+        expected_sequences = pSeq.Sequences({
             pSeq.SequenceID('seq0'):
                 pSeq.Sequence(pSeq.SequenceID('seq0'),
                               [],
@@ -352,7 +352,7 @@ class DAGMaf2PoagraphConstSymbolProviderTests(unittest.TestCase):
                 pSeq.Sequence(pSeq.SequenceID('seq3'),
                               [],
                               pSeq.SequenceMetadata({'group': '2'}))
-        }
+        })
         expected_poagraph = pPoagraph.Poagraph(expected_nodes, expected_sequences)
         actual_poagraph = pPoagraph.Poagraph.build_from_dagmaf(
             Maf(pathtools.get_file_content_stringio(maf_path), maf_path),

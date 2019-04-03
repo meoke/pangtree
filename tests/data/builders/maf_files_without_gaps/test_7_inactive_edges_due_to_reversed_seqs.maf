@@ -1,0 +1,16 @@
+##maf version=1
+## some edges are inactive after transforming to DAG
+a degree=2
+s seq1 0 3 + 11 ACT
+s seq2 0 3 + 13 ACT
+s seq3 0 2 + 11 A-T
+
+a degree=2
+s seq1 3 1 + 11 -A
+s seq2 8 2 - 13 GG
+s seq3 7 2 - 11 GG
+
+a degree=2
+s seq1 4 7 + 11 C-TGAAAA
+s seq2 5 8 + 13 CATGAACT
+s seq3 4 7 + 11 CATG-AAT
