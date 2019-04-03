@@ -50,13 +50,23 @@ class FromNCBI(FastaProvider):
 
     def _download_from_ncbi(self, sequence_id: SequenceID) -> str:
         # detailed_logger.info(f"Downloading from entrez sequence {sequence_id}...")
+        entrez_sequence_id = self._guess_ncbi_sequence_id(sequence_id)
         try:
-            handle = Entrez.efetch(db="nucleotide", id=sequence_id.value, rettype="fasta", retmode="text")
+            handle = Entrez.efetch(db="nucleotide", id=entrez_sequence_id, rettype="fasta", retmode="text")
             fasta_content = FastaProvider.get_raw_sequence_from_fasta(handle)
             return fasta_content
         except Exception as ex:
             raise Exception(f"Cannot download from Entrez sequence of ID: {sequence_id}") from ex
 
+    def _guess_ncbi_sequence_id(self, seqid: SequenceID) -> str:
+        # detailed_logger.info(f"Guessing entrez sequence id...")
+        version_indications = [*re.finditer('v[0-9]', seqid.value)]
+        if len(version_indications) == 1:
+            version_start = version_indications[0].span()[0]
+            if version_start == len(seqid.value) - 2:
+                return seqid.value[0:version_start] + "." + seqid.value[version_start+1:]
+        # detailed_logger.info(f"{seqid} translated to {guessed_entrez_name}")
+        return seqid.value
 
 class FastaDiskCache:
     def __init__(self, parent_dir: Path):

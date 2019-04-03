@@ -13,7 +13,7 @@ def get_fasta_provider(args: Namespace) -> FastaProvider:
         if args.email is None:
             raise Exception("Email address must be specified. It must be provided when fasta source is \'ncbi\'.")
         use_cache = args.cache if args.cache else False
-        return FromNCBI(args.email_address, use_cache)
+        return FromNCBI(args.email, use_cache)
     elif args.fasta_provider == 'file':
         if args.fasta_file is None:
             raise Exception("Fasta file source must be specified. It must be provided when fasta source is \'local\'.")
