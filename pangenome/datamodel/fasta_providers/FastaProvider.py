@@ -2,6 +2,8 @@ import abc
 import re
 from enum import Enum
 
+from datamodel.Sequence import SequenceID
+
 
 class FastaProviderException(Exception):
     pass
@@ -13,7 +15,6 @@ class FastaProviderOption(Enum):
     NO = 0
     NCBI = 1
     FILE = 2
-
 
 
 class EmailAddress:
@@ -41,5 +42,5 @@ class FastaProvider(abc.ABC):
        To build an exact pangraph the full sequences must be retrieved from: ncbi or local file system."""
 
     @abc.abstractmethod
-    def get_base(self, sequence_id: str, i: int):
+    def get_base(self, sequence_id: SequenceID, i: int):
         pass

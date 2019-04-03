@@ -14,7 +14,7 @@ class DAGMafNode:
 class DAGMaf:
     def __init__(self, maf: Maf):
         sorted_blocks = sort_mafblocks(maf)
-        self.dagmafnodes = [
+        self.dagmaf_nodes = [
             DAGMafNode(block_id=b.id,
                        alignment=b.alignment,
                        orient=b.orient,

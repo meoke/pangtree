@@ -45,4 +45,9 @@ class Poagraph:
     def build_from_po(cls, po: Po) -> 'Poagraph':
         return cls("nodes po", "paths po")
 
+    def __eq__(self, other: 'Poagraph') -> bool:
+        return self.nodes == other.nodes and \
+            self.sequences == other.sequences and \
+            self.datatype == other.datatype
+
 

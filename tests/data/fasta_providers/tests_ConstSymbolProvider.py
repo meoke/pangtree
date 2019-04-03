@@ -1,24 +1,23 @@
 import unittest
 
-from ...context import ConstSymbol, MissingSymbol, InputError
-from ...context import pSeq
+from ...context import ConstSymbolProvider, MissingSymbol, InputError
+from ...context import pSeq, pNode
 
-
-class ConstSymbolTests(unittest.TestCase):
+class ConstSymbolProviderTests(unittest.TestCase):
 
     def test_1_no_symbol_provided(self):
         missing_symbol = MissingSymbol()
-        const_symbol_provider = ConstSymbol(missing_symbol)
+        const_symbol_provider = ConstSymbolProvider(missing_symbol)
 
-        expected_symbol = '?'
-        actual_symbol = const_symbol_provider.get_base(pSeq.SequenceID(''), 0)
+        expected_symbol = pNode.Base('?')
+        actual_symbol = const_symbol_provider.get_base(pSeq.SequenceID('s'), 0)
         self.assertEqual(expected_symbol, actual_symbol)
 
     def test_2_symbol_provided(self):
-        const_symbol_provider = ConstSymbol(MissingSymbol('*'))
+        const_symbol_provider = ConstSymbolProvider(MissingSymbol('*'))
 
-        expected_symbol = '*'
-        actual_symbol = const_symbol_provider.get_base(pSeq.SequenceID(''), 0)
+        expected_symbol =pNode.Base('*')
+        actual_symbol = const_symbol_provider.get_base(pSeq.SequenceID('s'), 0)
         self.assertEqual(expected_symbol, actual_symbol)
 
     def test_3_incorrect_missing_symbol(self):

@@ -19,7 +19,7 @@ class DAGMaf:
 
 
 def get_dagmaf(maf: Maf) -> DAGMaf:
-    sorted_blocks = sort_mafblocks(maf)
+    sorted_blocks = sort_mafblocks(maf.filecontent)
     dagmafnodes = [
         DAGMafNode(block_id=b.id,
                    alignment=b.alignment,

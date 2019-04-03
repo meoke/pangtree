@@ -23,9 +23,9 @@ class Node:
     def __init__(self,
                  node_id: NodeID,
                  base: Base,
-                 aligned_to: Optional[NodeID],
-                 column_id: ColumnID = None,
-                 block_id: BlockID = None):
+                 aligned_to: Optional[NodeID] = None,
+                 column_id: Optional[ColumnID] = None,
+                 block_id: Optional[BlockID] = None):
         self.node_id: NodeID = node_id
         self.base: Base = base
         self.aligned_to: NodeID = aligned_to
@@ -40,7 +40,8 @@ class Node:
                 and self.base == other.base
                 and self.aligned_to == other.aligned_to
                 # and self.column_id == other.column_id
-                and self.block_id == other.block_id)
+                # and self.block_id == other.block_id
+                )
 
     def __str__(self):
         return \
