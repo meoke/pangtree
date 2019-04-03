@@ -2,16 +2,26 @@ import argparse
 import inspect
 from io import StringIO
 from pathlib import Path
-from typing import TypeVar, Callable, Optional
+from typing import TypeVar, Callable, Optional, Union
 
 from datamodel.DataType import DataType
 from datamodel.builders import PoagraphBuildException
-from datamodel.fasta_providers.FastaProvider import FastaProviderOption, EmailAddress
-from datamodel.input_types import Maf, MetadataCSV
+from datamodel.fasta_providers.FastaProvider import FastaProviderOption, EmailAddress, FastaProvider, UseCache
+from datamodel.input_types import Maf, MetadataCSV, Po, MissingSymbol
 
 
 class InvalidPath(Exception):
     pass
+
+
+def _get_file_extension(arg: str) -> str:
+    """Returns file extension if it is included in arg, else throws InvalidPath."""
+
+    file_path_suffix = Path(arg).suffix
+    try:
+        return file_path_suffix.split('.')[1]
+    except Exception:
+        raise InvalidPath(f"Cannot find file extension in {arg}.")
 
 
 def _get_path_if_valid(path: str) -> Path:
@@ -63,8 +73,14 @@ def _cli_file_arg(arg: str, constructor: Callable[[StringIO, Optional[Path]], T]
             raise argparse.ArgumentError("Incorrect file content") from p
 
 
-def _maf_file(x: str) -> Maf:
-    return _cli_file_arg(x, Maf)
+def _mulitalignment_file(x: str) -> Union[Maf, Po]:
+    file_type = _get_file_extension(x)
+    if file_type == 'maf':
+        return _cli_file_arg(x, Maf)
+    elif file_type == 'po':
+        return _cli_file_arg(x, Po)
+    else:
+        raise InvalidPath("Only multialignment files with .maf or .po can be processed.")
 
 
 def _metadata_file(x: str) -> MetadataCSV:
@@ -87,9 +103,9 @@ def get_parser() -> argparse.ArgumentParser:
                                 description='This software builds poagraph and generates consensuses.',
                                 epilog='For more information check github.com/meoke/pang')
     p.add_argument('--multialignment', '-m',
-                   type=_maf_file,
+                   type=_mulitalignment_file,
                    required=True,
-                   help='Path to the multialignment file. ' + inspect.getdoc(Maf))
+                   help='Path to the multialignment file.')
     p.add_argument('--datatype',
                    type=_data_type,
                    default=DataType.Nucleotides,
@@ -104,26 +120,24 @@ def get_parser() -> argparse.ArgumentParser:
                         'Set if the maf content must not be transformed to DAG before building poagraph. '
                         'Poagraph that was build in this way provides consensuses tree but the consensuses do not '
                         'reflect the real life sequences.')
-    p.add_argument('-fasta_complementation',
-                   type=_fasta_provider_option,
-                   default=FastaProviderOption.NCBI,
-                   help='\'ncbi\' for NCBI, \'file\' for file. ' + inspect.getdoc(FastaProviderOption))
+    p.add_argument('-fasta_provider',
+                   # type=_fasta_provider_option,
+                   default='ncbi',
+                   choices=['ncbi', 'file'],
+                   help='\'ncbi\' for NCBI, \'file\' for file. ' + inspect.getdoc(FastaProvider))
     p.add_argument('-email',
                    type=cli_arg(EmailAddress),
                    help=inspect.getdoc(EmailAddress))
-
-#     p.add_argument('-cache',
-#                    action='store_true',
-#                    help='Used if Fasta Complementation Option is \"NCBI\" '
-#                         'Stores sequences downloaded from NCBI on local disc.'
-#                         'They are reused between uses of this program.')
-#     p.add_argument('-missing_n',
-#                    type=str,
-#                    help='If fasta_complementation is NO, a custom symbol for missing nucleotides can be specified.'
-#                         'Make sure it is included in BLOSUM matrix you use.')
-#     p.add_argument('--fasta_source_file', '-f',
-#                    type=_file_arg,
-#                    help='ZIP archive with fasta files used to complement missing parts of sequences in maf file.')
+    p.add_argument('-cache',
+                   action='store_true',
+                   help='Set if fastas downloaded from ncbi should be cached locally in .fastacache folder. '
+                        + inspect.getdoc(UseCache))
+    p.add_argument('-missing_symbol',
+                   type=cli_arg(MissingSymbol),
+                   help=inspect.getdoc(MissingSymbol))
+    p.add_argument('--fasta_file', '-f',
+                   type=_get_path_if_valid,
+                   help='ZIP archive with fasta files or fasta file used as missing nucleotides/proteins source.')
 #
 #
 #

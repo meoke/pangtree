@@ -92,8 +92,8 @@ class PangenomeParameters:
         self._validate()
 
     def _validate(self) -> None:
-        if self.multialignment_file_content is None:
-            raise Exception("Unspecified multialignment file.")
+        # if self.multialignment_file_content is None:
+        #     raise Exception("Unspecified multialignment file.")
 
         if self.output_path is None:
             raise Exception("Unspecified output path.")
@@ -110,14 +110,14 @@ class PangenomeParameters:
                     raise Exception("The BLOSUM file does not contain default symbol"
                                     " for missing nucleotides (\'?\').") from e
 
-        if self.fasta_complementation_option is FastaComplementationOption.LOCAL and self.fasta_source_file is None:
-            raise Exception("Unspecified path to direction with fasta files, "
-                            "while FastaComplementationOption.LocalFasta was chosen. "
-                            "Use FastaComplementationOption.No or FastaComplementationOption.NCBI instead.")
+        # if self.fasta_complementation_option is FastaComplementationOption.LOCAL and self.fasta_source_file is None:
+        #     raise Exception("Unspecified path to direction with fasta files, "
+        #                     "while FastaComplementationOption.LocalFasta was chosen. "
+        #                     "Use FastaComplementationOption.No or FastaComplementationOption.NCBI instead.")
 
-        if self.fasta_complementation_option is FastaComplementationOption.NCBI and self.email_address is None:
-            raise Exception("Unspecified email address. "
-                            "Email address is requiered if FastaComplementationOption.NCBI was chosen.")
+        # if self.fasta_complementation_option is FastaComplementationOption.NCBI and self.email_address is None:
+        #     raise Exception("Unspecified email address. "
+        #                     "Email address is requiered if FastaComplementationOption.NCBI was chosen.")
 
         if self.consensus_type is None:
             raise Exception("Unspecified consensus algorithm. "

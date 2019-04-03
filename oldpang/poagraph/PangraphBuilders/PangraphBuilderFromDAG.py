@@ -42,15 +42,15 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
                  missing_base_symbol: str,
                  fasta_source: Optional[FastaProvider] = None):
         super().__init__(genomes_info)
-        self.pangraph = None
-        self.dagmaf: DAGMaf = None
-        self.free_edges: Dict[SequenceID, List[Edge]] = None
-        self.seqs_info: Dict[SequenceID, SequenceInfo] = None
-        self.column_id: ColumnID = None
-        self.complement_sequences: bool = True if fasta_source else False
-        self.missing_nucleotide_symbol: Base = make_base(missing_base_symbol)
-        self.genomes_info: MultialignmentMetadata = genomes_info
-
+        # self.pangraph = None
+        # self.dagmaf: DAGMaf = None
+        # self.free_edges: Dict[SequenceID, List[Edge]] = None
+        # self.seqs_info: Dict[SequenceID, SequenceInfo] = None
+        # self.column_id: ColumnID = None
+        # self.complement_sequences: bool = True if fasta_source else False
+        # self.missing_nucleotide_symbol: Base = make_base(missing_base_symbol)
+        # self.genomes_info: MultialignmentMetadata = genomes_info
+        #
         if self.complement_sequences:
             self.full_sequences: Dict[SequenceID, Sequence] = self.get_sequences(fasta_source)
 
@@ -61,95 +61,95 @@ class PangraphBuilderFromDAG(PangraphBuilderBase):
         }
 
     def build(self, maf: StringIO, pangraph) -> None:
-        self.dagmaf = maf_to_dagmaf(maf)
-        self.pangraph = pangraph
-        self.init_pangraph()
-        self.free_edges = {SequenceID(seq_id): [] for seq_id in self.sequences_ids}
-        self.set_seqs_info()
-        self.column_id = ColumnID(-1)
+        # self.dagmaf = maf_to_dagmaf(maf)
+        # self.pangraph = pangraph
+        # self.init_pangraph()
+        # self.free_edges = {SequenceID(seq_id): [] for seq_id in self.sequences_ids}
+        # self.set_seqs_info()
+        # self.column_id = ColumnID(-1)
 
         self.complement_starting_nodes()
         for mafnode in self.dagmaf.dagmafnodes:
             self.process_block(mafnode)
+    #
+    # def init_pangraph(self):
+    #     self.pangraph.paths = {SequenceID(seq_id): [] for seq_id in self.sequences_ids}
 
-    def init_pangraph(self):
-        self.pangraph.paths = {SequenceID(seq_id): [] for seq_id in self.sequences_ids}
+    # def set_seqs_info(self) -> None:
+    #     self.seqs_info = {SequenceID(seq_id): [] for seq_id in self.sequences_ids}
+    #
+    #     for n in self.dagmaf.dagmafnodes:
+    #         for seq in n.alignment:
+    #             self.seqs_info[self.get_seq_id(seq.id)].append(SequenceInfo(block_id=BlockID(n.id),
+    #                                                                         start=start_position(seq),
+    #                                                                         strand=seq.annotations["strand"],
+    #                                                                         size=seq.annotations["size"],
+    #                                                                         srcSize=seq.annotations["srcSize"],
+    #                                                                         orient=n.orient))
+    #     absents_sequences: List[SequenceID] = []
+    #     for seq_id, seq_info_list in self.seqs_info.items():
+    #         if seq_info_list:
+    #             self.seqs_info[seq_id] = sorted(seq_info_list, key=lambda si: si.start)
+    #         else:
+    #             absents_sequences.append(seq_id)
+    #     for seq_id in absents_sequences:
+    #         del self.seqs_info[seq_id]
 
-    def set_seqs_info(self) -> None:
-        self.seqs_info = {SequenceID(seq_id): [] for seq_id in self.sequences_ids}
+    # def complement_starting_nodes(self) -> None:
+    #     for seq_id, seq_info_list in self.seqs_info.items():
+    #         first_block_sinfo = seq_info_list[0]
+    #         if first_block_sinfo.start != 0:
+    #             self.complement_sequence_starting_nodes(seq_id, first_block_sinfo)
 
-        for n in self.dagmaf.dagmafnodes:
-            for seq in n.alignment:
-                self.seqs_info[self.get_seq_id(seq.id)].append(SequenceInfo(block_id=BlockID(n.id),
-                                                                            start=start_position(seq),
-                                                                            strand=seq.annotations["strand"],
-                                                                            size=seq.annotations["size"],
-                                                                            srcSize=seq.annotations["srcSize"],
-                                                                            orient=n.orient))
-        absents_sequences: List[SequenceID] = []
-        for seq_id, seq_info_list in self.seqs_info.items():
-            if seq_info_list:
-                self.seqs_info[seq_id] = sorted(seq_info_list, key=lambda si: si.start)
-            else:
-                absents_sequences.append(seq_id)
-        for seq_id in absents_sequences:
-            del self.seqs_info[seq_id]
+    # def get_missing_nucleotide(self, seq_id: SequenceID, i: int) -> Base:
+    #     if self.complement_sequences:
+    #         return make_base(self.full_sequences[seq_id][i])
+    #     return self.missing_nucleotide_symbol
 
-    def complement_starting_nodes(self) -> None:
-        for seq_id, seq_info_list in self.seqs_info.items():
-            first_block_sinfo = seq_info_list[0]
-            if first_block_sinfo.start != 0:
-                self.complement_sequence_starting_nodes(seq_id, first_block_sinfo)
+    # def complement_sequence_starting_nodes(self, seq_id: SequenceID, first_block_sinfo: SequenceInfo) -> None:
+    #     current_node_id: NodeID = self.get_max_node_id()
+    #     column_id = -first_block_sinfo.start
+    #     join_with = None
+    #     for i in range(first_block_sinfo.start):
+    #         current_node_id += 1
+    #         missing_nucleotide = self.get_missing_nucleotide(seq_id, i)
+    #         self.add_node(node_id=current_node_id,
+    #                       base=missing_nucleotide,
+    #                       aligned_to=None,
+    #                       column_id=column_id,
+    #                       block_id=None)
+    #         self.add_node_to_sequence(seq_id=seq_id, join_with=join_with, node_id=current_node_id)
+    #         join_with = current_node_id
+    #         column_id += 1
+    #     self.free_edges[seq_id].append(Edge(seq_id=seq_id,
+    #                                         from_block_id=None,
+    #                                         to_block_id=first_block_sinfo.block_id,
+    #                                         last_node_id=current_node_id,))
 
-    def get_missing_nucleotide(self, seq_id: SequenceID, i: int) -> Base:
-        if self.complement_sequences:
-            return make_base(self.full_sequences[seq_id][i])
-        return self.missing_nucleotide_symbol
+    # def get_max_node_id(self) -> NodeID:
+    #     return NodeID(len(self.pangraph.nodes) - 1)
 
-    def complement_sequence_starting_nodes(self, seq_id: SequenceID, first_block_sinfo: SequenceInfo) -> None:
-        current_node_id: NodeID = self.get_max_node_id()
-        column_id = -first_block_sinfo.start
-        join_with = None
-        for i in range(first_block_sinfo.start):
-            current_node_id += 1
-            missing_nucleotide = self.get_missing_nucleotide(seq_id, i)
-            self.add_node(node_id=current_node_id,
-                          base=missing_nucleotide,
-                          aligned_to=None,
-                          column_id=column_id,
-                          block_id=None)
-            self.add_node_to_sequence(seq_id=seq_id, join_with=join_with, node_id=current_node_id)
-            join_with = current_node_id
-            column_id += 1
-        self.free_edges[seq_id].append(Edge(seq_id=seq_id,
-                                            from_block_id=None,
-                                            to_block_id=first_block_sinfo.block_id,
-                                            last_node_id=current_node_id,))
+    # def add_node(self,
+    #              node_id: NodeID,
+    #              base: Base,
+    #              aligned_to: Optional[NodeID],
+    #              column_id: ColumnID,
+    #              block_id: Optional[BlockID]) -> None:
+    #     self.pangraph.nodes.append(Node(node_id=node_id,
+    #                                     base=base,
+    #                                     aligned_to=aligned_to,
+    #                                     column_id=column_id,
+    #                                     block_id=block_id))
 
-    def get_max_node_id(self) -> NodeID:
-        return NodeID(len(self.pangraph.nodes) - 1)
-
-    def add_node(self,
-                 node_id: NodeID,
-                 base: Base,
-                 aligned_to: Optional[NodeID],
-                 column_id: ColumnID,
-                 block_id: Optional[BlockID]) -> None:
-        self.pangraph.nodes.append(Node(node_id=node_id,
-                                        base=base,
-                                        aligned_to=aligned_to,
-                                        column_id=column_id,
-                                        block_id=block_id))
-
-    def add_node_to_sequence(self, seq_id: SequenceID, join_with: NodeID, node_id: NodeID) -> None:
-        if not self.pangraph.paths[seq_id] or join_with is None:
-            self.pangraph.paths[seq_id].append([node_id])
-        else:
-            for path in self.pangraph.paths[seq_id]:
-                if path[-1] == join_with:
-                    path.append(node_id)
-                    return
-            raise SequenceBuildingException("Cannot find path with specified last node id.")
+    # def add_node_to_sequence(self, seq_id: SequenceID, join_with: NodeID, node_id: NodeID) -> None:
+    #     if not self.pangraph.paths[seq_id] or join_with is None:
+    #         self.pangraph.paths[seq_id].append([node_id])
+    #     else:
+    #         for path in self.pangraph.paths[seq_id]:
+    #             if path[-1] == join_with:
+    #                 path.append(node_id)
+    #                 return
+    #         raise SequenceBuildingException("Cannot find path with specified last node id.")
 
     def process_block(self, block: Block) -> None:
         global_logger.info(f"Processing block {block.id}...")

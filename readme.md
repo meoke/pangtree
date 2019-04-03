@@ -134,11 +134,11 @@ python -m pangenome [args]
 | DATATYPE  | --datatype  | No, default = 'n' | Possible values: 'n' (nucleotides), 'p' (proteins).
 | METADATA | --metadata | No | Optional information about sequences in csv format. The only required column: \'seqid\' and its value must match multialignment files identifiers as described in *Sequence Naming Convention* (below). Example: data\Ebola\ebola_metadata.csv
 | RAW_MAF | -raw_maf | No, default=False | Build poagraph without transforming multialignment (maf) to DAG. Poagraph build in this way does not reflect real life sequences.
-| FASTA_COMPLEMENTATION | -fasta_complementation | No, default=NCBI | Nucleotides/proteins source if any are missed in the multialignment. Possible values: 'NCBI', 'FILE', 'NO'
-| MISSING_NUCLEOTIDE | -missing_n | No, default='?' | Symbol for missing nucleotides, used if FASTA_COMPLEMENTATION is 'NO'.
-| EMAIL | -email | Yes if FASTA_COMPLEMENTATION='NCBI' | E-mail address for NCBI API, used if FASTA_COMPLEMENTATION is 'NCBI'.
-| CACHE | -cache | No, default='Yes' | If True, sequences downloaded from NCBI are stored on local disc and reused between program calls, used if Fasta Complementation Option is 'NCBI'
-| FASTA_FILE | -fasta_source_file | Yes if FASTA_COMPLEMENTATION='FILE' | Path to fasta file or zipped fasta files with whole sequences present in multialignment, used if FASTA_COMPLEMENTATION is 'FILE'.
+| FASTA_PROVIDER | -fasta_provider | No, default=NCBI | Nucleotides/proteins source if any are missed in the multialignment. Possible values: 'ncbi', 'file'
+| MISSING_NUCLEOTIDE | -missing_n | No, default='?' | Symbol for missing nucleotides, used if no FASTA_PROVIDER is given.
+| EMAIL | -email | Yes if FASTA_PROVIDER='ncbi' | E-mail address for NCBI API, used if FASTA_PROVIDER is 'ncbi'.
+| CACHE | -cache | No, default='Yes' | If True, sequences downloaded from NCBI are stored on local disc and reused between program calls, used if Fasta Complementation Option is 'ncbi'
+| FASTA_FILE | -fasta_source_file | Yes if FASTA_PROVIDER='FILE' | Path to fasta file or zipped fasta files with whole sequences present in multialignment, used if FASTA_PROVIDER is 'FILE'.
 | Arguments affecting consensuses tree algorithm: |
 | CONSENSUS | -consensus | No | Possible values: 'TREE' (tree algorithm), 'POA' (poa algorithm)
 | BLOSUM | --blosum | No, default=bin\blosum80.mat |  Path to the blosum file which is used in consensus algorithm. Blosum file must include MISSING_NUCLEOTIDE. |

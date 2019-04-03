@@ -79,6 +79,7 @@ class Po:
 class MissingSymbol:
     """todo"""
 
-    def __init__(self, symbol: str):
+    def __init__(self, symbol: Optional[str] = '?'):
         if len(symbol) != 1:
             raise InputError('Missing symbol must be a single character.')
+        self.value = symbol

@@ -52,3 +52,6 @@ class Sequence:
                 self.seqid == other.seqid and \
                 self.paths == other.paths and \
                 self.seqmetadata == other.seqmetadata
+
+
+Sequences = NewType("Sequences", Dict[SequenceID, Sequence])

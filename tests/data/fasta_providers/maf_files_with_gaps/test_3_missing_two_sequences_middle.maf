@@ -1,0 +1,12 @@
+# maf version=1 scoring=roast.v3.3
+# cls.seq1 = "ACTAGGT"
+# cls.seq2 = "GGTCAGT"
+
+a score=1
+s seq1 0 2 + 7 AC
+s seq2 0 1 + 7 G-
+
+a score=1
+s seq1 4 3 + 7 G-GT
+s seq2 3 4 + 7 CAGT
+

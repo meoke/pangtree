@@ -3,7 +3,7 @@ from typing import Optional, List, Tuple
 from Bio import AlignIO
 from Bio.Align import MultipleSeqAlignment
 
-from ..DataType import Sequences
+from datamodel.Sequence import Sequences
 from ..Node import NodeID, ColumnID, Node, Base, BlockID
 from ..Sequence import SequenceID, Sequence, SequencePath
 from ..input_types import Maf, MetadataCSV
@@ -11,7 +11,7 @@ from ..input_types import Maf, MetadataCSV
 _ParsedMaf = List[Optional[MultipleSeqAlignment]]
 
 
-def get_poagraph(maf: Maf, metadata: MetadataCSV) -> Tuple[List[Node], Sequences]:
+def get_poagraph(maf: Maf, metadata: Optional[MetadataCSV]) -> Tuple[List[Node], Sequences]:
     alignment = [*AlignIO.parse(maf.filecontent, "maf")]
     nodes, sequences = _init_poagraph(alignment, metadata)
 
@@ -46,7 +46,7 @@ def get_poagraph(maf: Maf, metadata: MetadataCSV) -> Tuple[List[Node], Sequences
     return nodes, sequences
 
 
-def _init_poagraph(alignment: _ParsedMaf, metadata: MetadataCSV) -> Tuple[List[Node], Sequences]:
+def _init_poagraph(alignment: _ParsedMaf, metadata: Optional[MetadataCSV]) -> Tuple[List[Node], Sequences]:
     maf_sequences_ids = _get_sequences_ids(alignment)
     metadata_sequences_ids = metadata.get_all_sequences_ids() if metadata else []
     initial_sequences: Sequences = Sequences({seq_id: Sequence(seqid=seq_id,

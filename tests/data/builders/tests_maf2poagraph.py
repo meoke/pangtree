@@ -1,8 +1,6 @@
 import unittest
 from pathlib import Path
 
-from ddt import ddt
-
 from ...context import pNode
 from ...context import pSeq
 from ...context import Maf, MetadataCSV
@@ -15,7 +13,6 @@ def nid(x): return pNode.NodeID(x)
 def bid(x): return pNode.BlockID(x)
 
 
-@ddt
 class Maf2poagraphTests(unittest.TestCase):
 
     def setUp(self):

@@ -1,14 +1,18 @@
 import os
 import sys
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../pangenome')))
 
 
 from pangenome.datamodel import Node as pNode
+from pangenome.datamodel import Poagraph as pPoagraph
 from pangenome.datamodel import Sequence as pSeq
 from pangenome.datamodel import Poagraph as pPoagraph
-from pangenome.datamodel.builders import maf2poagraph
+from pangenome.datamodel.builders import maf2poagraph, dagmaf2poagraph
 from pangenome.datamodel.input_types import Maf, MetadataCSV
 import pangenome.tools.path as pathtools
+from pangenome.datamodel.fasta_providers.ConstSymbol import ConstSymbol
+from pangenome.datamodel.fasta_providers.FastaProvider import FastaProvider
+from pangenome.datamodel.input_types import MissingSymbol, InputError
 
 # from pangenome.pang.arguments.PangenomeParameters import MultialignmentFormat
 #
