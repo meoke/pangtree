@@ -1,12 +1,10 @@
 import unittest
 from pathlib import Path
 
-from ddt import ddt
 
 from tests.context import FromFileFastaProvider
 
 
-@ddt
 class FromFileFastaProviderTest_ReadFasta(unittest.TestCase):
 
     def test_1_one_sequence(self):

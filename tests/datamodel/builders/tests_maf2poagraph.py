@@ -16,9 +16,9 @@ def bid(x): return pNode.BlockID(x)
 class Maf2poagraphTests(unittest.TestCase):
 
     def setUp(self):
-        metadata_path = Path("tests/data/seq_metadata.csv")
+        metadata_path = Path("tests/datamodel/seq_metadata.csv")
         self.metadatacsv = MetadataCSV(pathtools.get_file_content_stringio(metadata_path), metadata_path)
-        self.maf_files_dir = 'tests/data/builders/maf_files/'
+        self.maf_files_dir = 'tests/datamodel/builders/maf_files/'
 
     def test_1_messy_sequences(self):
         maf_path = Path(self.maf_files_dir + "test_1_messy_sequences.maf")

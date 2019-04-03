@@ -13,7 +13,8 @@ import pangenome.tools.pathtools as pathtools
 from pangenome.datamodel.fasta_providers.ConstSymbolProvider import ConstSymbolProvider
 from pangenome.datamodel.fasta_providers.FromNCBI import FromNCBI, EmailAddress
 
-from pangenome.datamodel.fasta_providers.FastaProvider import FastaProvider
+from pangenome.datamodel.fasta_providers.FastaProvider import FastaProvider, FastaProviderException
+from pangenome.datamodel.fasta_providers.FromFile import FromFile
 from pangenome.datamodel.input_types import MissingSymbol, InputError
 
 

@@ -1,7 +1,6 @@
 import unittest
 from pathlib import Path
 
-from datamodel.Sequence import Sequences
 from ...context import pNode
 from ...context import pSeq
 from ...context import Maf, MetadataCSV
@@ -18,9 +17,9 @@ def bid(x): return pNode.BlockID(x)
 class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
 
     def setUp(self):
-        metadata_path = Path("tests/data/seq_metadata.csv")
+        metadata_path = Path("tests/datamodel/seq_metadata.csv")
         self.metadatacsv = MetadataCSV(pathtools.get_file_content_stringio(metadata_path), metadata_path)
-        self.maf_files_dir = 'tests/data/builders/maf_files_without_gaps/'
+        self.maf_files_dir = 'tests/datamodel/builders/maf_files_with_cycles_or_reversion/'
         self.fasta_provider = ConstSymbolProvider(MissingSymbol())
 
     def test_00_simple(self):
@@ -125,7 +124,7 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
 
         ]
 
-        expected_sequences = Sequences({
+        expected_sequences = pSeq.Sequences({
             pSeq.SequenceID('seq0'):
                 pSeq.Sequence(pSeq.SequenceID('seq0'),
                               [pSeq.SequencePath([*map(nid, [1, 2, 3])])],
@@ -165,7 +164,7 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
             pNode.Node(node_id=nid(7), base=pNode.Base('C'), aligned_to=None),
         ]
 
-        expected_sequences = Sequences({
+        expected_sequences = pSeq.Sequences({
             pSeq.SequenceID('seq0'):
                 pSeq.Sequence(pSeq.SequenceID('seq0'),
                               [],
@@ -196,7 +195,7 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
 
         expected_nodes = []
 
-        expected_sequences = Sequences({
+        expected_sequences = pSeq.Sequences({
             pSeq.SequenceID('seq0'):
                 pSeq.Sequence(pSeq.SequenceID('seq0'),
                               [],
@@ -229,7 +228,7 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
             pNode.Node(node_id=nid(0), base=pNode.Base('A'), aligned_to=None, block_id=bid(0))
         ]
 
-        expected_sequences = Sequences({
+        expected_sequences = pSeq.Sequences({
             pSeq.SequenceID('seq0'):
                 pSeq.Sequence(pSeq.SequenceID('seq0'),
                               [pSeq.SequencePath([*map(nid, [0])])],
@@ -276,7 +275,7 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
 
         ]
 
-        expected_sequences = Sequences({
+        expected_sequences = pSeq.Sequences({
             pSeq.SequenceID('seq0'):
                 pSeq.Sequence(pSeq.SequenceID('seq0'),
                               [pSeq.SequencePath([*map(nid, [0, 3, 4, 8])])],
@@ -324,7 +323,7 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
             pNode.Node(node_id=nid(15), base=pNode.Base('T'), aligned_to=nid(14)),
         ]
 
-        expected_sequences = Sequences({
+        expected_sequences = pSeq.Sequences({
             pSeq.SequenceID('seq0'):
                 pSeq.Sequence(pSeq.SequenceID('seq0'),
                               [],
@@ -371,7 +370,7 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
             pNode.Node(node_id=nid(9), base=pNode.Base('T'), aligned_to=None),
         ]
 
-        expected_sequences = Sequences({
+        expected_sequences = pSeq.Sequences({
             pSeq.SequenceID('seq0'):
                 pSeq.Sequence(pSeq.SequenceID('seq0'),
                               [],
@@ -426,7 +425,7 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
             pNode.Node(node_id=nid(19), base=pNode.Base('G'), aligned_to=None),
         ]
 
-        expected_sequences = Sequences({
+        expected_sequences = pSeq.Sequences({
             pSeq.SequenceID('seq0'):
                 pSeq.Sequence(pSeq.SequenceID('seq0'),
                               [],
@@ -484,7 +483,7 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
             pNode.Node(node_id=nid(22), base=pNode.Base('G'), aligned_to=nid(21)),
         ]
 
-        expected_sequences = Sequences({
+        expected_sequences = pSeq.Sequences({
             pSeq.SequenceID('seq0'):
                 pSeq.Sequence(pSeq.SequenceID('seq0'),
                               [pSeq.SequencePath([*map(nid, [7, 8, 9, 10, 11, 12, 15, 18, 19, 21])])],

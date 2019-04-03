@@ -18,7 +18,6 @@ class FromNCBI_FastaDiskCache_Tests(unittest.TestCase):
     @unittest.skip('Internet connection required -> long execution')
     def test_1_download_sequence_and_save_to_cache(self):
         fasta_provider = FromNCBI(EmailAddress('a@gmail.com'), use_cache=True)
-        # cache_dir_path = Path('tests/data/fasta_providers/.fastacache')
         cache_dir_path = pathtools.get_child_path(Path.cwd(), ".fastacache")
         if cache_dir_path.exists():
             shutil.rmtree(cache_dir_path)
@@ -37,7 +36,7 @@ class FromNCBI_FastaDiskCache_Tests(unittest.TestCase):
         self.assertTrue(file_created_in_cache)
 
         # file content
-        control_fasta_path = Path('tests/data/fasta_providers/fasta_files/AB050936.1.fasta')
+        control_fasta_path = Path('tests/data/fasta_providers/fasta_ncbi/AB050936.1.fasta')
 
         with open(control_fasta_path) as fasta_file_hanlder:
             expected_content = fasta_file_hanlder.read()
