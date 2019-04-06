@@ -2,7 +2,7 @@ import unittest
 from pathlib import Path
 
 
-from tests.context import FromFile, pSeq, FastaProviderException
+from tests.context import FromFile, pSeq, pNode
 
 
 class FromFileFastaProviderFastaTests(unittest.TestCase):
@@ -19,8 +19,9 @@ class FromFileFastaProviderFastaTests(unittest.TestCase):
                                expected_sequence: str,
                                fasta_provider: FromFile) -> None:
         for i, expected_symbol in enumerate(expected_sequence):
-            actual_symbol = fasta_provider.get_base(sequence_id, i)
-            self.assertEqual(expected_symbol, actual_symbol)
+            expected_base = pNode.Base(expected_symbol)
+            actual_base = fasta_provider.get_base(sequence_id, i)
+            self.assertEqual(expected_base, actual_base)
 
     def test_1_one_sequence_one_file_in_zip(self):
         fasta_path = self.fasta_dir + "test_1_one_sequence_one_file_in_zip.zip"

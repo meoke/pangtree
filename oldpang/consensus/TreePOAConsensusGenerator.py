@@ -2,14 +2,14 @@ from pathlib import Path
 from collections import deque
 from typing import List, Dict, Tuple
 
-from consensus.ConsensusesTree import ConsensusesTree
-from consensus.ConsensusNode import ConsensusNode, ConsensusNodeID
-from consensus.FindCutoff import FindMaxCutoff, FindNodeCutoff
-from consensus.exceptions import TreeConsensusGenerationException
+from consensuses.ConsensusesTree import ConsensusesTree
+from consensuses.ConsensusNode import ConsensusNode, ConsensusNodeID
+from consensuses.FindCutoff import FindMaxCutoff, FindNodeCutoff
+from consensuses.exceptions import TreeConsensusGenerationException
 from datamodel.Pangraph import Pangraph
 from datamodel.custom_types import SequenceID, NodeID
 from datamodel.CompatibilityToPath import CompatibilityToPath
-import consensus.top_consensus as top_consensus
+import consensuses.top_consensus as top_consensus
 from tools import loggingtools
 
 tresholds_logger = loggingtools.get_logger('tresholdsCSV')

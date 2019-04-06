@@ -4,6 +4,7 @@ from typing import Dict
 from io import StringIO
 from Bio import SeqIO
 
+from datamodel.Node import Base
 from datamodel.Sequence import SequenceID
 from datamodel.fasta_providers.FastaProvider import FastaProvider, FastaProviderException
 
@@ -12,12 +13,12 @@ class FromFile(FastaProvider):
     def __init__(self, fastas_file: Path):
         self.sequences: Dict[SequenceID, str] = self._read_fastas(fastas_file)
 
-    def get_base(self, sequence_id: SequenceID, i: int) -> str:
+    def get_base(self, sequence_id: SequenceID, i: int) -> Base:
         if sequence_id not in self.sequences.keys():
             raise FastaProviderException(f"Wrong sequence id: {sequence_id}. ")
         if i > len(self.sequences[sequence_id]):
             raise FastaProviderException(f"Index {i} is to large for sequence {SequenceID}.")
-        return self.sequences[sequence_id][i]
+        return Base(self.sequences[sequence_id][i])
 
     def _read_fastas(self, fastas_file: Path) -> Dict[SequenceID, str]:
         fastas_file_suffix = fastas_file.suffix

@@ -1,5 +1,6 @@
-from typing import Optional, List
+from typing import Optional, List, Tuple
 
+from datamodel.DAGMaf import DAGMaf
 from datamodel.DataType import DataType
 from datamodel.Sequence import Sequences
 from datamodel.Node import Node
@@ -13,9 +14,9 @@ class Poagraph:
                  nodes: List[Node],
                  sequences: Sequences,
                  datatype: Optional[DataType] = DataType.Nucleotides):
-        self.nodes = nodes
-        self.sequences = sequences
-        self.datatype = datatype
+        self.nodes: List[Node] = nodes
+        self.sequences: Sequences = sequences
+        self.datatype: DataType = datatype
 
     @classmethod
     def build_from_maf(cls,
@@ -33,13 +34,13 @@ class Poagraph:
                           maf: Maf,
                           fasta_provider: FastaProvider,
                           metadata: Optional[MetadataCSV],
-                          datatype: Optional[DataType] = DataType.Nucleotides) -> 'Poagraph':
+                          datatype: Optional[DataType] = DataType.Nucleotides) -> Tuple['Poagraph', DAGMaf]:
         dagmaf = maf2dagmaf.get_dagmaf(maf)
         nodes, sequences = dagmaf2poagraph.get_poagraph(dagmaf, fasta_provider, metadata)
         poagraph = Poagraph(nodes, sequences)
         if datatype is not None:
             poagraph.datatype = datatype
-        return poagraph
+        return poagraph, dagmaf
 
     @classmethod
     def build_from_po(cls, po: Po) -> 'Poagraph':

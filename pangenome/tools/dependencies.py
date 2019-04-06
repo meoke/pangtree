@@ -6,7 +6,7 @@ from datamodel.fasta_providers.FromNCBI import FromNCBI
 from datamodel.fasta_providers.FromFile import FromFile
 
 
-def get_fasta_provider(args: Namespace) -> FastaProvider:
+def resolve_fasta_provider(args: Namespace) -> FastaProvider:
     if args.fasta_provider is None:
         return ConstSymbolProvider(args.missing_symbol)
     elif args.fasta_provider == 'ncbi':

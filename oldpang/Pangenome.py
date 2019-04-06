@@ -1,5 +1,5 @@
-from consensus.ConsensusesTree import ConsensusesTree
-from consensus.FindCutoff import MAX1, MAX2, FindMaxCutoff, FindNodeCutoff, NODE1, NODE2, NODE3, NODE4
+from consensuses.ConsensusesTree import ConsensusesTree
+from consensuses.FindCutoff import MAX1, MAX2, FindMaxCutoff, FindNodeCutoff, NODE1, NODE2, NODE3, NODE4
 from metadata.MultialignmentMetadata import MultialignmentMetadata
 from fasta_providers.FromEntrezFastaProvider import FromEntrezFastaProvider
 from fasta_providers.FromFileFastaProvider import FromFileFastaProvider
@@ -11,8 +11,8 @@ from datamodel.PangraphToFilesConverters.PangraphToPO import PangraphToPO
 from tools import pathtools, loggingtools
 from PangenomeParameters import ConsensusAlgorithm, FastaComplementationOption, MaxCutoffOption, \
     NodeCutoffOption, PangenomeParameters
-from consensus.SimplePOAConsensusGenerator import SimplePOAConsensusGenerator
-from consensus.TreePOAConsensusGenerator import TreePOAConsensusGenerator
+from consensuses.SimplePOAConsensusGenerator import SimplePOAConsensusGenerator
+from consensuses.TreePOAConsensusGenerator import TreePOAConsensusGenerator
 from PangenomeParameters import MultialignmentFormat
 import fileformats.fasta as fileformats_fasta
 

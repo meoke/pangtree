@@ -11,7 +11,7 @@ class InputError(Exception):
 
 
 class Maf:
-    """todo"""
+    """Multialignment content as stream. Accepted formats: maf and po."""
 
     def __init__(self, file_content: StringIO, filename: Optional[Path]):
         self.filename = filename
@@ -22,10 +22,6 @@ class Maf:
     def _raise_exception_if_incorrect(filecontent):
         if False:
             raise InputError("Incorrect maf because...")
-
-    @staticmethod
-    def get_parameter_description():
-        return 'Accepted formats: .maf, .po.'
 
 
 class MetadataCSV:

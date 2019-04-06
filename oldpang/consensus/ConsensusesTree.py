@@ -1,6 +1,6 @@
 from typing import List
-from consensus.ConsensusNode import ConsensusNodeID, ConsensusNode
-from consensus.exceptions import ConsensusesTreeException
+from consensuses.ConsensusNode import ConsensusNodeID, ConsensusNode
+from consensuses.exceptions import ConsensusesTreeException
 
 
 class ConsensusesTree:

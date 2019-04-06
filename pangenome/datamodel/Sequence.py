@@ -1,7 +1,7 @@
 from typing import NewType, List, Any, Dict
 
-from .builders.PoagraphBuildException import PoagraphBuildException
-from .Node import NodeID
+from pangenome.datamodel.builders.PoagraphBuildException import PoagraphBuildException
+from pangenome.datamodel.Node import NodeID
 
 SequencePath = NewType('SequencePath', List[NodeID])
 SequenceMetadata = NewType('SequenceMetadata', Dict[str, Any])
@@ -33,6 +33,18 @@ class SequenceID:
 
     def __hash__(self):
         return hash(self.value)
+
+    def __le__(self, other: 'SequenceID'):
+        return self.value.__le__(other.value)
+
+    def __lt__(self, other: 'SequenceID'):
+        return self.value.__lt__(other.value)
+
+    def __ge__(self, other: 'SequenceID'):
+        return self.value.__ge__(other.value)
+
+    def __gt__(self, other: 'SequenceID'):
+        return self.value.__gt__(other.value)
 
 
 class Sequence:

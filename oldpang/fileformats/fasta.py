@@ -1,4 +1,4 @@
-from consensus.ConsensusesTree import ConsensusesTree
+from consensuses.ConsensusesTree import ConsensusesTree
 from datamodel.Pangraph import Pangraph
 
 

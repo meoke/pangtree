@@ -2,8 +2,9 @@ import argparse
 import inspect
 from io import StringIO
 from pathlib import Path
-from typing import TypeVar, Callable, Optional, Union
+from typing import TypeVar, Callable, Optional, Union, List
 
+from consensuses.input_types import Blosum, Hbmin, Range
 from datamodel.DataType import DataType
 from datamodel.builders import PoagraphBuildException
 from datamodel.fasta_providers.FastaProvider import FastaProviderOption, FastaProvider, UseCache
@@ -25,7 +26,7 @@ def _get_file_extension(arg: str) -> str:
         raise InvalidPath(f"Cannot find file extension in {arg}.")
 
 
-def _get_path_if_valid(path: str) -> Path:
+def _path_if_valid(path: str) -> Path:
     """Check if path exists."""
 
     file_path = Path(path)
@@ -49,13 +50,13 @@ def _data_type(data_type: str) -> DataType:
         raise argparse.ArgumentError("Data type parsing error.")
 
 
-def _fasta_provider_option(arg_fasta_provider_option: str) -> FastaProviderOption:
-    """Converts command line argument to FastaProviderOption"""
-
-    try:
-        return FastaProviderOption[arg_fasta_provider_option.upper()]
-    except KeyError:
-        raise argparse.ArgumentError("Incorrect FASTA_PROVIDER argument.")
+# def _fasta_provider_option(arg_fasta_provider_option: str) -> FastaProviderOption:
+#     """Converts command line argument to FastaProviderOption"""
+#
+#     try:
+#         return FastaProviderOption[arg_fasta_provider_option.upper()]
+#     except KeyError:
+#         raise argparse.ArgumentError("Incorrect FASTA_PROVIDER argument.")
 
 
 T = TypeVar('T')
@@ -63,7 +64,7 @@ T = TypeVar('T')
 
 def _cli_file_arg(arg: str, constructor: Callable[[StringIO, Optional[Path]], T]) -> T:
     try:
-        filepath = _get_path_if_valid(arg)
+        filepath = _path_if_valid(arg)
     except InvalidPath:
         raise argparse.ArgumentTypeError(f"File {arg} does not exist or is not a file.")
     with open(arg) as infile:
@@ -88,7 +89,15 @@ def _metadata_file(x: str) -> MetadataCSV:
     return _cli_file_arg(x, MetadataCSV)
 
 
-def cli_arg(constructor: Callable[[str], T]) -> Callable[[str], T]:
+def _blosum_file(x: str) -> Blosum:
+    return _cli_file_arg(x, Blosum)
+
+
+def _range_arg(x: List[str]) -> Range:
+    return Range(x)
+
+
+def _cli_arg(constructor: Callable[[str], T]) -> Callable[[str], T]:
     def _c(x):
         try:
             return constructor(x)
@@ -96,6 +105,13 @@ def cli_arg(constructor: Callable[[str], T]) -> Callable[[str], T]:
             raise argparse.ArgumentError(f"Incorrect argument {x}") from p
     return _c
 
+class _RangeArgAction(argparse.Action):
+    """Command line argument \'range\' (\'-r\') validation"""
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        if values[1] < values[0]:
+            raise ValueError("First r argument must be smaller or equal than the second r argument")
+        setattr(namespace, self.dest, values)
 
 def get_parser() -> argparse.ArgumentParser:
     """Create ArgumentParser for pang module."""
@@ -126,7 +142,7 @@ def get_parser() -> argparse.ArgumentParser:
                    choices=['ncbi', 'file'],
                    help='\'ncbi\' for NCBI, \'file\' for file. MISSING_SYMBOL will be used if not set. ' + inspect.getdoc(FastaProvider))
     p.add_argument('-email',
-                   type=cli_arg(EmailAddress),
+                   type=_cli_arg(EmailAddress),
                    help=inspect.getdoc(EmailAddress))
     p.add_argument('-cache',
                    action='store_true',
@@ -134,24 +150,32 @@ def get_parser() -> argparse.ArgumentParser:
                         + inspect.getdoc(UseCache))
     p.add_argument('-missing_symbol',
                    metavar='MISSING_SYMBOL',
-                   type=cli_arg(MissingSymbol),
+                   type=_cli_arg(MissingSymbol),
                    default=MissingSymbol(),
                    help=inspect.getdoc(MissingSymbol))
     p.add_argument('--fasta_file', '-f',
-                   type=_get_path_if_valid,
+                   type=_path_if_valid,
                    help='ZIP archive with fasta files or fasta file used as missing nucleotides/proteins source.')
-#
-#
-#
-#     p.add_argument('--blosum',
-#                    type=_file_arg,
-#                    help='Path to the BLOSUM matrix used in consensus generation algorithm.'
-#                         'If fasta_complementation option is NO and a custom symbol is provided, '
-#                         'the matrix specified here must include this symbol.'
-#                         'If fasta_complementation option is NO and a custom symbol is not provided, '
-#                         'the matrix specified here must include symbol \'?\' '
-#                         'as this is the default symbol for missing nucleotide.'
-#                    )
+    p.add_argument('-blosum',
+                   type=_blosum_file,
+                   help='Path to the blosum file. ' + inspect.getdoc(MetadataCSV))
+    p.add_argument('-consensus',
+                   choices=['poa', 'tree'],
+                   help='\'poa\' for direct result of poa software, \'tree\' for Consensuses Tree algorith.')
+    p.add_argument('-hbmin',
+                   type=_cli_arg(Hbmin),
+                   help='Simple POA algorithm parameter. '
+                        'Hbmin value. ' + inspect.getdoc(MetadataCSV))
+    p.add_argument('-max',
+                   default='max2',
+                   choices=['max1', 'max2'],
+                   help='Simple POA algorithm parameter. ' +
+                        'Specify which strategy - MAX1 or MAX2 use for finding max cutoff.')
+    p.add_argument('-r',
+                   nargs=2,
+                   action='append',
+                   default=[0, 1],
+                   help='Tree POA algorithm, MAX1 strategy parameter. ' + inspect.getdoc(Range))
 #     p.add_argument('--output', '-o',
 #                    type=_dir_arg,
 #                    default=create_default_output_dir(Path(getcwd())),
@@ -167,18 +191,8 @@ def get_parser() -> argparse.ArgumentParser:
 #                    type=_consensus_algorithm_option,
 #                    default=ConsensusAlgorithm.NO,
 #                    help='Set if consensus must be generated. Values to choose: \'simple\' or \'tree\'.')
-#     p.add_argument('-hbmin',
-#                    type=_float_0_1,
-#                    default=0.6,
-#                    help='Simple POA algorithm parameter. '
-#                         'The minimum value of sequence compatibility to generated consensus.')
-#     p.add_argument('-r',
-#                    nargs=2,
-#                    type=_float_0_1,
-#                    action=_RangeArgAction,
-#                    default=[0, 1],
-#                    help='Tree POA algorithm parameter.'
-#                         'Specify what part of sorted capabilities should be searched for node cutoff. E.g. [0.2,0.8]')
+
+
 #     p.add_argument('-multiplier',
 #                    type=float,
 #                    default=1,
@@ -189,13 +203,7 @@ def get_parser() -> argparse.ArgumentParser:
 #                    default=0.99,
 #                    help='Tree POA algorithm parameter.'
 #                         'Value of node compatibility above which the node is no more split.')
-#     p.add_argument('-re_consensus',
-#                    action='store_true',
-#                    default=False,
-#                    help='Tree POA algorithm parameter.'
-#                         'Set if after producing children nodes, sequences should be moved to'
-#                         ' siblings nodes if compatibility to its consensus is higher.')
-# c
+
 #     p.add_argument('-p',
 #                    type=float,
 #                    default=1,

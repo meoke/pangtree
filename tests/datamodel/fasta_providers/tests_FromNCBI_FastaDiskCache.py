@@ -7,7 +7,7 @@ from ddt import ddt
 
 from tests.context import FromNCBI, EmailAddress
 from tests.context import pathtools
-from tests.context import pSeq
+from tests.context import pSeq, pNode
 
 
 @ddt
@@ -53,7 +53,7 @@ class FromNCBI_FastaDiskCache_Tests(unittest.TestCase):
         cache_dir_path.mkdir()
         sequence_id = pSeq.SequenceID("seq1")
         fake_sequence = "foo"
-        expected_base = "o"
+        expected_base = pNode.Base("o")
         fake_fasta_path = pathtools.get_child_path(cache_dir_path, f"{sequence_id}.fasta")
         with open(fake_fasta_path, 'w') as fake_fasta_handler:
             fake_fasta_handler.write(f">{sequence_id} cached\n{fake_sequence}")

@@ -6,7 +6,7 @@ from datamodel import Pangraph
 from tools import pathtools
 from datamodel.custom_types import NodeID, SequenceID
 from datamodel.PangraphToFilesConverters.PangraphToPO import PangraphToPO, NodePO, SequencePO
-from consensus.exceptions import TreeConsensusGenerationException
+from consensuses.exceptions import TreeConsensusGenerationException
 from external.poa import call as call_poa
 
 

@@ -2,6 +2,7 @@ import abc
 from enum import Enum
 from io import StringIO
 
+from datamodel.Node import Base
 from datamodel.Sequence import SequenceID
 
 
@@ -30,7 +31,7 @@ class FastaProvider(abc.ABC):
        To build an exact pangraph the full sequences must be retrieved from: ncbi or local file system."""
 
     @abc.abstractmethod
-    def get_base(self, sequence_id: SequenceID, i: int):
+    def get_base(self, sequence_id: SequenceID, i: int) -> Base:
         pass
 
     @staticmethod

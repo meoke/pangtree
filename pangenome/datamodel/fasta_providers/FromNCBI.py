@@ -6,6 +6,7 @@ from typing import NewType, Dict
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 
+from datamodel.Node import Base
 from datamodel.Sequence import SequenceID
 from datamodel.fasta_providers.FastaProvider import FastaProvider, FastaProviderException
 from Bio import Entrez, SeqIO
@@ -34,7 +35,7 @@ class FromNCBI(FastaProvider):
         self.use_cache = use_cache
         self.sequences: Dict[SequenceID, str] = {}
 
-    def get_base(self, sequence_id: SequenceID, i: int):
+    def get_base(self, sequence_id: SequenceID, i: int) -> Base:
         if sequence_id not in self.sequences.keys():
             sequence_is_cached = self.fasta_disk_cache.sequence_is_cached(sequence_id)
             if self.use_cache and sequence_is_cached:
@@ -46,7 +47,7 @@ class FromNCBI(FastaProvider):
             else:
                 self.sequences[sequence_id] = self._download_from_ncbi(sequence_id)
 
-        return self.sequences[sequence_id][i]
+        return Base(self.sequences[sequence_id][i])
 
     def _download_from_ncbi(self, sequence_id: SequenceID) -> str:
         # detailed_logger.info(f"Downloading from entrez sequence {sequence_id}...")
