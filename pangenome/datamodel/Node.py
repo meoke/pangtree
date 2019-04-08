@@ -13,7 +13,7 @@ class Base:
             raise PoagraphBuildException("Empty string for base.")
         if len(b) > 1:
             raise PoagraphBuildException("Base string must have length 1.")
-        self.value = str.encode(b)
+        self.value: bytes = str.encode(b)
 
     def __eq__(self, other: 'Base'):
         return other and self.value.__eq__(other.value)

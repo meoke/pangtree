@@ -5,7 +5,7 @@ from mafgraph.graph import Block
 from mafgraph.graph.Arc import Arc
 
 from datamodel.DAGMaf import DAGMaf, DAGMafNode
-from datamodel.Sequence import Sequences, SequenceID, Sequence, SequencePath
+from datamodel.Sequence import SequenceID, Sequence, SequencePath
 from datamodel.Node import Node, ColumnID, BlockID, NodeID, Base
 from datamodel.builders.PoagraphBuildException import PoagraphBuildException
 from datamodel.fasta_providers import FastaProvider
@@ -31,13 +31,13 @@ Edge = namedtuple('Edge', ['seq_id',
 class _BuildState:
     def __init__(self,
                  initial_nodes: List[Node],
-                 initial_sequences: Sequences,
+                 initial_sequences: Dict[SequenceID, Sequence],
                  initial_edges: Dict[SequenceID, List[Edge]],
                  seqs_info: Dict[SequenceID, List[SequenceInfo]],
                  initial_column_id: ColumnID,
                  fasta_provider: FastaProvider):
         self.nodes: List[Node] = initial_nodes
-        self.sequences: Sequences = initial_sequences
+        self.sequences: Dict[SequenceID, Sequence] = initial_sequences
         self.free_edges: Dict[SequenceID, List[Edge]] = initial_edges
         self.seqs_info: Dict[SequenceID, List[SequenceInfo]] = seqs_info
         self.column_id: ColumnID = initial_column_id
@@ -46,7 +46,7 @@ class _BuildState:
 
 def get_poagraph(dagmaf: DAGMaf,
                  fasta_provider: FastaProvider,
-                 metadata: Optional[MetadataCSV]) -> Tuple[List[Node], Sequences]:
+                 metadata: Optional[MetadataCSV]) -> Tuple[List[Node], Dict[SequenceID, Sequence]]:
     sequences_in_dagmaf = _get_sequences_ids(dagmaf)
     build_state = _BuildState(initial_nodes=[],
                               initial_sequences=_init_sequences(sequences_in_dagmaf, metadata),
@@ -68,13 +68,13 @@ def _get_sequences_ids(dagmaf: DAGMaf) -> List[SequenceID]:
 
 
 def _init_sequences(sequences_in_dagmaf: List[SequenceID],
-                    metadata: Optional[MetadataCSV]) -> Sequences:
+                    metadata: Optional[MetadataCSV]) -> Dict[SequenceID, Sequence]:
     metadata_sequences_ids = metadata.get_all_sequences_ids() if metadata else []
-    initial_sequences: Sequences = Sequences({seq_id: Sequence(seqid=seq_id,
-                                                               paths=[],
-                                                               seqmetadata=metadata.get_sequence_metadata(seq_id)
-                                                               if metadata else {})
-                                              for seq_id in set(sequences_in_dagmaf + metadata_sequences_ids)})
+    initial_sequences = {seq_id: Sequence(seqid=seq_id,
+                                          paths=[],
+                                          seqmetadata=metadata.get_sequence_metadata(seq_id)
+                                          if metadata else {})
+                         for seq_id in set(sequences_in_dagmaf + metadata_sequences_ids)}
 
     return initial_sequences
 

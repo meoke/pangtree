@@ -1,9 +1,9 @@
-from typing import Optional, List, Tuple
+from typing import Optional, List, Tuple, Dict
 
 from Bio import AlignIO
 from Bio.Align import MultipleSeqAlignment
 
-from datamodel.Sequence import Sequences
+# from datamodel.Sequence import Sequences
 from ..Node import NodeID, ColumnID, Node, Base, BlockID
 from ..Sequence import SequenceID, Sequence, SequencePath
 from ..input_types import Maf, MetadataCSV
@@ -11,7 +11,7 @@ from ..input_types import Maf, MetadataCSV
 _ParsedMaf = List[Optional[MultipleSeqAlignment]]
 
 
-def get_poagraph(maf: Maf, metadata: Optional[MetadataCSV]) -> Tuple[List[Node], Sequences]:
+def get_poagraph(maf: Maf, metadata: Optional[MetadataCSV]) -> Tuple[List[Node], Dict[SequenceID, Sequence]]:
     alignment = [*AlignIO.parse(maf.filecontent, "maf")]
     nodes, sequences = _init_poagraph(alignment, metadata)
 
@@ -46,14 +46,15 @@ def get_poagraph(maf: Maf, metadata: Optional[MetadataCSV]) -> Tuple[List[Node],
     return nodes, sequences
 
 
-def _init_poagraph(alignment: _ParsedMaf, metadata: Optional[MetadataCSV]) -> Tuple[List[Node], Sequences]:
+def _init_poagraph(alignment: _ParsedMaf,
+                   metadata: Optional[MetadataCSV]) -> Tuple[List[Node], Dict[SequenceID, Sequence]]:
     maf_sequences_ids = _get_sequences_ids(alignment)
     metadata_sequences_ids = metadata.get_all_sequences_ids() if metadata else []
-    initial_sequences: Sequences = Sequences({seq_id: Sequence(seqid=seq_id,
-                                                               paths=[],
-                                                               seqmetadata=metadata.get_sequence_metadata(seq_id)
-                                                               if metadata else {})
-                                              for seq_id in set(maf_sequences_ids + metadata_sequences_ids)})
+    initial_sequences = {seq_id: Sequence(seqid=seq_id,
+                                          paths=[],
+                                          seqmetadata=metadata.get_sequence_metadata(seq_id)
+                                          if metadata else {})
+                         for seq_id in set(maf_sequences_ids + metadata_sequences_ids)}
 
     return [], initial_sequences
 

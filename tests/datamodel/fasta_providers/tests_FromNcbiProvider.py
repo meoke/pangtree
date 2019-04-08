@@ -29,7 +29,7 @@ class FromNCBITests(unittest.TestCase):
         fasta_provider = FromNCBI(EmailAddress('a@gmail.com'), use_cache=False)
         sequence_id = ""
         with self.assertRaises(Exception) as err:
-            _ = fasta_provider._download_from_ncbi(sequence_id, 0, 11)
+            _ = fasta_provider._download_from_ncbi(sequence_id)
             self.assertEqual(str(err), f"Cannot download from Entrez sequence of ID: {sequence_id}")
 
     def read_sequence(self, path: Path):

@@ -1,6 +1,8 @@
 from io import StringIO
-from typing import Optional, Tuple, List
+from typing import Optional, Tuple, List, Union
 from pathlib import Path
+
+from datamodel.input_types import MissingSymbol
 
 
 class ConsensusInputError(Exception):
@@ -13,13 +15,13 @@ class Blosum:
     The matrix in this file must contain symbol for missing nucleotides/proteins.
     Lower-case is interpreted as nucleteotides and upper-case as proteins."""
 
-    def __init__(self, file_content: StringIO, filepath: Optional[Path], missing_base_symbol: str):
+    def __init__(self, file_content: StringIO, filepath: Optional[Path], missing_base_symbol: MissingSymbol):
         self.filepath = filepath
         self._raise_exception_if_incorrect(file_content, missing_base_symbol)
         self.filecontent = file_content
 
     @staticmethod
-    def _raise_exception_if_incorrect(filecontent: StringIO, missing_base_symbol: str):
+    def _raise_exception_if_incorrect(filecontent: StringIO, missing_base_symbol: MissingSymbol):
         blosum_lines = filecontent.readlines()
         if not blosum_lines:
             raise ConsensusInputError("Empty blosum file. Provide a valid blosum file or use te default one.")
@@ -34,7 +36,7 @@ class Blosum:
                                       "It should begin with a whitespace.")
         blosum_symbols = str.strip(blosum_symbols_line).split(" ")
 
-        if missing_base_symbol in blosum_symbols:
+        if missing_base_symbol.value in blosum_symbols:
             return True
         else:
             raise ConsensusInputError("Cannot find symbol used as missing base in blosum file.")
@@ -43,11 +45,11 @@ class Blosum:
 class Hbmin:
     """The minimum value of sequence compatibility to generated consensus."""
 
-    def __init__(self, value: str):
-        self._raise_exception_if_incorrect(value)
-        self.value: float = float(value)
+    def __init__(self, value: Union[str, float] = None):
+        self.value: float = float(value) if value is not None else 0.9
+        self._raise_exception_if_incorrect(self.value)
 
-    def _raise_exception_if_incorrect(self, value: str) -> None:
+    def _raise_exception_if_incorrect(self, value: float) -> None:
         try:
             v = float(value)
         except ValueError:
@@ -59,18 +61,46 @@ class Hbmin:
 class Range:
     """Specify what part of sorted capabilities should be searched for node cutoff. E.g. [0.2,0.8]"""
 
-    def __init__(self, value: List[str]):
-        self.value: Tuple[float, float] = (float(value[0]), float(value[1]))
+    def __init__(self, value: List[Union[str, float]] = None):
+        self.value: Tuple[float, float] = (float(value[0]), float(value[1])) if value else (0, 1)
         self._raise_exception_if_incorrect(self.value)
 
     def _raise_exception_if_incorrect(self, value: Tuple[float, float]) -> None:
         if len(value) != 2:
-            raise Exception("CUTOFF SEARCH RANGE must have length 2.")
+            raise ConsensusInputError("CUTOFF SEARCH RANGE must have length 2.")
         if value[1] < value[0]:
-            raise Exception("CUTOFF SEARCH RANGE first value must be smaller or equal to second value.")
+            raise ConsensusInputError("CUTOFF SEARCH RANGE first value must be smaller or equal to second value.")
         if value[0] < 0 \
                 or value[0] > 1 \
                 or value[1] < 0 \
                 or value[1] > 1:
-            raise Exception("CUTOFF SEARCH RANGE values must be in the range of [0,1].")
+            raise ConsensusInputError("CUTOFF SEARCH RANGE values must be in the range of [0,1].")
 
+
+class Stop:
+    """Value of node compatibility above which the node is no more split."""
+    
+    def __init__(self, value: Union[str, float] = None):
+        self.value: float = float(value) if value is not None else 0.99
+        self._raise_exception_if_incorrect(self.value)
+
+    def _raise_exception_if_incorrect(self, value: float) -> None:
+        if value < 0:
+            raise ConsensusInputError("STOP must be greater than 0.")
+        if value > 1:
+            raise ConsensusInputError("STOP must be smaller than 1.")
+
+
+class P:
+    """Value that changes compatiblity linear meaning to compatibility**P."""
+    """Any floatable value is allowed."""
+
+    def __init__(self, value: Union[str, float] = None):
+        self.value: float = float(value) if value is not None else 1
+
+
+class Multiplier:
+    """NODE1 and NODE2 strategy parameter."""
+
+    def __init__(self, value: Union[str, float] = None):
+        self.value: float = float(value) if value is not None else 1

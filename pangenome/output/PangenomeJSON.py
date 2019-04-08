@@ -3,7 +3,7 @@ from typing import Dict, List, Union, Tuple
 import jsonpickle
 import pickle
 
-from consensuses.ConsensusTree import ConsensusTree
+from consensus.ConsensusTree import ConsensusTree
 from datamodel.DAGMaf import DAGMaf
 from datamodel.Poagraph import Poagraph
 
@@ -115,7 +115,7 @@ class ConsensusNode:
         self.consensus_node_id: int = consensus_node_id
         self.name: str = name
         self.parent: int = parent_node_id
-        self.children: int = children_nodes_ids
+        self.children: List[int] = children_nodes_ids
         self.comp_to_all_sequences: Dict[str, float] = comp_to_all_sequences
         self.sequences_int_ids: List[int] = sequences_int_ids
         self.nodes_ids: List[int] = poagraph_nodes_ids

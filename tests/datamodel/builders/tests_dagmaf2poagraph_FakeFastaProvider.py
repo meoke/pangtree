@@ -54,7 +54,7 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
             pNode.Node(node_id=nid(11), base=pNode.Base('T'), aligned_to=None, block_id=bid(0))
         ]
 
-        expected_sequences = pSeq.Sequences({
+        expected_sequences = {
             pSeq.SequenceID('seq0'):
                 pSeq.Sequence(pSeq.SequenceID('seq0'),
                               [],
@@ -71,7 +71,7 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
                 pSeq.Sequence(pSeq.SequenceID('seq3'),
                               [],
                               pSeq.SequenceMetadata({'group': '2'}))
-        })
+        }
         expected_poagraph = pPoagraph.Poagraph(expected_nodes, expected_sequences)
         actual_poagraph, _ = pPoagraph.Poagraph.build_from_dagmaf(
             Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
@@ -101,7 +101,7 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
             pNode.Node(node_id=nid(12), base=pNode.Base('T'), aligned_to=None),
         ]
 
-        expected_sequences = pSeq.Sequences({
+        expected_sequences = {
             pSeq.SequenceID('seq0'):
                 pSeq.Sequence(pSeq.SequenceID('seq0'),
                               [],
@@ -118,7 +118,7 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
                 pSeq.Sequence(pSeq.SequenceID('seq3'),
                               [],
                               pSeq.SequenceMetadata({'group': '2'}))
-        })
+        }
         expected_poagraph = pPoagraph.Poagraph(expected_nodes, expected_sequences)
         actual_poagraph, _ = pPoagraph.Poagraph.build_from_dagmaf(
             Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
@@ -152,7 +152,7 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
             pNode.Node(node_id=nid(11), base=pNode.Base('T'), aligned_to=None)
         ]
 
-        expected_sequences = pSeq.Sequences({
+        expected_sequences = {
             pSeq.SequenceID('seq0'):
                 pSeq.Sequence(pSeq.SequenceID('seq0'),
                               [],
@@ -169,7 +169,7 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
                 pSeq.Sequence(pSeq.SequenceID('seq3'),
                               [],
                               pSeq.SequenceMetadata({'group': '2'}))
-        })
+        }
         expected_poagraph = pPoagraph.Poagraph(expected_nodes, expected_sequences)
         actual_poagraph, _ = pPoagraph.Poagraph.build_from_dagmaf(
             Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
@@ -201,7 +201,7 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
 
         ]
 
-        expected_sequences = pSeq.Sequences({
+        expected_sequences = {
             pSeq.SequenceID('seq0'):
                 pSeq.Sequence(pSeq.SequenceID('seq0'),
                               [],
@@ -218,7 +218,7 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
                 pSeq.Sequence(pSeq.SequenceID('seq3'),
                               [],
                               pSeq.SequenceMetadata({'group': '2'}))
-        })
+        }
         expected_poagraph = pPoagraph.Poagraph(expected_nodes, expected_sequences)
         actual_poagraph, _ = pPoagraph.Poagraph.build_from_dagmaf(
             Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
@@ -250,7 +250,7 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
             pNode.Node(node_id=nid(11), base=pNode.Base('T'), aligned_to=None)
         ]
 
-        expected_sequences = pSeq.Sequences({
+        expected_sequences = {
             pSeq.SequenceID('seq0'):
                 pSeq.Sequence(pSeq.SequenceID('seq0'),
                               [],
@@ -268,7 +268,7 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
                 pSeq.Sequence(pSeq.SequenceID('seq3'),
                               [],
                               pSeq.SequenceMetadata({'group': '2'}))
-        })
+        }
         expected_poagraph = pPoagraph.Poagraph(expected_nodes, expected_sequences)
         actual_poagraph, _ = pPoagraph.Poagraph.build_from_dagmaf(
             Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
@@ -301,7 +301,7 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
 
         ]
 
-        expected_sequences = pSeq.Sequences({
+        expected_sequences = {
             pSeq.SequenceID('seq0'):
                 pSeq.Sequence(pSeq.SequenceID('seq0'),
                               [],
@@ -319,7 +319,7 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
                 pSeq.Sequence(pSeq.SequenceID('seq3'),
                               [],
                               pSeq.SequenceMetadata({'group': '2'}))
-        })
+        }
         expected_poagraph = pPoagraph.Poagraph(expected_nodes, expected_sequences)
         actual_poagraph, _ = pPoagraph.Poagraph.build_from_dagmaf(
             Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
@@ -351,7 +351,7 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
             pNode.Node(node_id=nid(11), base=pNode.Base('T'), aligned_to=nid(10)),
         ]
 
-        expected_sequences = pSeq.Sequences({
+        expected_sequences = {
             pSeq.SequenceID('seq0'):
                 pSeq.Sequence(pSeq.SequenceID('seq0'),
                               [],
@@ -368,7 +368,7 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
                 pSeq.Sequence(pSeq.SequenceID('seq3'),
                               [],
                               pSeq.SequenceMetadata({'group': '2'}))
-        })
+        }
         expected_poagraph = pPoagraph.Poagraph(expected_nodes, expected_sequences)
         actual_poagraph, _ = pPoagraph.Poagraph.build_from_dagmaf(
             Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
