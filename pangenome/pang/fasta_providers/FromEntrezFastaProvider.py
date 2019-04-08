@@ -7,9 +7,9 @@ from Bio import SeqIO
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 
-from fasta_providers.FastaProvider import FastaProvider
-from pangraph.custom_types import Sequence
-from tools import loggingtools, pathtools
+from pangenome.pang.fasta_providers.FastaProvider import FastaProvider
+from pangenome.pang.pangraph.custom_types import Sequence
+from pangenome.pang.tools import loggingtools, pathtools
 
 EntrezSequenceID = NewType("EntrezSequenceID", str)
 

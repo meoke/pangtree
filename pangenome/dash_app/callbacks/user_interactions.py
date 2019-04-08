@@ -3,9 +3,9 @@ from base64 import b64decode
 from pathlib import Path
 import jsonpickle
 
-from Pangenome import Pangenome
-from arguments.PangenomeParameters import PangenomeParameters
-from fileformats.json.JSONPangenome import JSONPangenome
+from pangenome.pang.Pangenome import Pangenome
+from pangenome.pang.arguments.PangenomeParameters import PangenomeParameters
+from pangenome.pang.fileformats.json.JSONPangenome import JSONPangenome
 from ..server import app
 from dash.dependencies import Input, Output, State
 from ..layout.layout_ids import *

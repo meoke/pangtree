@@ -6,17 +6,17 @@ from Bio import AlignIO
 from mafgraph.graph import Block
 from mafgraph.graph.Arc import Arc
 
-from fileformats.maf.DAGMaf import DAGMaf
-from fileformats.maf.reader import maf_to_dagmaf
-from fasta_providers.FastaProvider import FastaProvider
-from pangraph.Node import Node
-from pangraph.PangraphBuilders.PangraphBuilderBase import PangraphBuilderBase
-from pangraph.exceptions import NoSequenceInfo, SequenceBuildingException
-from pangraph.custom_types import ColumnID, SequenceID, NodeID, BlockID, Sequence, Base, make_base
-from metadata.MultialignmentMetadata import MultialignmentMetadata
+from pangenome.pang.fileformats.maf.DAGMaf import DAGMaf
+from pangenome.pang.fileformats.maf.reader import maf_to_dagmaf
+from pangenome.pang.fasta_providers.FastaProvider import FastaProvider
+from pangenome.pang.pangraph.Node import Node
+from pangenome.pang.pangraph.PangraphBuilders.PangraphBuilderBase import PangraphBuilderBase
+from pangenome.pang.pangraph.exceptions import NoSequenceInfo, SequenceBuildingException
+from pangenome.pang.pangraph.custom_types import ColumnID, SequenceID, NodeID, BlockID, Sequence, Base, make_base
+from pangenome.pang.metadata.MultialignmentMetadata import MultialignmentMetadata
 from mafgraph.mafreader import start_position
 
-from tools import loggingtools
+from pangenome.pang.tools import loggingtools
 
 global_logger = loggingtools.get_global_logger()
 detailed_logger = loggingtools.get_logger("details")

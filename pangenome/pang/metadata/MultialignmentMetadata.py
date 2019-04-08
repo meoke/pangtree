@@ -2,13 +2,13 @@ import re
 
 import pandas as pd
 
-from arguments.PangenomeParameters import MultialignmentFormat
-from fasta_providers.FromEntrezFastaProvider import EntrezSequenceID
-from pangraph.custom_types import SequenceID
+from pangenome.pang.arguments.PangenomeParameters import MultialignmentFormat
+from pangenome.pang.fasta_providers.FromEntrezFastaProvider import EntrezSequenceID
+from pangenome.pang.pangraph.custom_types import SequenceID
 from typing import Dict, List, Any
 from io import StringIO
 
-from tools import loggingtools
+from pangenome.pang.tools import loggingtools
 
 global_logger = loggingtools.get_global_logger()
 detailed_logger = loggingtools.get_logger("details")

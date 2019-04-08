@@ -1,11 +1,11 @@
 from typing import Dict
 
-from fileformats.json.JSONPangenome import JSONPangenome
+from pangenome.pang.fileformats.json.JSONPangenome import JSONPangenome
 
 
 def get_data(jsonpangenome: JSONPangenome) -> Dict[str, str]:
     parameters_data = {}
-    if jsonpangenome.program_parameters:
+    if jsonpangenome['program_parameters']:
         parameters_data["Multialignment file name"] = jsonpangenome.program_parameters.multialignment_file_path
         parameters_data["Datatype"] = jsonpangenome.program_parameters.datatype
         parameters_data["Metadata file name"] = jsonpangenome.program_parameters.metadata_file_path

@@ -1,7 +1,7 @@
 from pathlib import Path
-from consensus.ConsensusesTree import ConsensusesTree
-from pangraph.Pangraph import Pangraph
-from tools import loggingtools
+from pangenome.pang.consensus.ConsensusesTree import ConsensusesTree
+from pangenome.pang.pangraph.Pangraph import Pangraph
+from pangenome.pang.tools import loggingtools
 
 global_logger = loggingtools.get_global_logger()
 

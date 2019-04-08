@@ -1,6 +1,6 @@
 from typing import List
-from consensus.ConsensusNode import ConsensusNodeID, ConsensusNode
-from consensus.exceptions import ConsensusesTreeException
+from pangenome.pang.consensus.ConsensusNode import ConsensusNodeID, ConsensusNode
+from pangenome.pang.consensus.exceptions import ConsensusesTreeException
 
 
 class ConsensusesTree:

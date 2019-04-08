@@ -2,14 +2,14 @@ from io import StringIO
 from typing import List, Dict
 import numpy as np
 
-from pangraph.CompatibilityToPath import CompatibilityToPath
-from pangraph.PangraphBuilders.PangraphBuilderBase import PangraphBuilderBase
-from pangraph.PangraphBuilders.PangraphBuilderFromDAG import PangraphBuilderFromDAG
-from pangraph.PangraphBuilders.PangraphBuilderFromMAF import PangraphBuilderFromMAF
-from fasta_providers.FastaProvider import FastaProvider
-from metadata.MultialignmentMetadata import MultialignmentMetadata
-from pangraph.PangraphBuilders.PangraphBuilderFromPO import PangraphBuilderFromPO
-from tools import loggingtools
+from pangenome.pang.pangraph.CompatibilityToPath import CompatibilityToPath
+from pangenome.pang.pangraph.PangraphBuilders.PangraphBuilderBase import PangraphBuilderBase
+from pangenome.pang.pangraph.PangraphBuilders.PangraphBuilderFromDAG import PangraphBuilderFromDAG
+from pangenome.pang.pangraph.PangraphBuilders.PangraphBuilderFromMAF import PangraphBuilderFromMAF
+from pangenome.pang.fasta_providers.FastaProvider import FastaProvider
+from pangenome.pang.metadata.MultialignmentMetadata import MultialignmentMetadata
+from pangenome.pang.pangraph.PangraphBuilders.PangraphBuilderFromPO import PangraphBuilderFromPO
+from pangenome.pang.tools import loggingtools
 from .Node import Node
 from .custom_types import NodeID, SequenceID
 from .DataType import DataType

@@ -5,9 +5,9 @@ import math
 import plotly.graph_objs as go
 import pandas as pd
 
-from consensus.ConsensusNode import ConsensusNodeID
+from pangenome.pang.consensus.ConsensusNode import ConsensusNodeID
 from dash_app.layout.css_styles import colors
-from fileformats.json.JSONPangenome import JSONPangenome, JSONConsensus
+from pangenome.pang.fileformats.json.JSONPangenome import JSONPangenome, JSONConsensus
 import networkx as nx
 from networkx.readwrite import json_graph
 
@@ -20,20 +20,20 @@ def get_consensustree_dict(jsonpangenome: JSONPangenome) -> Dict:
 
 def get_consensustree(jsonpangenome: JSONPangenome) -> nx.DiGraph:
     tree_graph = nx.DiGraph()
-    for consensus in sorted(jsonpangenome.consensuses, key=lambda c: c.node_id):
-        node_is_leaf = True if not consensus.children else False
-        tree_graph.add_node(consensus.node_id,
-                            name=consensus.name,
-                            comp=consensus.comp_to_all_sequences,
-                            sequences_ids=consensus.sequences_ids,
+    for consensus in sorted(jsonpangenome['consensuses'], key=lambda c: c['node_id']):
+        node_is_leaf = True if not consensus['children'] else False
+        tree_graph.add_node(consensus['node_id'],
+                            name=consensus['name'],
+                            comp=consensus['comp_to_all_sequences'],
+                            sequences_ids=consensus['sequences_ids'],
                             show_in_table=True,
                             hidden=False,
-                            children_consensuses=consensus.children,
+                            children_consensuses=consensus['children'],
                             # mincomp=consensus.mincomp ** (1/jsonpangenome.program_parameters.p),
-                            mincomp=consensus.mincomp,
+                            mincomp=consensus['mincomp'],
                             is_leaf=node_is_leaf)
-        if consensus.parent is not None:
-            tree_graph.add_edge(consensus.parent, consensus.node_id, weight=len(consensus.sequences_ids))
+        if 'parent' in consensus.keys() and consensus['parent'] is not None:
+            tree_graph.add_edge(consensus['parent'], consensus['node_id'], weight=len(consensus['sequences_ids']))
 
     return tree_graph
 

@@ -5,8 +5,8 @@ from typing import Dict
 
 from Bio import SeqIO
 
-from fasta_providers.FastaProvider import FastaProvider
-from pangraph.custom_types import SequenceID, Sequence
+from pangenome.pang.fasta_providers.FastaProvider import FastaProvider
+from pangenome.pang.pangraph.custom_types import SequenceID, Sequence
 
 
 class FromFileFastaProvider(FastaProvider):

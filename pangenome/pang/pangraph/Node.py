@@ -1,4 +1,4 @@
-from pangraph.custom_types import NodeID, Base, BlockID, ColumnID
+from pangenome.pang.pangraph.custom_types import NodeID, Base, BlockID, ColumnID
 
 
 class Node:

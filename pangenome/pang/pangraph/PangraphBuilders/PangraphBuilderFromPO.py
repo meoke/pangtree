@@ -2,11 +2,11 @@ from collections import namedtuple
 from io import StringIO
 from typing import Dict, Iterator, List, Tuple
 
-from pangraph.Node import Node
-from pangraph.PangraphBuilders.PangraphBuilderBase import PangraphBuilderBase
-from metadata.MultialignmentMetadata import MultialignmentMetadata
-from pangraph.custom_types import NodeID, SequenceID, Base, make_base
-from tools import loggingtools
+from pangenome.pang.pangraph.Node import Node
+from pangenome.pang.pangraph.PangraphBuilders.PangraphBuilderBase import PangraphBuilderBase
+from pangenome.pang.metadata.MultialignmentMetadata import MultialignmentMetadata
+from pangenome.pang.pangraph.custom_types import NodeID, SequenceID, Base, make_base
+from pangenome.pang.tools import loggingtools
 
 global_logger = loggingtools.get_global_logger()
 detailed_logger = loggingtools.get_logger("details")

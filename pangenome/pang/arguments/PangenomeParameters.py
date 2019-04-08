@@ -4,7 +4,7 @@ from typing import Optional
 from enum import Enum
 from pathlib import Path
 
-from pangraph.DataType import DataType
+from pangenome.pang.pangraph.DataType import DataType
 
 
 class ConsensusAlgorithm(Enum):

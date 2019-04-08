@@ -2,12 +2,12 @@ from bisect import bisect_left
 from pathlib import Path
 from typing import List, Dict, Union
 
-from pangraph import Pangraph
-from tools import pathtools
-from pangraph.custom_types import NodeID, SequenceID
-from pangraph.PangraphToFilesConverters.PangraphToPO import PangraphToPO, NodePO, SequencePO
-from consensus.exceptions import TreeConsensusGenerationException
-from call_external.poa import call as call_poa
+from pangenome.pang.pangraph import Pangraph
+from pangenome.pang.tools import pathtools
+from pangenome.pang.pangraph.custom_types import NodeID, SequenceID
+from pangenome.pang.pangraph.PangraphToFilesConverters.PangraphToPO import PangraphToPO, NodePO, SequencePO
+from pangenome.pang.consensus.exceptions import TreeConsensusGenerationException
+from pangenome.pang.call_external.poa import call as call_poa
 
 
 def get_top_consensus(pangraph: Pangraph,

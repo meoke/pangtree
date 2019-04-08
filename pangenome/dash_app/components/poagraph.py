@@ -1,6 +1,6 @@
 from typing import List, Dict, Union
 
-from fileformats.json.JSONPangenome import JSONPangenome
+from pangenome.pang.fileformats.json.JSONPangenome import JSONPangenome
 import plotly.graph_objs as go
 
 y_pos_dict = {'A': 40, 'C': 35, 'G': 30, 'T': 25, 'N': 20, 'W': 10, '?': 5, 'n': 2}

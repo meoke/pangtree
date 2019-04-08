@@ -1,20 +1,20 @@
-from consensus.ConsensusesTree import ConsensusesTree
-from consensus.FindCutoff import MAX1, MAX2, FindMaxCutoff, FindNodeCutoff, NODE1, NODE2, NODE3, NODE4
-from metadata.MultialignmentMetadata import MultialignmentMetadata
-from fasta_providers.FromEntrezFastaProvider import FromEntrezFastaProvider
-from fasta_providers.FromFileFastaProvider import FromFileFastaProvider
-from pangraph.Pangraph import Pangraph
-from pangraph.PangraphBuilders.PangraphBuilderFromDAG import PangraphBuilderFromDAG
-from pangraph.PangraphBuilders.PangraphBuilderFromMAF import PangraphBuilderFromMAF
-from pangraph.PangraphBuilders.PangraphBuilderFromPO import PangraphBuilderFromPO
-from pangraph.PangraphToFilesConverters.PangraphToPO import PangraphToPO
-from tools import pathtools, loggingtools
-from arguments.PangenomeParameters import ConsensusAlgorithm, FastaComplementationOption, MaxCutoffOption, \
+from pangenome.pang.consensus.ConsensusesTree import ConsensusesTree
+from pangenome.pang.consensus.FindCutoff import MAX1, MAX2, FindMaxCutoff, FindNodeCutoff, NODE1, NODE2, NODE3, NODE4
+from pangenome.pang.metadata.MultialignmentMetadata import MultialignmentMetadata
+from pangenome.pang.fasta_providers.FromEntrezFastaProvider import FromEntrezFastaProvider
+from pangenome.pang.fasta_providers.FromFileFastaProvider import FromFileFastaProvider
+from pangenome.pang.pangraph.Pangraph import Pangraph
+from pangenome.pang.pangraph.PangraphBuilders.PangraphBuilderFromDAG import PangraphBuilderFromDAG
+from pangenome.pang.pangraph.PangraphBuilders.PangraphBuilderFromMAF import PangraphBuilderFromMAF
+from pangenome.pang.pangraph.PangraphBuilders.PangraphBuilderFromPO import PangraphBuilderFromPO
+from pangenome.pang.pangraph.PangraphToFilesConverters.PangraphToPO import PangraphToPO
+from pangenome.pang.tools import pathtools, loggingtools
+from pangenome.pang.arguments.PangenomeParameters import ConsensusAlgorithm, FastaComplementationOption, MaxCutoffOption, \
     NodeCutoffOption, PangenomeParameters
-from consensus.SimplePOAConsensusGenerator import SimplePOAConsensusGenerator
-from consensus.TreePOAConsensusGenerator import TreePOAConsensusGenerator
-from arguments.PangenomeParameters import MultialignmentFormat
-import fileformats.fasta as fileformats_fasta
+from pangenome.pang.consensus.SimplePOAConsensusGenerator import SimplePOAConsensusGenerator
+from pangenome.pang.consensus.TreePOAConsensusGenerator import TreePOAConsensusGenerator
+from pangenome.pang.arguments.PangenomeParameters import MultialignmentFormat
+import pangenome.pang.fileformats.fasta as fileformats_fasta
 
 global_logger = loggingtools.get_logger("")
 

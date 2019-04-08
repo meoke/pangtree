@@ -1,8 +1,8 @@
 from typing import List, Tuple, Callable
 
-from pangraph.DataType import DataType
-from pangraph.Pangraph import Pangraph
-from pangraph.custom_types import NodeID
+from pangenome.pang.pangraph.DataType import DataType
+from pangenome.pang.pangraph.Pangraph import Pangraph
+from pangenome.pang.pangraph.custom_types import NodeID
 
 
 class NodePO:

@@ -1,6 +1,6 @@
 import abc
 
-from metadata.MultialignmentMetadata import MultialignmentMetadata
+from pangenome.pang.metadata.MultialignmentMetadata import MultialignmentMetadata
 
 
 class PangraphBuilderBase(abc.ABC):

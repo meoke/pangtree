@@ -2,7 +2,7 @@ from abc import ABC
 from typing import List, Optional
 import numpy as np
 
-from pangraph.CompatibilityToPath import CompatibilityToPath
+from pangenome.pang.pangraph.CompatibilityToPath import CompatibilityToPath
 
 
 class FindCutoffResult:

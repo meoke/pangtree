@@ -1,6 +1,6 @@
 from typing import List, Dict, NewType
-from pangraph.custom_types import SequenceID, NodeID
-from pangraph.CompatibilityToPath import CompatibilityToPath
+from pangenome.pang.pangraph.custom_types import SequenceID, NodeID
+from pangenome.pang.pangraph.CompatibilityToPath import CompatibilityToPath
 
 ConsensusNodeID = NewType('ConsensusNodeID', int)
 

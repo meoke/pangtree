@@ -1,5 +1,5 @@
-from consensus.ConsensusesTree import ConsensusesTree
-from pangraph.Pangraph import Pangraph
+from pangenome.pang.consensus.ConsensusesTree import ConsensusesTree
+from pangenome.pang.pangraph.Pangraph import Pangraph
 
 
 def pangraph_to_fasta(pangraph: Pangraph) -> str:

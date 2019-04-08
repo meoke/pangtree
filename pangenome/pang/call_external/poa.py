@@ -2,7 +2,7 @@ import os
 import subprocess
 from pathlib import Path
 
-from tools import loggingtools
+from pangenome.pang.tools import loggingtools
 
 detailed_logger = loggingtools.get_logger("details")
 

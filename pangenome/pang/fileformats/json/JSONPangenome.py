@@ -1,8 +1,8 @@
 import itertools
 from typing import List, Dict
-from Pangenome import Pangenome
-from arguments.PangenomeParameters import PangenomeParameters, FastaComplementationOption
-from pangraph.custom_types import NodeID
+from pangenome.pang.Pangenome import Pangenome
+from pangenome.pang.arguments.PangenomeParameters import PangenomeParameters, FastaComplementationOption
+from pangenome.pang.pangraph.custom_types import NodeID
 
 
 class JSONProgramParameters:
