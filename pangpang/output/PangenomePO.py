@@ -36,7 +36,7 @@ class SequencePO:
 
 
 def poagraph_to_PangenomePO(poagraph: Poagraph) -> str:
-    """Converts poagraph to po file."""
+    """Converts poagraph to .po file."""
 
     po_nodes, po_sequences = _convert_to_po_input_data(poagraph)
     return poagraph_elements_to_PangenomePO(po_nodes, po_sequences, poagraph.datatype)
@@ -57,7 +57,7 @@ def _convert_to_po_input_data(poagraph: Poagraph) -> Tuple[List[NodePO], List[Se
     sequences_weights = poagraph.get_sequences_weights(poagraph.get_sequences_ids())
 
     for node in poagraph.nodes:
-        po_nodes.append(NodePO(base=node.get_base(),
+        po_nodes.append(NodePO(base=node.base.value,
                                aligned_to=node.aligned_to,
                                in_nodes=set(),
                                sequences_ids=[]))

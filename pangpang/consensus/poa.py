@@ -169,7 +169,7 @@ class PangraphPOTranslator:
 
         for line_idx in range(first_node_line_idx, len(po_lines)):
             new_node_id += 1
-            for c_id in consensuses_in_po_lines:
+            for c_id in consensuses_to_return.keys():
                 if consensuses_in_po_lines[c_id].po_consensus_id in po_lines[line_idx]:
                     consensuses_to_return[c_id][consensuses_paths_node_counter[c_id]] = self.new_to_old[new_node_id]
                     consensuses_paths_node_counter[c_id] += 1

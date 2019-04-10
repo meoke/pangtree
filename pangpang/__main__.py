@@ -1,12 +1,13 @@
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../pangenome')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../pangpang')))
 from consensus import tree_generator, simple_tree_generator
 from datamodel.input_types import Maf
 from datamodel.Poagraph import Poagraph
 from tools import cli, pathtools
 from output.PangenomeJSON import to_PangenomeJSON, TaskParameters, to_json, to_pickle, load_pickle
+from output.PangenomePO import poagraph_to_PangenomePO
 
 
 def main():
@@ -37,6 +38,10 @@ def main():
                                                            max_strategy,
                                                            node_strategy,
                                                            args.verbose)
+
+    if args.output_po:
+        pangenome_po = poagraph_to_PangenomePO(poagraph)
+        pathtools.save_to_file(pangenome_po, pathtools.get_child_path(args.output_dir, "poagraph.po"))
 
     pangenomejson = to_PangenomeJSON(TaskParameters(), poagraph, dagmaf, consensus_tree)
     pagenome_json_str = to_json(pangenomejson)

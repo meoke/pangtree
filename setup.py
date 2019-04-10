@@ -1,9 +1,10 @@
 from distutils.core import setup
 
 setup(
-    name='pang',
+    name='pangpang',
     version='0.1dev',
-    packages=['biopython', 'numpy', 'jsonpickle', 'ddt', 'mafgraph'],
+    packages=['pangpang'],
+    # packages=['biopython', 'numpy', 'jsonpickle', 'ddt', 'mafgraph'],
     license='MIT Licence',
-    long_description=open('README.md').read(),
+    long_description=open('readme.md').read()
 )

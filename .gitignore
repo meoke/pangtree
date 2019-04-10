@@ -112,3 +112,4 @@ pangenome/pang/.fastacache
 /output/
 
 /.fastacache/*
+*.png

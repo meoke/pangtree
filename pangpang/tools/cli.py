@@ -222,10 +222,10 @@ def get_parser() -> argparse.ArgumentParser:
 #     p.add_argument('-fasta',
 #                    action='store_true',
 #                    help='Set if fasta files for consensuses must be produced.')
-#     p.add_argument('-output_po',
-#                    action='store_true',
-#                    default=False,
-#                    help='Set if po file with entire pangraph (without any consensuses) must be produced.')
+    p.add_argument('-output_po',
+                   action='store_true',
+                   default=False,
+                   help='Set if output must containt poagraph as .po file.')
 #     p.add_argument('-consensus',
 #                    type=_consensus_algorithm_option,
 #                    default=ConsensusAlgorithm.NO,

@@ -3,9 +3,9 @@ from typing import Dict, List, Union, Tuple
 import jsonpickle
 import pickle
 
-from consensus.ConsensusTree import ConsensusTree
-from datamodel.DAGMaf import DAGMaf
-from datamodel.Poagraph import Poagraph
+from pangpang.consensus.ConsensusTree import ConsensusTree
+from pangpang.datamodel.DAGMaf import DAGMaf
+from pangpang.datamodel.Poagraph import Poagraph
 
 
 class TaskParameters:
@@ -160,7 +160,7 @@ class PangenomeJSON:
         self.sequences: List[Sequence] = sequences
         self.nodes: List[Node] = nodes
         self.dagmaf_nodes = dagmaf_nodes
-        self.consensuses_tree = consensuses_tree
+        self.consensuses = consensuses_tree
 
 
 def to_PangenomeJSON(task_parameters: TaskParameters = None,

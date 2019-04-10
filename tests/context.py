@@ -3,19 +3,25 @@ import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../pangenome')))
 
 
-from pangenome.datamodel import Node as pNode
-from pangenome.datamodel import Poagraph as pPoagraph
-from pangenome.datamodel import Sequence as pSeq
-from pangenome.datamodel import Poagraph as pPoagraph
-from pangenome.datamodel.builders import maf2poagraph, dagmaf2poagraph
-from pangenome.datamodel.input_types import Maf, MetadataCSV
-import pangenome.tools.pathtools as pathtools
-from pangenome.datamodel.fasta_providers.ConstSymbolProvider import ConstSymbolProvider
-from pangenome.datamodel.fasta_providers.FromNCBI import FromNCBI, EmailAddress
+from pangpang.datamodel import Node as pNode
+from pangpang.datamodel import Poagraph as pPoagraph
+from pangpang.datamodel import Sequence as pSeq
+from pangpang.datamodel import Poagraph as pPoagraph
+from pangpang.datamodel.builders import maf2poagraph, dagmaf2poagraph
+from pangpang.datamodel.input_types import Maf, MetadataCSV
+import pangpang.tools.pathtools as pathtools
+from pangpang.datamodel.fasta_providers.ConstSymbolProvider import ConstSymbolProvider
+from pangpang.datamodel.fasta_providers.FromNCBI import FromNCBI, EmailAddress
 
-from pangenome.datamodel.fasta_providers.FastaProvider import FastaProvider, FastaProviderException
-from pangenome.datamodel.fasta_providers.FromFile import FromFile
-from pangenome.datamodel.input_types import MissingSymbol, InputError
+from pangpang.datamodel.fasta_providers.FastaProvider import FastaProvider, FastaProviderException
+from pangpang.datamodel.fasta_providers.FromFile import FromFile
+from pangpang.datamodel.input_types import MissingSymbol, InputError
+
+from pangpang.output import PangenomePO
+
+from pangpang.output import PangenomeFASTA
+from pangpang.consensus import ConsensusTree as CT
+from pangpang.consensus.input_types import P
 
 
 # from pangenome.pang.arguments.PangenomeParameters import MultialignmentFormat

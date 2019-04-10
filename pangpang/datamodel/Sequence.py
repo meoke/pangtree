@@ -1,7 +1,7 @@
 from typing import NewType, List, Any, Dict
 
-from pangenome.datamodel.builders.PoagraphBuildException import PoagraphBuildException
-from pangenome.datamodel.Node import NodeID
+from pangpang.datamodel.builders.PoagraphBuildException import PoagraphBuildException
+from pangpang.datamodel.Node import NodeID
 
 SequencePath = NewType('SequencePath', List[NodeID])
 SequenceMetadata = NewType('SequenceMetadata', Dict[str, Any])
