@@ -1,4 +1,4 @@
-from typing import List, NewType, Dict
+from typing import List, NewType, Dict, Optional
 
 from consensus.input_types import P
 from datamodel.Node import NodeID
@@ -14,7 +14,7 @@ class ConsensusesTreeException(Exception):
 class CompatibilityToPath:
     """Expresses how similar is one poagraph path to another."""
 
-    def __init__(self, compatibility: float, p: P):
+    def __init__(self, compatibility: float, p: P = P(1)):
         self.value: float = compatibility**p.value
 
     def __eq__(self, other):
@@ -44,19 +44,19 @@ class CompatibilityToPath:
 
 class ConsensusNode(object):
     def __init__(self,
-                 parent_node_id: ConsensusNodeID = None,
-                 children_nodes_ids: List[ConsensusNodeID] = None,
-                 sequences_ids: List[SequenceID] = None,
-                 consensus_id: ConsensusNodeID = None,
-                 mincomp: CompatibilityToPath = None,
-                 compatibilities_to_all: Dict[SequenceID, CompatibilityToPath] = None,
-                 consensus_path: SequencePath = None):
+                 consensus_id: ConsensusNodeID,
+                 parent_node_id: Optional[ConsensusNodeID] = None,
+                 children_nodes_ids: Optional[List[ConsensusNodeID]] = None,
+                 sequences_ids: Optional[List[SequenceID]] = None,
+                 mincomp: Optional[CompatibilityToPath] = None,
+                 compatibilities_to_all: Optional[Dict[SequenceID, CompatibilityToPath]] = None,
+                 consensus_path: Optional[SequencePath] = None):
         self.parent_node_id: ConsensusNodeID = parent_node_id
         self.children_nodes_ids: List[ConsensusNodeID] = children_nodes_ids if children_nodes_ids else []
         self.sequences_ids: List[SequenceID] = sequences_ids if sequences_ids else []
         self.consensus_id: ConsensusNodeID = consensus_id
-        self.mincomp: CompatibilityToPath = mincomp
-        self.compatibilities_to_all: Dict[SequenceID, CompatibilityToPath] = compatibilities_to_all
+        self.mincomp: CompatibilityToPath = mincomp if mincomp else CompatibilityToPath(0)
+        self.compatibilities_to_all: Dict[SequenceID, CompatibilityToPath] = compatibilities_to_all if compatibilities_to_all else {}
         self.consensus_path: SequencePath = consensus_path
 
     def __str__(self):

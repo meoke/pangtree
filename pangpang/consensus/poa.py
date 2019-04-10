@@ -2,8 +2,9 @@ import os
 from bisect import bisect_left
 from collections import namedtuple
 from pathlib import Path
-from typing import List, Dict, Union
+from typing import List, Dict, Union, Optional
 
+from consensus.input_types import Hbmin
 from datamodel.Node import NodeID
 from datamodel.Poagraph import Poagraph
 from datamodel.Sequence import SequenceID, SequencePath
@@ -17,12 +18,8 @@ class NoConsensusError(Exception):
     pass
 
 
-def get_consensus(poagraph: Poagraph,
-                  sequences_ids: List[SequenceID],
-                  output_dir: Path,
-                  job_name: str,
-                  blosum_path: Path,
-                  specific_consensus_id: int) -> Dict[int, SequencePath]:
+def get_consensuses(poagraph: Poagraph, sequences_ids: List[SequenceID], output_dir: Path, job_name: str,
+                    blosum_path: Path, hbmin: Hbmin, specific_consensuses_id: Optional[List[int]] = None) -> Dict[int, SequencePath]:
     poa_input_path = pathtools.get_child_path(output_dir, f"{job_name}_in_pangenome.po")
     poa_output_path = pathtools.get_child_path(output_dir, f"{job_name}_out_pangenome.po")
 
@@ -34,10 +31,10 @@ def get_consensus(poagraph: Poagraph,
     call(po_file_path=poa_input_path,
          hb_file_path=poa_output_path,
          blosum_path=blosum_path.resolve(),
-         hbmin=0.6)
+         hbmin=hbmin.value)
     with open(poa_output_path) as poa_output:
         poa_output_lines = poa_output.readlines()
-    consensus_paths = s.read_consensus_paths(poa_output_lines, [specific_consensus_id])
+    consensus_paths = s.read_consensus_paths(poa_output_lines, specific_consensuses_id)
     return consensus_paths
     # return {specific_consensus_id: SequencePath([NodeID(0)])}
 
@@ -51,6 +48,17 @@ def call(po_file_path: Path, hb_file_path: Path, blosum_path: Path, hbmin: float
     poa_str_output = poa_result.stderr.decode("ASCII")
     # detailed_logger.info(f"Poa output: {poa_str_output}")
 
+
+class ConsInfo:
+    def __init__(self,
+                 fullname: str,
+                 po_consensus_id: Optional[str] = None,
+                 assigned_sequences_ids: Optional[List[SequenceID]] = None,
+                 path: Optional[SequencePath] = None):
+        self.fullname: str = fullname
+        self.po_consensus_id: str = po_consensus_id
+        self.assigned_sequences_ids: List[SequenceID] = assigned_sequences_ids
+        self.path: SequencePath = path
 
 
 class PangraphPOTranslator:
@@ -127,7 +135,7 @@ class PangraphPOTranslator:
     def _extract_line_value(line: str) -> str:
         return line.split('=')[1].strip()
 
-    def read_consensus_paths(self, po_lines: List[str], specific_consensus_id) -> Dict[int, SequencePath]:
+    def read_consensus_paths(self, po_lines: List[str], specific_consensuses_ids: Optional[List[int]] = None) -> Dict[int, SequencePath]:
         po_lines_iterator = iter(po_lines)
 
         for i in range(3):
@@ -136,41 +144,44 @@ class PangraphPOTranslator:
         nodes_count = int(PangraphPOTranslator._extract_line_value(next(po_lines_iterator)))
         paths_count = int(PangraphPOTranslator._extract_line_value(next(po_lines_iterator)))
 
-        ConsInfo = namedtuple('ConsInfo', ['fullname', 'po_consensus_id', 'length'])
-
-        consensuses_in_po_lines = dict()
+        consensuses_in_po_lines: Dict[int, ConsInfo] = dict()
         s = -1
         for i in range(paths_count):
             s += 1
             path_name = PangraphPOTranslator._extract_line_value(next(po_lines_iterator))
             if len(path_name) > 7 and path_name[:7] == "CONSENS":
-                detailed_consens_info = next(po_lines_iterator)
-                detailed_info = self._extract_line_value(detailed_consens_info).split(' ')
-                consens_nodes_count = int(detailed_info[0])
-                consensuses_in_po_lines[int(path_name[7:])] = ConsInfo(fullname=path_name,
-                                                                       po_consensus_id=f"S{str(s)}",
-                                                                       length=consens_nodes_count)
+                if specific_consensuses_ids is None or s in specific_consensuses_ids:
+                    detailed_consens_info_line = next(po_lines_iterator)
+                    detailed_consens_info = self._extract_line_value(detailed_consens_info_line).split(' ')
+                    consens_nodes_count = int(detailed_consens_info[0])
+                    consensuses_in_po_lines[int(path_name[7:])].fullname = path_name
+                    consensuses_in_po_lines[int(path_name[7:])].po_consensus_id = f"S{str(s)}"
+                    consensuses_in_po_lines[int(path_name[7:])].path = [None] * consens_nodes_count
             else:
-                _ = next(po_lines_iterator)
-                continue
+                detailed_sequence_info_line = next(po_lines_iterator)
+                detailed_sequence_info = self._extract_line_value(detailed_sequence_info_line).split(' ')
+                assigned_consensus_id = int(detailed_sequence_info[3])
+                sequence_id = self.seq_new_to_old[i]
+                if assigned_consensus_id != -1:
+                    if assigned_consensus_id in consensuses_in_po_lines:
+                        consensuses_in_po_lines[assigned_consensus_id].assigned_sequences_ids.append(sequence_id)
+                    else:
+                        consensuses_in_po_lines[assigned_consensus_id] = ConsInfo(fullname=f"CONSENS{assigned_consensus_id}",
+                                                                                  assigned_sequences_ids=[sequence_id])
 
         if not consensuses_in_po_lines:
             raise NoConsensusError("No consensus found in this poagraph.")
 
-        consensuses_to_return = {c: [None] * c_info.length
-                                 for c, c_info
-                                 in consensuses_in_po_lines.items()
-                                 if c in specific_consensus_id}
-        consensuses_paths_node_counter = {c: 0 for c in consensuses_to_return.keys()}
+
+        consensuses_paths_node_counter = {c: 0 for c in consensuses_in_po_lines.keys()}
 
         first_node_line_idx = 5 + paths_count * 2
-        old_node_id = 0
         new_node_id = -1
 
         for line_idx in range(first_node_line_idx, len(po_lines)):
             new_node_id += 1
-            for c_id in consensuses_to_return.keys():
+            for c_id in consensuses_in_po_lines.keys():
                 if consensuses_in_po_lines[c_id].po_consensus_id in po_lines[line_idx]:
-                    consensuses_to_return[c_id][consensuses_paths_node_counter[c_id]] = self.new_to_old[new_node_id]
+                    consensuses_in_po_lines[c_id].path[consensuses_paths_node_counter[c_id]] = self.new_to_old[new_node_id]
                     consensuses_paths_node_counter[c_id] += 1
-        return consensuses_to_return
+        return consensuses_in_po_lines

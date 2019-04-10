@@ -70,13 +70,13 @@ class ToFASTATests(unittest.TestCase):
         consensuses_tree = CT.ConsensusTree()
         consensuses_tree.nodes = [
             # all members set
-            CT.ConsensusNode(parent_node_id=CT.ConsensusNodeID(-1),
+            CT.ConsensusNode(consensus_id=CT.ConsensusNodeID(0),
+                             parent_node_id=CT.ConsensusNodeID(-1),
                              children_nodes_ids=[CT.ConsensusNodeID(1), CT.ConsensusNodeID(2)],
                              sequences_ids=[pSeq.SequenceID('seq0'),
                                             pSeq.SequenceID('seq1'),
                                             pSeq.SequenceID('seq2'),
                                             pSeq.SequenceID('seq3')],
-                             consensus_id=CT.ConsensusNodeID(0),
                              mincomp=CT.CompatibilityToPath(0.5, P(1)),
                              compatibilities_to_all={pSeq.SequenceID('seq0'): CT.CompatibilityToPath(1.0, P(1)),
                                                      pSeq.SequenceID('seq1'): CT.CompatibilityToPath(0.9, P(1)),
@@ -84,11 +84,11 @@ class ToFASTATests(unittest.TestCase):
                                                      pSeq.SequenceID('seq3'): CT.CompatibilityToPath(0.6, P(1))},
                              consensus_path=pSeq.SequencePath([nid(0), nid(2), nid(5), nid(6), nid(10), nid(12), nid(13), nid(16)])),
             # no compatibilities to all, no mincomp
-            CT.ConsensusNode(parent_node_id=CT.ConsensusNodeID(0),
+            CT.ConsensusNode(consensus_id=CT.ConsensusNodeID(1),
+                             parent_node_id=CT.ConsensusNodeID(0),
                              sequences_ids=[pSeq.SequenceID('seq0'),
                                             pSeq.SequenceID('seq1'),
                                             pSeq.SequenceID('seq2')],
-                             consensus_id=CT.ConsensusNodeID(1),
                              consensus_path=pSeq.SequencePath(
                                  [nid(0), nid(2), nid(3), nid(6), nid(10), nid(11), nid(13), nid(17)]))
         ]

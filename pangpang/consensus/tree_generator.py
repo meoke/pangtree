@@ -4,7 +4,7 @@ from typing import List, Dict, Tuple
 
 from consensus.ConsensusTree import ConsensusTree, ConsensusNode, ConsensusNodeID, CompatibilityToPath
 from consensus.cutoffs import FindMaxCutoff, FindNodeCutoff
-from consensus.input_types import Blosum, Stop, P
+from consensus.input_types import Blosum, Stop, P, Hbmin
 from datamodel.Poagraph import Poagraph
 from consensus import poa
 from datamodel.Sequence import SequenceID, SequencePath
@@ -68,21 +68,22 @@ def _init_consensus_tree(poagraph: Poagraph, blosum_path: Path, output_dir: Path
 
 def _get_root_node(poagraph: Poagraph, blosum_path: Path, output_dir: Path, p: P) -> ConsensusNode:
     # detailed_logger.info("Getting the root consensus node...")
-    all_poagraph_sequences_ids = [*poagraph.sequences.keys()]
+    all_poagraph_sequences_ids = poagraph.get_sequences_ids()
     try:
-        consensus_paths = poa.get_consensus(poagraph,
-                                             all_poagraph_sequences_ids,
-                                             output_dir,
-                                             "root",
-                                             blosum_path,
-                                             0)
+        consensus_paths = poa.get_consensuses(poagraph,
+                                              all_poagraph_sequences_ids,
+                                              output_dir,
+                                              "root",
+                                              blosum_path,
+                                              hbmin=Hbmin(0),
+                                              specific_consensuses_id=[0])
     except poa.NoConsensusError:
         raise TreeConsensusGenerationException("Cannot find root consensus.")
     compatibilities = poagraph.get_compatibilities(all_poagraph_sequences_ids,
                                                    consensus_paths[0],
                                                    p=p)
-    consensus_node = ConsensusNode(sequences_ids=[*poagraph.sequences.keys()],
-                                   consensus_id=ConsensusNodeID(0),
+    consensus_node = ConsensusNode(consensus_id=ConsensusNodeID(0),
+                                   sequences_ids=[*poagraph.sequences.keys()],
                                    mincomp=_get_min_comp(all_poagraph_sequences_ids, compatibilities),
                                    compatibilities_to_all=compatibilities,
                                    consensus_path=consensus_paths[0])
@@ -117,12 +118,13 @@ def _get_children_nodes(node: ConsensusNode,
 
         while not_assigned_sequences_ids:
             # detailed_logger.info(f"### Getting child {len(so_far_cutoffs)}...")
-            consensus_path = poa.get_consensus(poagraph,
-                                                not_assigned_sequences_ids,
-                                                output_dir,
-                                                f"{node.consensus_id}_{len(so_far_cutoffs)}_all",
-                                                blosum_path,
-                                                0)[0]
+            consensus_path = poa.get_consensuses(poagraph,
+                                                 not_assigned_sequences_ids,
+                                                 output_dir,
+                                                 f"{node.consensus_id}_{len(so_far_cutoffs)}_all",
+                                                 blosum_path,
+                                                 Hbmin(0),
+                                                 specific_consensuses_id=[0])[0]
 
             compatibilities_to_consensus = poagraph.get_compatibilities(sequences_ids=not_assigned_sequences_ids,
                                                                         consensus_path=consensus_path,
@@ -131,12 +133,13 @@ def _get_children_nodes(node: ConsensusNode,
             max_sequences_ids = _get_max_compatible_sequences_ids(max_cutoff_strategy,
                                                                   compatibilities_to_consensus,
                                                                   splitted_node_id=node.consensus_id)
-            max_consensus_path = poa.get_consensus(poagraph,
-                                                   max_sequences_ids,
-                                                   output_dir,
-                                                   f"{node.consensus_id}_{len(so_far_cutoffs)}_max",
-                                                   blosum_path,
-                                                   0)[0]
+            max_consensus_path = poa.get_consensuses(poagraph,
+                                                     max_sequences_ids,
+                                                     output_dir,
+                                                     f"{node.consensus_id}_{len(so_far_cutoffs)}_max",
+                                                     blosum_path,
+                                                     Hbmin(0),
+                                                     specific_consensuses_id=[0])[0]
 
             comps_to_max_consensus = poagraph.get_compatibilities(sequences_ids=not_assigned_sequences_ids,
                                                                   consensus_path=max_consensus_path,
@@ -145,9 +148,9 @@ def _get_children_nodes(node: ConsensusNode,
                 node_cutoff_strategy,
                 compatibilities_to_max_c=comps_to_max_consensus,
                 so_far_cutoffs=so_far_cutoffs, splitted_node_id=node.consensus_id)
-            consensus_node = ConsensusNode(parent_node_id=node.consensus_id,
+            consensus_node = ConsensusNode(consensus_id=ConsensusNodeID(current_max_consensus_node_id + len(so_far_cutoffs)+1),
+                                           parent_node_id=node.consensus_id,
                                            sequences_ids=qualified_sequences_ids,
-                                           consensus_id=ConsensusNodeID(current_max_consensus_node_id + len(so_far_cutoffs)+1),
                                            mincomp=_get_min_comp(node_sequences_ids=qualified_sequences_ids,
                                                                  comps_to_consensus=comps_to_max_consensus),
                                            consensus_path=SequencePath(max_consensus_path))

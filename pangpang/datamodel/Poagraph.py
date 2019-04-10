@@ -56,7 +56,7 @@ class Poagraph:
     def get_compatibilities(self,
                             sequences_ids: List[SequenceID],
                             consensus_path: SequencePath,
-                            p: P) -> Dict[SequenceID, CompatibilityToPath]:
+                            p: Optional[P] = P(1)) -> Dict[SequenceID, CompatibilityToPath]:
         compatibilities = dict()
         for seq_id in sequences_ids:
             try:
