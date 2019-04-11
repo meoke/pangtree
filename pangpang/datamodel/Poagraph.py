@@ -49,9 +49,13 @@ class Poagraph:
         return cls("nodes po", "paths po")
 
     def __eq__(self, other: 'Poagraph') -> bool:
-        return self.nodes == other.nodes and \
-            self.sequences == other.sequences and \
-            self.datatype == other.datatype
+        # return self.nodes == other.nodes and \
+        #     self.sequences == other.sequences and \
+        #     self.datatype == other.datatype
+        a= self.nodes == other.nodes
+        b=    self.sequences == other.sequences
+        c=   self.datatype == other.datatype
+        return a and b and c
 
     def get_compatibilities(self,
                             sequences_ids: List[SequenceID],

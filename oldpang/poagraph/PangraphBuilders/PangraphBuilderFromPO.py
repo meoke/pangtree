@@ -38,41 +38,41 @@ class PangraphBuilderFromPO(PangraphBuilderBase):
         self._build_sequences_info(po_content, paths_count)
         self._build_pangraph_paths_and_nodes(po_content, nodes_count)
 
-    def _init_pangraph(self, nodes_count: int) -> None:
-        self.pangraph.paths = {SequenceID(seq_id): [[]] for seq_id in self.sequences_ids}
-        self.pangraph.nodes = [None] * nodes_count
+    # def _init_pangraph(self, nodes_count: int) -> None:
+    #     self.pangraph.paths = {SequenceID(seq_id): [[]] for seq_id in self.sequences_ids}
+    #     self.pangraph.nodes = [None] * nodes_count
+    #
+    # @staticmethod
+    # def extract_line_value(line: str) -> str:
+    #     splitted_line = line.split('=')
+    #     if len(splitted_line) < 2:
+    #         raise Exception("Incorrect line format. Nothing after \"=\" found.")
+    #     return splitted_line[1].strip()
 
-    @staticmethod
-    def extract_line_value(line: str) -> str:
-        splitted_line = line.split('=')
-        if len(splitted_line) < 2:
-            raise Exception("Incorrect line format. Nothing after \"=\" found.")
-        return splitted_line[1].strip()
+    # @staticmethod
+    # def get_sequences_names(multialignment_file_content: str) -> List[str]:
+    #     pocontent = StringIO(multialignment_file_content)
+    #     po_lines = pocontent.readlines()
+    #     sourcecount = int(PangraphBuilderFromPO.extract_line_value(po_lines[4]))
+    #     sequences_names = []
+    #     for i in range(5, 5+sourcecount*2, 2):
+    #         sequence_name = PangraphBuilderFromPO.extract_line_value(po_lines[i])
+    #         sequences_names.append(sequence_name)
+    #     return sequences_names
 
-    @staticmethod
-    def get_sequences_names(multialignment_file_content: str) -> List[str]:
-        pocontent = StringIO(multialignment_file_content)
-        po_lines = pocontent.readlines()
-        sourcecount = int(PangraphBuilderFromPO.extract_line_value(po_lines[4]))
-        sequences_names = []
-        for i in range(5, 5+sourcecount*2, 2):
-            sequence_name = PangraphBuilderFromPO.extract_line_value(po_lines[i])
-            sequences_names.append(sequence_name)
-        return sequences_names
-
-    def _build_sequences_info(self, po_content: Iterator, paths_count: int) -> None:
-        for i in range(paths_count):
-            path_name = PangraphBuilderFromPO.extract_line_value(next(po_content))
-            detailed_path_info = next(po_content)
-            detailed_info = PangraphBuilderFromPO.extract_line_value(detailed_path_info).split(' ')
-            if len(detailed_info) < 5:
-                raise Exception(f"Expeceted SOURCEINFO=[5 parameters]. Got {detailed_path_info} instead.")
-            self.sequences_info[i] = POSequenceInfo(name=path_name,
-                                                    nodes_count=detailed_info[0],
-                                                    start_node=detailed_info[1],
-                                                    weight=detailed_info[2],
-                                                    consensus_id=detailed_info[3],
-                                                    additional_info="".join(detailed_info[4:]))
+    # def _build_sequences_info(self, po_content: Iterator, paths_count: int) -> None:
+    #     for i in range(paths_count):
+    #         path_name = PangraphBuilderFromPO.extract_line_value(next(po_content))
+    #         detailed_path_info = next(po_content)
+    #         detailed_info = PangraphBuilderFromPO.extract_line_value(detailed_path_info).split(' ')
+    #         if len(detailed_info) < 5:
+    #             raise Exception(f"Expeceted SOURCEINFO=[5 parameters]. Got {detailed_path_info} instead.")
+    #         self.sequences_info[i] = POSequenceInfo(name=path_name,
+    #                                                 nodes_count=detailed_info[0],
+    #                                                 start_node=detailed_info[1],
+    #                                                 weight=detailed_info[2],
+    #                                                 consensus_id=detailed_info[3],
+    #                                                 additional_info="".join(detailed_info[4:]))
 
     def _build_pangraph_paths_and_nodes(self, po_content: Iterator, nodes_count: int) -> None:
         for i in range(nodes_count):

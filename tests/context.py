@@ -7,7 +7,7 @@ from pangpang.datamodel import Node as pNode
 from pangpang.datamodel import Poagraph as pPoagraph
 from pangpang.datamodel import Sequence as pSeq
 from pangpang.datamodel import Poagraph as pPoagraph
-from pangpang.datamodel.builders import maf2poagraph, dagmaf2poagraph
+from pangpang.datamodel.builders import maf2poagraph, dagmaf2poagraph, po2poagraph
 from pangpang.datamodel.input_types import Maf, MetadataCSV
 import pangpang.tools.pathtools as pathtools
 from pangpang.datamodel.fasta_providers.ConstSymbolProvider import ConstSymbolProvider
@@ -15,7 +15,7 @@ from pangpang.datamodel.fasta_providers.FromNCBI import FromNCBI, EmailAddress
 
 from pangpang.datamodel.fasta_providers.FastaProvider import FastaProvider, FastaProviderException
 from pangpang.datamodel.fasta_providers.FromFile import FromFile
-from pangpang.datamodel.input_types import MissingSymbol, InputError
+from pangpang.datamodel.input_types import MissingSymbol, InputError, Po
 
 from pangpang.output import PangenomePO
 

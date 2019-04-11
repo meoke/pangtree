@@ -1,6 +1,6 @@
 import csv
 from io import StringIO
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 from pathlib import Path
 
 from .Sequence import SequenceID
@@ -51,11 +51,13 @@ class MetadataCSV:
         if 'seqid' not in headers:
             raise InputError('No seqid column in metadata csv.')
 
-    def get_all_sequences_ids(self):
+    def get_all_sequences_ids(self) -> List[SequenceID]:
         return [*self.metadata.keys()]
 
-    def get_sequence_metadata(self, seq_id):
-        return self.metadata[seq_id]
+    def get_sequence_metadata(self, seq_id) -> Dict[str, Any]:
+        if seq_id in self.metadata:
+            return self.metadata[seq_id]
+        return {}
 
 
 class Po:
