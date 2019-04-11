@@ -6,7 +6,7 @@ from datamodel.DAGMaf import DAGMaf
 from datamodel.DataType import DataType
 from datamodel.Sequence import SequencePath, SequenceID, Sequence
 from datamodel.Node import Node
-from datamodel.builders import maf2poagraph, maf2dagmaf, dagmaf2poagraph
+from datamodel.builders import maf2poagraph, maf2dagmaf, dagmaf2poagraph, po2poagraph
 from datamodel.input_types import Po, Maf, MetadataCSV
 from .fasta_providers.FastaProvider import FastaProvider
 import numpy as np
@@ -27,8 +27,8 @@ class Poagraph:
                        datatype: Optional[DataType] = DataType.Nucleotides) -> 'Poagraph':
         nodes, sequences = maf2poagraph.get_poagraph(maf, metadata)
         poagraph = Poagraph(nodes, sequences)
-        if datatype is not None:
-            poagraph.datatype = datatype
+        Poagraph._complement_metadata_for_sequences_absent_in_metadata_provided(poagraph, metadata)
+        poagraph.datatype = datatype
         return poagraph
 
     @classmethod
@@ -40,22 +40,24 @@ class Poagraph:
         dagmaf = maf2dagmaf.get_dagmaf(maf)
         nodes, sequences = dagmaf2poagraph.get_poagraph(dagmaf, fasta_provider, metadata)
         poagraph = Poagraph(nodes, sequences)
-        if datatype is not None:
-            poagraph.datatype = datatype
+        Poagraph._complement_metadata_for_sequences_absent_in_metadata_provided(poagraph, metadata)
+        poagraph.datatype = datatype
         return poagraph, dagmaf
 
     @classmethod
-    def build_from_po(cls, po: Po) -> 'Poagraph':
-        return cls("nodes po", "paths po")
+    def build_from_po(cls,
+                      po: Po,
+                      metadata: Optional[MetadataCSV],
+                      datatype: Optional[DataType] = DataType.Nucleotides) -> 'Poagraph':
+        poagraph = po2poagraph.get_poagraph(po, metadata)
+        Poagraph._complement_metadata_for_sequences_absent_in_metadata_provided(poagraph, metadata)
+        poagraph.datatype = datatype
+        return poagraph
 
     def __eq__(self, other: 'Poagraph') -> bool:
-        # return self.nodes == other.nodes and \
-        #     self.sequences == other.sequences and \
-        #     self.datatype == other.datatype
-        a= self.nodes == other.nodes
-        b=    self.sequences == other.sequences
-        c=   self.datatype == other.datatype
-        return a and b and c
+        return self.nodes == other.nodes and \
+            self.sequences == other.sequences and \
+            self.datatype == other.datatype
 
     def get_compatibilities(self,
                             sequences_ids: List[SequenceID],
@@ -111,3 +113,10 @@ class Poagraph:
 
         return [*self.sequences.keys()]
 
+    @staticmethod
+    def _complement_metadata_for_sequences_absent_in_metadata_provided(poagraph: 'Poagraph', metadata: MetadataCSV):
+        headers = metadata.get_metadata_keys()
+        for seq in poagraph.sequences.values():
+            for h in headers:
+                if h not in seq.seqmetadata:
+                    seq.seqmetadata[h] = None

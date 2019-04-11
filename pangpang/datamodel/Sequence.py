@@ -18,7 +18,7 @@ class SequenceID:
             if len(splitted) > 1:
                 self.value = ".".join(splitted[1:])
             elif len(splitted) == 1:
-                self.value = splitted[0]
+                self.value = str(splitted[0])
             else:
                 raise PoagraphBuildException("Sequence ID cannot be empty.")
 

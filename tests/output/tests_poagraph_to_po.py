@@ -1,6 +1,9 @@
 import unittest
 from pathlib import Path
 
+
+from ddt import unpack, data, ddt
+
 from tests.context import pathtools, pNode, pSeq, pPoagraph, PangenomePO
 
 
@@ -10,6 +13,7 @@ def nid(x): return pNode.NodeID(x)
 def bid(x): return pNode.Base(x)
 
 
+@ddt
 class PoagraphToPOTests(unittest.TestCase):
 
     def setUp(self):
@@ -110,6 +114,27 @@ class PoagraphToPOTests(unittest.TestCase):
         expected_po_content = pathtools.get_file_content(expected_po_content_path)
         self.assertEqual(expected_po_content, actual_po_content)
 
+    @data(([], ""),
+          ([nid(0), nid(1)], "L0L1"))
+    @unpack
+    def test_3_get_in_nodes_info(self, in_nodes, expected_in_nodes):
+        actual_in_nodes = PangenomePO._get_in_nodes_info(in_nodes)
+        self.assertEqual(expected_in_nodes, actual_in_nodes)
+
+    @data(([], ""),
+          ([0, 1], "S0S1"),
+          ([1, 3], "S1S3"))
+    @unpack
+    def test_get_sources_info(self, sources_ids, expected_info):
+        actual_sources_ids = PangenomePO._get_sources_info(sources_ids)
+        self.assertEqual(expected_info, actual_sources_ids)
+
+    @data((None, ""),
+          (0, "A0"))
+    @unpack
+    def test_get_aligned_to_info(self, aligned_to, expected_aligned_to):
+        actual_aligned_to = PangenomePO._get_aligned_to_info(aligned_to)
+        self.assertEqual(expected_aligned_to, actual_aligned_to)
 
 
 if __name__ == '__main__':

@@ -40,16 +40,26 @@ class MetadataCSV:
         d = {}
         for row in rd:
             seqid = SequenceID(row['seqid'], skip_part_before_dot=False)
+            if seqid in d:
+                raise InputError("Not unique values seqid column in metadata file. Make them unique.")
             d[seqid] = dict(row)
+            if None in d[seqid].keys():
+                raise InputError("CSV metadata error. "
+                                 "Different fields number in line 0 than in header line.")
             del d[seqid]['seqid']
         return d
 
     @staticmethod
     def _raise_exception_if_incorrect(rd: csv.DictReader) -> None:
         headers = rd.fieldnames
+        if not headers:
+            raise InputError('Empty csv file.')
 
         if 'seqid' not in headers:
-            raise InputError('No seqid column in metadata csv.')
+            raise InputError('No \'seqid\' column in metadata csv.')
+
+        if headers.count('seqid') > 1:
+            raise InputError('Only one \'seqid\' column in metadata csv is allowed.')
 
     def get_all_sequences_ids(self) -> List[SequenceID]:
         return [*self.metadata.keys()]
@@ -58,6 +68,13 @@ class MetadataCSV:
         if seq_id in self.metadata:
             return self.metadata[seq_id]
         return {}
+
+    def get_metadata_keys(self) -> List[str]:
+        if self.metadata.values():
+            example_metadata = [*self.metadata.values()][0]
+            if example_metadata:
+                return [*example_metadata.keys()]
+        return []
 
 
 class Po:
