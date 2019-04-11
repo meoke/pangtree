@@ -62,12 +62,12 @@ class Range:
     """Specify what part of sorted capabilities should be searched for node cutoff. E.g. [0.2,0.8]"""
 
     def __init__(self, value: List[Union[str, float]] = None):
+        if len(value) != 2:
+            raise ConsensusInputError("CUTOFF SEARCH RANGE must have length 2.")
         self.value: Tuple[float, float] = (float(value[0]), float(value[1])) if value else (0, 1)
         self._raise_exception_if_incorrect(self.value)
 
     def _raise_exception_if_incorrect(self, value: Tuple[float, float]) -> None:
-        if len(value) != 2:
-            raise ConsensusInputError("CUTOFF SEARCH RANGE must have length 2.")
         if value[1] < value[0]:
             raise ConsensusInputError("CUTOFF SEARCH RANGE first value must be smaller or equal to second value.")
         if value[0] < 0 \
