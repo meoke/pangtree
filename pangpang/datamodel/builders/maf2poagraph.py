@@ -4,12 +4,15 @@ from Bio import AlignIO
 from Bio.Align import MultipleSeqAlignment
 
 # from datamodel.Sequence import Sequences
-from ..Node import NodeID, ColumnID, Node, Base, BlockID
-from ..Sequence import SequenceID, Sequence, SequencePath
-from ..input_types import Maf, MetadataCSV
+from pangpang.datamodel.Node import NodeID, ColumnID, Node, Base, BlockID
+from pangpang.datamodel.Sequence import SequenceID, Sequence, SequencePath
+from pangpang.datamodel.input_types import Maf, MetadataCSV
+from tools import logprocess
 
 _ParsedMaf = List[Optional[MultipleSeqAlignment]]
 
+global_logger = logprocess.get_global_logger()
+detailed_logger = logprocess.get_logger("details")
 
 def get_poagraph(maf: Maf, metadata: Optional[MetadataCSV]) -> Tuple[List[Node], Dict[SequenceID, Sequence]]:
     alignment = [*AlignIO.parse(maf.filecontent, "maf")]
@@ -18,7 +21,7 @@ def get_poagraph(maf: Maf, metadata: Optional[MetadataCSV]) -> Tuple[List[Node],
     current_node_id = NodeID(-1)
     column_id = ColumnID(-1)
     for block_id, block in enumerate(alignment):
-        # global_logger.info(f"Processing block {block_id}...")
+        global_logger.info(f"Processing block {block_id}...")
         block_width = len(block[0].seq)
 
         for col in range(block_width):

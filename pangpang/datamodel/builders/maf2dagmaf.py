@@ -3,6 +3,10 @@ from typing import List
 from datamodel.DAGMaf import DAGMaf, DAGMafNode
 from datamodel.input_types import Maf
 from mafgraph.sorter import sort_mafblocks
+from tools import logprocess
+
+global_logger = logprocess.get_global_logger()
+
 #
 #
 # class DAGMafNode:

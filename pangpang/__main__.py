@@ -5,7 +5,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../p
 from consensus import tree_generator, simple_tree_generator
 from datamodel.input_types import Maf
 from datamodel.Poagraph import Poagraph
-from tools import cli, pathtools
+from tools import cli, pathtools, logprocess
 from output.PangenomeJSON import to_PangenomeJSON, TaskParameters, to_json, to_pickle, load_pickle
 from output.PangenomePO import poagraph_to_PangenomePO
 
@@ -13,6 +13,13 @@ from output.PangenomePO import poagraph_to_PangenomePO
 def main():
     parser = cli.get_parser()
     args = parser.parse_args()
+
+    if not args.quiet and args.verbose:
+        logprocess.add_file_handler_to_logger(args.output_dir, "details", "details.log", propagate=False)
+        logprocess.add_file_handler_to_logger(args.output_dir, "", "details.log", propagate=False)
+    if args.quiet:
+        logprocess.disable_all_loggers()
+
     poagraph, dagmaf = None, None
     if isinstance(args.multialignment, Maf) and args.raw_maf:
         poagraph = Poagraph.build_from_maf(args.multialignment, args.metadata)

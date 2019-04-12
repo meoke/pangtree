@@ -11,9 +11,9 @@ from datamodel.Sequence import SequenceID
 from datamodel.fasta_providers.FastaProvider import FastaProvider, FastaProviderException
 from Bio import Entrez, SeqIO
 
-from tools import pathtools
-
+from tools import pathtools, logprocess
 NCBISequenceID = NewType("NCBISequenceID", str)
+detailed_logger = logprocess.get_logger("details")
 
 
 class EmailAddress:
@@ -50,7 +50,7 @@ class FromNCBI(FastaProvider):
         return Base(self.sequences[sequence_id][i])
 
     def _download_from_ncbi(self, sequence_id: SequenceID) -> str:
-        # detailed_logger.info(f"Downloading from entrez sequence {sequence_id}...")
+        detailed_logger.info(f"Downloading from entrez sequence {sequence_id}...")
         entrez_sequence_id = self._guess_ncbi_sequence_id(sequence_id)
         try:
             handle = Entrez.efetch(db="nucleotide", id=entrez_sequence_id, rettype="fasta", retmode="text")
@@ -60,13 +60,13 @@ class FromNCBI(FastaProvider):
             raise Exception(f"Cannot download from Entrez sequence of ID: {sequence_id}") from ex
 
     def _guess_ncbi_sequence_id(self, seqid: SequenceID) -> str:
-        # detailed_logger.info(f"Guessing entrez sequence id...")
+        detailed_logger.info(f"Guessing entrez sequence id...")
         version_indications = [*re.finditer('v[0-9]', seqid.value)]
         if len(version_indications) == 1:
             version_start = version_indications[0].span()[0]
             if version_start == len(seqid.value) - 2:
                 return seqid.value[0:version_start] + "." + seqid.value[version_start+1:]
-        # detailed_logger.info(f"{seqid} translated to {guessed_entrez_name}")
+        detailed_logger.info(f"{seqid} translated to {guessed_entrez_name}")
         return seqid.value
 
 class FastaDiskCache:
@@ -90,7 +90,7 @@ class FastaDiskCache:
         return pathtools.get_child_path(self.cache_dir, f"{seq_id}.fasta")
 
     def read_from_cache(self, seq_id: SequenceID) -> str:
-        # detailed_logger.info(f"Reading {seq_id} from cache...")
+        detailed_logger.info(f"Reading {seq_id} from cache...")
         cache_filepath = self.get_cached_filepath(seq_id)
         with open(cache_filepath) as fasta_handle:
             seq = SeqIO.read(fasta_handle, "fasta")
@@ -99,12 +99,12 @@ class FastaDiskCache:
     def create_cache_dir(self) -> None:
         if not self.cache_dir_exists():
             pathtools.create_dir(self.cache_dir)
-            # detailed_logger.info(".fastacache directory was created.")
-        # else:
-            # detailed_logger.warning(".fastacache directory not created, as it already exists.")
+            detailed_logger.info(".fastacache directory was created.")
+        else:
+            detailed_logger.warning(".fastacache directory not created, as it already exists.")
 
     def save_to_cache(self, seq_id: SequenceID, sequence: str) -> None:
-        # detailed_logger.info(f"Caching sequence {seq_id}...")
+        detailed_logger.info(f"Caching sequence {seq_id}...")
         if not self.cache_dir_exists():
             self.create_cache_dir()
         cache_filename = self.get_cached_filepath(seq_id)

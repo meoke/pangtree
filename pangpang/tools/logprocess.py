@@ -4,9 +4,18 @@ import os
 import sys
 from pathlib import Path
 
-from . import pathtools
+from tools import pathtools
+
 logging_config_path = Path(os.path.abspath(__file__)).joinpath('../../logging.conf').resolve()
 logging.config.fileConfig(logging_config_path)
+
+
+def get_global_logger():
+    return logging.getLogger("")
+
+
+def get_logger(logger_name: str):
+    return logging.getLogger(logger_name)
 
 
 def add_file_handler_to_logger(outputdir,
@@ -29,17 +38,8 @@ def add_console_handler_to_logger(logger_name: str, propagate: bool):
     console_logger.addHandler(console_handler)
 
 
-def get_logger(loggername):
-    return logging.getLogger(loggername)
-
-
-def get_global_logger():
-    return logging.getLogger("")
-
-
 def disable_all_loggers():
-    for logger in [logging.getLogger(name) for name in logging.root.manager.loggerDict]:
-        logger.disabled = True
+    logging.root.disabled = True
 
 
 def remove_console_handler_from_logger(logger_name):

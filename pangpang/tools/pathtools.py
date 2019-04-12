@@ -1,4 +1,5 @@
 import os
+import shutil
 from datetime import datetime
 from pathlib import Path
 from io import StringIO
@@ -57,3 +58,8 @@ def get_child_dir(parent_path: Path, child_dir_name: str):
     if not child_dir_path.is_dir():
         child_dir_path.mkdir()
     return child_dir_path.resolve()
+
+
+def remove_dir(dir_path: Path) -> None:
+    if dir_path.exists() and dir_path.is_dir():
+        shutil.rmtree(dir_path)

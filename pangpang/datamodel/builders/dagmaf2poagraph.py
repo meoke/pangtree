@@ -11,7 +11,12 @@ from datamodel.builders.PoagraphBuildException import PoagraphBuildException
 from datamodel.fasta_providers import FastaProvider
 from datamodel.input_types import MetadataCSV
 
+from tools import logprocess
+
 from mafgraph.mafreader import start_position
+
+global_logger = logprocess.get_global_logger()
+detailed_logger = logprocess.get_logger("details")
 
 MafSequenceID = NewType('MafSequenceID', str)
 
@@ -156,7 +161,7 @@ def _add_node_to_sequence(build_state: _BuildState,
 
 
 def _process_block(build_state: _BuildState, block: DAGMafNode):
-    # global_logger.info(f"Processing block {block.id}...")
+    global_logger.info(f"Processing block {block.id}...")
     current_node_id = _get_max_node_id(build_state.nodes)
     block_width = len(block.alignment[0].seq)
     paths_join_info = _get_paths_join_info(block, build_state.free_edges)

@@ -243,10 +243,10 @@ def get_parser() -> argparse.ArgumentParser:
                    action='store_true',
                    default=False,
                    help='Set if detailed log files must be produced.')
-#     p.add_argument('-q', '--quiet',
-#                    action='store_true',
-#                    default=False,
-#                    help='Set to turn off console logging .')
+    p.add_argument('-q', '--quiet',
+                   action='store_true',
+                   default=False,
+                   help='Set to turn off console logging .')
 #     p.add_argument('-output_with_nodes',
 #                    action='store_true',
 #                    default=False,
@@ -313,6 +313,6 @@ def get_default_output_dir():
 def get_default_blosum(missing_base_symbol: MissingSymbol):
     """Returns default blosum file: Blosum80.mat"""
     parent_dir = Path(os.path.dirname(os.path.abspath(__file__)) + '/')
-    default_blosum_path = pathtools.get_child_path(parent_dir, "../../bin/blosum80.mat")
+    default_blosum_path = pathtools.get_child_path(parent_dir, "../bin/blosum80.mat")
     blosum_content = pathtools.get_file_content_stringio(default_blosum_path)
     return Blosum(blosum_content, default_blosum_path, missing_base_symbol)

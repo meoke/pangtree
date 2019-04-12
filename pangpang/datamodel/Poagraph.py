@@ -11,6 +11,7 @@ from datamodel.input_types import Po, Maf, MetadataCSV
 from .fasta_providers.FastaProvider import FastaProvider
 import numpy as np
 
+
 class Poagraph:
     def __init__(self,
                  nodes: List[Node],
@@ -49,7 +50,8 @@ class Poagraph:
                       po: Po,
                       metadata: Optional[MetadataCSV],
                       datatype: Optional[DataType] = DataType.Nucleotides) -> 'Poagraph':
-        poagraph = po2poagraph.get_poagraph(po, metadata)
+        nodes, sequences = po2poagraph.get_poagraph(po, metadata)
+        poagraph = Poagraph(nodes, sequences)
         Poagraph._complement_metadata_for_sequences_absent_in_metadata_provided(poagraph, metadata)
         poagraph.datatype = datatype
         return poagraph
@@ -106,7 +108,6 @@ class Poagraph:
         if seq_id not in self.sequences:
             raise Exception("No sequence with given ID in pangraph.")
         return sum([len(path) for path in self.sequences[seq_id].paths])
-
 
     def get_sequences_ids(self) -> List[SequenceID]:
         """Returns sequences of all genome sequences in Poagraph."""

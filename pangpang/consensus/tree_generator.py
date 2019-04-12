@@ -8,6 +8,11 @@ from consensus.input_types import Blosum, Stop, P, Hbmin
 from datamodel.Poagraph import Poagraph
 from consensus import poa
 from datamodel.Sequence import SequenceID, SequencePath
+from tools import logprocess
+
+tresholds_logger = logprocess.get_logger('tresholdsCSV')
+detailed_logger = logprocess.get_logger('details')
+global_logger = logprocess.get_global_logger()
 
 
 class TreeConsensusGenerationException(Exception):
@@ -21,7 +26,10 @@ def get_consensus_tree(poagraph: Poagraph,
                        p: P,
                        max_strategy: FindMaxCutoff,
                        node_strategy: FindNodeCutoff,
-                       verbose: bool):
+                       verbose: bool) -> ConsensusTree:
+    global_logger.info("Consensuses Tree generation started.")
+    if verbose:
+        logprocess.add_file_handler_to_logger(output_dir, "tresholdsCSV", "tresholds.csv", "%(message)s", False)
     _raise_error_if_invalid_poagraph(poagraph)
     consensus_tree = _init_consensus_tree(poagraph, blosum.filepath, output_dir, p)
 
@@ -48,7 +56,7 @@ def get_consensus_tree(poagraph: Poagraph,
             consensus_tree.nodes.append(child)
             if not _node_is_ready(child, stop):
                 nodes_to_process.append(child)
-    # global_logger.info("Consensuses Tree generation finished.\n")
+    global_logger.info("Consensuses Tree generation finished.\n")
     return consensus_tree
 
 
@@ -67,7 +75,7 @@ def _init_consensus_tree(poagraph: Poagraph, blosum_path: Path, output_dir: Path
 
 
 def _get_root_node(poagraph: Poagraph, blosum_path: Path, output_dir: Path, p: P) -> ConsensusNode:
-    # detailed_logger.info("Getting the root consensus node...")
+    detailed_logger.info("Getting the root consensus node...")
     all_poagraph_sequences_ids = poagraph.get_sequences_ids()
     try:
         consensus_paths = poa.get_consensuses(poagraph,
@@ -80,14 +88,14 @@ def _get_root_node(poagraph: Poagraph, blosum_path: Path, output_dir: Path, p: P
     except poa.NoConsensusError:
         raise TreeConsensusGenerationException("Cannot find root consensus.")
     compatibilities = poagraph.get_compatibilities(all_poagraph_sequences_ids,
-                                                   consensus_paths[0],
+                                                   consensus_paths[0].path,
                                                    p=p)
     consensus_node = ConsensusNode(consensus_id=ConsensusNodeID(0),
                                    sequences_ids=[*poagraph.sequences.keys()],
                                    mincomp=_get_min_comp(all_poagraph_sequences_ids, compatibilities),
                                    compatibilities_to_all=compatibilities,
-                                   consensus_path=consensus_paths[0])
-    # detailed_logger.info(f"New consensus node created: {str(consensus_node)}")
+                                   consensus_path=consensus_paths[0].path)
+    detailed_logger.info(f"New consensus node created: {str(consensus_node)}")
     return consensus_node
 
 
@@ -114,17 +122,17 @@ def _get_children_nodes(node: ConsensusNode,
         children_nodes: List[ConsensusNode] = []
         not_assigned_sequences_ids: List[SequenceID] = node.sequences_ids
         so_far_cutoffs: List[CompatibilityToPath] = []
-        # detailed_logger.info(f"Getting children nodes for consensus node {node.consensus_id}...")
+        detailed_logger.info(f"Getting children nodes for consensus node {node.consensus_id}...")
 
         while not_assigned_sequences_ids:
-            # detailed_logger.info(f"### Getting child {len(so_far_cutoffs)}...")
+            detailed_logger.info(f"### Getting child {len(so_far_cutoffs)}...")
             consensus_path = poa.get_consensuses(poagraph,
                                                  not_assigned_sequences_ids,
                                                  output_dir,
                                                  f"{node.consensus_id}_{len(so_far_cutoffs)}_all",
                                                  blosum_path,
                                                  Hbmin(0),
-                                                 specific_consensuses_id=[0])[0]
+                                                 specific_consensuses_id=[0])[0].path
 
             compatibilities_to_consensus = poagraph.get_compatibilities(sequences_ids=not_assigned_sequences_ids,
                                                                         consensus_path=consensus_path,
@@ -139,7 +147,7 @@ def _get_children_nodes(node: ConsensusNode,
                                                      f"{node.consensus_id}_{len(so_far_cutoffs)}_max",
                                                      blosum_path,
                                                      Hbmin(0),
-                                                     specific_consensuses_id=[0])[0]
+                                                     specific_consensuses_id=[0])[0].path
 
             comps_to_max_consensus = poagraph.get_compatibilities(sequences_ids=not_assigned_sequences_ids,
                                                                   consensus_path=max_consensus_path,
@@ -154,12 +162,12 @@ def _get_children_nodes(node: ConsensusNode,
                                            mincomp=_get_min_comp(node_sequences_ids=qualified_sequences_ids,
                                                                  comps_to_consensus=comps_to_max_consensus),
                                            consensus_path=SequencePath(max_consensus_path))
-            # detailed_logger.info(f"New consensus node created: {str(consensus_node)}")
+            detailed_logger.info(f"New consensus node created: {str(consensus_node)}")
             so_far_cutoffs.append(node_cutoff)
             children_nodes.append(consensus_node)
             not_assigned_sequences_ids = list(set(not_assigned_sequences_ids) - set(qualified_sequences_ids))
 
-        # detailed_logger.info("Children nodes generated.")
+        detailed_logger.info("Children nodes generated.")
 
         return children_nodes
 
@@ -168,10 +176,10 @@ def _get_max_compatible_sequences_ids(max_cutoff_strategy: FindMaxCutoff,
                                       compatibilities_to_consensus: Dict[SequenceID, CompatibilityToPath],
                                       splitted_node_id) -> List[SequenceID]:
     max_cutoff = max_cutoff_strategy.find_max_cutoff([*compatibilities_to_consensus.values()])
-    # tresholds_logger.info(f"Splitting {splitted_node_id}; MAX; {compatibilities_to_consensus}; "
-    #                       f"{max_cutoff.cutoff}; {max_cutoff.explanation}")
-    # detailed_logger.info(f"Minimum compatibility of sequences chosen for generating the best consensus: "
-    #                      f"{max_cutoff.cutoff}.")
+    tresholds_logger.info(f"Splitting {splitted_node_id}; MAX; {compatibilities_to_consensus}; "
+                          f"{max_cutoff.cutoff}; {max_cutoff.explanation}")
+    detailed_logger.info(f"Minimum compatibility of sequences chosen for generating the best consensus: "
+                         f"{max_cutoff.cutoff}.")
     max_sequences_ids = _get_sequences_ids_above_cutoff(compatibilities_to_consensus, max_cutoff.cutoff)
     return max_sequences_ids
 
@@ -187,16 +195,16 @@ def _get_qualified_sequences_ids_and_cutoff(node_cutoff_strategy: FindNodeCutoff
         -> Tuple[List[SequenceID], CompatibilityToPath]:
     node_cutoff = node_cutoff_strategy.find_node_cutoff(compatibilities=[*compatibilities_to_max_c.values()],
                                                         so_far_cutoffs=so_far_cutoffs)
-    # tresholds_logger.info(f"Splitting {splitted_node_id}; NODE; {compatibilities_to_max_c}; "
-    #                       f"{node_cutoff.cutoff}; {node_cutoff.explanation}")
+    tresholds_logger.info(f"Splitting {splitted_node_id}; NODE; {compatibilities_to_max_c}; "
+                          f"{node_cutoff.cutoff}; {node_cutoff.explanation}")
     compatibtle_sequences_ids = _get_sequences_ids_above_cutoff(compatibilities_to_max_c, node_cutoff.cutoff)
-    # detailed_logger.info(f"{len(compatibtle_sequences_ids)} sequences ({compatibtle_sequences_ids} are "
-    #                      f"qualified to be enclosed in this node, mincomp = {node_cutoff.cutoff}.")
+    detailed_logger.info(f"{len(compatibtle_sequences_ids)} sequences ({compatibtle_sequences_ids} are "
+                         f"qualified to be enclosed in this node, mincomp = {node_cutoff.cutoff}.")
     return compatibtle_sequences_ids, node_cutoff.cutoff
 
 
 def _node_is_ready(node: ConsensusNode, stop: Stop) -> bool:
     if len(node.sequences_ids) == 1 or node.mincomp >= stop:
-        # detailed_logger.info(f"Node {node.consensus_id} satisfied requirements and won't be split!")
+        detailed_logger.info(f"Node {node.consensus_id} satisfied requirements and won't be split!")
         return True
     return False

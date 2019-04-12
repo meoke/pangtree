@@ -226,7 +226,8 @@ def to_PangenomeJSON(task_parameters: TaskParameters = None,
 
 
 def to_json(pangenomejson: PangenomeJSON) -> str:
-    return jsonpickle.encode(pangenomejson)
+    # jsonpickle.set_encoder_options('simplejson', indent=4)
+    return jsonpickle.encode(pangenomejson, unpicklable=False)
 
 
 def to_pickle(pangenomejson: PangenomeJSON) -> str:

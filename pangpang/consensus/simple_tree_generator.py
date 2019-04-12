@@ -7,7 +7,9 @@ from consensus.input_types import Blosum, Hbmin
 from consensus.poa import ConsInfo
 from datamodel.Poagraph import Poagraph
 from datamodel.Sequence import SequencePath
+from tools import logprocess
 
+global_logger = logprocess.get_global_logger()
 
 class ConsensusGenerationException(Exception):
     pass
@@ -39,6 +41,7 @@ def _get_consensus_nodes(poagraph: Poagraph, consensus_paths: Dict[int, ConsInfo
 
 
 def get_simple_consensus_tree(poagraph: Poagraph, blosum: Blosum, output_dir: Path, hbmin: Hbmin, verbose: bool):
+    global_logger.info("Simple consensus generation started.")
     all_poagraph_sequences_ids = poagraph.get_sequences_ids()
     try:
         consensus_paths = poa.get_consensuses(poagraph,

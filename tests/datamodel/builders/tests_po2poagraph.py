@@ -60,8 +60,9 @@ class Po2poagraphTests(unittest.TestCase):
         }
 
         expected_poagraph = pPoagraph.Poagraph(expected_nodes, expected_sequences)
-        actual_poagraph = po2poagraph.get_poagraph(Po(pathtools.get_file_content_stringio(po_path), po_path),
+        nodes, sequences = po2poagraph.get_poagraph(Po(pathtools.get_file_content_stringio(po_path), po_path),
                                                    self.metadatacsv)
+        actual_poagraph = pPoagraph.Poagraph(nodes, sequences)
         self.assertEqual(expected_poagraph, actual_poagraph)
 
     def test_2_consensuses_and_empty_sequences(self):
@@ -106,8 +107,9 @@ class Po2poagraphTests(unittest.TestCase):
         }
 
         expected_poagraph = pPoagraph.Poagraph(expected_nodes, expected_sequences)
-        actual_poagraph = po2poagraph.get_poagraph(Po(pathtools.get_file_content_stringio(po_path), po_path),
+        nodes, sequences = po2poagraph.get_poagraph(Po(pathtools.get_file_content_stringio(po_path), po_path),
                                                    self.metadatacsv)
+        actual_poagraph = pPoagraph.Poagraph(nodes, sequences)
         self.assertEqual(expected_poagraph, actual_poagraph)
 
 

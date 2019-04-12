@@ -2,7 +2,6 @@ from collections import namedtuple
 from typing import List, Optional, Tuple, Dict
 
 from datamodel.Node import Base, NodeID, Node
-from datamodel.Poagraph import Poagraph
 from datamodel.Sequence import Sequence, SequenceID, SequencePath
 from datamodel.input_types import Po, MetadataCSV
 
@@ -22,7 +21,7 @@ def get_poagraph(po: Po, metadataCsv: MetadataCSV):
     sequences_info = _get_sequences_info_from_po(po_lines)
     initial_sequences = _init_sequences(sequences_info, metadataCsv)
     nodes, sequences = _get_poagraph_paths_and_nodes(po_lines, sequences_info, initial_sequences)
-    return Poagraph(nodes, sequences)
+    return nodes, sequences
 
 
 def _extract_line_value(line: str) -> str:
