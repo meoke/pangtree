@@ -21,8 +21,8 @@ from pangpang.output import PangenomePO
 
 from pangpang.output import PangenomeFASTA
 from pangpang.consensus import ConsensusTree as CT
-from pangpang.consensus.input_types import P, Range, ConsensusInputError
-from pangpang.consensus import cutoffs
+from pangpang.consensus.input_types import P, Range, ConsensusInputError, Multiplier
+from pangpang.consensus import cutoffs, poa
 
 
 # from pangenome.pang.arguments.PangenomeParameters import MultialignmentFormat

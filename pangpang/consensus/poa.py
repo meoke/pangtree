@@ -23,7 +23,7 @@ def get_consensuses(poagraph: Poagraph, sequences_ids: List[SequenceID], output_
     poa_input_path = pathtools.get_child_path(output_dir, f"{job_name}_in_pangenome.po")
     poa_output_path = pathtools.get_child_path(output_dir, f"{job_name}_out_pangenome.po")
 
-    s = PangraphPOTranslator(poagraph, sequences_ids)
+    s = PoagraphPOTranslator(poagraph, sequences_ids)
     poa_input_content = s.get_input_po_content()
     with open(poa_input_path, 'w') as poa_input:
         poa_input.write(poa_input_content)
@@ -61,7 +61,7 @@ class ConsInfo:
         self.path: SequencePath = path
 
 
-class PangraphPOTranslator:
+class PoagraphPOTranslator:
     def __init__(self, poagraph: Poagraph, sequences_ids: List[SequenceID]):
         self.poagraph: Poagraph = poagraph
         self.sequences_ids: List[SequenceID] = sequences_ids
@@ -135,27 +135,27 @@ class PangraphPOTranslator:
     def _extract_line_value(line: str) -> str:
         return line.split('=')[1].strip()
 
-    def read_consensus_paths(self, po_lines: List[str], specific_consensuses_ids: Optional[List[int]] = None) -> Dict[int, SequencePath]:
+    def read_consensus_paths(self, po_lines: List[str], specific_consensuses_ids: Optional[List[int]] = None) -> Dict[int, ConsInfo]:
         po_lines_iterator = iter(po_lines)
 
         for i in range(3):
             next(po_lines_iterator)
 
-        nodes_count = int(PangraphPOTranslator._extract_line_value(next(po_lines_iterator)))
-        paths_count = int(PangraphPOTranslator._extract_line_value(next(po_lines_iterator)))
+        nodes_count = int(PoagraphPOTranslator._extract_line_value(next(po_lines_iterator)))
+        paths_count = int(PoagraphPOTranslator._extract_line_value(next(po_lines_iterator)))
 
         consensuses_in_po_lines: Dict[int, ConsInfo] = dict()
-        s = -1
+        current_consensus_id = -1
         for i in range(paths_count):
-            s += 1
-            path_name = PangraphPOTranslator._extract_line_value(next(po_lines_iterator))
+            path_name = PoagraphPOTranslator._extract_line_value(next(po_lines_iterator))
             if len(path_name) > 7 and path_name[:7] == "CONSENS":
-                if specific_consensuses_ids is None or s in specific_consensuses_ids:
+                current_consensus_id += 1
+                if specific_consensuses_ids is None or current_consensus_id in specific_consensuses_ids:
                     detailed_consens_info_line = next(po_lines_iterator)
                     detailed_consens_info = self._extract_line_value(detailed_consens_info_line).split(' ')
                     consens_nodes_count = int(detailed_consens_info[0])
                     consensuses_in_po_lines[int(path_name[7:])].fullname = path_name
-                    consensuses_in_po_lines[int(path_name[7:])].po_consensus_id = f"S{str(s)}"
+                    consensuses_in_po_lines[int(path_name[7:])].po_consensus_id = f"S{str(current_consensus_id)}"
                     consensuses_in_po_lines[int(path_name[7:])].path = [None] * consens_nodes_count
             else:
                 detailed_sequence_info_line = next(po_lines_iterator)
