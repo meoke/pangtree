@@ -65,9 +65,13 @@ class FromNCBI(FastaProvider):
         if len(version_indications) == 1:
             version_start = version_indications[0].span()[0]
             if version_start == len(seqid.value) - 2:
-                return seqid.value[0:version_start] + "." + seqid.value[version_start+1:]
+                guessed_entrez_name = seqid.value[0:version_start] + "." + seqid.value[version_start+1:]
+            else:
+                guessed_entrez_name = seqid.value
+        else:
+            guessed_entrez_name = seqid.value
         detailed_logger.info(f"{seqid} translated to {guessed_entrez_name}")
-        return seqid.value
+        return guessed_entrez_name
 
 class FastaDiskCache:
     def __init__(self, parent_dir: Path):

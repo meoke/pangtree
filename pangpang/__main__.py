@@ -29,6 +29,7 @@ def main():
 
     blosum = args.blosum if args.blosum else cli.get_default_blosum(args.missing_symbol)
     consensus_output_dir = pathtools.get_child_dir(args.output_dir, "consensus")
+    consensus_tree = None
     if args.consensus == 'poa':
         consensus_tree = simple_tree_generator.get_simple_consensus_tree(poagraph,
                                                                          blosum,

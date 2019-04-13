@@ -28,7 +28,8 @@ class Poagraph:
                        datatype: Optional[DataType] = DataType.Nucleotides) -> 'Poagraph':
         nodes, sequences = maf2poagraph.get_poagraph(maf, metadata)
         poagraph = Poagraph(nodes, sequences)
-        Poagraph._complement_metadata_for_sequences_absent_in_metadata_provided(poagraph, metadata)
+        if metadata:
+            Poagraph._complement_metadata_for_sequences_absent_in_metadata_provided(poagraph, metadata)
         poagraph.datatype = datatype
         return poagraph
 
@@ -41,7 +42,8 @@ class Poagraph:
         dagmaf = maf2dagmaf.get_dagmaf(maf)
         nodes, sequences = dagmaf2poagraph.get_poagraph(dagmaf, fasta_provider, metadata)
         poagraph = Poagraph(nodes, sequences)
-        Poagraph._complement_metadata_for_sequences_absent_in_metadata_provided(poagraph, metadata)
+        if metadata:
+            Poagraph._complement_metadata_for_sequences_absent_in_metadata_provided(poagraph, metadata)
         poagraph.datatype = datatype
         return poagraph, dagmaf
 
@@ -52,7 +54,8 @@ class Poagraph:
                       datatype: Optional[DataType] = DataType.Nucleotides) -> 'Poagraph':
         nodes, sequences = po2poagraph.get_poagraph(po, metadata)
         poagraph = Poagraph(nodes, sequences)
-        Poagraph._complement_metadata_for_sequences_absent_in_metadata_provided(poagraph, metadata)
+        if metadata:
+            Poagraph._complement_metadata_for_sequences_absent_in_metadata_provided(poagraph, metadata)
         poagraph.datatype = datatype
         return poagraph
 
