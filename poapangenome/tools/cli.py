@@ -149,7 +149,7 @@ def get_parser() -> argparse.ArgumentParser:
                    metavar='METADATA_PATH',
                    type=_metadata_file,
                    help='Path to the csv file with metadata. ' + inspect.getdoc(MetadataCSV))
-    p.add_argument('-raw_maf',
+    p.add_argument('--raw_maf',
                    action='store_true',
                    default=False,
                    help='Poagraph building from maf file parameter.'

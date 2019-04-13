@@ -1,6 +1,6 @@
-# Pang
+# Poapangenome
 
-Tool for analysis and visualisation of multiple sequence alignment. It implements the idea of pan-genome ([Ref. 1](https://doi.org/10.1093/bib/bbw089)) by representing the multialginment as a graph and construction of a phylogenetic tree joined with an agreed sequence for every node.
+Tool for analysis and visualisation of multiple sequence alignment. It implements the idea of pan-genome ([Ref. 1](https://doi.org/10.1093/bib/bbw089)) by representing the multialginment as a poa-graph (Partial Order Alignment Graph) and construction of a phylogenetic tree joined with an agreed sequence for every node.
 
 [PL]
 Narzędzie służące do analizy i wizualizacji uliniowienia wielu sekwencji genetycznych. Implementuje ideę pangenomeu ([Ref. 1](https://doi.org/10.1093/bib/bbw089)) poprzez grafową reprezentację multiuliniowienia oraz konstrukcję drzewa filogenetycznego z kompromisową sekwencją dla każdego węzła. 
@@ -23,7 +23,7 @@ Testing:
 ### Installing
 
 ```
-TBA
+python3 setup.py install
 ```
 
 ### Quick installation check
@@ -119,43 +119,42 @@ NODE:
 
 ## Usage
 
-1. Import package **pangenome** to your Python program. Check [API documentation]().
+1. Import package **poapangenome** to your Python program. Check [API documentation]().
 
 or
 
-2. Use **pangenome** from command line with following arguments:
+2. Use **poapangenome** from command line with following arguments:
 
 python -m pangenome [args]
 
 | Name  | CLI | Required | Description
 | ------------- | ------------- | ------- | ----------
 | Arguments affecting poagraph build process: |
-| MULTIALIGNMENT  | --multialignment, -m  | Yes | Path to the mulitalignment file (.maf or .po)
+| MULTIALIGNMENT  | --multialignment  | Yes | Path to the mulitalignment file (.maf or .po)
 | DATATYPE  | --datatype  | No, default = 'n' | Possible values: 'n' (nucleotides), 'p' (proteins).
 | METADATA | --metadata | No | Optional information about sequences in csv format. The only required column: \'seqid\' and its value must match multialignment files identifiers as described in *Sequence Naming Convention* (below). Example: data\Ebola\ebola_metadata.csv
-| RAW_MAF | -raw_maf | No, default=False | Build poagraph without transforming multialignment (maf) to DAG. Poagraph build in this way does not reflect real life sequences.
-| FASTA_PROVIDER | -fasta_provider | No | Nucleotides/proteins source if any are missed in the multialignment. Possible values: 'ncbi', 'file'. If not specified: MISSING_NUCLEOTIDE is used.
-| MISSING_NUCLEOTIDE | -missing_n | No, default='?' | Symbol for missing nucleotides, used if no FASTA_PROVIDER is given.
-| EMAIL | -email | Yes if FASTA_PROVIDER='ncbi' | E-mail address for NCBI API, used if FASTA_PROVIDER is 'ncbi'.
-| CACHE | -cache | No, default='Yes' | If True, sequences downloaded from NCBI are stored on local disc and reused between program calls, used if Fasta Complementation Option is 'ncbi'
+| RAW_MAF | --raw_maf | No, default=False | Build poagraph without transforming multialignment (maf) to DAG. Poagraph build in this way does not reflect real life sequences.
+| FASTA_PROVIDER | --fasta_provider | No | Nucleotides/proteins source if any are missed in the multialignment. Possible values: 'ncbi', 'file'. If not specified: MISSING_NUCLEOTIDE is used.
+| MISSING_NUCLEOTIDE | --missing_symbol | No, default='?' | Symbol for missing nucleotides, used if no FASTA_PROVIDER is given.
+| EMAIL | --email | Yes if FASTA_PROVIDER='ncbi' | E-mail address for NCBI API, used if FASTA_PROVIDER is 'ncbi'.
+| CACHE | --cache | No, default='Yes' | If True, sequences downloaded from NCBI are stored on local disc and reused between program calls, used if Fasta Complementation Option is 'ncbi'
 | FASTA_FILE | -fasta_source_file | Yes if FASTA_PROVIDER='FILE' | Path to fasta file or zipped fasta files with whole sequences present in multialignment, used if FASTA_PROVIDER is 'FILE'.
 | Arguments affecting consensuses tree algorithm: |
 | CONSENSUS | -consensus | No | Possible values: 'TREE' (tree algorithm), 'POA' (poa algorithm)
 | BLOSUM | --blosum | No, default=bin\blosum80.mat |  Path to the blosum file which is used in consensus algorithm. Blosum file must include MISSING_NUCLEOTIDE. |
-| HBMIN | -hbmin | No, defaUlt=0.9 | 'POA' parameter. The minimum value of sequence compatibility to generated consensus.
-| STOP | -stop | No, default=0.99 | 'TREE' parameter. Minimum value of compatibility in tree leaves.
-| MAX | -max | No, default=MAX2 | 'TREE' parameter. Max cutoff finding strategy. Available values: 'MAX1', 'MAX2'.
-| NODE | -node | No, default=NODE3 | 'NODE' parameter. Node cutoff finding strategy. Available values: 'NODE1', 'NODE2', 'NODE3', 'NODE4'
-| R | -r | No, default=[0,1] | 'MAX1' parameter. Specifies what part of sorted capabilities should be searched for node cutoff. Format: '[a, b]' where a, b in [0, 1] and a < b. 
+| HBMIN | -0hbmin | No, default=0.9 | 'POA' parameter. The minimum value of sequence compatibility to generated consensus.
+| STOP | --stop | No, default=0.99 | 'TREE' parameter. Minimum value of compatibility in tree leaves.
+| MAX | --max | No, default=MAX2 | 'TREE' parameter. Max cutoff finding strategy. Available values: 'MAX1', 'MAX2'.
+| NODE | --node | No, default=NODE3 | 'NODE' parameter. Node cutoff finding strategy. Available values: 'NODE1', 'NODE2', 'NODE3', 'NODE4'
+| R | --r | No, default=[0,1] | 'MAX1' parameter. Specifies what part of sorted capabilities should be searched for node cutoff. Format: '[a, b]' where a, b in [0, 1] and a < b. 
 | MULTIPLIER | -multiplier | No, default=1 | 'NODE1' and 'NODE2' parameter. It controls the size of gaps for node cutoff. The greater it is, the more granular the tree is.
 | P | -p | No, default=1 | 'TREE' parameter. It changes the linear meaning of compatiblities during cutoff finding because the compatibilities are raised to the power o P. For p from range [0,1] it decreases distances between small compatibilities and increases distances between the bigger ones.For p > 1 it increases distances between small compatibilities and decreases distances between the bigger ones.
 | Arguments affecting output format: |
-| OUTPUT_DIR | --output, -o | No, default=timestamped folder in current working directory | Output directory path.
+| OUTPUT_DIR | --output_dir, -o | No, default=timestamped folder in current working directory | Output directory path.
 | VERBOSE | --verbose, -v | No, default=False | Set if detailed log files must be produced.
 | QUIET | --quiet, -q | No, default=False | Set to turn off console logging.
-| FASTA | --fasta | No, default=False | Set to create fasta files with consensuses.
-| PO | -po | No, default=False | Set to create po file with multialignment (without consensuses).
-| INCLUDE_PATHS | -output_with_paths | No, default=False | Set if output json should include paths (it significantly increases file size).
+| FASTA | --output_fasta | No, default=False | Set to create fasta files with consensuses.
+| PO | -output_po | No, default=False | Set to create po file with multialignment (without consensuses).
 
 #### Sequence Naming Convention
 
@@ -174,7 +173,7 @@ will produce:
 
 2. Generate consensuses tree, use metadata, detailed logging and default algorithm settings.
 ```
-python -m pangenome -m data/Ebola/Ebola.maf -metadata data/Ebola/Ebola.maf -consensus tree -v
+python3 -m pangenome -m data/Ebola/Ebola.maf -metadata data/Ebola/Ebola.maf -consensus tree -v
 ```
 will produce:
 
