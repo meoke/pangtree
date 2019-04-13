@@ -17,7 +17,7 @@ detailed_logger = logprocess.get_logger("details")
 
 
 class EmailAddress:
-    """E-mail address requiered when Fasta Provider Option is \"NCBI\"
+    """E-mail address requiered when Fasta Provider is \"NCBI\"
        as Entrez API obligates the user to pass e-mail address."""
 
     def __init__(self, email_address: str):

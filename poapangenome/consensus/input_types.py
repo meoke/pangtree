@@ -59,7 +59,7 @@ class Hbmin:
 
 
 class Range:
-    """Specify what part of sorted capabilities should be searched for node cutoff. E.g. [0.2,0.8]"""
+    """Specify what part of sorted compatibilities should be searched for node cutoff. E.g. [0.2,0.8]"""
 
     def __init__(self, value: List[Union[str, float]] = None):
         if len(value) != 2:

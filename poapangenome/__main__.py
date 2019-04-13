@@ -1,13 +1,14 @@
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../pangpang')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../poapangenome')))
 from consensus import tree_generator, simple_tree_generator
 from datamodel.input_types import Maf
 from datamodel.Poagraph import Poagraph
 from tools import cli, pathtools, logprocess
 from output.PangenomeJSON import to_PangenomeJSON, TaskParameters, to_json, to_pickle, load_pickle
 from output.PangenomePO import poagraph_to_PangenomePO
+from output.PangenomeFASTA import poagraph_to_fasta, consensuses_tree_to_fasta
 
 
 def main():
@@ -51,6 +52,13 @@ def main():
     if args.output_po:
         pangenome_po = poagraph_to_PangenomePO(poagraph)
         pathtools.save_to_file(pangenome_po, pathtools.get_child_path(args.output_dir, "poagraph.po"))
+
+    if args.output_fasta:
+        sequences_fasta = poagraph_to_fasta(poagraph)
+        pathtools.save_to_file(sequences_fasta, pathtools.get_child_path(args.output_dir, "sequences.fasta"))
+        if consensus_tree:
+            consensuses_fasta = consensuses_tree_to_fasta(poagraph, consensus_tree)
+            pathtools.save_to_file(consensuses_fasta, pathtools.get_child_path(args.output_dir, "consensuses.fasta"))
 
     pangenomejson = to_PangenomeJSON(TaskParameters(), poagraph, dagmaf, consensus_tree)
     pagenome_json_str = to_json(pangenomejson)

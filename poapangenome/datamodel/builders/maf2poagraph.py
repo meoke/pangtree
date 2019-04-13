@@ -4,9 +4,9 @@ from Bio import AlignIO
 from Bio.Align import MultipleSeqAlignment
 
 # from datamodel.Sequence import Sequences
-from pangpang.datamodel.Node import NodeID, ColumnID, Node, Base, BlockID
-from pangpang.datamodel.Sequence import SequenceID, Sequence, SequencePath
-from pangpang.datamodel.input_types import Maf, MetadataCSV
+from poapangenome.datamodel.Node import NodeID, ColumnID, Node, Base, BlockID
+from poapangenome.datamodel.Sequence import SequenceID, Sequence, SequencePath
+from poapangenome.datamodel.input_types import Maf, MetadataCSV
 from tools import logprocess
 
 _ParsedMaf = List[Optional[MultipleSeqAlignment]]

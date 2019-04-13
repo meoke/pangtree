@@ -2,7 +2,7 @@ from enum import Enum
 
 
 class DataType(Enum):
-    """todo"""
+    """It describes whether poagraph is build from nucleotides or proteins."""
 
     Nucleotides = 0
     Proteins = 1

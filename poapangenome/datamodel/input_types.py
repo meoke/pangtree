@@ -25,7 +25,8 @@ class Maf:
 
 
 class MetadataCSV:
-    """todo See... examples\\Ebola\\ebola_metadata.csv"""
+    """Metadata provides additional information about sequences used in Poagraph.
+    See example metadata file: data\\Ebola\\ebola_metadata.csv"""
 
     def __init__(self, filecontent: StringIO, filename: Optional[Path]):
         filecontent = filecontent.read()
@@ -92,7 +93,7 @@ class Po:
 
 
 class MissingSymbol:
-    """todo"""
+    """A symbol used to complement omitted symbols in genome sequence. "?" is default."""
 
     def __init__(self, symbol: Optional[str] = '?'):
         if len(symbol) != 1:

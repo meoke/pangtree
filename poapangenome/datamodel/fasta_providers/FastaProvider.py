@@ -19,8 +19,8 @@ class FastaProviderOption(Enum):
 
 
 class UseCache:
-    """Used if Fasta Complementation Option is \"NCBI\"
-       Sequences downloaded from NCBI are stored and reused
+    """Used if Fasta Provider is \"NCBI\"
+       Sequences downloaded from NCBI are stored and
        reused between uses of this program."""
     pass
 

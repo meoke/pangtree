@@ -53,15 +53,6 @@ def _data_type(data_type: str) -> DataType:
         raise argparse.ArgumentError("Data type parsing error.")
 
 
-# def _fasta_provider_option(arg_fasta_provider_option: str) -> FastaProviderOption:
-#     """Converts command line argument to FastaProviderOption"""
-#
-#     try:
-#         return FastaProviderOption[arg_fasta_provider_option.upper()]
-#     except KeyError:
-#         raise argparse.ArgumentError("Incorrect FASTA_PROVIDER argument.")
-
-
 def _path_if_valid(path: str) -> Path:
     """Check if path exists."""
 
@@ -141,11 +132,12 @@ def get_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog='pang',
                                 description='This software builds poagraph and generates consensuses.',
                                 epilog='For more information check github.com/meoke/pang')
-    p.add_argument('-output_dir', '-o',
+    p.add_argument('--output_dir',
                    type=_cli_dir_arg,
                    default=get_default_output_dir(),
                    help='Output directory path.')
-    p.add_argument('--multialignment', '-m',
+    p.add_argument('--multialignment',
+                   metavar='MULTIALIGNMENT_PATH',
                    type=_mulitalignment_file,
                    required=True,
                    help='Path to the multialignment file.')
@@ -154,8 +146,9 @@ def get_parser() -> argparse.ArgumentParser:
                    default=DataType.Nucleotides,
                    help='\'n\' for nucleotides, \'p\' for proteins. ' + inspect.getdoc(DataType))
     p.add_argument('--metadata',
+                   metavar='METADATA_PATH',
                    type=_metadata_file,
-                   help='Path to the csv file. ' + inspect.getdoc(MetadataCSV))
+                   help='Path to the csv file with metadata. ' + inspect.getdoc(MetadataCSV))
     p.add_argument('-raw_maf',
                    action='store_true',
                    default=False,
@@ -163,82 +156,73 @@ def get_parser() -> argparse.ArgumentParser:
                         'Set if the maf content must not be transformed to DAG before building poagraph. '
                         'Poagraph that was build in this way provides consensuses tree but the consensuses do not '
                         'reflect the real life sequences.')
-    p.add_argument('-fasta_provider',
-                   # type=_fasta_provider_option,
+    p.add_argument('--fasta_provider',
+                   metavar="FASTA_PROVIDER",
                    choices=['ncbi', 'file'],
-                   help='\'ncbi\' for NCBI, \'file\' for file. MISSING_SYMBOL will be used if not set. ')
-    p.add_argument('-missing_symbol',
+                   help='Maf file may not include full sequences. '
+                        'In such case an additional data source is needed. '
+                        'Use \'ncbi\' for NCBI (then set also EMAIL and possibly CACHE) or \'file\' for file (then provide also FASTA_PATH). MISSING_SYMBOL is used if this argument is omitted. ')
+    p.add_argument('--missing_symbol',
                    metavar='MISSING_SYMBOL',
                    type=_cli_arg(MissingSymbol),
                    default=MissingSymbol(),
                    help=inspect.getdoc(MissingSymbol))
-    p.add_argument('-email',
+    p.add_argument('--email',
                    type=_cli_arg(EmailAddress),
                    help=inspect.getdoc(EmailAddress))
-    p.add_argument('-cache',
+    p.add_argument('--cache',
                    action='store_true',
-                   help='Set if fastas downloaded from ncbi should be cached locally in .fastacache folder. '
+                   help='Set if fastas downloaded from NCBI should be cached locally in .fastacache folder. '
                         + inspect.getdoc(UseCache))
-    p.add_argument('--fasta_file', '-f',
+    p.add_argument('--fasta_path',
+                   metavar="FASTA_PATH",
                    type=_path_if_valid,
-                   help='ZIP archive with fasta files or fasta file used as missing nucleotides/proteins source.')
-    p.add_argument('-consensus',
+                   help='ZIP archive with fasta files or fasta file used as FASTA_PROVIDER.')
+    p.add_argument('--consensus',
                    choices=['poa', 'tree'],
-                   help='\'poa\' for direct result of poa software, \'tree\' for Consensuses Tree algorith.')
-    p.add_argument('-blosum',
+                   help='Generate consensus tree. Use \'poa\' for direct result of poa software, \'tree\' for Consensuses Tree algorith.')
+    p.add_argument('--blosum',
                    type=_blosum_file,
+                   metavar='BLOSUM_PATH',
                    help='Path to the blosum file. ' + inspect.getdoc(Blosum))
-    p.add_argument('-hbmin',
+    p.add_argument('--hbmin',
                    type=_cli_arg(Hbmin),
                    default=consensus_input_types.Hbmin(),
                    help='Simple POA algorithm parameter. '
                         'Hbmin value. ' + inspect.getdoc(Hbmin))
-    p.add_argument('-max',
+    p.add_argument('--max',
                    default='max2',
                    choices=['max1', 'max2'],
                    help='Tree POA algorithm parameter. ' +
                         'Specify which strategy - MAX1 or MAX2 use for finding max cutoff.')
-    p.add_argument('-node',
+    p.add_argument('--node',
                    default='node3',
                    choices=['node1', 'node2', 'node3', 'node4'],
                    help='Tree POA algorithm parameter. ' +
-                        'Specify which strategy - NODE1, NODE2, NODE3 or NODE4 use for finding max cutoff.')
-    p.add_argument('-r',
+                        'Specify which strategy - NODE1, NODE2, NODE3 or NODE4 use for finding node cutoff.')
+    p.add_argument('--r',
                    nargs=2,
                    action='append',
                    help='Tree POA algorithm, MAX1 strategy parameter. ' + inspect.getdoc(Range))
-    p.add_argument('-multiplier',
+    p.add_argument('--multiplier',
                    type=_cli_arg(consensus_input_types.Multiplier),
                    default=consensus_input_types.Multiplier(),
                    help='Tree POA algorithm parameter.' + inspect.getdoc(consensus_input_types.Multiplier))
-    p.add_argument('-stop',
+    p.add_argument('--stop',
                    type=_cli_arg(consensus_input_types.Stop),
                    default=consensus_input_types.Stop(),
                    help='Tree POA algorithm parameter.' + inspect.getdoc(consensus_input_types.Stop))
-    p.add_argument('-p',
+    p.add_argument('--p',
                    type=_cli_arg(consensus_input_types.P),
                    default=consensus_input_types.P(),
                    help='Tree consensus algorithm parameter.' + inspect.getdoc(consensus_input_types.P))
-#     p.add_argument('-fasta',
-#                    action='store_true',
-#                    help='Set if fasta files for consensuses must be produced.')
-    p.add_argument('-output_po',
+    p.add_argument('--output_fasta',
+                   action='store_true',
+                   help='Set if fasta files for sequences and consensuses must be produced.')
+    p.add_argument('--output_po',
                    action='store_true',
                    default=False,
-                   help='Set if output must containt poagraph as .po file.')
-#     p.add_argument('-consensus',
-#                    type=_consensus_algorithm_option,
-#                    default=ConsensusAlgorithm.NO,
-#                    help='Set if consensus must be generated. Values to choose: \'simple\' or \'tree\'.')
-
-
-
-
-#     p.add_argument('-node',
-#                    default=NodeCutoffOption.NODE3,
-#                    type=_node_cutoff_option,
-#                    help='Specify which strategy - NODE1 (1), NODE2 (2), NODE3 (3) or NODE4 (4) use '
-#                         'for finding max cutoff (see details in README.md)')
+                   help='Set if po file for poagraph must be produced.')
     p.add_argument('-v', '--verbose',
                    action='store_true',
                    default=False,
@@ -246,11 +230,7 @@ def get_parser() -> argparse.ArgumentParser:
     p.add_argument('-q', '--quiet',
                    action='store_true',
                    default=False,
-                   help='Set to turn off console logging .')
-#     p.add_argument('-output_with_nodes',
-#                    action='store_true',
-#                    default=False,
-#                    help='Set if output json should include nodes (it significantly increases file size).')
+                   help='Set to turn off console logging.')
     return p
 
 
