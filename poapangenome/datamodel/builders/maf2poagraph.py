@@ -3,11 +3,10 @@ from typing import Optional, List, Tuple, Dict
 from Bio import AlignIO
 from Bio.Align import MultipleSeqAlignment
 
-# from datamodel.Sequence import Sequences
 from poapangenome.datamodel.Node import NodeID, ColumnID, Node, Base, BlockID
 from poapangenome.datamodel.Sequence import SequenceID, Sequence, SequencePath
 from poapangenome.datamodel.input_types import Maf, MetadataCSV
-from tools import logprocess
+from poapangenome.tools import logprocess
 
 _ParsedMaf = List[Optional[MultipleSeqAlignment]]
 

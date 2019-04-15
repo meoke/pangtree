@@ -1,8 +1,7 @@
 from typing import List, NewType, Dict, Optional
 
-from consensus.input_types import P
-from datamodel.Node import NodeID
-from datamodel.Sequence import SequenceID, SequencePath
+from poapangenome.consensus.input_types import P
+from poapangenome.datamodel.Sequence import SequenceID, SequencePath
 
 ConsensusNodeID = NewType('ConsensusNodeID', int)
 

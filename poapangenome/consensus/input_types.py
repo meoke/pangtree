@@ -2,7 +2,7 @@ from io import StringIO
 from typing import Optional, Tuple, List, Union
 from pathlib import Path
 
-from datamodel.input_types import MissingSymbol
+from poapangenome.datamodel.input_types import MissingSymbol
 
 
 class ConsensusInputError(Exception):

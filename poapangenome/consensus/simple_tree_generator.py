@@ -1,15 +1,15 @@
 from pathlib import Path
 from typing import Dict
 
-from consensus import poa
-from consensus.ConsensusTree import ConsensusTree, ConsensusNode, ConsensusNodeID
-from consensus.input_types import Blosum, Hbmin
-from consensus.poa import ConsInfo
-from datamodel.Poagraph import Poagraph
-from datamodel.Sequence import SequencePath
-from tools import logprocess
+from poapangenome.consensus import poa
+from poapangenome.consensus.ConsensusTree import ConsensusTree, ConsensusNode, ConsensusNodeID
+from poapangenome.consensus.input_types import Blosum, Hbmin
+from poapangenome.consensus.poa import ConsInfo
+from poapangenome.datamodel.Poagraph import Poagraph
+from poapangenome.tools import logprocess
 
 global_logger = logprocess.get_global_logger()
+
 
 class ConsensusGenerationException(Exception):
     pass

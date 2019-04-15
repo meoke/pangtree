@@ -15,7 +15,7 @@ setuptools.setup(
         "Operating System :: POSIX :: Linux",
         "Topic :: Scientific/Engineering :: Bio-Informatics"
     ],
-    install_requires=['biopython', 'numpy', 'jsonpickle', 'ddt'],
+    install_requires=['biopython', 'numpy', 'jsonpickle', 'ddt', 'networkx', 'six'],
     license='MIT Licence',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown'

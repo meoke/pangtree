@@ -3,17 +3,17 @@ from typing import Tuple, List, NewType, Optional, Dict
 
 from mafgraph.graph import Block
 from mafgraph.graph.Arc import Arc
-
-from datamodel.DAGMaf import DAGMaf, DAGMafNode
-from datamodel.Sequence import SequenceID, Sequence, SequencePath
-from datamodel.Node import Node, ColumnID, BlockID, NodeID, Base
-from datamodel.builders.PoagraphBuildException import PoagraphBuildException
-from datamodel.fasta_providers import FastaProvider
-from datamodel.input_types import MetadataCSV
-
-from tools import logprocess
-
 from mafgraph.mafreader import start_position
+
+from poapangenome.datamodel.DAGMaf import DAGMaf, DAGMafNode
+from poapangenome.datamodel.Sequence import SequenceID, Sequence, SequencePath
+from poapangenome.datamodel.Node import Node, ColumnID, BlockID, NodeID, Base
+from poapangenome.datamodel.builders.PoagraphBuildException import PoagraphBuildException
+from poapangenome.datamodel.fasta_providers import FastaProvider
+from poapangenome.datamodel.input_types import MetadataCSV
+
+from poapangenome.tools import logprocess
+
 
 global_logger = logprocess.get_global_logger()
 detailed_logger = logprocess.get_logger("details")

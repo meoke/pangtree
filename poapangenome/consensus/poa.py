@@ -3,18 +3,19 @@ from bisect import bisect_left
 from pathlib import Path
 from typing import List, Dict, Union, Optional
 
-from consensus.input_types import Hbmin
-from datamodel.Node import NodeID
-from datamodel.Poagraph import Poagraph
-from datamodel.Sequence import SequenceID, SequencePath
-from output.PangenomePO import NodePO, SequencePO
-from tools import pathtools
-import output.PangenomePO as PangenomePO
+from poapangenome.consensus.input_types import Hbmin
+from poapangenome.datamodel.Node import NodeID
+from poapangenome.datamodel.Poagraph import Poagraph
+from poapangenome.datamodel.Sequence import SequenceID, SequencePath
+from poapangenome.output.PangenomePO import NodePO, SequencePO
+from poapangenome.tools import pathtools
+import poapangenome.output.PangenomePO as PangenomePO
 import subprocess
-from tools import logprocess
+from poapangenome.tools import logprocess
 
 detailed_logger = logprocess.get_logger('details')
 global_logger = logprocess.get_global_logger()
+
 
 class NoConsensusError(Exception):
     pass

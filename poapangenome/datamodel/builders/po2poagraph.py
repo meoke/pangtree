@@ -1,9 +1,9 @@
 from collections import namedtuple
 from typing import List, Optional, Tuple, Dict
 
-from datamodel.Node import Base, NodeID, Node
-from datamodel.Sequence import Sequence, SequenceID, SequencePath
-from datamodel.input_types import Po, MetadataCSV
+from poapangenome.datamodel.Node import Base, NodeID, Node
+from poapangenome.datamodel.Sequence import Sequence, SequenceID, SequencePath
+from poapangenome.datamodel.input_types import Po, MetadataCSV
 
 # global_logger = loggingtools.get_global_logger()
 # detailed_logger = loggingtools.get_logger("details")

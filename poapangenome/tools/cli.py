@@ -5,22 +5,22 @@ from io import StringIO
 from pathlib import Path
 from typing import TypeVar, Callable, Optional, Union, List
 
-from consensus.cutoffs import FindMaxCutoff, MAX2, MAX1, NODE3, FindCutoff, FindNodeCutoff, NODE1, NODE2, NODE4
-from consensus.input_types import Blosum, Hbmin, Range
-from datamodel.DataType import DataType
-from datamodel.builders import PoagraphBuildException
-from datamodel.fasta_providers.FastaProvider import FastaProvider, UseCache
-from datamodel.fasta_providers.FromNCBI import EmailAddress
-from datamodel.input_types import Maf, MetadataCSV, Po, MissingSymbol
+from poapangenome.consensus.cutoffs import FindMaxCutoff, MAX2, MAX1, NODE3, FindCutoff, FindNodeCutoff, NODE1, NODE2, NODE4
+from poapangenome.consensus.input_types import Blosum, Hbmin, Range
+from poapangenome.datamodel.DataType import DataType
+from poapangenome.datamodel.builders import PoagraphBuildException
+from poapangenome.datamodel.fasta_providers.FastaProvider import FastaProvider, UseCache
+from poapangenome.datamodel.fasta_providers.FromNCBI import EmailAddress
+from poapangenome.datamodel.input_types import Maf, MetadataCSV, Po, MissingSymbol
 
-from datamodel.fasta_providers import FastaProvider
-from datamodel.fasta_providers.ConstSymbolProvider import ConstSymbolProvider
-from datamodel.fasta_providers.FromNCBI import FromNCBI
-from datamodel.fasta_providers.FromFile import FromFile
+from poapangenome.datamodel.fasta_providers import FastaProvider
+from poapangenome.datamodel.fasta_providers.ConstSymbolProvider import ConstSymbolProvider
+from poapangenome.datamodel.fasta_providers.FromNCBI import FromNCBI
+from poapangenome.datamodel.fasta_providers.FromFile import FromFile
 
-from consensus import input_types as consensus_input_types
+from poapangenome.consensus import input_types as consensus_input_types
 
-from tools import pathtools
+from poapangenome.tools import pathtools
 
 
 class InvalidPath(Exception):

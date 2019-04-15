@@ -1,14 +1,15 @@
 from typing import Optional, List, Tuple, Dict
 
-from consensus.ConsensusTree import CompatibilityToPath
-from consensus.input_types import P
-from datamodel.DAGMaf import DAGMaf
-from datamodel.DataType import DataType
-from datamodel.Sequence import SequencePath, SequenceID, Sequence
-from datamodel.Node import Node
-from datamodel.builders import maf2poagraph, maf2dagmaf, dagmaf2poagraph, po2poagraph
-from datamodel.input_types import Po, Maf, MetadataCSV
-from .fasta_providers.FastaProvider import FastaProvider
+from poapangenome.datamodel.fasta_providers.ConstSymbolProvider import ConstSymbolProvider
+from poapangenome.consensus.ConsensusTree import CompatibilityToPath
+from poapangenome.consensus.input_types import P
+from poapangenome.datamodel.DAGMaf import DAGMaf
+from poapangenome.datamodel.DataType import DataType
+from poapangenome.datamodel.Sequence import SequencePath, SequenceID, Sequence
+from poapangenome.datamodel.Node import Node
+from poapangenome.datamodel.builders import maf2poagraph, maf2dagmaf, dagmaf2poagraph, po2poagraph
+from poapangenome.datamodel.input_types import Po, Maf, MetadataCSV, MissingSymbol
+from poapangenome.datamodel.fasta_providers.FastaProvider import FastaProvider
 import numpy as np
 
 
@@ -36,8 +37,8 @@ class Poagraph:
     @classmethod
     def build_from_dagmaf(cls,
                           maf: Maf,
-                          fasta_provider: FastaProvider,
-                          metadata: Optional[MetadataCSV],
+                          fasta_provider: Optional[FastaProvider] = ConstSymbolProvider(MissingSymbol()),
+                          metadata: Optional[MetadataCSV] = None,
                           datatype: Optional[DataType] = DataType.Nucleotides) -> Tuple['Poagraph', DAGMaf]:
         dagmaf = maf2dagmaf.get_dagmaf(maf)
         nodes, sequences = dagmaf2poagraph.get_poagraph(dagmaf, fasta_provider, metadata)
@@ -50,7 +51,7 @@ class Poagraph:
     @classmethod
     def build_from_po(cls,
                       po: Po,
-                      metadata: Optional[MetadataCSV],
+                      metadata: Optional[MetadataCSV] = None,
                       datatype: Optional[DataType] = DataType.Nucleotides) -> 'Poagraph':
         nodes, sequences = po2poagraph.get_poagraph(po, metadata)
         poagraph = Poagraph(nodes, sequences)
