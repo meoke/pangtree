@@ -1,6 +1,6 @@
 # Poapangenome
 
-Tool for analysis and visualisation of multiple sequence alignment. It implements the idea of pan-genome ([Ref. 1](https://doi.org/10.1093/bib/bbw089)) by representing the multialginment as a poa-graph (Partial Order Alignment Graph) and construction of a phylogenetic tree joined with an agreed sequence for every node.
+Tool for analysis and visualisation of multiple sequence alignment. It implements the idea of pan-genome ([Ref. 1](https://doi.org/10.1093/bib/bbw089)) by representing the multialignment as a poa-graph (Partial Order Alignment Graph) and constructing a phylogenetic tree joined with an agreed sequence for every node.
 
 [PL]
 Narzędzie służące do analizy i wizualizacji uliniowienia wielu sekwencji genetycznych. Implementuje ideę pangenomeu ([Ref. 1](https://doi.org/10.1093/bib/bbw089)) poprzez grafową reprezentację multiuliniowienia oraz konstrukcję drzewa filogenetycznego z kompromisową sekwencją dla każdego węzła. 
@@ -24,6 +24,11 @@ Testing:
 
 ```
 python3 setup.py install
+```
+or
+
+```
+pip3 install poapangenome
 ```
 
 ### Quick installation check

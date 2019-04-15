@@ -53,7 +53,7 @@ def get_consensuses(poagraph: Poagraph, sequences_ids: List[SequenceID], output_
 
 
 def call(po_file_path: Path, hb_file_path: Path, blosum_path: Path, hbmin: float) -> None:
-    poa_path = pathtools.get_child_path(Path(os.path.abspath(__file__)), '../../bin/poa').resolve()
+    poa_path = pathtools.get_child_path(Path(os.path.abspath(__file__)), '../../../bin/poa').resolve()
     detailed_logger.info(f"Run poa! Input: {po_file_path} Output: {hb_file_path}...")
     command = f"{poa_path} -read_msa {po_file_path} -hb -po {hb_file_path} {blosum_path} -hbmin {hbmin}"
     poa_result = subprocess.run(command, stderr=subprocess.PIPE, shell=True)
