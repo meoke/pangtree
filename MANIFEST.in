@@ -1,0 +1,4 @@
+include tests/*.py
+include bin/*
+include docs/*
+include poapangenome/logging.conf

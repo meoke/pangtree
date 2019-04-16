@@ -1,0 +1,6 @@
+# maf version=1 scoring=roast.v3.3
+
+a score=1
+s db.s1.1 0 3 + 3 CTC
+s foo.s2.1 0 3 + 3 ACG
+s ffo2.s3.10 0 3 + 3 ACG
