@@ -5,6 +5,7 @@ from io import StringIO
 from pathlib import Path
 from typing import TypeVar, Callable, Optional, Union, List
 
+from output.PangenomeJSON import TaskParameters
 from poapangenome.consensus.cutoffs import FindMaxCutoff, MAX2, MAX1, NODE3, FindCutoff, FindNodeCutoff, NODE1, NODE2, NODE4
 from poapangenome.consensus.input_types import Blosum, Hbmin, Range
 from poapangenome.datamodel.DataType import DataType
@@ -296,3 +297,31 @@ def get_default_blosum(missing_base_symbol: MissingSymbol):
     default_blosum_path = pathtools.get_child_path(parent_dir, "../../bin/blosum80.mat")
     blosum_content = pathtools.get_file_content_stringio(default_blosum_path)
     return Blosum(blosum_content, default_blosum_path, missing_base_symbol)
+
+
+def get_task_parameters(args: argparse.Namespace, running_time) -> TaskParameters:
+    return TaskParameters(running_time=running_time,
+                          multialignment_file_path=args.multialignment.filename,
+                          multialignment_format=str(type(args.multialignment).__name__),
+                          datatype=args.datatype.name,
+                          metadata_file_path=args.metadata.filename if args.metadata else None,
+                          blosum_file_path=args.blosum.filename if args.blosum else None,
+                          output_path=args.output_dir,
+                          output_po=bool(args.output_po),
+                          output_fasta=bool(args.output_fasta),
+                          output_with_nodes=None,
+                          verbose=bool(args.verbose),
+                          raw_maf=bool(args.raw_maf),
+                          fasta_provider=args.fasta_provider if args.fasta_provider else 'ConstSymbol',
+                          email_address=args.email.value if args.email else None,
+                          cache=bool(args.cache),
+                          missing_base_symbol=args.missing_symbol.value,
+                          fasta_source_file=args.fasta_path,
+                          consensus_type=args.consensus,
+                          hbmin=args.hbmin.value if args.hbmin else None,
+                          max_cutoff_option=args.max,
+                          search_range=args.r,
+                          node_cutoff_option=args.node,
+                          multiplier=args.multiplier.value if args.multiplier else None,
+                          stop=args.stop.value if args.stop else None,
+                          p=args.p.value if args.p else None)
