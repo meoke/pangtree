@@ -2,8 +2,8 @@ import abc
 from enum import Enum
 from io import StringIO
 
-from datamodel.Node import Base
-from datamodel.Sequence import SequenceID
+from poapangenome.datamodel.Node import Base
+from poapangenome.datamodel.Sequence import SequenceID
 
 
 class FastaProviderException(Exception):
