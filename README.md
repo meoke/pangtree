@@ -165,6 +165,49 @@ python -m pangenome [args]
 
 [anything before first dot is ignored].[everything after first dot (also other dots) is interpreted as seqid]
 
+#### PO file format specification
+This section originates from [POA software](https://sourceforge.net/projects/poamsa/) README.
+
+_File intro:_
+```
+VERSION= Current version of POA,e.g. LPO.1.0
+
+NAME=  Name of PO-MSA.  Defaults to name of 1st sequence in PO-MSA
+
+TITLE=  Title of PO-MSA.  Defaults to title of 1st sequence in PO-MSA
+
+LENGTH= Number of nodes in PO-MSA
+
+SOURCECOUNT= Number of sequences in PO-MSA
+```
+_For each sequence in the PoaGraph:_
+```
+SOURCENAME= Name of sequence taken from FASTA sequence header
+
+SOURCEINFO= Number of nodes in sequence 
+            [Index of first node containing sequence] [Sequence weight] [Index of bundle containing sequence] [Title of sequence taken from FASTA sequence header]
+```
+_Example:_
+```
+SOURCENAME=GRB2_HUMAN
+
+SOURCEINFO=217 10 0 3 GROWTH FACTOR RECEPTOR-BOUND PROTEIN 2 (GRB2 ADAPTOR PROTEIN)(SH2)
+```
+_For each node in the PO-MSA:_
+```
+Residue label:'L' delimited index list of other nodes with edges into node
+              'S' delimited index list of sequences stored in each node
+              'A' index of next node in same align ring
+                     NB: align ring indices must form a cycle.
+                     e.g. if two nodes 121 and 122 are aligned, then 
+                     the line for node 121 indicates "A122", and
+                     the line for node 122 indicates "A121".
+``` 
+_Example:_
+```
+F:L156L155L22S2S3S7A158
+```
+
 ### Example use cases
 1. Build poagraph using default settings (transform to DAG, download missing nucleotides from NCBI) and save to .po file :
 ```
