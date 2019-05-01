@@ -11,7 +11,6 @@ from poapangenome.consensus.input_types import Blosum, Hbmin, Range
 from poapangenome.datamodel.DataType import DataType
 from poapangenome.datamodel.builders import PoagraphBuildException
 from poapangenome.datamodel.fasta_providers.FastaProvider import FastaProvider, UseCache
-from poapangenome.datamodel.fasta_providers.FromNCBI import EmailAddress
 from poapangenome.datamodel.input_types import Maf, MetadataCSV, Po, MissingSymbol
 
 from poapangenome.datamodel.fasta_providers import FastaProvider
@@ -162,15 +161,12 @@ def get_parser() -> argparse.ArgumentParser:
                    choices=['ncbi', 'file'],
                    help='Maf file may not include full sequences. '
                         'In such case an additional data source is needed. '
-                        'Use \'ncbi\' for NCBI (then set also EMAIL and possibly CACHE) or \'file\' for file (then provide also FASTA_PATH). MISSING_SYMBOL is used if this argument is omitted. ')
+                        'Use \'ncbi\' for NCBI (then CACHE option is available) or \'file\' for file (then provide also FASTA_PATH). MISSING_SYMBOL is used if this argument is omitted. ')
     p.add_argument('--missing_symbol',
                    metavar='MISSING_SYMBOL',
                    type=_cli_arg(MissingSymbol),
                    default=MissingSymbol(),
                    help=inspect.getdoc(MissingSymbol))
-    p.add_argument('--email',
-                   type=_cli_arg(EmailAddress),
-                   help=inspect.getdoc(EmailAddress))
     p.add_argument('--cache',
                    action='store_true',
                    help='Set if fastas downloaded from NCBI should be cached locally in .fastacache folder. '
@@ -239,10 +235,8 @@ def resolve_fasta_provider(args: argparse.Namespace) -> FastaProvider:
     if args.fasta_provider is None:
         return ConstSymbolProvider(args.missing_symbol)
     elif args.fasta_provider == 'ncbi':
-        if args.email is None:
-            raise Exception("Email address must be specified. It must be provided when fasta source is \'ncbi\'.")
         use_cache = args.cache if args.cache else False
-        return FromNCBI(args.email, use_cache)
+        return FromNCBI(use_cache)
     elif args.fasta_provider == 'file':
         if args.fasta_file is None:
             raise Exception("Fasta file source must be specified. It must be provided when fasta source is \'local\'.")
@@ -313,7 +307,6 @@ def get_task_parameters(args: argparse.Namespace, running_time) -> TaskParameter
                           verbose=bool(args.verbose),
                           raw_maf=bool(args.raw_maf),
                           fasta_provider=args.fasta_provider if args.fasta_provider else 'ConstSymbol',
-                          email_address=args.email.value if args.email else None,
                           cache=bool(args.cache),
                           missing_base_symbol=args.missing_symbol.value,
                           fasta_source_file=args.fasta_path,

@@ -15,7 +15,7 @@ class Blosum:
     The matrix in this file must contain symbol for missing nucleotides/proteins.
     Lower-case is interpreted as nucleteotides and upper-case as proteins."""
 
-    def __init__(self, file_content: StringIO, filepath: Optional[Path], missing_base_symbol: MissingSymbol):
+    def __init__(self, file_content: StringIO, filepath: Path, missing_base_symbol: MissingSymbol):
         self.filepath = filepath
         self._raise_exception_if_incorrect(file_content, missing_base_symbol)
         self.filecontent = file_content
