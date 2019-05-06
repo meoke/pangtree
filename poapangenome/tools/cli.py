@@ -165,7 +165,6 @@ def get_parser() -> argparse.ArgumentParser:
     p.add_argument('--missing_symbol',
                    metavar='MISSING_SYMBOL',
                    type=_cli_arg(MissingSymbol),
-                   default=MissingSymbol(),
                    help=inspect.getdoc(MissingSymbol))
     p.add_argument('--cache',
                    action='store_true',
@@ -233,7 +232,10 @@ def get_parser() -> argparse.ArgumentParser:
 
 def resolve_fasta_provider(args: argparse.Namespace) -> FastaProvider:
     if args.fasta_provider is None:
-        return ConstSymbolProvider(args.missing_symbol)
+        if args.missing_symbol is None:
+            return ConstSymbolProvider(MissingSymbol())
+        else:
+            return ConstSymbolProvider(args.missing_symbol)
     elif args.fasta_provider == 'ncbi':
         use_cache = args.cache if args.cache else False
         return FromNCBI(use_cache)
@@ -285,12 +287,12 @@ def get_default_output_dir():
     return output_dir_path
 
 
-def get_default_blosum(missing_base_symbol: MissingSymbol):
+def get_default_blosum():
     """Returns default blosum file: Blosum80.mat"""
     parent_dir = Path(os.path.dirname(os.path.abspath(__file__)) + '/')
     default_blosum_path = pathtools.get_child_path(parent_dir, "../../bin/blosum80.mat")
     blosum_content = pathtools.get_file_content_stringio(default_blosum_path)
-    return Blosum(blosum_content, default_blosum_path, missing_base_symbol)
+    return Blosum(blosum_content, default_blosum_path)
 
 
 def get_task_parameters(args: argparse.Namespace, running_time) -> TaskParameters:
@@ -299,7 +301,7 @@ def get_task_parameters(args: argparse.Namespace, running_time) -> TaskParameter
                           multialignment_format=str(type(args.multialignment).__name__),
                           datatype=args.datatype.name,
                           metadata_file_path=args.metadata.filename if args.metadata else None,
-                          blosum_file_path=args.blosum.filename if args.blosum else None,
+                          blosum_file_path=args.blosum.filepath if args.blosum else None,
                           output_path=args.output_dir,
                           output_po=bool(args.output_po),
                           output_fasta=bool(args.output_fasta),
@@ -308,7 +310,7 @@ def get_task_parameters(args: argparse.Namespace, running_time) -> TaskParameter
                           raw_maf=bool(args.raw_maf),
                           fasta_provider=args.fasta_provider if args.fasta_provider else 'ConstSymbol',
                           cache=bool(args.cache),
-                          missing_base_symbol=args.missing_symbol.value,
+                          missing_base_symbol=args.missing_symbol.value if args.missing_symbol else MissingSymbol().value,
                           fasta_source_file=args.fasta_path,
                           consensus_type=args.consensus,
                           hbmin=args.hbmin.value if args.hbmin else None,

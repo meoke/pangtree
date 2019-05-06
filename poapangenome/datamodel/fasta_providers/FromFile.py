@@ -33,7 +33,7 @@ class FromFile(FastaProvider):
                 return self._read_fasta(fastas_file)
             else:
                 raise FastaProviderException("Unknown fasta file format. "
-                                             "Available file formats: zip, fasta, json.")
+                                             "Available file formats: zip, fasta/fna/faa, json.")
 
     def _read_zip(self, zip_path: Path) -> Dict[SequenceID, str]:
         if not zipfile.is_zipfile(zip_path):

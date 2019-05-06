@@ -2,6 +2,8 @@ import os
 import sys
 import time
 
+from poapangenome.datamodel.fasta_providers.ConstSymbolProvider import ConstSymbolProvider
+
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../poapangenome')))
 from poapangenome.consensus import tree_generator, simple_tree_generator
 from poapangenome.datamodel.input_types import Maf, Po
@@ -32,26 +34,30 @@ def main():
     elif isinstance(args.multialignment, Po):
         poagraph = Poagraph.build_from_po(args.multialignment, args.metadata)
 
-    blosum = args.blosum if args.blosum else cli.get_default_blosum(args.missing_symbol)
-    consensus_output_dir = pathtools.get_child_dir(args.output_dir, "consensus")
-    consensus_tree = None
-    if args.consensus == 'poa':
-        consensus_tree = simple_tree_generator.get_simple_consensus_tree(poagraph,
-                                                                         blosum,
-                                                                         consensus_output_dir,
-                                                                         args.hbmin,
-                                                                         args.verbose)
-    elif args.consensus == 'tree':
-        max_strategy = cli.resolve_max_strategy(args)
-        node_strategy = cli.resolve_node_strategy(args)
-        consensus_tree = tree_generator.get_consensus_tree(poagraph,
-                                                           blosum,
-                                                           consensus_output_dir,
-                                                           args.stop,
-                                                           args.p,
-                                                           max_strategy,
-                                                           node_strategy,
-                                                           args.verbose)
+    if args.consensus is not None:
+        blosum = args.blosum if args.blosum else cli.get_default_blosum()
+        if fasta_provider is not None and isinstance(fasta_provider, ConstSymbolProvider):
+            blosum.check_if_symbol_is_present(fasta_provider.missing_symbol.as_str())
+
+        consensus_output_dir = pathtools.get_child_dir(args.output_dir, "consensus")
+        consensus_tree = None
+        if args.consensus == 'poa':
+            consensus_tree = simple_tree_generator.get_simple_consensus_tree(poagraph,
+                                                                             blosum,
+                                                                             consensus_output_dir,
+                                                                             args.hbmin,
+                                                                             args.verbose)
+        elif args.consensus == 'tree':
+            max_strategy = cli.resolve_max_strategy(args)
+            node_strategy = cli.resolve_node_strategy(args)
+            consensus_tree = tree_generator.get_consensus_tree(poagraph,
+                                                               blosum,
+                                                               consensus_output_dir,
+                                                               args.stop,
+                                                               args.p,
+                                                               max_strategy,
+                                                               node_strategy,
+                                                               args.verbose)
 
     if args.output_po:
         pangenome_po = poagraph_to_PangenomePO(poagraph)
@@ -70,8 +76,8 @@ def main():
                                      dagmaf=dagmaf,
                                      consensuses_tree=consensus_tree)
     pangenome_json_str = to_json(pangenomejson)
-    pangenome_json = str_to_PangenomeJSON(pangenome_json_str)
     pathtools.save_to_file(pangenome_json_str, pathtools.get_child_path(args.output_dir, "pangenome.json"))
+    pangenome_json = str_to_PangenomeJSON(pangenome_json_str)
     # pagenome_pickle_str = to_pickle(pangenomejson)
     # pathtools.save_to_file(pagenome_pickle_str, pathtools.get_child_path(args.output_dir, "pangenome.pickle"), 'wb')
     # jsonpangenome = load_pickle(pagenome_pickle_str)
