@@ -18,6 +18,11 @@ class Base:
     def __eq__(self, other: 'Base'):
         return other and self.value.__eq__(other.value)
 
+    def as_str(self) -> str:
+        """Return base value as string."""
+
+        return self.value.decode("ASCII")
+
 
 class Node:
     def __init__(self,

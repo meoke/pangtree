@@ -3,6 +3,7 @@ import shutil
 from datetime import datetime
 from pathlib import Path
 from io import StringIO
+from typing import Optional
 
 
 def get_file_content(path: Path) -> str:
@@ -46,10 +47,10 @@ def get_current_time() -> str:
     return datetime.now().strftime('%m_%d__%H_%M_%S')
 
 
-def save_to_file(filecontent: str, filename: Path) -> None:
+def save_to_file(filecontent: str, filename: Path, mode: Optional[str] = 'w') -> None:
     """Saves string to file."""
 
-    with open(filename, 'w') as output:
+    with open(filename, mode) as output:
         output.write(filecontent)
 
 

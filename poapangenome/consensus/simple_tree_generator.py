@@ -21,7 +21,10 @@ def _get_consensus_nodes(poagraph: Poagraph, consensus_paths: Dict[int, ConsInfo
     for c_id, c_info in consensus_paths.items():
         assigned_sequences += c_info.assigned_sequences_ids
         compatibilities = poagraph.get_compatibilities(poagraph.get_sequences_ids(), c_info.path)
-        mincomp = min([c for seq_id, c in compatibilities.items() if seq_id in c_info.assigned_sequences_ids])
+        if len(c_info.assigned_sequences_ids):
+            mincomp = min([c for seq_id, c in compatibilities.items() if seq_id in c_info.assigned_sequences_ids])
+        else:
+            mincomp = 0
         cn = ConsensusNode(consensus_id=ConsensusNodeID(c_id+1),
                            parent_node_id=ConsensusNodeID(0),
                            sequences_ids=c_info.assigned_sequences_ids,

@@ -26,7 +26,6 @@ class TaskParameters:
 
                  raw_maf: bool = None,
                  fasta_provider: str = None,
-                 email_address: str = None,
                  cache: bool = None,
                  missing_base_symbol: str = None,
                  fasta_source_file: str = None,
@@ -56,7 +55,6 @@ class TaskParameters:
 
         self.raw_maf: bool = raw_maf
         self.fasta_complementation_option: str = fasta_provider
-        self.email: str = email_address
         self.cache: bool = cache
         self.missing_base_symbol: str = missing_base_symbol
         self.fasta_source_file: str = fasta_source_file
@@ -96,7 +94,7 @@ class Sequence:
         self.sequence_int_id: int = sequence_int_id
         self.sequence_str_id: str = sequence_str_id
         self.metadata: Dict[str, Union[str, float]] = metadata
-        self.nodes_ids: List[int] = nodes_ids
+        self.nodes_ids: List[List[int]] = nodes_ids
 
 
 class ConsensusNode:
@@ -188,8 +186,8 @@ def to_PangenomeJSON(task_parameters: TaskParameters = None,
         pangenome_sequences = [Sequence(sequence_int_id=paths_seq_id_to_int_id[seq_id],
                                         sequence_str_id=str(seq_id),
                                         metadata=poagraph.sequences[seq_id].seqmetadata,
-                                        nodes_ids=[node_id for path in poagraph.sequences[seq_id].paths
-                                                       for node_id in path] if task_parameters.output_with_nodes else []
+                                        nodes_ids=[path for path in poagraph.sequences[seq_id].paths
+                                                       ] if task_parameters.output_with_nodes else []
                                         )
                                for seq_id in sorted_sequences_ids]
 
@@ -197,8 +195,8 @@ def to_PangenomeJSON(task_parameters: TaskParameters = None,
         dagmaf_nodes = [MafNode(node_id=n.id,
                                 orient=n.orient,
                                 out_edges=[MafEdge(edge_type=edge.edge_type,
-                                                       sequences=edge.sequences,
-                                                       to_block=edge.to) for edge in n.out_edges])
+                                                   sequences=edge.sequences,
+                                                   to_block=edge.to) for edge in n.out_edges])
                         for n in dagmaf.dagmaf_nodes]
 
     if consensuses_tree:
@@ -236,3 +234,52 @@ def to_pickle(pangenomejson: PangenomeJSON) -> str:
 
 def load_pickle(s: str) -> PangenomeJSON:
     return pickle.loads(s)
+
+def str_to_PangenomeJSON(s: str) -> PangenomeJSON:
+    pangenome_dict = jsonpickle.loads(s)
+    if 'task_parameters' in pangenome_dict:
+        task_parameters = TaskParameters()
+        for k, v in pangenome_dict['task_parameters'].items():
+            task_parameters.__dict__[k] = v
+    if 'dagmaf_nodes' in pangenome_dict:
+        dagmaf_nodes = [MafNode(node_id=dagmaf_node['node_id'],
+                                orient=dagmaf_node['orient'],
+                                out_edges=[MafEdge(edge_type=edge['edge_type'],
+                                                       sequences=edge['sequences'],
+                                                       to_block=edge['to_block']) for edge in dagmaf_node['out_edges']])
+                        for dagmaf_node in pangenome_dict['dagmaf_nodes']]
+
+    if "nodes" in pangenome_dict:
+        pangenome_nodes = [Node(node_id=node["id"],
+                                base=node['base'],
+                                column_id=node['column_id'],
+                                block_id=node['block_id'],
+                                aligned_to=node['aligned_to'])
+                           for node in pangenome_dict['nodes']]
+
+    if 'sequences' in pangenome_dict:
+        pangenome_sequences = [Sequence(sequence_int_id=sequence['sequence_int_id'],
+                                        sequence_str_id=sequence['sequence_str_id'],
+                                        metadata=sequence['metadata'],
+                                        nodes_ids=sequence['nodes_ids']
+                                        )
+                               for sequence in pangenome_dict['sequences']]
+
+    if 'consensuses' in pangenome_dict:
+        consensuses_nodes = [ConsensusNode(consensus_node_id=consensus_node['consensus_node_id'],
+                                               name=consensus_node['name'],
+                                               parent_node_id=consensus_node['parent'],
+                                               children_nodes_ids=consensus_node['children'],
+                                               comp_to_all_sequences=consensus_node['comp_to_all_sequences'],
+                                               sequences_int_ids=consensus_node['sequences_int_ids'],
+                                               poagraph_nodes_ids=consensus_node['nodes_ids'],
+                                               mincomp=consensus_node['mincomp'])
+                                for consensus_node in pangenome_dict['consensuses']]
+
+
+    return PangenomeJSON(task_parameters,
+                         pangenome_sequences,
+                         pangenome_nodes,
+                         dagmaf_nodes,
+                         consensuses_nodes
+                         )

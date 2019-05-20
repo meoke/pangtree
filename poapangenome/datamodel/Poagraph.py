@@ -1,5 +1,6 @@
 from typing import Optional, List, Tuple, Dict
-
+from time import time
+from datetime import datetime
 from poapangenome.datamodel.fasta_providers.ConstSymbolProvider import ConstSymbolProvider
 from poapangenome.consensus.ConsensusTree import CompatibilityToPath
 from poapangenome.consensus.input_types import P
@@ -27,7 +28,10 @@ class Poagraph:
                        maf: Maf,
                        metadata: Optional[MetadataCSV] = None,
                        datatype: Optional[DataType] = DataType.Nucleotides) -> 'Poagraph':
+        start = time()
         nodes, sequences = maf2poagraph.get_poagraph(maf, metadata)
+        end = time()
+        print("Build time: ", datetime.fromtimestamp(end-start).strftime("%H:%M:%S"))
         poagraph = Poagraph(nodes, sequences)
         if metadata:
             Poagraph._complement_metadata_for_sequences_absent_in_metadata_provided(poagraph, metadata)
@@ -41,7 +45,11 @@ class Poagraph:
                           metadata: Optional[MetadataCSV] = None,
                           datatype: Optional[DataType] = DataType.Nucleotides) -> Tuple['Poagraph', DAGMaf]:
         dagmaf = maf2dagmaf.get_dagmaf(maf)
+        start = datetime.now()
         nodes, sequences = dagmaf2poagraph.get_poagraph(dagmaf, fasta_provider, metadata)
+        end = datetime.now()
+        print("Build time: ", end - start)
+        poagraph = Poagraph(nodes, sequences)
         poagraph = Poagraph(nodes, sequences)
         if metadata:
             Poagraph._complement_metadata_for_sequences_absent_in_metadata_provided(poagraph, metadata)
@@ -105,6 +113,7 @@ class Poagraph:
         else:
             normalized_sources_weights_dict = {path: int((weight - min_weight)/diff_weight*100)
                                                for path, weight in unweighted_sources_weights.items()}
+        # return {path_key: 100 for path_key in unweighted_sources_weights.keys()}
         return normalized_sources_weights_dict
 
     def get_sequence_nodes_count(self, seq_id: SequenceID) -> int:

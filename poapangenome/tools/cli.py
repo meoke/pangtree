@@ -5,12 +5,12 @@ from io import StringIO
 from pathlib import Path
 from typing import TypeVar, Callable, Optional, Union, List
 
+from output.PangenomeJSON import TaskParameters
 from poapangenome.consensus.cutoffs import FindMaxCutoff, MAX2, MAX1, NODE3, FindCutoff, FindNodeCutoff, NODE1, NODE2, NODE4
 from poapangenome.consensus.input_types import Blosum, Hbmin, Range
 from poapangenome.datamodel.DataType import DataType
 from poapangenome.datamodel.builders import PoagraphBuildException
 from poapangenome.datamodel.fasta_providers.FastaProvider import FastaProvider, UseCache
-from poapangenome.datamodel.fasta_providers.FromNCBI import EmailAddress
 from poapangenome.datamodel.input_types import Maf, MetadataCSV, Po, MissingSymbol
 
 from poapangenome.datamodel.fasta_providers import FastaProvider
@@ -161,15 +161,11 @@ def get_parser() -> argparse.ArgumentParser:
                    choices=['ncbi', 'file'],
                    help='Maf file may not include full sequences. '
                         'In such case an additional data source is needed. '
-                        'Use \'ncbi\' for NCBI (then set also EMAIL and possibly CACHE) or \'file\' for file (then provide also FASTA_PATH). MISSING_SYMBOL is used if this argument is omitted. ')
+                        'Use \'ncbi\' for NCBI (then CACHE option is available) or \'file\' for file (then provide also FASTA_PATH). MISSING_SYMBOL is used if this argument is omitted. ')
     p.add_argument('--missing_symbol',
                    metavar='MISSING_SYMBOL',
                    type=_cli_arg(MissingSymbol),
-                   default=MissingSymbol(),
                    help=inspect.getdoc(MissingSymbol))
-    p.add_argument('--email',
-                   type=_cli_arg(EmailAddress),
-                   help=inspect.getdoc(EmailAddress))
     p.add_argument('--cache',
                    action='store_true',
                    help='Set if fastas downloaded from NCBI should be cached locally in .fastacache folder. '
@@ -236,16 +232,17 @@ def get_parser() -> argparse.ArgumentParser:
 
 def resolve_fasta_provider(args: argparse.Namespace) -> FastaProvider:
     if args.fasta_provider is None:
-        return ConstSymbolProvider(args.missing_symbol)
+        if args.missing_symbol is None:
+            return ConstSymbolProvider(MissingSymbol())
+        else:
+            return ConstSymbolProvider(args.missing_symbol)
     elif args.fasta_provider == 'ncbi':
-        if args.email is None:
-            raise Exception("Email address must be specified. It must be provided when fasta source is \'ncbi\'.")
         use_cache = args.cache if args.cache else False
-        return FromNCBI(args.email, use_cache)
+        return FromNCBI(use_cache)
     elif args.fasta_provider == 'file':
-        if args.fasta_file is None:
+        if args.fasta_path is None:
             raise Exception("Fasta file source must be specified. It must be provided when fasta source is \'local\'.")
-        return FromFile(args.fasta_file)
+        return FromFile(args.fasta_path)
     else:
         raise Exception("Not known fasta provider."
                         "Should be \'ncbi\' or \'file\' or None."
@@ -290,9 +287,36 @@ def get_default_output_dir():
     return output_dir_path
 
 
-def get_default_blosum(missing_base_symbol: MissingSymbol):
+def get_default_blosum():
     """Returns default blosum file: Blosum80.mat"""
     parent_dir = Path(os.path.dirname(os.path.abspath(__file__)) + '/')
     default_blosum_path = pathtools.get_child_path(parent_dir, "../../bin/blosum80.mat")
     blosum_content = pathtools.get_file_content_stringio(default_blosum_path)
-    return Blosum(blosum_content, default_blosum_path, missing_base_symbol)
+    return Blosum(blosum_content, default_blosum_path)
+
+
+def get_task_parameters(args: argparse.Namespace, running_time) -> TaskParameters:
+    return TaskParameters(running_time=running_time,
+                          multialignment_file_path=args.multialignment.filename,
+                          multialignment_format=str(type(args.multialignment).__name__),
+                          datatype=args.datatype.name,
+                          metadata_file_path=args.metadata.filename if args.metadata else None,
+                          blosum_file_path=args.blosum.filepath if args.blosum else None,
+                          output_path=args.output_dir,
+                          output_po=bool(args.output_po),
+                          output_fasta=bool(args.output_fasta),
+                          output_with_nodes=True,
+                          verbose=bool(args.verbose),
+                          raw_maf=bool(args.raw_maf),
+                          fasta_provider=args.fasta_provider if args.fasta_provider else 'ConstSymbol',
+                          cache=bool(args.cache),
+                          missing_base_symbol=args.missing_symbol.value if args.missing_symbol else MissingSymbol().value,
+                          fasta_source_file=args.fasta_path,
+                          consensus_type=args.consensus,
+                          hbmin=args.hbmin.value if args.hbmin else None,
+                          max_cutoff_option=args.max,
+                          search_range=args.r,
+                          node_cutoff_option=args.node,
+                          multiplier=args.multiplier.value if args.multiplier else None,
+                          stop=args.stop.value if args.stop else None,
+                          p=args.p.value if args.p else None)

@@ -19,7 +19,7 @@ def poagraph_to_fasta(poagraph: Poagraph) -> str:
 def consensuses_tree_to_fasta(poagraph: Poagraph, consensus_tree: ConsensusTree) -> str:
     fasta_lines = []
     for consensus_node in consensus_tree.nodes:
-        if len(consensus_node.consensus_path) == 0:
+        if consensus_node.consensus_path is None or len(consensus_node.consensus_path) == 0:
             continue
         sequence = "".join([poagraph.nodes[node_id].get_base()
                             for node_id in consensus_node.consensus_path])

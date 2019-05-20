@@ -6,31 +6,19 @@ from typing import NewType, Dict
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 
-from datamodel.Node import Base
-from datamodel.Sequence import SequenceID
-from datamodel.fasta_providers.FastaProvider import FastaProvider, FastaProviderException
+from poapangenome.datamodel.Node import Base
+from poapangenome.datamodel.Sequence import SequenceID
+from poapangenome.datamodel.fasta_providers.FastaProvider import FastaProvider, FastaProviderException
 from Bio import Entrez, SeqIO
 
-from tools import pathtools, logprocess
+from poapangenome.tools import pathtools, logprocess
 NCBISequenceID = NewType("NCBISequenceID", str)
 detailed_logger = logprocess.get_logger("details")
 
 
-class EmailAddress:
-    """E-mail address requiered when Fasta Provider is \"NCBI\"
-       as Entrez API obligates the user to pass e-mail address."""
-
-    def __init__(self, email_address: str):
-        match = re.match(r'^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$', email_address)
-        if match is not None:
-            self.value = email_address
-        else:
-            raise FastaProviderException(f"Incorrect e-mail address ({email_address}).")
-
-
 class FromNCBI(FastaProvider):
-    def __init__(self, email_address: EmailAddress, use_cache: bool):
-        Entrez.email = email_address.value
+    def __init__(self, use_cache: bool):
+        Entrez.email = "paulinahyzy@gmail.com"
         self.fasta_disk_cache = FastaDiskCache(Path(os.getcwd()))
         self.use_cache = use_cache
         self.sequences: Dict[SequenceID, str] = {}

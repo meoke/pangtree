@@ -15,28 +15,31 @@ class Blosum:
     The matrix in this file must contain symbol for missing nucleotides/proteins.
     Lower-case is interpreted as nucleteotides and upper-case as proteins."""
 
-    def __init__(self, file_content: StringIO, filepath: Optional[Path], missing_base_symbol: MissingSymbol):
+    def __init__(self, file_content: StringIO, filepath: Path):
         self.filepath = filepath
-        self._raise_exception_if_incorrect(file_content, missing_base_symbol)
-        self.filecontent = file_content
+        self.blosum_lines = file_content.readlines()
+        self.blosum_symbols_line = None
+        self._raise_exception_if_incorrect()
 
-    @staticmethod
-    def _raise_exception_if_incorrect(filecontent: StringIO, missing_base_symbol: MissingSymbol):
-        blosum_lines = filecontent.readlines()
-        if not blosum_lines:
+    def _raise_exception_if_incorrect(self):
+        if not self.blosum_lines:
             raise ConsensusInputError("Empty blosum file. Provide a valid blosum file or use te default one.")
 
         blosum_symbols_line = None
-        for blosum_line in blosum_lines:
+        for blosum_line in self.blosum_lines:
             if len(blosum_line) > 0 and blosum_line[0] == " ":
                 blosum_symbols_line = blosum_line
                 break
         if not blosum_symbols_line:
             raise ConsensusInputError("Cannot find the horizontal line of symbols in blosum file. "
-                                      "It should begin with a whitespace.")
-        blosum_symbols = str.strip(blosum_symbols_line).split(" ")
+                                      "It should be the first line beginning with a whitespace.")
+        self.blosum_symbols_line = blosum_symbols_line
 
-        if missing_base_symbol.value in blosum_symbols:
+    def check_if_symbol_is_present(self, missing_symbol: str):
+        """Checks if missng__symbol is present in the matrix."""
+
+        blosum_symbols = str.strip(self.blosum_symbols_line).split(" ")
+        if missing_symbol in blosum_symbols:
             return True
         else:
             raise ConsensusInputError("Cannot find symbol used as missing base in blosum file.")

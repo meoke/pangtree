@@ -4,9 +4,9 @@ from typing import Dict
 from io import StringIO
 from Bio import SeqIO
 
-from datamodel.Node import Base
-from datamodel.Sequence import SequenceID
-from datamodel.fasta_providers.FastaProvider import FastaProvider, FastaProviderException
+from poapangenome.datamodel.Node import Base
+from poapangenome.datamodel.Sequence import SequenceID
+from poapangenome.datamodel.fasta_providers.FastaProvider import FastaProvider, FastaProviderException
 
 
 class FromFile(FastaProvider):
@@ -33,7 +33,7 @@ class FromFile(FastaProvider):
                 return self._read_fasta(fastas_file)
             else:
                 raise FastaProviderException("Unknown fasta file format. "
-                                             "Available file formats: zip, fasta, json.")
+                                             "Available file formats: zip, fasta/fna/faa, json.")
 
     def _read_zip(self, zip_path: Path) -> Dict[SequenceID, str]:
         if not zipfile.is_zipfile(zip_path):

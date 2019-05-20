@@ -1,7 +1,7 @@
-from datamodel.Node import Base
-from datamodel.Sequence import SequenceID
-from datamodel.fasta_providers.FastaProvider import FastaProvider
-from datamodel.input_types import MissingSymbol
+from poapangenome.datamodel.Node import Base
+from poapangenome.datamodel.Sequence import SequenceID
+from poapangenome.datamodel.fasta_providers.FastaProvider import FastaProvider
+from poapangenome.datamodel.input_types import MissingSymbol
 
 
 class ConstSymbolProvider(FastaProvider):

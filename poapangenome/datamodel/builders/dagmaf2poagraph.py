@@ -150,7 +150,8 @@ def _add_node_to_sequence(build_state: _BuildState,
                           seq_id: SequenceID,
                           join_with: NodeID,
                           node_id: NodeID) -> None:
-    if not build_state.sequences[seq_id].paths or join_with is None:
+    q = build_state.sequences[seq_id].paths
+    if len(build_state.sequences[seq_id].paths) == 0 or join_with is None:
         build_state.sequences[seq_id].paths.append(SequencePath([node_id]))
     else:
         for path in build_state.sequences[seq_id].paths:

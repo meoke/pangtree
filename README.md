@@ -141,7 +141,6 @@ python -m pangenome [args]
 | RAW_MAF | --raw_maf | No, default=False | Build poagraph without transforming multialignment (maf) to DAG. Poagraph build in this way does not reflect real life sequences.
 | FASTA_PROVIDER | --fasta_provider | No | Nucleotides/proteins source if any are missed in the multialignment. Possible values: 'ncbi', 'file'. If not specified: MISSING_NUCLEOTIDE is used.
 | MISSING_NUCLEOTIDE | --missing_symbol | No, default='?' | Symbol for missing nucleotides, used if no FASTA_PROVIDER is given.
-| EMAIL | --email | Yes if FASTA_PROVIDER='ncbi' | E-mail address for NCBI API, used if FASTA_PROVIDER is 'ncbi'.
 | CACHE | --cache | No, default='Yes' | If True, sequences downloaded from NCBI are stored on local disc and reused between program calls, used if Fasta Complementation Option is 'ncbi'
 | FASTA_FILE | -fasta_source_file | Yes if FASTA_PROVIDER='FILE' | Path to fasta file or zipped fasta files with whole sequences present in multialignment, used if FASTA_PROVIDER is 'FILE'.
 | Arguments affecting consensuses tree algorithm: |
