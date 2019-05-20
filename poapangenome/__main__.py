@@ -1,6 +1,6 @@
 import os
 import sys
-import time
+import datetime
 
 from poapangenome.datamodel.fasta_providers.ConstSymbolProvider import ConstSymbolProvider
 
@@ -18,14 +18,14 @@ def main():
     parser = cli.get_parser()
     args = parser.parse_args()
 
-    start = time.time()
+    start = datetime.datetime.now()
     if not args.quiet and args.verbose:
         logprocess.add_file_handler_to_logger(args.output_dir, "details", "details.log", propagate=False)
         logprocess.add_file_handler_to_logger(args.output_dir, "", "details.log", propagate=False)
     if args.quiet:
         logprocess.disable_all_loggers()
 
-    poagraph, dagmaf = None, None
+    poagraph, dagmaf, fasta_provider = None, None, None
     if isinstance(args.multialignment, Maf) and args.raw_maf:
         poagraph = Poagraph.build_from_maf(args.multialignment, args.metadata)
     elif isinstance(args.multialignment, Maf) and not args.raw_maf:
@@ -70,18 +70,25 @@ def main():
             consensuses_fasta = consensuses_tree_to_fasta(poagraph, consensus_tree)
             pathtools.save_to_file(consensuses_fasta, pathtools.get_child_path(args.output_dir, "consensuses.fasta"))
 
-    end = time.time()
+    end = datetime.datetime.now()
     pangenomejson = to_PangenomeJSON(task_parameters=cli.get_task_parameters(args, running_time=f"{end-start}s"),
                                      poagraph=poagraph,
                                      dagmaf=dagmaf,
                                      consensuses_tree=consensus_tree)
     pangenome_json_str = to_json(pangenomejson)
+    print(end-start)
     pathtools.save_to_file(pangenome_json_str, pathtools.get_child_path(args.output_dir, "pangenome.json"))
     pangenome_json = str_to_PangenomeJSON(pangenome_json_str)
     # pagenome_pickle_str = to_pickle(pangenomejson)
     # pathtools.save_to_file(pagenome_pickle_str, pathtools.get_child_path(args.output_dir, "pangenome.pickle"), 'wb')
     # jsonpangenome = load_pickle(pagenome_pickle_str)
-    print()
+
+    # start = time.time()
+    # a = hash(pangenome_json_str)
+    # end = time.time()
+    # print(f"{end-start}s")
+    #
+    # print(a)
 
 if __name__ == "__main__":
     main()

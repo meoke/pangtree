@@ -42,8 +42,8 @@ def disable_all_loggers():
     logging.root.disabled = True
 
 
-def remove_console_handler_from_logger(logger_name):
-    logger = logging.getLogger(logger_name)
+def remove_console_handler_from_root_logger():
+    logger = logging.getLogger("root").parent
     for lh in logger.handlers[:]:
         if type(lh) == logging.StreamHandler and lh.stream.name == "<stdout>":
             logger.removeHandler(lh)

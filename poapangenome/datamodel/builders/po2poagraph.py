@@ -70,7 +70,7 @@ def _get_poagraph_paths_and_nodes(po_lines: List[str],
         Tuple[List[Node], Dict[SequenceID, Sequence]]:
     nodes_count = int(_extract_line_value(po_lines[3]))
     paths_count = int(_extract_line_value(po_lines[4]))
-
+    #todo uzupelniac kolumn id
     nodes: List[Node] = [None] * nodes_count
     node_id = 0
     for i in range(5 + paths_count * 2, 5 + paths_count * 2 + nodes_count):

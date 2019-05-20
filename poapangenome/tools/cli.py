@@ -240,9 +240,9 @@ def resolve_fasta_provider(args: argparse.Namespace) -> FastaProvider:
         use_cache = args.cache if args.cache else False
         return FromNCBI(use_cache)
     elif args.fasta_provider == 'file':
-        if args.fasta_file is None:
+        if args.fasta_path is None:
             raise Exception("Fasta file source must be specified. It must be provided when fasta source is \'local\'.")
-        return FromFile(args.fasta_file)
+        return FromFile(args.fasta_path)
     else:
         raise Exception("Not known fasta provider."
                         "Should be \'ncbi\' or \'file\' or None."

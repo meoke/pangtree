@@ -155,9 +155,16 @@ class PoagraphPOTranslator:
                     detailed_consens_info_line = next(po_lines_iterator)
                     detailed_consens_info = self._extract_line_value(detailed_consens_info_line).split(' ')
                     consens_nodes_count = int(detailed_consens_info[0])
-                    consensuses_in_po_lines[int(path_name[7:])].fullname = path_name
-                    consensuses_in_po_lines[int(path_name[7:])].po_consensus_id = f"S{str(i)}"
-                    consensuses_in_po_lines[int(path_name[7:])].path = [None] * consens_nodes_count
+                    cons_id = int(path_name[7:])
+                    if cons_id in consensuses_in_po_lines:
+                        consensuses_in_po_lines[cons_id].fullname = path_name
+                        consensuses_in_po_lines[cons_id].po_consensus_id = f"S{str(i)}"
+                        consensuses_in_po_lines[cons_id].path = [None] * consens_nodes_count
+                    else:
+                        consensuses_in_po_lines[cons_id] = ConsInfo(fullname=f"CONSENS{cons_id}",
+                                                                    assigned_sequences_ids=[],
+                                                                    po_consensus_id=f"S{str(i)}",
+                                                                    path=[None] * consens_nodes_count)
             else:
                 detailed_sequence_info_line = next(po_lines_iterator)
                 detailed_sequence_info = self._extract_line_value(detailed_sequence_info_line).split(' ')
