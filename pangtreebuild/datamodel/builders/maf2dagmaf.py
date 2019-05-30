@@ -1,7 +1,7 @@
-from poapangenome.datamodel.DAGMaf import DAGMaf, DAGMafNode
-from poapangenome.datamodel.input_types import Maf
+from pangtreebuild.datamodel.DAGMaf import DAGMaf, DAGMafNode
+from pangtreebuild.datamodel.input_types import Maf
 from mafgraph.sorter import sort_mafblocks
-from poapangenome.tools import logprocess
+from pangtreebuild.tools import logprocess
 
 global_logger = logprocess.get_global_logger()
 

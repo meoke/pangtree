@@ -1,0 +1,20 @@
+>consensus0|mincomp=0.10526315789473684|sequences_count=6|children=[1, 2]
+AGTCGCGCCGCGTACGCT
+>consensus1|mincomp=0.6111111111111112|sequences_count=4|children=[5, 6]
+AGTCGCGCTGCGTACGCT
+>consensus2|mincomp=0.7368421052631579|sequences_count=2|children=[3, 4]
+TTGACACCGTATGTAGC
+>consensus3|mincomp=1.0|sequences_count=1|children=[]
+TTGACACCGTATGTAGC
+>consensus4|mincomp=1.0|sequences_count=1|children=[]
+TTTACACCGTACTCGTACC
+>consensus5|mincomp=0.8888888888888888|sequences_count=3|children=[7, 8, 9]
+AGTCGCGCAGCGTACGCT
+>consensus6|mincomp=1.0|sequences_count=1|children=[]
+CGTAGTGCCGGCTACGTT
+>consensus7|mincomp=1.0|sequences_count=1|children=[]
+AGTGGCGCAGCGTACGCT
+>consensus8|mincomp=1.0|sequences_count=1|children=[]
+AGTCGCGCTGGGTACGCT
+>consensus9|mincomp=1.0|sequences_count=1|children=[]
+AGTCGTCGCCGCGTACGCT

@@ -3,7 +3,7 @@ from io import StringIO
 from typing import Optional, Dict, Any, List
 from pathlib import Path
 
-from poapangenome.datamodel.Sequence import SequenceID
+from pangtreebuild.datamodel.Sequence import SequenceID
 
 
 class InputError(Exception):
@@ -79,7 +79,7 @@ class MetadataCSV:
 
 
 class Po:
-    """todo"""
+    """PO file"""
 
     def __init__(self, filecontent: StringIO, filename: Optional[Path]):
         self.filename = filename

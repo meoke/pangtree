@@ -32,8 +32,8 @@ def file_exists(file_path: Path):
 
 
 def create_dir(dir_path: Path):
-    dir_path.mkdir()
-
+    if not dir_exists(dir_path):
+        dir_path.mkdir()
 
 def get_cwd() -> Path:
     """Returns current working directory."""

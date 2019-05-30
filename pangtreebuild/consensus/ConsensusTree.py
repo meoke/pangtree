@@ -1,12 +1,13 @@
 from typing import List, NewType, Dict, Optional
 
-from poapangenome.consensus.input_types import P
-from poapangenome.datamodel.Sequence import SequenceID, SequencePath
+from pangtreebuild.consensus.input_types import P
+from pangtreebuild.datamodel.Sequence import SequenceID, SequencePath
 
 ConsensusNodeID = NewType('ConsensusNodeID', int)
 
 
 class ConsensusesTreeException(Exception):
+    """Exception raised during Consensus Tree creation."""
     pass
 
 
@@ -42,6 +43,8 @@ class CompatibilityToPath:
 
 
 class ConsensusNode(object):
+    """Node in Consensus Tree"""
+
     def __init__(self,
                  consensus_id: ConsensusNodeID,
                  parent_node_id: Optional[ConsensusNodeID] = None,
@@ -76,6 +79,10 @@ class ConsensusNode(object):
 
 
 class ConsensusTree:
+    """A tree that shows relation between aligned sequences.
+
+    Each node has assigned subset of multialignment, a consensus path and minimum compatibility value."""
+
     def __init__(self):
         self.nodes: List[ConsensusNode] = []
 

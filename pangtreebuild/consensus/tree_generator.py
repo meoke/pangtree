@@ -2,13 +2,13 @@ from collections import deque
 from pathlib import Path
 from typing import List, Dict, Tuple
 
-from poapangenome.consensus.ConsensusTree import ConsensusTree, ConsensusNode, ConsensusNodeID, CompatibilityToPath
-from poapangenome.consensus.cutoffs import FindMaxCutoff, FindNodeCutoff
-from poapangenome.consensus.input_types import Blosum, Stop, P, Hbmin
-from poapangenome.datamodel.Poagraph import Poagraph
-from poapangenome.consensus import poa
-from poapangenome.datamodel.Sequence import SequenceID, SequencePath
-from poapangenome.tools import logprocess
+from pangtreebuild.consensus.ConsensusTree import ConsensusTree, ConsensusNode, ConsensusNodeID, CompatibilityToPath
+from pangtreebuild.consensus.cutoffs import FindMaxCutoff, FindNodeCutoff
+from pangtreebuild.consensus.input_types import Blosum, Stop, P, Hbmin
+from pangtreebuild.datamodel.Poagraph import Poagraph
+from pangtreebuild.consensus import poa
+from pangtreebuild.datamodel.Sequence import SequenceID, SequencePath
+from pangtreebuild.tools import logprocess
 
 tresholds_logger = logprocess.get_logger('tresholdsCSV')
 detailed_logger = logprocess.get_logger('details')

@@ -3,10 +3,10 @@ from typing import Optional, List, Tuple, Dict
 from Bio import AlignIO
 from Bio.Align import MultipleSeqAlignment
 
-from poapangenome.datamodel.Node import NodeID, ColumnID, Node, Base, BlockID
-from poapangenome.datamodel.Sequence import SequenceID, Sequence, SequencePath
-from poapangenome.datamodel.input_types import Maf, MetadataCSV
-from poapangenome.tools import logprocess
+from pangtreebuild.datamodel.Node import NodeID, ColumnID, Node, Base, BlockID
+from pangtreebuild.datamodel.Sequence import SequenceID, Sequence, SequencePath
+from pangtreebuild.datamodel.input_types import Maf, MetadataCSV
+from pangtreebuild.tools import logprocess
 
 _ParsedMaf = List[Optional[MultipleSeqAlignment]]
 

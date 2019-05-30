@@ -1,5 +1,5 @@
-from poapangenome.consensus.ConsensusTree import ConsensusTree
-from poapangenome.datamodel.Poagraph import Poagraph
+from pangtreebuild.consensus.ConsensusTree import ConsensusTree
+from pangtreebuild.datamodel.Poagraph import Poagraph
 
 
 def poagraph_to_fasta(poagraph: Poagraph) -> str:
