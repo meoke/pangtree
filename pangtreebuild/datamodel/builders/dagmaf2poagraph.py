@@ -5,14 +5,14 @@ from mafgraph.graph import Block
 from mafgraph.graph.Arc import Arc
 from mafgraph.mafreader import start_position
 
-from poapangenome.datamodel.DAGMaf import DAGMaf, DAGMafNode
-from poapangenome.datamodel.Sequence import SequenceID, Sequence, SequencePath
-from poapangenome.datamodel.Node import Node, ColumnID, BlockID, NodeID, Base
-from poapangenome.datamodel.builders.PoagraphBuildException import PoagraphBuildException
-from poapangenome.datamodel.fasta_providers import FastaProvider
-from poapangenome.datamodel.input_types import MetadataCSV
+from pangtreebuild.datamodel.DAGMaf import DAGMaf, DAGMafNode
+from pangtreebuild.datamodel.Sequence import SequenceID, Sequence, SequencePath
+from pangtreebuild.datamodel.Node import Node, ColumnID, BlockID, NodeID, Base
+from pangtreebuild.datamodel.builders.PoagraphBuildException import PoagraphBuildException
+from pangtreebuild.datamodel.fasta_providers import FastaProvider
+from pangtreebuild.datamodel.input_types import MetadataCSV
 
-from poapangenome.tools import logprocess
+from pangtreebuild.tools import logprocess
 
 
 global_logger = logprocess.get_global_logger()

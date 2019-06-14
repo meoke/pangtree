@@ -3,7 +3,7 @@ from io import StringIO
 from typing import Optional, Dict, Any, List
 from pathlib import Path
 
-from poapangenome.datamodel.Sequence import SequenceID
+from pangtreebuild.datamodel.Sequence import SequenceID
 
 
 class InputError(Exception):

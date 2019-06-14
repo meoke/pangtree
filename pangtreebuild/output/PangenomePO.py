@@ -1,8 +1,8 @@
 from typing import List, Tuple, Callable
 
-from poapangenome.datamodel.DataType import DataType
-from poapangenome.datamodel.Node import NodeID
-from poapangenome.datamodel.Poagraph import Poagraph
+from pangtreebuild.datamodel.DataType import DataType
+from pangtreebuild.datamodel.Node import NodeID
+from pangtreebuild.datamodel.Poagraph import Poagraph
 
 
 class NodePO:

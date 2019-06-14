@@ -3,15 +3,15 @@ from bisect import bisect_left
 from pathlib import Path
 from typing import List, Dict, Union, Optional
 
-from poapangenome.consensus.input_types import Hbmin
-from poapangenome.datamodel.Node import NodeID
-from poapangenome.datamodel.Poagraph import Poagraph
-from poapangenome.datamodel.Sequence import SequenceID, SequencePath
-from poapangenome.output.PangenomePO import NodePO, SequencePO
-from poapangenome.tools import pathtools
-import poapangenome.output.PangenomePO as PangenomePO
+from pangtreebuild.consensus.input_types import Hbmin
+from pangtreebuild.datamodel.Node import NodeID
+from pangtreebuild.datamodel.Poagraph import Poagraph
+from pangtreebuild.datamodel.Sequence import SequenceID, SequencePath
+from pangtreebuild.output.PangenomePO import NodePO, SequencePO
+from pangtreebuild.tools import pathtools
+import pangtreebuild.output.PangenomePO as PangenomePO
 import subprocess
-from poapangenome.tools import logprocess
+from pangtreebuild.tools import logprocess
 
 detailed_logger = logprocess.get_logger('details')
 global_logger = logprocess.get_global_logger()

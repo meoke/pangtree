@@ -4,9 +4,9 @@ from typing import Dict
 from io import StringIO
 from Bio import SeqIO
 
-from poapangenome.datamodel.Node import Base
-from poapangenome.datamodel.Sequence import SequenceID
-from poapangenome.datamodel.fasta_providers.FastaProvider import FastaProvider, FastaProviderException
+from pangtreebuild.datamodel.Node import Base
+from pangtreebuild.datamodel.Sequence import SequenceID
+from pangtreebuild.datamodel.fasta_providers.FastaProvider import FastaProvider, FastaProviderException
 
 
 class FromFile(FastaProvider):

@@ -2,16 +2,16 @@ import os
 import sys
 import datetime
 
-from poapangenome.datamodel.fasta_providers.ConstSymbolProvider import ConstSymbolProvider
+from pangtreebuild.datamodel.fasta_providers.ConstSymbolProvider import ConstSymbolProvider
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../poapangenome')))
-from poapangenome.consensus import tree_generator, simple_tree_generator
-from poapangenome.datamodel.input_types import Maf, Po
-from poapangenome.datamodel.Poagraph import Poagraph
-from poapangenome.tools import cli, pathtools, logprocess
-from poapangenome.output.PangenomeJSON import to_PangenomeJSON, TaskParameters, to_json, to_pickle, load_pickle, str_to_PangenomeJSON
-from poapangenome.output.PangenomePO import poagraph_to_PangenomePO
-from poapangenome.output.PangenomeFASTA import poagraph_to_fasta, consensuses_tree_to_fasta
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../pangtreebuild')))
+from pangtreebuild.consensus import tree_generator, simple_tree_generator
+from pangtreebuild.datamodel.input_types import Maf, Po
+from pangtreebuild.datamodel.Poagraph import Poagraph
+from pangtreebuild.tools import cli, pathtools, logprocess
+from pangtreebuild.output.PangenomeJSON import to_PangenomeJSON, TaskParameters, to_json, to_pickle, load_pickle, str_to_PangenomeJSON
+from pangtreebuild.output.PangenomePO import poagraph_to_PangenomePO
+from pangtreebuild.output.PangenomeFASTA import poagraph_to_fasta, consensuses_tree_to_fasta
 
 
 def main():

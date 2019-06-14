@@ -4,7 +4,7 @@ import os
 import sys
 from pathlib import Path
 
-from poapangenome.tools import pathtools
+from pangtreebuild.tools import pathtools
 
 logging_config_path = Path(os.path.abspath(__file__)).joinpath('../../logging.conf').resolve()
 logging.config.fileConfig(logging_config_path)

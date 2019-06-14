@@ -1,16 +1,16 @@
 from typing import Optional, List, Tuple, Dict
 from time import time
 from datetime import datetime
-from poapangenome.datamodel.fasta_providers.ConstSymbolProvider import ConstSymbolProvider
-from poapangenome.consensus.ConsensusTree import CompatibilityToPath
-from poapangenome.consensus.input_types import P
-from poapangenome.datamodel.DAGMaf import DAGMaf
-from poapangenome.datamodel.DataType import DataType
-from poapangenome.datamodel.Sequence import SequencePath, SequenceID, Sequence
-from poapangenome.datamodel.Node import Node
-from poapangenome.datamodel.builders import maf2poagraph, maf2dagmaf, dagmaf2poagraph, po2poagraph
-from poapangenome.datamodel.input_types import Po, Maf, MetadataCSV, MissingSymbol
-from poapangenome.datamodel.fasta_providers.FastaProvider import FastaProvider
+from pangtreebuild.datamodel.fasta_providers.ConstSymbolProvider import ConstSymbolProvider
+from pangtreebuild.consensus.ConsensusTree import CompatibilityToPath
+from pangtreebuild.consensus.input_types import P
+from pangtreebuild.datamodel.DAGMaf import DAGMaf
+from pangtreebuild.datamodel.DataType import DataType
+from pangtreebuild.datamodel.Sequence import SequencePath, SequenceID, Sequence
+from pangtreebuild.datamodel.Node import Node
+from pangtreebuild.datamodel.builders import maf2poagraph, maf2dagmaf, dagmaf2poagraph, po2poagraph
+from pangtreebuild.datamodel.input_types import Po, Maf, MetadataCSV, MissingSymbol
+from pangtreebuild.datamodel.fasta_providers.FastaProvider import FastaProvider
 import numpy as np
 
 

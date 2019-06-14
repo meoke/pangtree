@@ -2,8 +2,8 @@ from abc import ABC
 from typing import List, Optional
 import numpy as np
 
-from poapangenome.consensus.ConsensusTree import CompatibilityToPath
-from poapangenome.consensus import input_types
+from pangtreebuild.consensus.ConsensusTree import CompatibilityToPath
+from pangtreebuild.consensus import input_types
 
 
 class FindCutoffResult:
