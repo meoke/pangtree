@@ -1,6 +1,6 @@
 from Bio import SeqIO
 to_save = []
-ids = ["AB", "CD", "ABCD", "EFGHIJ", "GHIJ", "EF", "HIJ"]
+ids = ["root"]
 with open("all_500_corrected.fasta", "rU") as handle:
     for record in SeqIO.parse(handle, "fasta"):
         if record.id in ids:
