@@ -17,7 +17,7 @@ class FromFile(FastaProvider):
         if sequence_id not in self.sequences.keys():
             raise FastaProviderException(f"Wrong sequence id: {sequence_id}. ")
         if i > len(self.sequences[sequence_id]):
-            raise FastaProviderException(f"Index {i} is to large for sequence {SequenceID}.")
+            raise FastaProviderException(f"Index {i} is to large for sequence {sequence_id}.")
         return Base(self.sequences[sequence_id][i])
 
     def _read_fastas(self, fastas_file: Path) -> Dict[SequenceID, str]:

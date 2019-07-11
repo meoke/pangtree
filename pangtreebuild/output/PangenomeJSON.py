@@ -174,46 +174,49 @@ def to_PangenomeJSON(task_parameters: TaskParameters = None,
     consensuses_nodes = []
 
     if poagraph:
-        pangenome_nodes = [Node(node_id=node.node_id,
-                                base=node.get_base(),
-                                column_id=node.column_id,
-                                block_id=node.block_id,
-                                aligned_to=node.aligned_to)
-                           for node in poagraph.nodes]
+        pangenome_nodes = []#Node(node_id=node.node_id,
+        # pangenome_nodes = [Node(node_id=node.node_id,
+        #                         base=node.get_base(),
+        #                         column_id=node.column_id,
+        #                         block_id=node.block_id,
+        #                         aligned_to=node.aligned_to)
+        #                    for node in poagraph.nodes]
 
         sorted_sequences_ids = sorted(poagraph.sequences.keys())
         paths_seq_id_to_int_id = {seq_id: i for i, seq_id in enumerate(sorted_sequences_ids)}
         pangenome_sequences = [Sequence(sequence_int_id=paths_seq_id_to_int_id[seq_id],
                                         sequence_str_id=str(seq_id),
                                         metadata=poagraph.sequences[seq_id].seqmetadata,
-                                        nodes_ids=[path for path in poagraph.sequences[seq_id].paths
-                                                       ] if task_parameters.output_with_nodes else []
+                                        nodes_ids=[]
+                                        # nodes_ids=[path for path in poagraph.sequences[seq_id].paths
+                                        #              ] if task_parameters.output_with_nodes else []
                                         )
                                for seq_id in sorted_sequences_ids]
 
-    if dagmaf:
-        dagmaf_nodes = [MafNode(node_id=n.id,
-                                orient=n.orient,
-                                out_edges=[MafEdge(edge_type=edge.edge_type,
-                                                   sequences=edge.sequences,
-                                                   to_block=edge.to) for edge in n.out_edges])
-                        for n in dagmaf.dagmaf_nodes]
+    # if dagmaf:
+    #     dagmaf_nodes = [MafNode(node_id=n.id,
+    #                             orient=n.orient,
+    #                             out_edges=[MafEdge(edge_type=edge.edge_type,
+    #                                                sequences=edge.sequences,
+    #                                                to_block=edge.to) for edge in n.out_edges])
+    #                     for n in dagmaf.dagmaf_nodes]
 
     if consensuses_tree:
         consensuses_nodes = [ConsensusNode(consensus_node_id=consensus_node.consensus_id,
                                            name=f"CONSENSUS{consensus_node.consensus_id}",
                                            parent_node_id=consensus_node.parent_node_id,
                                            children_nodes_ids=consensus_node.children_nodes_ids,
-                                           comp_to_all_sequences={seq_id: comp.value
+                                           comp_to_all_sequences={seq_id: comp.root_value().value
                                                                       for seq_id, comp
                                                                       in consensus_node.compatibilities_to_all.items()},
                                            sequences_int_ids=[paths_seq_id_to_int_id[seq_id]
                                                                   for seq_id
                                                                   in consensus_node.sequences_ids
                                                                   if seq_id in paths_seq_id_to_int_id.keys()],
-                                           poagraph_nodes_ids=consensus_node.consensus_path
-                                               if task_parameters.output_with_nodes else [],
-                                           mincomp=consensus_node.mincomp.value)
+                                           poagraph_nodes_ids=[],
+                                           # poagraph_nodes_ids=consensus_node.consensus_path
+                                           #      if task_parameters.output_with_nodes else [],
+                                           mincomp=consensus_node.mincomp.root_value().value)
                              for consensus_node in consensuses_tree.nodes]
     return PangenomeJSON(task_parameters,
                          pangenome_sequences,

@@ -15,6 +15,7 @@ class CompatibilityToPath:
 
     def __init__(self, compatibility: float, p: P = P(1)):
         self.value: float = compatibility**p.value
+        self.p: float = p.value
 
     def __eq__(self, other):
         return self.value == other.value
@@ -40,6 +41,8 @@ class CompatibilityToPath:
     def __repr__(self):
         return f"""{self.value}"""
 
+    def root_value(self):
+        return CompatibilityToPath(self.value**(1/self.p))
 
 class ConsensusNode(object):
     def __init__(self,

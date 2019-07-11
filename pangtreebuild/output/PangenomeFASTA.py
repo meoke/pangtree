@@ -24,7 +24,9 @@ def consensuses_tree_to_fasta(poagraph: Poagraph, consensus_tree: ConsensusTree)
         sequence = "".join([poagraph.nodes[node_id].get_base()
                             for node_id in consensus_node.consensus_path])
         missing_mincomp_symbol = "?"
+        leaf = "" if len(consensus_node.sequences_ids) > 1 else str(consensus_node.sequences_ids)
         fasta_lines.append(f">consensus{consensus_node.consensus_id}|"
+                           f"leaf_for={leaf}|"
                            f"mincomp={consensus_node.mincomp if consensus_node.mincomp is not None else missing_mincomp_symbol}|"
                            f"sequences_count={len(consensus_node.sequences_ids)}|"
                            f"children={str(consensus_node.children_nodes_ids)}")

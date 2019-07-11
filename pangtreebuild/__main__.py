@@ -2,6 +2,7 @@ import os
 import sys
 import datetime
 
+from pangtreebuild.datamodel.Sequence import SequenceID
 from pangtreebuild.datamodel.fasta_providers.ConstSymbolProvider import ConstSymbolProvider
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../pangtreebuild')))
@@ -13,7 +14,7 @@ from pangtreebuild.output.PangenomeJSON import to_PangenomeJSON, TaskParameters,
 from pangtreebuild.output.PangenomePO import poagraph_to_PangenomePO
 from pangtreebuild.output.PangenomeFASTA import poagraph_to_fasta, consensuses_tree_to_fasta
 
-
+import pickle
 def main():
     parser = cli.get_parser()
     args = parser.parse_args()
@@ -34,6 +35,15 @@ def main():
     elif isinstance(args.multialignment, Po):
         poagraph = Poagraph.build_from_po(args.multialignment, args.metadata)
 
+    #temp save just the model
+    end=datetime.datetime.now()
+
+    pangenomejson = to_PangenomeJSON(task_parameters=cli.get_task_parameters(args, running_time=f"{end - start}s"),
+                                     poagraph=poagraph,
+                                     dagmaf=dagmaf,
+                                     consensuses_tree=None)
+    pangenome_json_str = to_json(pangenomejson)
+    pathtools.save_to_file(pangenome_json_str, pathtools.get_child_path(args.output_dir, "poagraf.json"))
     if args.consensus is not None:
         blosum = args.blosum if args.blosum else cli.get_default_blosum()
         if fasta_provider is not None and isinstance(fasta_provider, ConstSymbolProvider):
@@ -59,6 +69,7 @@ def main():
                                                                node_strategy,
                                                                args.verbose)
 
+
     if args.output_po:
         pangenome_po = poagraph_to_PangenomePO(poagraph)
         pathtools.save_to_file(pangenome_po, pathtools.get_child_path(args.output_dir, "poagraph.po"))
@@ -75,10 +86,18 @@ def main():
                                      poagraph=poagraph,
                                      dagmaf=dagmaf,
                                      consensuses_tree=consensus_tree)
+
+    dump_path = pathtools.get_child_path(args.output_dir, "datadump.pickle")
+    with open(dump_path, 'wb') as output:
+        pickle.dump(pangenomejson, output)
+
+    with open(dump_path, 'rb') as input:
+        pangenomejson = pickle.load(input)
+
     pangenome_json_str = to_json(pangenomejson)
     print(end-start)
     pathtools.save_to_file(pangenome_json_str, pathtools.get_child_path(args.output_dir, "pangenome.json"))
-    pangenome_json = str_to_PangenomeJSON(pangenome_json_str)
+    # pangenome_json = str_to_PangenomeJSON(pangenome_json_str)
     # pagenome_pickle_str = to_pickle(pangenomejson)
     # pathtools.save_to_file(pagenome_pickle_str, pathtools.get_child_path(args.output_dir, "pangenome.pickle"), 'wb')
     # jsonpangenome = load_pickle(pagenome_pickle_str)
