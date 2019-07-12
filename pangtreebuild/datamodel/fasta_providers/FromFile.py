@@ -4,9 +4,9 @@ from typing import Dict
 from io import StringIO
 from Bio import SeqIO
 
-from poapangenome.datamodel.Node import Base
-from poapangenome.datamodel.Sequence import SequenceID
-from poapangenome.datamodel.fasta_providers.FastaProvider import FastaProvider, FastaProviderException
+from pangtreebuild.datamodel.Node import Base
+from pangtreebuild.datamodel.Sequence import SequenceID
+from pangtreebuild.datamodel.fasta_providers.FastaProvider import FastaProvider, FastaProviderException
 
 
 class FromFile(FastaProvider):
@@ -17,7 +17,7 @@ class FromFile(FastaProvider):
         if sequence_id not in self.sequences.keys():
             raise FastaProviderException(f"Wrong sequence id: {sequence_id}. ")
         if i > len(self.sequences[sequence_id]):
-            raise FastaProviderException(f"Index {i} is to large for sequence {SequenceID}.")
+            raise FastaProviderException(f"Index {i} is to large for sequence {sequence_id}.")
         return Base(self.sequences[sequence_id][i])
 
     def _read_fastas(self, fastas_file: Path) -> Dict[SequenceID, str]:

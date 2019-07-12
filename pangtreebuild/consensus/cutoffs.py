@@ -2,8 +2,8 @@ from abc import ABC
 from typing import List, Optional
 import numpy as np
 
-from poapangenome.consensus.ConsensusTree import CompatibilityToPath
-from poapangenome.consensus import input_types
+from pangtreebuild.consensus.ConsensusTree import CompatibilityToPath
+from pangtreebuild.consensus import input_types
 
 
 class FindCutoffResult:
@@ -20,6 +20,7 @@ class FindCutoff(ABC):
 
     @staticmethod
     def sort_and_get_value_following_max_distance(values: List[CompatibilityToPath]) -> CompatibilityToPath:
+        # if len(values) == 1:
         if len(values) == 1:
             return values[0]
         sorted_values = sorted(values)

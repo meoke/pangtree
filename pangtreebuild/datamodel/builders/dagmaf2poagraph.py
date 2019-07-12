@@ -5,14 +5,14 @@ from mafgraph.graph import Block
 from mafgraph.graph.Arc import Arc
 from mafgraph.mafreader import start_position
 
-from poapangenome.datamodel.DAGMaf import DAGMaf, DAGMafNode
-from poapangenome.datamodel.Sequence import SequenceID, Sequence, SequencePath
-from poapangenome.datamodel.Node import Node, ColumnID, BlockID, NodeID, Base
-from poapangenome.datamodel.builders.PoagraphBuildException import PoagraphBuildException
-from poapangenome.datamodel.fasta_providers import FastaProvider
-from poapangenome.datamodel.input_types import MetadataCSV
+from pangtreebuild.datamodel.DAGMaf import DAGMaf, DAGMafNode
+from pangtreebuild.datamodel.Sequence import SequenceID, Sequence, SequencePath
+from pangtreebuild.datamodel.Node import Node, ColumnID, BlockID, NodeID, Base
+from pangtreebuild.datamodel.builders.PoagraphBuildException import PoagraphBuildException
+from pangtreebuild.datamodel.fasta_providers import FastaProvider
+from pangtreebuild.datamodel.input_types import MetadataCSV
 
-from poapangenome.tools import logprocess
+from pangtreebuild.tools import logprocess
 
 
 global_logger = logprocess.get_global_logger()
@@ -62,7 +62,9 @@ def get_poagraph(dagmaf: DAGMaf,
 
     _complement_starting_nodes(build_state)
 
-    for mafnode in dagmaf.dagmaf_nodes:
+    for i, mafnode in enumerate(dagmaf.dagmaf_nodes):
+        # p = i/len(dagmaf.dagmaf_nodes) * 100
+        # global_logger.info(f"{p}%")
         _process_block(build_state, mafnode)
 
     return build_state.nodes, build_state.sequences
@@ -158,11 +160,12 @@ def _add_node_to_sequence(build_state: _BuildState,
             if path[-1] == join_with:
                 path.append(node_id)
                 return
+
         raise PoagraphBuildException("Cannot find path with specified last node id.")
 
 
 def _process_block(build_state: _BuildState, block: DAGMafNode):
-    global_logger.info(f"Processing block {block.id}...")
+    # global_logger.info(f"Processing block {block.id}...")
     current_node_id = _get_max_node_id(build_state.nodes)
     block_width = len(block.alignment[0].seq)
     paths_join_info = _get_paths_join_info(block, build_state.free_edges)
