@@ -1,12 +1,12 @@
 from pathlib import Path
 from typing import Dict
 
-from poapangenome.consensus import poa
-from poapangenome.consensus.ConsensusTree import ConsensusTree, ConsensusNode, ConsensusNodeID
-from poapangenome.consensus.input_types import Blosum, Hbmin
-from poapangenome.consensus.poa import ConsInfo
-from poapangenome.datamodel.Poagraph import Poagraph
-from poapangenome.tools import logprocess
+from pangtreebuild.consensus import poa
+from pangtreebuild.consensus.ConsensusTree import ConsensusTree, ConsensusNode, ConsensusNodeID
+from pangtreebuild.consensus.input_types import Blosum, Hbmin
+from pangtreebuild.consensus.poa import ConsInfo
+from pangtreebuild.datamodel.Poagraph import Poagraph
+from pangtreebuild.tools import logprocess
 
 global_logger = logprocess.get_global_logger()
 

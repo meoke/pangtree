@@ -1,6 +1,6 @@
 from typing import NewType, Optional
 
-from poapangenome.datamodel.builders.PoagraphBuildException import PoagraphBuildException
+from pangtreebuild.datamodel.builders.PoagraphBuildException import PoagraphBuildException
 
 NodeID = NewType('NodeID', int)
 ColumnID = NewType('ColumnID', int)

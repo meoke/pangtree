@@ -3,14 +3,14 @@ from pathlib import Path
 
 from ddt import unpack, data, ddt
 
-from tests.context import FromNCBI, EmailAddress
+from tests.context import FromNCBI
 from tests.context import pSeq
 
 
 @ddt
 class FromNCBITests(unittest.TestCase):
     def setUp(self) -> None:
-        self.fasta_provider = FromNCBI(EmailAddress('a@gmail.com'), use_cache=False)
+        self.fasta_provider = FromNCBI(use_cache=False)
 
     @unittest.skip("slow test - internet connection required")
     def test_0_get_10th_symbol_of_AB050936v1(self):
@@ -22,7 +22,7 @@ class FromNCBITests(unittest.TestCase):
 
     @unittest.skip("slow test - internet connection required")
     def test_1_download_AB050936v1(self):
-        fasta_provider = FromNCBI(EmailAddress('a@gmail.com'), use_cache=False)
+        fasta_provider = FromNCBI(use_cache=False)
         sequence_id = pSeq.SequenceID("AB050936.1", skip_part_before_dot=False)
         actual_sequence = fasta_provider._download_from_ncbi(sequence_id)
         p = Path('tests/data/fasta_providers/fasta_files/AB050936.1.fasta')
@@ -31,7 +31,7 @@ class FromNCBITests(unittest.TestCase):
 
     @unittest.skip("slow test - internet connection required")
     def test_2_failed_download(self):
-        fasta_provider = FromNCBI(EmailAddress('a@gmail.com'), use_cache=False)
+        fasta_provider = FromNCBI(use_cache=False)
         sequence_id = ""
         with self.assertRaises(Exception) as err:
             _ = fasta_provider._download_from_ncbi(sequence_id)
@@ -43,7 +43,7 @@ class FromNCBITests(unittest.TestCase):
           (pSeq.SequenceID("withv1", False), "with.1"))
     @unpack
     def test_3_guess_entrez_id(self, sequenceID: pSeq.SequenceID, expected_guessed_entrez_id: str):
-        fasta_provider = FromNCBI(EmailAddress('a@gmail.com'), use_cache=False)
+        fasta_provider = FromNCBI(use_cache=False)
         actual_guessed_entrez_id = fasta_provider._guess_ncbi_sequence_id(sequenceID)
 
         self.assertEqual(expected_guessed_entrez_id, actual_guessed_entrez_id)

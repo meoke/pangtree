@@ -3,9 +3,9 @@ from typing import Dict, List, Union, Tuple
 import jsonpickle
 import pickle
 
-from poapangenome.consensus.ConsensusTree import ConsensusTree
-from poapangenome.datamodel.DAGMaf import DAGMaf
-from poapangenome.datamodel.Poagraph import Poagraph
+from pangtreebuild.consensus.ConsensusTree import ConsensusTree
+from pangtreebuild.datamodel.DAGMaf import DAGMaf
+from pangtreebuild.datamodel.Poagraph import Poagraph
 
 
 class TaskParameters:

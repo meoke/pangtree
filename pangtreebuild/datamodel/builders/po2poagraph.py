@@ -1,12 +1,9 @@
 from collections import namedtuple
 from typing import List, Optional, Tuple, Dict
 
-from poapangenome.datamodel.Node import Base, NodeID, Node
-from poapangenome.datamodel.Sequence import Sequence, SequenceID, SequencePath
-from poapangenome.datamodel.input_types import Po, MetadataCSV
-
-# global_logger = loggingtools.get_global_logger()
-# detailed_logger = loggingtools.get_logger("details")
+from pangtreebuild.datamodel.Node import Base, NodeID, Node
+from pangtreebuild.datamodel.Sequence import Sequence, SequenceID, SequencePath
+from pangtreebuild.datamodel.input_types import Po, MetadataCSV
 
 POSequenceInfo = namedtuple('POSequenceInfo', ['name',
                                                'nodes_count',
@@ -70,7 +67,6 @@ def _get_poagraph_paths_and_nodes(po_lines: List[str],
         Tuple[List[Node], Dict[SequenceID, Sequence]]:
     nodes_count = int(_extract_line_value(po_lines[3]))
     paths_count = int(_extract_line_value(po_lines[4]))
-    #todo uzupelniac kolumn id
     nodes: List[Node] = [None] * nodes_count
     node_id = 0
     for i in range(5 + paths_count * 2, 5 + paths_count * 2 + nodes_count):

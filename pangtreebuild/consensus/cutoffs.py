@@ -2,8 +2,8 @@ from abc import ABC
 from typing import List, Optional
 import numpy as np
 
-from poapangenome.consensus.ConsensusTree import CompatibilityToPath
-from poapangenome.consensus import input_types
+from pangtreebuild.consensus.ConsensusTree import CompatibilityToPath
+from pangtreebuild.consensus import input_types
 
 
 class FindCutoffResult:
@@ -49,7 +49,6 @@ class FindNodeCutoff(FindCutoff):
 class MAX1(FindMaxCutoff):
     def __init__(self, cutoff_search_range: input_types.Range):
         super().__init__()
-        # todo remove below data check
         if len(cutoff_search_range.value) != 2:
             raise ValueError("Cutoff search range must have length 2.")
         elif cutoff_search_range.value[1] < cutoff_search_range.value[0]:

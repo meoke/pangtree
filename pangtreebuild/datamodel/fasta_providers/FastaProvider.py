@@ -2,8 +2,8 @@ import abc
 from enum import Enum
 from io import StringIO
 
-from poapangenome.datamodel.Node import Base
-from poapangenome.datamodel.Sequence import SequenceID
+from pangtreebuild.datamodel.Node import Base
+from pangtreebuild.datamodel.Sequence import SequenceID
 
 
 class FastaProviderException(Exception):
@@ -11,7 +11,7 @@ class FastaProviderException(Exception):
 
 
 class FastaProviderOption(Enum):
-    """todo"""
+    """Fasta source to complement missing nucleotides."""
 
     NO = 0
     NCBI = 1

@@ -6,12 +6,12 @@ from typing import NewType, Dict
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 
-from poapangenome.datamodel.Node import Base
-from poapangenome.datamodel.Sequence import SequenceID
-from poapangenome.datamodel.fasta_providers.FastaProvider import FastaProvider, FastaProviderException
+from pangtreebuild.datamodel.Node import Base
+from pangtreebuild.datamodel.Sequence import SequenceID
+from pangtreebuild.datamodel.fasta_providers.FastaProvider import FastaProvider, FastaProviderException
 from Bio import Entrez, SeqIO
 
-from poapangenome.tools import pathtools, logprocess
+from pangtreebuild.tools import pathtools, logprocess
 NCBISequenceID = NewType("NCBISequenceID", str)
 detailed_logger = logprocess.get_logger("details")
 

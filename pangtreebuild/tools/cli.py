@@ -5,22 +5,22 @@ from io import StringIO
 from pathlib import Path
 from typing import TypeVar, Callable, Optional, Union, List
 
-from output.PangenomeJSON import TaskParameters
-from poapangenome.consensus.cutoffs import FindMaxCutoff, MAX2, MAX1, NODE3, FindCutoff, FindNodeCutoff, NODE1, NODE2, NODE4
-from poapangenome.consensus.input_types import Blosum, Hbmin, Range
-from poapangenome.datamodel.DataType import DataType
-from poapangenome.datamodel.builders import PoagraphBuildException
-from poapangenome.datamodel.fasta_providers.FastaProvider import FastaProvider, UseCache
-from poapangenome.datamodel.input_types import Maf, MetadataCSV, Po, MissingSymbol
+from pangtreebuild.output.PangenomeJSON import TaskParameters
+from pangtreebuild.consensus.cutoffs import FindMaxCutoff, MAX2, MAX1, NODE3, FindCutoff, FindNodeCutoff, NODE1, NODE2, NODE4
+from pangtreebuild.consensus.input_types import Blosum, Hbmin, Range
+from pangtreebuild.datamodel.DataType import DataType
+from pangtreebuild.datamodel.builders import PoagraphBuildException
+from pangtreebuild.datamodel.fasta_providers.FastaProvider import FastaProvider, UseCache
+from pangtreebuild.datamodel.input_types import Maf, MetadataCSV, Po, MissingSymbol
 
-from poapangenome.datamodel.fasta_providers import FastaProvider
-from poapangenome.datamodel.fasta_providers.ConstSymbolProvider import ConstSymbolProvider
-from poapangenome.datamodel.fasta_providers.FromNCBI import FromNCBI
-from poapangenome.datamodel.fasta_providers.FromFile import FromFile
+from pangtreebuild.datamodel.fasta_providers import FastaProvider
+from pangtreebuild.datamodel.fasta_providers.ConstSymbolProvider import ConstSymbolProvider
+from pangtreebuild.datamodel.fasta_providers.FromNCBI import FromNCBI
+from pangtreebuild.datamodel.fasta_providers.FromFile import FromFile
 
-from poapangenome.consensus import input_types as consensus_input_types
+from pangtreebuild.consensus import input_types as consensus_input_types
 
-from poapangenome.tools import pathtools
+from pangtreebuild.tools import pathtools
 
 
 class InvalidPath(Exception):
@@ -129,7 +129,7 @@ class _RangeArgAction(argparse.Action):
 def get_parser() -> argparse.ArgumentParser:
     """Create ArgumentParser for pang module."""
 
-    p = argparse.ArgumentParser(prog='pang',
+    p = argparse.ArgumentParser(prog='pangtreebuild',
                                 description='This software builds poagraph and generates consensuses.',
                                 epilog='For more information check github.com/meoke/pang')
     p.add_argument('--output_dir',
@@ -186,24 +186,6 @@ def get_parser() -> argparse.ArgumentParser:
                    default=consensus_input_types.Hbmin(),
                    help='Simple POA algorithm parameter. '
                         'Hbmin value. ' + inspect.getdoc(Hbmin))
-    p.add_argument('--max',
-                   default='max2',
-                   choices=['max1', 'max2'],
-                   help='Tree POA algorithm parameter. ' +
-                        'Specify which strategy - MAX1 or MAX2 use for finding max cutoff.')
-    p.add_argument('--node',
-                   default='node3',
-                   choices=['node1', 'node2', 'node3', 'node4'],
-                   help='Tree POA algorithm parameter. ' +
-                        'Specify which strategy - NODE1, NODE2, NODE3 or NODE4 use for finding node cutoff.')
-    p.add_argument('--r',
-                   nargs=2,
-                   action='append',
-                   help='Tree POA algorithm, MAX1 strategy parameter. ' + inspect.getdoc(Range))
-    p.add_argument('--multiplier',
-                   type=_cli_arg(consensus_input_types.Multiplier),
-                   default=consensus_input_types.Multiplier(),
-                   help='Tree POA algorithm parameter.' + inspect.getdoc(consensus_input_types.Multiplier))
     p.add_argument('--stop',
                    type=_cli_arg(consensus_input_types.Stop),
                    default=consensus_input_types.Stop(),
@@ -250,37 +232,18 @@ def resolve_fasta_provider(args: argparse.Namespace) -> FastaProvider:
 
 
 def resolve_max_strategy(args: argparse.Namespace) -> FindMaxCutoff:
-    if args.max is None or args.max == "max2":
-        return MAX2()
-    elif args.max == "max1":
-        r = consensus_input_types.Range(args.r)
-        return MAX1(r)
-    else:
-        raise Exception("Not known max cutoff strategy."
-                        "Should be \'max1\' or \'max2\' or None."
-                        "Cannot generate Consensus Tree.")
+    return MAX2()
 
 
 def resolve_node_strategy(args: argparse.Namespace) -> FindNodeCutoff:
-    if args.node is None or args.node == "node3":
-        return NODE3()
-    elif args.node == "node1":
-        return NODE1(args.multiplier)
-    elif args.node == "node2":
-        return NODE2(args.r)
-    elif args.node == "node4":
-        return NODE4()
-    else:
-        raise Exception("Not known node cutoff strategy."
-                        "Should be \'node1\', \'node2\',\'node3\', \'node3\' or None."
-                        "Cannot generate Consensus Tree.")
-
+    return NODE3()
 
 def get_default_output_dir():
     """Creates timestamped child dir under current working directory."""
 
     current_dir = pathtools.get_cwd()
     current_time = pathtools.get_current_time()
+    pathtools.create_dir(pathtools.get_child_path(current_dir, "output"))
     output_dir_name = "_".join(["output/", current_time])
     output_dir_path = pathtools.get_child_path(current_dir, output_dir_name)
     pathtools.create_dir(output_dir_path)
@@ -314,9 +277,9 @@ def get_task_parameters(args: argparse.Namespace, running_time) -> TaskParameter
                           fasta_source_file=args.fasta_path,
                           consensus_type=args.consensus,
                           hbmin=args.hbmin.value if args.hbmin else None,
-                          max_cutoff_option=args.max,
-                          search_range=args.r,
-                          node_cutoff_option=args.node,
-                          multiplier=args.multiplier.value if args.multiplier else None,
+                          max_cutoff_option="MAX2",
+                          search_range=None,
+                          node_cutoff_option="NODE3",
+                          multiplier=None,
                           stop=args.stop.value if args.stop else None,
                           p=args.p.value if args.p else None)
