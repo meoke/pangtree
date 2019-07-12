@@ -1,9 +1,0 @@
-{"title": "Ebola",
-  "source": "Ebola portal",
-  "data": [
-      {"genbankID": "", "assemblyID": "", "mafname": "t1", "name": "t1", "group": ""},
-      {"genbankID": "", "assemblyID": "", "mafname": "t2", "name": "t2", "group": ""},
-      {"genbankID": "", "assemblyID": "", "mafname": "t3", "name": "t3", "group": ""},
-      {"genbankID": "", "assemblyID": "", "mafname": "t4", "name": "t4", "group": ""}
-    ]
-}

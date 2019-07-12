@@ -1,4 +1,4 @@
 include tests/*.py
 include bin/*
-include docs/*
+include doc_img/*
 include pangtreebuild/logging.conf

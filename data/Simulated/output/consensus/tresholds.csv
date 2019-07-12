@@ -1,0 +1,18 @@
+Splitting 0; MAX; {seq1: 0.8888888888888888, seq3: 0.6666666666666666, seq2: 0.9473684210526315, seq0: 0.8888888888888888, seq4: 0.10526315789473684, seq5: 0.11764705882352941}; 0.6666666666666666; Value after max distance in cutoff search range.
+Splitting 0; NODE; {seq1: 0.9444444444444444, seq3: 0.6111111111111112, seq2: 0.8947368421052632, seq0: 0.8888888888888888, seq4: 0.10526315789473684, seq5: 0.11764705882352941}; 0.6111111111111112; No so far cutoffs. Use max 2.
+Splitting 0; MAX; {seq5: 1.0, seq4: 0.7368421052631579}; 1.0; Value after max distance in cutoff search range.
+Splitting 0; NODE; {seq5: 1.0, seq4: 0.7368421052631579}; 0.7368421052631579; guard < min(compatibilities). Return min(compatibilities).
+Splitting 2; MAX; {seq5: 1.0, seq4: 0.7368421052631579}; 1.0; Value after max distance in cutoff search range.
+Splitting 2; NODE; {seq5: 1.0, seq4: 0.7368421052631579}; 1.0; No so far cutoffs. Use max 2.
+Splitting 2; MAX; {seq4: 1.0}; 1.0; Value after max distance in cutoff search range.
+Splitting 2; NODE; {seq4: 1.0}; 1.0; guard < min(compatibilities). Return min(compatibilities).
+Splitting 1; MAX; {seq1: 0.9444444444444444, seq3: 0.6111111111111112, seq2: 0.8947368421052632, seq0: 0.8888888888888888}; 0.8888888888888888; Value after max distance in cutoff search range.
+Splitting 1; NODE; {seq1: 0.8888888888888888, seq3: 0.6111111111111112, seq2: 0.8947368421052632, seq0: 0.9444444444444444}; 0.8888888888888888; No so far cutoffs. Use max 2.
+Splitting 1; MAX; {seq3: 1.0}; 1.0; Value after max distance in cutoff search range.
+Splitting 1; NODE; {seq3: 1.0}; 1.0; guard < min(compatibilities). Return min(compatibilities).
+Splitting 5; MAX; {seq1: 0.8888888888888888, seq2: 0.8947368421052632, seq0: 0.9444444444444444}; 0.9444444444444444; Value after max distance in cutoff search range.
+Splitting 5; NODE; {seq1: 0.8333333333333334, seq2: 0.8421052631578947, seq0: 1.0}; 1.0; No so far cutoffs. Use max 2.
+Splitting 5; MAX; {seq1: 1.0, seq2: 0.8421052631578947}; 1.0; Value after max distance in cutoff search range.
+Splitting 5; NODE; {seq1: 1.0, seq2: 0.8421052631578947}; 1.0; guard > max(compatibilities). Use max 2.
+Splitting 5; MAX; {seq2: 1.0}; 1.0; Value after max distance in cutoff search range.
+Splitting 5; NODE; {seq2: 1.0}; 1.0; guard < min(compatibilities). Return min(compatibilities).
