@@ -5,12 +5,12 @@ from io import StringIO
 from pathlib import Path
 from typing import TypeVar, Callable, Optional, Union, List
 
-from output.PangenomeJSON import TaskParameters
-from pangtreebuild.consensus.cutoffs import FindMaxCutoff, MAX2, MAX1, NODE3, FindCutoff, FindNodeCutoff, NODE1, NODE2, NODE4
+from pangtreebuild.output.PangenomeJSON import TaskParameters
+from pangtreebuild.consensus.cutoffs import FindMaxCutoff, MAX2, MAX1, NODE3, FindNodeCutoff, NODE1, NODE2, NODE4
 from pangtreebuild.consensus.input_types import Blosum, Hbmin, Range
 from pangtreebuild.datamodel.DataType import DataType
 from pangtreebuild.datamodel.builders import PoagraphBuildException
-from pangtreebuild.datamodel.fasta_providers.FastaProvider import FastaProvider, UseCache
+from pangtreebuild.datamodel.fasta_providers.FastaProvider import UseCache
 from pangtreebuild.datamodel.input_types import Maf, MetadataCSV, Po, MissingSymbol
 
 from pangtreebuild.datamodel.fasta_providers import FastaProvider
