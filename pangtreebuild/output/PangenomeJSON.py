@@ -174,22 +174,22 @@ def to_PangenomeJSON(task_parameters: TaskParameters = None,
     consensuses_nodes = []
 
     if poagraph:
-        pangenome_nodes = []#Node(node_id=node.node_id,
-        # pangenome_nodes = [Node(node_id=node.node_id,
-        #                         base=node.get_base(),
-        #                         column_id=node.column_id,
-        #                         block_id=node.block_id,
-        #                         aligned_to=node.aligned_to)
-        #                    for node in poagraph.nodes]
+        # pangenome_nodes = []
+        pangenome_nodes = [Node(node_id=node.node_id,
+                                base=node.get_base(),
+                                column_id=node.column_id,
+                                block_id=node.block_id,
+                                aligned_to=node.aligned_to)
+                           for node in poagraph.nodes]
 
         sorted_sequences_ids = sorted(poagraph.sequences.keys())
         paths_seq_id_to_int_id = {seq_id: i for i, seq_id in enumerate(sorted_sequences_ids)}
         pangenome_sequences = [Sequence(sequence_int_id=paths_seq_id_to_int_id[seq_id],
                                         sequence_str_id=str(seq_id),
                                         metadata=poagraph.sequences[seq_id].seqmetadata,
-                                        nodes_ids=[]
-                                        # nodes_ids=[path for path in poagraph.sequences[seq_id].paths
-                                        #              ] if task_parameters.output_with_nodes else []
+                                        # nodes_ids=[]
+                                        nodes_ids=[path for path in poagraph.sequences[seq_id].paths
+                                                     ] if task_parameters.output_with_nodes else []
                                         )
                                for seq_id in sorted_sequences_ids]
 

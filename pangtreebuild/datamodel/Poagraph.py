@@ -28,10 +28,7 @@ class Poagraph:
                        maf: Maf,
                        metadata: Optional[MetadataCSV] = None,
                        datatype: Optional[DataType] = DataType.Nucleotides) -> 'Poagraph':
-        start = time()
         nodes, sequences = maf2poagraph.get_poagraph(maf, metadata)
-        end = time()
-        print("Build time: ", datetime.fromtimestamp(end-start).strftime("%H:%M:%S"))
         poagraph = Poagraph(nodes, sequences)
         if metadata:
             Poagraph._complement_metadata_for_sequences_absent_in_metadata_provided(poagraph, metadata)
@@ -45,11 +42,7 @@ class Poagraph:
                           metadata: Optional[MetadataCSV] = None,
                           datatype: Optional[DataType] = DataType.Nucleotides) -> Tuple['Poagraph', DAGMaf]:
         dagmaf = maf2dagmaf.get_dagmaf(maf)
-        start = datetime.now()
         nodes, sequences = dagmaf2poagraph.get_poagraph(dagmaf, fasta_provider, metadata)
-        end = datetime.now()
-        print("Build time: ", end - start)
-        poagraph = Poagraph(nodes, sequences)
         poagraph = Poagraph(nodes, sequences)
         if metadata:
             Poagraph._complement_metadata_for_sequences_absent_in_metadata_provided(poagraph, metadata)

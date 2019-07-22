@@ -5,12 +5,12 @@ from io import StringIO
 from pathlib import Path
 from typing import TypeVar, Callable, Optional, Union, List
 
-from output.PangenomeJSON import TaskParameters
-from pangtreebuild.consensus.cutoffs import FindMaxCutoff, MAX2, MAX1, NODE3, FindCutoff, FindNodeCutoff, NODE1, NODE2, NODE4
+from pangtreebuild.output.PangenomeJSON import TaskParameters
+from pangtreebuild.consensus.cutoffs import FindMaxCutoff, MAX2, MAX1, NODE3, FindNodeCutoff, NODE1, NODE2, NODE4
 from pangtreebuild.consensus.input_types import Blosum, Hbmin, Range
 from pangtreebuild.datamodel.DataType import DataType
 from pangtreebuild.datamodel.builders import PoagraphBuildException
-from pangtreebuild.datamodel.fasta_providers.FastaProvider import FastaProvider, UseCache
+from pangtreebuild.datamodel.fasta_providers.FastaProvider import UseCache
 from pangtreebuild.datamodel.input_types import Maf, MetadataCSV, Po, MissingSymbol
 
 from pangtreebuild.datamodel.fasta_providers import FastaProvider
@@ -129,7 +129,7 @@ class _RangeArgAction(argparse.Action):
 def get_parser() -> argparse.ArgumentParser:
     """Create ArgumentParser for pang module."""
 
-    p = argparse.ArgumentParser(prog='pang',
+    p = argparse.ArgumentParser(prog='pangtreebuild',
                                 description='This software builds poagraph and generates consensuses.',
                                 epilog='For more information check github.com/meoke/pang')
     p.add_argument('--output_dir',
@@ -176,7 +176,7 @@ def get_parser() -> argparse.ArgumentParser:
                    help='ZIP archive with fasta files or fasta file used as FASTA_PROVIDER.')
     p.add_argument('--consensus',
                    choices=['poa', 'tree'],
-                   help='Generate consensus tree. Use \'poa\' for direct result of poa software, \'tree\' for Consensuses Tree algorith.')
+                   help='Generate consensus tree. Use \'poa\' for direct result of poa software, \'tree\' for Consensus Tree algorithm.')
     p.add_argument('--blosum',
                    type=_blosum_file,
                    metavar='BLOSUM_PATH',

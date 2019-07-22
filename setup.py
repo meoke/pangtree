@@ -2,12 +2,12 @@ import setuptools
 
 
 setuptools.setup(
-    name='poapangenome',
-    version='0.2dev',
+    name='pangtreebuild',
+    version='0.3dev',
     author="Paulina Dziakdiewicz",
     author_email="pedziadkiewicz@gmail.com",
-    description="Multiple sequence alignment analysis with consensus generation",
-    url="https://github.com/meoke/pang",
+    description="Multiple sequence alignment analysis with Consensus Tree generation",
+    url="https://github.com/meoke/pangtree",
     packages=setuptools.find_packages(exclude=("tests",)),
     classifiers=[
         "Programming Language :: Python :: 3",

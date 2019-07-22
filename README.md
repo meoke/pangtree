@@ -50,13 +50,13 @@ python3 -m pangtreebuild [args]
 | FASTA_PROVIDER | --fasta_provider | No | Nucleotides source if any residues are missed in the multialignment. Possible values: 'ncbi', 'file'. If not specified: MISSING_NUCLEOTIDE is used.
 | MISSING_SYMBOL | --missing_symbol | No, default='?' | Symbol for missing nucleotides used if no FASTA_PROVIDER is given.
 | CACHE | --cache | No, default='Yes' | If True, sequences downloaded from NCBI are stored on local disc and reused between program calls, used if FASTA_PROVIDER is 'ncbi'
-| FASTA_FILE | -fasta_source_file | Yes if FASTA_PROVIDER='FILE' | Path to fasta file or zipped fasta files with whole sequences present in multialignment, used if FASTA_PROVIDER is 'FILE'.
+| FASTA_FILE | -fasta_source_file | Yes, if FASTA_PROVIDER='FILE' | Path to fasta file or zipped fasta files with whole sequences present in multialignment, used if FASTA_PROVIDER is 'file'.
 | Arguments affecting Consensuses Tree construction: |
-| CONSENSUS | -consensus | No | Possible values: 'TREE' (default algorithm, descibed in Documentation.md), 'POA' (simplified version, based solely on Ref. 2)
-| BLOSUM | --blosum | No, default=bin\blosum80.mat |  Path to the blosum filem. Blosum file must include MISSING_NUCLEOTIDE. |
-| HBMIN | --hbmin | No, default=0.9 | 'POA' parameter. The minimum value of sequence compatibility to generated consensus.
-| STOP | --stop | No, default=0.99 | 'TREE' parameter. Minimum value of compatibility in tree leaves.
-| P | -p | No, default=1 | 'TREE' parameter. It changes the linear meaning of compatiblities during cutoff finding because the compatibilities are raised to the power o P. For P from range [0,1] it decreases distances between small compatibilities and increases distances between the bigger ones. For p > 1 it increases distances between small compatibilities and decreases distances between the bigger ones.
+| CONSENSUS | -consensus | No | Possible values: 'tree' (default algorithm, descibed in Documentation.md), 'poa' (simplified version, based solely on Ref. 2)
+| BLOSUM | --blosum | No, default=bin\blosum80.mat |  Path to the blosum file. Blosum matrix must include MISSING_NUCLEOTIDE. |
+| HBMIN | --hbmin | No, default=0.9 | 'poa' algorithm parameter. The minimum value of sequence compatibility to generated consensus.
+| STOP | --stop | No, default=0.99 | 'tree' algorithm parameter. Minimum value of compatibility in tree leaves.
+| P | -p | No, default=1 | 'tree' parameter. It changes the linear meaning of compatiblities during cutoff finding because the compatibilities are raised to the power o P. For P from range [0,1] it decreases distances between small compatibilities and increases distances between the bigger ones. For p > 1 it increases distances between small compatibilities and decreases distances between the bigger ones.
 | Arguments affecting output generation: |
 | OUTPUT_DIR | --output_dir, -o | No, default=timestamped folder in current working directory | Output directory path.
 | VERBOSE | --verbose, -v | No, default=False | Set if detailed log files must be produced.
