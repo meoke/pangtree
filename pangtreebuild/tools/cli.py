@@ -129,7 +129,7 @@ class _RangeArgAction(argparse.Action):
 def get_parser() -> argparse.ArgumentParser:
     """Create ArgumentParser for pang module."""
 
-    p = argparse.ArgumentParser(prog='pang',
+    p = argparse.ArgumentParser(prog='pangtreebuild',
                                 description='This software builds poagraph and generates consensuses.',
                                 epilog='For more information check github.com/meoke/pang')
     p.add_argument('--output_dir',
@@ -176,7 +176,7 @@ def get_parser() -> argparse.ArgumentParser:
                    help='ZIP archive with fasta files or fasta file used as FASTA_PROVIDER.')
     p.add_argument('--consensus',
                    choices=['poa', 'tree'],
-                   help='Generate consensus tree. Use \'poa\' for direct result of poa software, \'tree\' for Consensuses Tree algorith.')
+                   help='Generate consensus tree. Use \'poa\' for direct result of poa software, \'tree\' for Consensus Tree algorithm.')
     p.add_argument('--blosum',
                    type=_blosum_file,
                    metavar='BLOSUM_PATH',
