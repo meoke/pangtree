@@ -7,7 +7,7 @@ setuptools.setup(
     author="Paulina Dziakdiewicz",
     author_email="pedziadkiewicz@gmail.com",
     description="Multiple sequence alignment analysis with Consensus Tree generation",
-    url="https://github.com/meoke/pangtreebuild",
+    url="https://github.com/meoke/pangtree",
     packages=setuptools.find_packages(exclude=("tests",)),
     classifiers=[
         "Programming Language :: Python :: 3",
