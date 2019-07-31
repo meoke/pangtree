@@ -87,6 +87,8 @@ def calc_comp(s):
 
 a = [1, 2, 3]
 b = [4, 5, 6, 7, 8]
+c=[49,50]
 
 calc_comp(a)
 calc_comp(b)
+calc_comp(c)
