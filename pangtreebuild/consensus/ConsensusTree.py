@@ -1,4 +1,6 @@
 from typing import List, NewType, Dict, Optional
+from newick import Node, dumps
+from collections import deque
 
 from pangtreebuild.consensus.input_types import P
 from pangtreebuild.datamodel.Sequence import SequenceID, SequencePath
@@ -43,6 +45,7 @@ class CompatibilityToPath:
 
     def root_value(self):
         return CompatibilityToPath(self.value**(1/self.p))
+
 
 class ConsensusNode(object):
     def __init__(self,
@@ -92,3 +95,24 @@ class ConsensusTree:
         if len(self.nodes) == 0:
             return -1
         return max([node.consensus_id for node in self.nodes])
+
+    def as_newick(self):
+        return self._convert_to_newick()
+
+    def _convert_to_newick(self):
+        if not self.nodes:
+            return None
+
+        sorted_nodes = sorted(self.nodes, key=lambda x: x.consensus_id)
+        newick_nodes: List[Node] = [Node(name=str(n.consensus_id)) for n in sorted_nodes]
+        newick_tree: Node = newick_nodes[0]
+        nodes_to_process: List[Node] = [newick_nodes[0]]
+        while nodes_to_process:
+            n = nodes_to_process.pop()
+            children_newick_nodes = [newick_nodes[child_id] for child_id in sorted_nodes[int(n.name)].children_nodes_ids]
+            for child in children_newick_nodes:
+                n.add_descendant(child)
+                nodes_to_process.append(child)
+
+        t = dumps(newick_tree)
+        return t

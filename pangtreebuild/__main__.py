@@ -69,6 +69,8 @@ def main():
                                                                max_strategy,
                                                                node_strategy,
                                                                args.verbose)
+        newick_consensus_tree = consensus_tree.as_newick()
+        pathtools.save_to_file(newick_consensus_tree, pathtools.get_child_path(args.output_dir, "consensus_tree.newick"))
 
 
     if args.output_po:
