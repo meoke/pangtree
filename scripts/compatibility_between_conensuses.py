@@ -9,7 +9,6 @@ import os, sys
 from pathlib import Path
 from typing import List, Tuple, Dict
 import matplotlib.pyplot as plt
-import numpy as np
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../pangtreebuild')))
 import pangtreebuild.tools.pathtools as pathtools
@@ -154,7 +153,7 @@ def global_compatibilities_analysis(consensus_tree: ConsensusTree, groups: List[
         calc_comp(g)
 
 
-def local_compatibilities_analysis(poagraph: Poagraph, consensus_tree: ConsensusTree, groups: List[List[int]]) -> None:
+def local_compatibilities_analysis_poagraph_coordinates(poagraph: Poagraph, consensus_tree: ConsensusTree, groups: List[List[int]]) -> None:
     def produce_chart(x, ys, labels, chart_path):
         fig, ax = plt.subplots()
         for i, y in enumerate(ys):
@@ -215,6 +214,63 @@ def local_compatibilities_analysis(poagraph: Poagraph, consensus_tree: Consensus
     for g in groups:
         produce_local_compatibility_chart(g, column_to_nodes)
 
+
+def local_compatibilities_analysis_consensus_coordinates(poagraph: Poagraph, consensus_tree: ConsensusTree, groups: List[List[int]]) -> None:
+    def produce_chart(x, ys, labels, chart_path):
+        fig, ax = plt.subplots()
+        for i, y in enumerate(ys):
+            ax.plot(x, y, label=labels[i] )
+        for r in [[469, 2689], [3128,4151], [4478,5459], [6038,8069], [6038,7133], [6038,6933], [8508, 9375], [10344, 11100], [11580,18219]]:
+            ax.plot([r[0], r[1]], [1,1  ], color="green")
+        ax.set(xlabel='POA graph columns IDs', ylabel='Local compatibility to other consensus', title=f"Base consensus: {labels[-1]}")
+        ax.legend(loc=4)
+        ax.grid()
+
+        fig.savefig(chart_path)
+
+    def produce_local_compatibility_chart(consensuses_group: List[int], column_to_nodes: Dict[ColumnID, NodeID]):
+        # columns_count = max(column_to_nodes.keys())
+        frame_size = 400
+        frame_step = 200
+        frame_start = 0
+
+        for consensus in consensuses_group:
+            consensus_path = consensus_tree.nodes[consensus].consensus_path
+            consensus_length = len(consensus_path)
+            chart_path = output_dir_path.joinpath(f"{consensus}.png")
+            ys = []
+            labels = []
+            for consensus_to_compare in set(consensuses_group) - {consensus}:
+                y = []
+                consensus_to_compare_path = consensus_tree.nodes[consensus_to_compare].consensus_path
+                frame_start = 0
+                frame_end = frame_start + frame_size
+                x=[]
+                while frame_start <= consensus_length:
+                    frame_nodes_indexes = range(frame_start, frame_end)
+                    frame_nodes = set([consensus_path[node_index] for node_index in frame_nodes_indexes])
+                    comp = len(frame_nodes.intersection(consensus_to_compare_path)) / len(frame_nodes)
+                    y.append(comp)
+                    x.append(frame_start)
+                    frame_start += frame_step
+                    frame_end = min(frame_end + frame_step, consensus_length)
+
+                ys.append(y)
+                labels.append(str(consensus_to_compare))
+            labels.append(consensus)
+            produce_chart(x, ys, labels, chart_path)
+
+    column_to_nodes = {node.column_id: [] for node in poagraph.nodes}
+    for node in poagraph.nodes:
+        column_to_nodes[node.column_id].append(node.node_id)
+
+    current_path = Path(os.path.abspath(__file__)).resolve()
+    output_dir_path = pathtools.get_child_dir(current_path.parent, "charts_ebola")
+
+    for g in groups:
+        produce_local_compatibility_chart(g, column_to_nodes)
+
+
 ebola_a = [1, 2, 3]
 ebola_b = [4, 5, 6, 7, 8]
 ebola_c = [49,50]
@@ -225,7 +281,8 @@ ebola_poagraph, ebola_consensus_tree = get_ebola_consensus_tree(p=0.25, stop=0.9
 # sim1_poagraph, sim1_consensus_tree = get_sim1_consensus_tree(p=1, stop=0.99, output_dir_name="output_sim1")
 # global_compatibilities_analysis(ebola_consensus_tree, [a, b, c])
 # local_compatibilities_analysis(sim1_poagraph, sim1_consensus_tree, [sim])
-local_compatibilities_analysis(ebola_poagraph, ebola_consensus_tree, [ebola_a, ebola_b, ebola_c])
+local_compatibilities_analysis_consensus_coordinates(ebola_poagraph, ebola_consensus_tree, [ebola_a, ebola_b, ebola_c])
+# local_compatibilities_analysis_consensus_coordinates(sim1_poagraph, sim1_consensus_tree, [sim])
 
 
 

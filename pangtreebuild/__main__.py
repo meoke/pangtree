@@ -5,7 +5,6 @@ import datetime
 
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../pangtreebuild')))
-from pangtreebuild.datamodel.Sequence import SequenceID
 from pangtreebuild.datamodel.fasta_providers.ConstSymbolProvider import ConstSymbolProvider
 from pangtreebuild.consensus import tree_generator, simple_tree_generator
 from pangtreebuild.datamodel.input_types import Maf, Po
@@ -15,11 +14,9 @@ from pangtreebuild.output.PangenomeJSON import to_PangenomeJSON, TaskParameters,
 from pangtreebuild.output.PangenomePO import poagraph_to_PangenomePO
 from pangtreebuild.output.PangenomeFASTA import poagraph_to_fasta, consensuses_tree_to_fasta
 
-import pickle
 def main():
     parser = cli.get_parser()
     args = parser.parse_args()
-
     start = datetime.datetime.now()
     if not args.quiet and args.verbose:
         logprocess.add_file_handler_to_logger(args.output_dir, "details", "details.log", propagate=False)
@@ -36,14 +33,6 @@ def main():
     elif isinstance(args.multialignment, Po):
         poagraph = Poagraph.build_from_po(args.multialignment, args.metadata)
 
-    end=datetime.datetime.now()
-
-    pangenomejson = to_PangenomeJSON(task_parameters=cli.get_task_parameters(args, running_time=f"{end - start}s"),
-                                     poagraph=poagraph,
-                                     dagmaf=dagmaf,
-                                     consensuses_tree=None)
-    pangenome_json_str = to_json(pangenomejson)
-    pathtools.save_to_file(pangenome_json_str, pathtools.get_child_path(args.output_dir, "poagraf.json"))
     consensus_tree = None
     if args.consensus is not None:
         blosum = args.blosum if args.blosum else cli.get_default_blosum()
@@ -69,7 +58,13 @@ def main():
                                                                max_strategy,
                                                                node_strategy,
                                                                args.verbose)
-        newick_consensus_tree = consensus_tree.as_newick()
+        try:
+            seq_id_to_name = {seq_id: seq.seqmetadata["name"] for seq_id, seq in poagraph.sequences.items()}
+        except:
+            seq_id_to_name = None
+
+        newick_consensus_tree = consensus_tree.as_newick(seq_id_to_name)
+
         pathtools.save_to_file(newick_consensus_tree, pathtools.get_child_path(args.output_dir, "consensus_tree.newick"))
 
 

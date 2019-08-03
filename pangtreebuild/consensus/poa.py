@@ -49,6 +49,8 @@ def get_consensuses(poagraph: Poagraph, sequences_ids: List[SequenceID], output_
          hbmin=hbmin.value)
     with open(poa_output_path) as poa_output:
         poa_output_lines = poa_output.readlines()
+    os.remove(poa_input_path)
+    os.remove(poa_output_path)
     consensus_paths = s.read_consensus_paths(poa_output_lines, specific_consensuses_id)
     return consensus_paths
 
