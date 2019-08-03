@@ -1,6 +1,6 @@
-from typing import List, NewType, Dict, Optional
-from newick import Node, dumps
+from typing import List, NewType, Dict, Optional, Tuple
 from collections import deque
+from newick import Node, dumps
 
 from pangtreebuild.consensus.input_types import P
 from pangtreebuild.datamodel.Sequence import SequenceID, SequencePath
@@ -103,15 +103,24 @@ class ConsensusTree:
         if not self.nodes:
             return None
 
+        # dołożyć compatibility
+        # 1 - minComp ?
         sorted_nodes = sorted(self.nodes, key=lambda x: x.consensus_id)
-        newick_nodes: List[Node] = [Node(name=str(n.consensus_id)) for n in sorted_nodes]
-        newick_tree: Node = newick_nodes[0]
+        newick_nodes: Tuple[int, List[Node]] = []
+        for n in sorted_nodes:
+            if len(n.sequences_ids) == 1:
+                name = str(n.sequences_ids[0])
+            else:
+                name = f"Consensus {str(n.consensus_id)}"
+            newick_nodes.append((n.consensus_id, Node(name=name, length=str(1-n.mincomp.root_value().value))))
+
+        newick_tree: Node = newick_nodes[0][1]
         nodes_to_process: List[Node] = [newick_nodes[0]]
         while nodes_to_process:
             n = nodes_to_process.pop()
-            children_newick_nodes = [newick_nodes[child_id] for child_id in sorted_nodes[int(n.name)].children_nodes_ids]
+            children_newick_nodes = [(child_id, newick_nodes[child_id][1])for child_id in sorted_nodes[n[0]].children_nodes_ids]
             for child in children_newick_nodes:
-                n.add_descendant(child)
+                n[1].add_descendant(child[1])
                 nodes_to_process.append(child)
 
         t = dumps(newick_tree)
