@@ -228,16 +228,97 @@ def local_compatibilities_analysis_consensus_coordinates(poagraph: Poagraph, con
 
         fig.savefig(chart_path)
 
-    def produce_local_compatibility_chart(consensuses_group: List[int], column_to_nodes: Dict[ColumnID, NodeID]):
-        # columns_count = max(column_to_nodes.keys())
-        frame_size = 400
-        frame_step = 200
-        frame_start = 0
+    class Chart:
+        def __init__(self, x, consensus, ys, labels):
+            self.x = x
+            self.consensus = consensus
+            self.ys = ys
+            self.labels = labels
 
+    def produce_joint_chart(chart_datas: List[Chart], chart_path):
+        fig, axs = plt.subplots(len(chart_datas)+2, 1)
+        if len(chart_datas) == 5:
+            fig.set_size_inches(14.5, 8)
+        elif len(chart_datas) == 3:
+            fig.set_size_inches(18.5, 6.5)
+        line_objects = []
+        line_labels = []
+        for i, cd in enumerate(chart_datas):
+            for j, y in enumerate(cd.ys):
+                # if j == 0 and i == 0:
+                axs[len(chart_datas)].plot(cd.x, y, color = 'white')
+                c_label = ebola_consensus_labels[cd.labels[j]][0]
+                lo = axs[i].plot(cd.x, y, label=c_label, color = ebola_consensus_labels[cd.labels[j]][1])
+                line_objects.append(lo)
+                if c_label not in line_labels:
+
+                    line_labels.append(c_label)
+            axs[i].set_xlabel(f'{ebola_consensus_labels[str(cd.consensus)][0]}')
+            axs[i].set_ylim(0, 1)
+
+        fig.legend(line_objects,  # The line objects
+                   labels=line_labels,  # The labels for each line
+                   loc="lower center",  # Position of legend
+                   borderaxespad=0.1,  # Small spacing around legend box
+                   title="Legend Title",  # Title for the legend
+                    # bbox_to_anchor=(1.1, 1.05)
+                   ncol=2
+                   )
+
+
+        for r in [(469, 2689, 1, "NP"),
+                  (3128,4151, 1, "VP35"),
+                  (4478,5459, 1, "VP40"),
+                  (6038,8069, 1, "GP"),
+                  (6038,7133, 2, "ssGP"),
+                  (6038,6933, 3, "sGP"),
+                  (8508, 9375, 1, "VP30"),
+                  (10344, 11100, 1, "VP24"),
+                  (11580, 18219, 1, "L")]:
+        # for r in [(2, 5, 1, "jeden"), (6,10, 1, "dwa")]:
+            axs[len(chart_datas)].plot([r[0], r[1]], [r[2], r[2]], color="green")
+
+            axs[len(chart_datas)].annotate(r[3], (r[0], r[2]+0.1))
+            # axs[len(chart_datas)].set_xlim(0, 19000)
+            # axs[len(chart_datas)].set_xlim(0, 19000)
+
+        for k in [len(chart_datas), len(chart_datas)+1]:
+            axs[k].tick_params(
+                axis='x',  # changes apply to the x-axis
+                which='both',  # both major and minor ticks are affected
+                bottom=False,  # ticks along the bottom edge are off
+                top=False,  # ticks along the top edge are off
+                labelbottom=False)  # labels along the bottom edge are off
+            axs[k].tick_params(
+                axis='y',  # changes apply to the x-axis
+                which='both',  # both major and minor ticks are affected
+                left=False,  # ticks along the bottom edge are off
+                right=False,  # ticks along the top edge are off
+                labelleft=False)  # labels along the bottom edge are off
+            axs[k].spines['top'].set_visible(False)
+            axs[k].spines['right'].set_visible(False)
+            axs[k].spines['bottom'].set_visible(False)
+            axs[k].spines['left'].set_visible(False)
+
+
+        fig.text(0.005, 0.6, 'Compatibility', ha='center', va='center', rotation='vertical')
+
+        fig.tight_layout()
+        fig.savefig(chart_path, dpi=100)
+
+
+    def produce_local_compatibility_chart(consensuses_group: List[int]):
+        frame_size = 200
+        # frame_size = 5
+        frame_step = 200
+        # frame_step = 5
+        joint_chart_name = "_".join([str(c) for c in consensuses_group])
+        joint_chart_path = output_dir_path.joinpath(f"{joint_chart_name}.png")
+        chart_datas = []
         for consensus in consensuses_group:
             consensus_path = consensus_tree.nodes[consensus].consensus_path
             consensus_length = len(consensus_path)
-            chart_path = output_dir_path.joinpath(f"{consensus}.png")
+            single_chart_path = output_dir_path.joinpath(f"{consensus}.png")
             ys = []
             labels = []
             for consensus_to_compare in set(consensuses_group) - {consensus}:
@@ -257,31 +338,36 @@ def local_compatibilities_analysis_consensus_coordinates(poagraph: Poagraph, con
 
                 ys.append(y)
                 labels.append(str(consensus_to_compare))
-            labels.append(consensus)
-            produce_chart(x, ys, labels, chart_path)
-
-    column_to_nodes = {node.column_id: [] for node in poagraph.nodes}
-    for node in poagraph.nodes:
-        column_to_nodes[node.column_id].append(node.node_id)
+            # labels.append(str(consensus))
+            chart_datas.append(Chart(x, consensus, ys, labels))
+        produce_joint_chart(chart_datas, joint_chart_path)
 
     current_path = Path(os.path.abspath(__file__)).resolve()
-    output_dir_path = pathtools.get_child_dir(current_path.parent, "charts_ebola")
+    output_dir_path = pathtools.get_child_dir(current_path.parent, "charts_ebola_200_200")
 
     for g in groups:
-        produce_local_compatibility_chart(g, column_to_nodes)
-
+        produce_local_compatibility_chart(g)
 
 ebola_a = [1, 2, 3]
 ebola_b = [4, 5, 6, 7, 8]
-ebola_c = [49,50]
+# ebola_c = [49,50]
 
+ebola_consensus_labels = {"1": ("All but Marburg 1987", "red"),
+                          "2": ("Marburg 1987 I", "green"),
+                          "3": ("Marburg 1987 II", "blue"),
+                          "4": ("Ebola 2014, Zaire (DRC) 1976-7, DRC 2007", "blue"),
+                          "5": ("Sudan 1976-9", "goldenrod"),
+                          "6": ("Reston 1989-90", "forestgreen"),
+                          "7": ("Bundibugyo 2007 I", "lightskyblue"),
+                          "8": ("Bundibugyo 2007 II", "blueviolet")
+                          }
 sim = [1, 2, 6]
 
 ebola_poagraph, ebola_consensus_tree = get_ebola_consensus_tree(p=0.25, stop=0.99, output_dir_name="output_ebola")
 # sim1_poagraph, sim1_consensus_tree = get_sim1_consensus_tree(p=1, stop=0.99, output_dir_name="output_sim1")
 # global_compatibilities_analysis(ebola_consensus_tree, [a, b, c])
 # local_compatibilities_analysis(sim1_poagraph, sim1_consensus_tree, [sim])
-local_compatibilities_analysis_consensus_coordinates(ebola_poagraph, ebola_consensus_tree, [ebola_a, ebola_b, ebola_c])
+local_compatibilities_analysis_consensus_coordinates(ebola_poagraph, ebola_consensus_tree, [ebola_a, ebola_b])
 # local_compatibilities_analysis_consensus_coordinates(sim1_poagraph, sim1_consensus_tree, [sim])
 
 
