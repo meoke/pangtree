@@ -160,13 +160,13 @@ class ConsensusTree:
                                 seqid = cn.sequences_ids[0]
                                 metadata = f"[&&NHX:name={name}:group={group}:seqid={seqid}:mincomp={cn.mincomp}]"
                             else:
-                                name = f"Consenses {cn.consensus_id}"
+                                name = f"Consensus {cn.consensus_id}"
                                 metadata = f"[&&NHX:name={name}:mincomp={cn.mincomp}]"
                         else:
                             if len(cn.sequences_ids) == 1:
                                 name = cn.sequences_ids[0]
                             else:
-                                name = f"Consenses {cn.consensus_id}"
+                                name = f"Consensus {cn.consensus_id}"
                             mincomp = cn.mincomp
                             metadata = f"[&&NHX:name={name}:mincomp={mincomp}]"
                 label += ':' + newick_tree._length + metadata
