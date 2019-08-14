@@ -58,14 +58,17 @@ def main():
                                                                max_strategy,
                                                                node_strategy,
                                                                args.verbose)
-        try:
-            seq_id_to_name = {seq_id: seq.seqmetadata["name"] for seq_id, seq in poagraph.sequences.items()}
-        except:
-            seq_id_to_name = None
 
-        newick_consensus_tree = consensus_tree.as_newick(seq_id_to_name)
+        if args.metadata is not None:
+            seq_id_to_metadata = {seq_id: seq.seqmetadata for seq_id, seq in poagraph.sequences.items()}
+        else:
+            seq_id_to_metadata = None
+
+        newick_consensus_tree = consensus_tree.as_newick(seq_id_to_metadata, expand_leaves=False)
+        newick_consensus_tree_extended = consensus_tree.as_newick(seq_id_to_metadata, expand_leaves=True)
 
         pathtools.save_to_file(newick_consensus_tree, pathtools.get_child_path(args.output_dir, "consensus_tree.newick"))
+        pathtools.save_to_file(newick_consensus_tree_extended, pathtools.get_child_path(args.output_dir, "consensus_tree_extended.newick"))
 
 
     if args.output_po:

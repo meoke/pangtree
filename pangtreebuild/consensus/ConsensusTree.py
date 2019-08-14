@@ -99,8 +99,8 @@ class ConsensusTree:
             return -1
         return max([node.consensus_id for node in self.nodes])
 
-    def as_newick(self, seq_id_to_seq_name: Dict[SequenceID, str] = None):
-        return self._convert_to_newick(seq_id_to_seq_name)
+    def as_newick(self, seq_id_to_seq_name: Dict[SequenceID, str] = None, expand_leaves=False):
+        return self._convert_to_newick(seq_id_to_seq_name, expand_leaves)
 
     def as_phyloxml(self, seq_id_to_seq_name: Dict[SequenceID, str] = None):
         return self._convert_to_phyloxml(seq_id_to_seq_name)
@@ -145,13 +145,12 @@ class ConsensusTree:
 
         return dumps(newick_tree)
 
-
-    def _convert_to_newick(self, seq_id_to_metadata: Dict[SequenceID, str] = None) -> str:
+    def _convert_to_newick(self, seq_id_to_metadata: Dict[SequenceID, str] = None, expand_newick = False) -> str:
         def newick_nhx(newick_tree):
             """The representation of the Node in Newick format."""
             label = newick_tree.name or ''
             if newick_tree._length:
-                for cn in self.nodes:
+                for cn in sorted_nodes:
                     if str(cn.consensus_id) == newick_tree.name:
                         if seq_id_to_metadata:
                             if len(cn.sequences_ids) == 1:
@@ -169,7 +168,10 @@ class ConsensusTree:
                                 name = f"Consensus {cn.consensus_id}"
                             mincomp = cn.mincomp
                             metadata = f"[&&NHX:name={name}:mincomp={mincomp}]"
-                label += ':' + newick_tree._length + metadata
+                try:
+                    label += ':' + newick_tree._length + metadata
+                except:
+                    print("metadata")
             descendants = ','.join([newick_nhx(n) for n in newick_tree.descendants])
             if descendants:
                 descendants = '(' + descendants + ')'
@@ -179,6 +181,21 @@ class ConsensusTree:
             return None
 
         sorted_nodes = sorted(self.nodes, key=lambda x: x.consensus_id)
+
+        if expand_newick:
+            new_leaves_count = 0
+            for node in self.nodes:
+                if len(node.children_nodes_ids) == 0 and len(node.sequences_ids) > 1:
+                    for seq_id in node.sequences_ids:
+                        consensus_node_id = len(self.nodes) + new_leaves_count
+                        node.children_nodes_ids.append(consensus_node_id)
+                        sorted_nodes.append(ConsensusNode(consensus_id=consensus_node_id,
+                                                           parent_node_id=node.consensus_id,
+                                                           children_nodes_ids=[],
+                                                           sequences_ids=[seq_id],
+                                                           mincomp=CompatibilityToPath(1.0)
+                                                           ))
+                        new_leaves_count += 1
 
         nodes_to_process = [(None, sorted_nodes[0])]
         newick_tree = None
@@ -205,5 +222,3 @@ class ConsensusTree:
             for child in node.children_nodes_ids:
                 nodes_to_process.append((label, sorted_nodes[child]))
         return "(" + newick_nhx(newick_tree) + ")"
-        # return dumps(newick_tree)
-

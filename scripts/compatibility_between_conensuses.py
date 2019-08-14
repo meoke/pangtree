@@ -222,7 +222,7 @@ def local_compatibilities_analysis_consensus_coordinates(poagraph: Poagraph, con
             ax.plot(x, y, label=labels[i] )
         for r in [[469, 2689], [3128,4151], [4478,5459], [6038,8069], [6038,7133], [6038,6933], [8508, 9375], [10344, 11100], [11580,18219]]:
             ax.plot([r[0], r[1]], [1,1  ], color="green")
-        ax.set(xlabel='POA graph columns IDs', ylabel='Local compatibility to other consensus', title=f"Base consensus: {labels[-1]}")
+        ax.set(xlabel='POA graph columns IDs', ylabel='Local compatibility', title=f"Base consensus: {labels[-1]}")
         ax.legend(loc=4)
         ax.grid()
 
@@ -246,37 +246,47 @@ def local_compatibilities_analysis_consensus_coordinates(poagraph: Poagraph, con
         for i, cd in enumerate(chart_datas):
             for j, y in enumerate(cd.ys):
                 # if j == 0 and i == 0:
-                axs[len(chart_datas)].plot(cd.x, y, color = 'white')
+                axs[len(chart_datas)].plot(cd.x, [0 for _ in y], color = 'white')
                 c_label = ebola_consensus_labels[cd.labels[j]][0]
-                lo = axs[i].plot(cd.x, y, label=c_label, color = ebola_consensus_labels[cd.labels[j]][1])
-                line_objects.append(lo)
-                if c_label not in line_labels:
+                color = ebola_consensus_labels[cd.labels[j]][1]
+                if c_label in line_labels:
+                    c_label = '_' + c_label
+                lo = axs[i].plot(cd.x, y, label=c_label, color = color)
 
-                    line_labels.append(c_label)
+                line_labels.append(c_label)
+                line_objects.append(lo)
+
+
+
+
             axs[i].set_xlabel(f'{ebola_consensus_labels[str(cd.consensus)][0]}')
             axs[i].set_ylim(0, 1)
-
-        fig.legend(line_objects,  # The line objects
-                   labels=line_labels,  # The labels for each line
-                   loc="lower center",  # Position of legend
+        # plt.gca().get_legend_handles_labels(0)
+        # handles, labels = ax.get_legend_handles_labels()
+        # fig.legend(handles, labels, loc='upper center')
+        # plt.figlegend(line_objects, line_labels, loc='lower center', ncol=5, labelspacing=0.)
+        # fig.legend(line_objects,  # The line objects
+        #            labels=line_labels,  # The labels for each line
+        fig.legend(loc="lower center",  # Position of legend
                    borderaxespad=0.1,  # Small spacing around legend box
-                   title="Legend Title",  # Title for the legend
-                    # bbox_to_anchor=(1.1, 1.05)
-                   ncol=2
+                   title="Consensus sequence",  # Title for the legend
+                   ncol=2,
                    )
 
+        # bbox_to_anchor = (0., 1.02, 1., .102), loc = 3,
+        # ncol = 2, mode = "expand", borderaxespad = 0.)
 
         for r in [(469, 2689, 1, "NP"),
                   (3128,4151, 1, "VP35"),
                   (4478,5459, 1, "VP40"),
                   (6038,8069, 1, "GP"),
-                  (6038,7133, 2, "ssGP"),
-                  (6038,6933, 3, "sGP"),
+                  # (6038,7133, 2, "ssGP"),
+                  # (6038,6933, 3, "sGP"),
                   (8508, 9375, 1, "VP30"),
                   (10344, 11100, 1, "VP24"),
                   (11580, 18219, 1, "L")]:
         # for r in [(2, 5, 1, "jeden"), (6,10, 1, "dwa")]:
-            axs[len(chart_datas)].plot([r[0], r[1]], [r[2], r[2]], color="green")
+            axs[len(chart_datas)].plot([r[0], r[1]], [r[2], r[2]], color="blue")
 
             axs[len(chart_datas)].annotate(r[3], (r[0], r[2]+0.1))
             # axs[len(chart_datas)].set_xlim(0, 19000)
@@ -308,7 +318,7 @@ def local_compatibilities_analysis_consensus_coordinates(poagraph: Poagraph, con
 
 
     def produce_local_compatibility_chart(consensuses_group: List[int]):
-        frame_size = 200
+        frame_size = 400
         # frame_size = 5
         frame_step = 200
         # frame_step = 5
@@ -332,6 +342,7 @@ def local_compatibilities_analysis_consensus_coordinates(poagraph: Poagraph, con
                     frame_nodes = set([consensus_path[node_index] for node_index in frame_nodes_indexes])
                     comp = len(frame_nodes.intersection(consensus_to_compare_path)) / len(frame_nodes)
                     y.append(comp)
+                    # x.append(frame_start + frame_step/2)
                     x.append(frame_start)
                     frame_start += frame_step
                     frame_end = min(frame_end + frame_step, consensus_length)
@@ -343,7 +354,7 @@ def local_compatibilities_analysis_consensus_coordinates(poagraph: Poagraph, con
         produce_joint_chart(chart_datas, joint_chart_path)
 
     current_path = Path(os.path.abspath(__file__)).resolve()
-    output_dir_path = pathtools.get_child_dir(current_path.parent, "charts_ebola_200_200")
+    output_dir_path = pathtools.get_child_dir(current_path.parent, "charts_ebola_400_200_left_kreski_v2")
 
     for g in groups:
         produce_local_compatibility_chart(g)
@@ -352,14 +363,14 @@ ebola_a = [1, 2, 3]
 ebola_b = [4, 5, 6, 7, 8]
 # ebola_c = [49,50]
 
-ebola_consensus_labels = {"1": ("All but Marburg 1987", "red"),
-                          "2": ("Marburg 1987 I", "green"),
-                          "3": ("Marburg 1987 II", "blue"),
-                          "4": ("Ebola 2014, Zaire (DRC) 1976-7, DRC 2007", "blue"),
-                          "5": ("Sudan 1976-9", "goldenrod"),
-                          "6": ("Reston 1989-90", "forestgreen"),
-                          "7": ("Bundibugyo 2007 I", "lightskyblue"),
-                          "8": ("Bundibugyo 2007 II", "blueviolet")
+ebola_consensus_labels = {"1": ("Ebola virus", "sienna"),
+                          "2": ("Marburg virus 1980", "green"),
+                          "3": ("Marburg virus 1987", "orange"),
+                          "4": ("Zaire Ebola virus", "grey"),
+                          "5": ("Sudan Ebola virus", "lightgreen"),
+                          "6": ("Reston Ebola virus", "darkviolet"),
+                          "7": ("Bundibugyo 2007 Ebola virus", "hotpink"),
+                          "8": ("Bundibugyo Tai Forest", "yellow")
                           }
 sim = [1, 2, 6]
 
