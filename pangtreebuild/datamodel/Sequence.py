@@ -16,7 +16,8 @@ class SequenceID:
         else:
             splitted = sequence_id.split('.')
             if len(splitted) > 1:
-                self.value = ".".join(splitted[1:])
+                self.value = splitted[0] #simulated
+                # self.value = ".".join(splitted[1:]) #ebola
             elif len(splitted) == 1:
                 self.value = str(splitted[0])
             else:

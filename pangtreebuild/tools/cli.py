@@ -40,6 +40,7 @@ def _get_file_extension(arg: str) -> str:
 
 def _data_type(data_type: str) -> DataType:
     """Converts command line argument to DataType"""
+
     if data_type == "p":
         data_type_full_name = "Proteins"
     elif data_type == "n":
@@ -278,7 +279,7 @@ def resolve_node_strategy(args: argparse.Namespace) -> FindNodeCutoff:
 
 def get_default_output_dir():
     """Creates timestamped child dir under current working directory."""
-
+    
     current_dir = pathtools.get_cwd()
     current_time = pathtools.get_current_time()
     output_dir_name = "_".join(["output/", current_time])
@@ -305,7 +306,7 @@ def get_task_parameters(args: argparse.Namespace, running_time) -> TaskParameter
                           output_path=args.output_dir,
                           output_po=bool(args.output_po),
                           output_fasta=bool(args.output_fasta),
-                          output_with_nodes=True,
+                          output_with_nodes=False,
                           verbose=bool(args.verbose),
                           raw_maf=bool(args.raw_maf),
                           fasta_provider=args.fasta_provider if args.fasta_provider else 'ConstSymbol',

@@ -111,3 +111,9 @@ ENV/
 
 /.fastacache/*
 
+*.fasta
+
+data/Simulated1/output/*
+data/Simulated_yeast_nocycles/output/*
+data/Simulated_yeast_nocycles/input/*
+data/Ebola/output/*
