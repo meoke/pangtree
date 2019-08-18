@@ -279,7 +279,7 @@ def resolve_node_strategy(args: argparse.Namespace) -> FindNodeCutoff:
 
 def get_default_output_dir():
     """Creates timestamped child dir under current working directory."""
-    
+
     current_dir = pathtools.get_cwd()
     current_time = pathtools.get_current_time()
     output_dir_name = "_".join(["output/", current_time])
