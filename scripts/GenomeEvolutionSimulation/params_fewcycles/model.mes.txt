@@ -1,0 +1,422 @@
+#################################
+### NONBIOLOGICAL PARAMETERS ####
+#################################
+
+# Number of times to retry if an event fails.
+EventFailTries = 5
+
+# Maximum allowed pct. error due to approximations in computing rates.
+MaxRateApproxErrPct = 20
+
+#####################################
+### EVOLUTIONARY RATE PARAMETERS ####
+#####################################
+
+## NOTE:
+## Rates and probabilities specified in this section model neutral events
+## Rates of events involving constrained bases emerge from the base-specific rejection probabilities
+
+
+## POINT SUBSTITUTION PROBABILITIES 
+## Rates are calculated using base composition of the the genome
+
+AC_Rate=0.2
+AG_Rate=0.6
+AT_Rate=0.2
+CA_Rate=0.2
+CG_Rate=0.2
+CT_Rate=0.6
+
+## POINT SUBSTITUTION PROBABILITIES IN CpGs OUTSIDE OF CpG ISLANDS
+## This elevates the C->T transition rate in CpGs that are methylated,
+## which are those CpGs that reside outside of CpG islands.
+
+
+# Ratio (C->T and G->A rate outside CpG islands) / (rate inside islands).
+# To indicate genome is unmethyated, set MinCpGSweeps=0.
+CpG_C_to_T_Ratio = 12
+
+# Maximum fraction of CpGs to mutate in a single CpG sweep.
+# Should be << 1 because substitution does not commute with copy.
+CpGFraction = 0.1
+
+# Minimum number of CpG sweeps. Set to zero if genome not methylated.
+MinCpGSweeps = 0
+
+## PROBABILITIES OF AMINO ACID SUBSTITUTION GIVEN A PROPOSED NUCLEOTIDE SUBSTITUTION
+## Note that rows sum to different values reflecting the variation in the resistance of amino acids to change; e.g., W is generally more conserved than I.
+
+AminoAcidSubstProbs=
+       A      C      D      E      F      G      H      I      K      L      M      N      P      Q      R      S      T      V      W      Y
+A      .      .   0.037  0.062     .   0.076     .      .      .      .      .      .   0.067     .      .   0.182  0.096  0.048     .      .      #   A=0.568
+C      .      .      .      .   0.031  0.030     .      .      .      .      .      .      .      .   0.026  0.063     .      .   0.015  0.016     #   C=0.181
+D   0.037     .      .   0.146     .   0.043  0.054     .      .      .      .   0.101     .      .      .      .      .   0.028     .   0.028     #   D=0.437
+E   0.062     .   0.146     .      .   0.042     .      .   0.075     .      .      .      .   0.120     .      .      .   0.040     .      .      #   E=0.484
+F      .   0.031     .      .      .      .      .   0.040     .   0.052     .      .      .      .      .   0.036     .   0.036     .   0.153     #   F=0.347
+G   0.076  0.030  0.043  0.042     .      .      .      .      .      .      .      .      .      .   0.017  0.077     .   0.022  0.016     .      #   G=0.324
+H      .      .   0.054     .      .      .      .      .      .   0.026     .   0.124  0.051  0.114  0.051     .      .      .      .   0.067     #   H=0.488
+I      .      .      .      .   0.040     .      .      .   0.064  0.109  0.068  0.056     .      .   0.039  0.029  0.058  0.133     .      .      #   I=0.596
+K      .      .      .   0.075     .      .      .   0.064     .      .   0.037  0.062     .   0.101  0.127     .   0.071     .      .      .      #   K=0.538
+L      .      .      .      .   0.052     .   0.026  0.109     .      .   0.122     .   0.025  0.049  0.021  0.067     .   0.087  0.026     .      #   L=0.582
+M      .      .      .      .      .      .      .   0.068  0.037  0.122     .      .      .      .   0.023     .   0.065  0.064     .      .      #   M=0.380
+N      .      .   0.101     .      .      .   0.124  0.056  0.062     .      .      .      .      .      .   0.082  0.094     .      .   0.032     #   N=0.551
+P   0.067     .      .      .      .      .   0.051     .      .   0.025     .      .      .   0.072  0.021  0.067  0.065     .      .      .      #   P=0.367
+Q      .      .      .   0.120     .      .   0.114     .   0.101  0.049     .      .   0.072     .   0.047     .      .      .      .      .      #   Q=0.503
+R      .   0.026     .      .      .   0.017  0.051  0.039  0.127  0.021  0.023     .   0.021  0.047     .   0.039  0.037     .   0.017     .      #   R=0.466
+S   0.182  0.063     .      .   0.036  0.077     .   0.029     .   0.067     .   0.082  0.067     .   0.039     .   0.191     .   0.021  0.033     #   S=0.885
+T   0.096     .      .      .      .      .      .   0.058  0.071     .   0.065  0.094  0.065     .   0.037  0.191     .      .      .      .      #   T=0.676
+V   0.048     .   0.028  0.040  0.036  0.022     .   0.133     .   0.087  0.064     .      .      .      .      .      .      .      .      .      #   V=0.458
+W      .   0.015     .      .      .   0.016     .      .      .   0.026     .      .      .      .   0.017  0.021     .      .      .      .      #   W=0.095
+Y      .   0.016  0.028     .   0.153     .   0.067     .      .      .      .   0.032     .      .      .   0.033     .      .      .      .      #   Y=0.330
+
+
+# Amino acid substitution probabilities are multiplied by this factor.
+AminoAcidProbMultiplier = 2.0
+
+## RATE TABLES FOR ALL MULTIPLE BASE EVENTS EXCEPT MOBILE ELEMENT INSERTIONS AND SSR (TANDEM) EVENTS
+## Shorthands:
+## Delete = Standard deletion
+## Insert = Insertion of truly random DNA; not duplicative
+## Invert = Standard reverse-complemented inversion
+## Tandem = Tandem Duplication
+## Move = IntRAchromosomal Nonduplicative Transposition
+## Copy = IntRAchromosomal Nontandem Duplication
+## InterChrMove = IntERchromosomal Nonduplicative Transposition
+## InterChrCopy = IntERchromosomal Nontandem Duplication
+
+
+DeleteRates=
+#     Length        Rate
+# ==========  ==========
+           1,   0.021500;
+           2,   0.008000;
+           3,   0.004750;
+           4,   0.004000;
+           5,   0.003130;
+           6,   0.002630;
+           7,   0.002130;
+           8,   0.001620;
+           9,   0.001250;
+          10,   0.001000;
+         100,   0.000100;
+//
+
+
+InsertRates=
+#     Length        Rate
+# ==========  ==========
+           1,   0.002150;
+           2,   0.000800;
+           3,   0.000475;
+           4,   0.000400;
+           5,   0.000313;
+           6,   0.000263;
+           7,   0.000213;
+           8,   0.000162;
+           9,   0.000125;
+          10,   0.000100;
+         100,   0.000010;
+//
+
+
+InvertRates=
+#     Length        Rate
+# ==========  ==========
+          10,          0;
+//
+
+TandemRates=
+#     Length        Rate
+# ==========  ==========
+           1,   0.019350;
+           2,   0.007200;
+           3,   0.004275;
+           4,   0.003600;
+           5,   0.002817;
+           6,   0.002367;
+           7,   0.001917;
+           8,   0.001458;
+           9,   0.001125;
+          10,   0.000900;
+         100,   0.000090;
+//
+
+MoveRates=
+#     Length        Rate
+# ==========  ==========
+          10,          0;
+//
+
+CopyRates=
+#     Length        Rate
+# ==========  ==========
+          10,          0;
+//
+
+InterChrMoveRates=
+#     Length        Rate
+# ==========  ==========
+          10,          0;
+//
+
+InterChrCopyRates=
+#     Length        Rate
+# ==========  ==========
+          10,          0;
+//
+
+
+## TANDEM REPEAT PARAMETERS
+
+# Rate of TandemExpand event (per tandem base).
+TandemExpandRate = 0.001
+
+# Rate of TandemContract event (per tandem base).
+TandemContractRate = 0.005
+
+
+## PARAMETERS RELEVANT TO INVERSIONS OF MOVE AND COPY EVENTS
+## Note that these are not inversion-only parameters
+## Inversion-only rates are specified MULTIPLE-BASE EVENTS section above
+
+# Minimum length of a move that can be inverted.
+MinMoveInvertLength = 0
+
+# Minimum length of a non-tandem copy that can be inverted.
+MinCopyInvertLength = 0
+
+# Minimum length of a tandem copy that can be inverted.
+MinTandemInvertLength = 100
+
+# Probability of inverting a move.
+MoveInvertProb = 0.5
+
+# Probability of inverting a non-tandem copy.
+CopyInvertProb = 0.5
+
+# Probability of inverting a tandem copy.
+TandemInvertProb = 0.1
+
+
+
+##########################################################
+###  PARAMETERS RELEVANT TO CONSTRAINT-BASED MODELING  ###
+###   OF SELECTIVE PRESSURES ON FUNCTIONAL ELEMENTS    ###
+##########################################################
+
+## Note:  creations, deletions, moves, etc, as specified in this section
+## refer to creations, deletions, moves, etc, of constraint annotation
+## on existing DNA, not to the creations, deletions, moves, etc, of DNA.
+
+
+## CHANGES IN PROTEIN CODING GENE STRUCTURE (including changes to UTRs)
+## Note:  Many of these parameters are best understood with the visual
+## representation that can be found as part of the evolver documentation
+
+
+# UTR EXONS
+
+# Rate of CreateNonTermUTR event (per UTR).
+CreateNontermUTRRate = 0
+
+# Rate of CreateTermUTR event (per UTR).
+CreateTermUTRRate = 0
+
+# Rate of DeleteUTR event (per UTR).
+DeleteUTRRate = 0
+
+# Rate of MoveUTRTerm event (per UTR).
+MoveUTRTermRate = 0.5
+
+
+# CDS EXONS
+
+# Rate of CreateCDS event (per CDS).
+CreateCDSRate = 0
+
+# Rate of DeleteCDS event (per CDS).
+DeleteCDSRate = 0
+
+
+# START/STOP CODONS
+
+# Rate of MoveStartCodonIntoUTR event (per gene).
+MoveStartCodonIntoUTRRate = 0.05
+
+# Rate of MoveStartCodonIntoCDS event (per gene).
+MoveStartCodonIntoCDSRate = 0.05
+
+# Rate of MoveStopCodonIntoUTR event (per gene).
+MoveStopCodonIntoUTRRate = 0.05
+
+# Rate of MoveStopCodonIntoCDS event (per gene).
+MoveStopCodonIntoCDSRate = 0.05
+
+
+# SPLICE SITES
+
+# Rate of MoveCDSDonorIntoIntron event (per CDS).
+MoveCDSDonorIntoIntronRate = 0.002
+
+# Rate of MoveDonorIntoCDS event (per CDS).
+MoveDonorIntoCDSRate = 0.002
+
+# Rate of MoveCDSAcceptorIntoIntron event (per CDS).
+MoveCDSAcceptorIntoIntronRate = 0.002
+
+# Rate of MoveAcceptorIntoCDS event (per CDS).
+MoveAcceptorIntoCDSRate = 0.002
+
+# Rate of MoveUTRDonorIntoIntron event (per UTR).
+MoveUTRDonorIntoIntronRate = 0.01
+
+# Rate of MoveDonorIntoUTR event (per UTR).
+MoveDonorIntoUTRRate = 0.01
+
+# Rate of MoveUTRAcceptorIntoIntron event (per UTR).
+MoveUTRAcceptorIntoIntronRate = 0.01
+
+# Rate of MoveAcceptorIntoUTR event (per UTR).
+MoveAcceptorIntoUTRRate = 0.01
+
+
+## CONSTRAINT CHANGES AFFECTING WHOLE GENES OR NON-GENE ELEMENTS
+
+# Rate of ChangeGeneSpeed event (per gene).
+ChangeGeneSpeedRate = 0
+
+# Rate of ChangeNGESpeed event (per non-gene element).
+ChangeNGESpeedRate = 0
+
+# Relative probabilities of constraint change on genes after duplication
+GeneDupeWeights=
+            OldSlower   OldSame OldFaster   OldLost
+ NewSlower          0         0         0         0
+   NewSame          0         0         1        10
+ NewFaster          0        10        10         0
+   NewLost          0       100         0         0
+
+
+########
+## PARAMETERS FOR DE NOVO GENERATION OF NONCODING FUNCTIONAL ELEMENTS
+## Note:  exonic elements are generated from existing genome annotations
+########
+
+
+## ALL NONCODING FUNCTIONAL ELEMENTS
+
+# Percent of genome to cover with non-coding constrained elements.
+GenomeNCCEPct = 10
+
+## NONEXONIC GENE ELEMENTS
+## (Modeling, for example, gene-associated regulatory elements)
+
+# Rate of CreateNXE event (per non-exon element).
+CreateNXERate = 0
+
+# Rate of DeleteNXE event (per non-exon element).
+DeleteNXERate = 0
+
+# Rate of MoveNXE event (per non-exon element).
+MoveNXERate = 0.5
+
+# Mean fraction of space between two genes that is assigned to inter-genic space.
+# Remaining space is assiged to the two flanking genes.
+MeanInterGeneFract = 0.5
+
+# Standard deviation of inter-gene fraction (see MeanInterGeneFract).
+StdDevInterGeneFract = 0.2
+
+
+## SINGLE CONSTRAINED ELEMENTS NOT ASSOCIATED WITH A GENE,
+## OR "NON-GENE ELEMENTS".  (Modeling, for example, isolated RNA genes)
+
+# Rate of CreateNGE event (per non-exon element).
+CreateNGERate = 0
+
+# Rate of DeleteNGE event (per non-exon element).
+DeleteNGERate = 0
+
+# Rate of MoveNGE event (per non-exon element).
+MoveNGERate = 0.02
+
+
+## CpG ISLANDS
+## Note:  the evolver shorthand "CpG island" is a bit of a misnomer.
+## These elements ought to be called "regions that are unmethylated
+## in the germline, in which therefore there is no higher rate of
+## C->T transitions in CpGs.
+## Given enough evolutionary time, such regions become CpG islands.
+
+# Rate of CreateIsland event (per CpG island element).
+CreateCpGIslandRate = 0
+
+# Rate of DeleteIsland event (per CpG island element).
+DeleteCpGIslandRate = 0
+
+# Rate of MoveIsland event (per CpG island element).
+MoveCpGIslandRate = 0.02
+
+
+#######
+## NUMERICAL CONSTRAINTS ON PARAMETER VALUES INVOLVING EVOLUTIONARY CONSTRAINT CHANGES
+#######
+
+
+## CEILINGS
+
+# Min and Max Lengths of a tandem repeat (for internal tracking).
+MinTandemAnnot = 8
+MaxTandemAnnot = 128
+
+# Maximum number of codons to move when moving START or STOP codon.
+MaxMoveStartStopCodons = 33
+
+# Maximum number of bases to move a donor or acceptor site.
+MaxMoveSpliceBases = 100
+
+# Maximum distance between CpG island and first exon.
+PromoterCpGSlopBases = 32
+
+# Minimum number of bases in a 5' or 3' UTR.
+MinUTRBases = 100
+
+# Minimum length of an intron (applied to constraint change events only).
+MinIntronLength = 17
+
+
+## DISTRIBUTIONS
+
+# Mean and standard deviation of distance to move a non-gene element.
+MoveNGEMeanDist = 5
+MoveNGEStdDevDist = 2
+
+# Mean and standard deviation of distance to move a CpG island.
+MoveCpGIslandMeanDist = 128
+MoveCpGIslandStdDevDist = 64
+
+# Mean and standard deviation of distance to move a non-exon element.
+MoveNXEMeanDist = 5
+MoveNXEStdDevDist = 2
+
+# Mean and standard deviation of distance to move transcription terminal.
+MoveUTRTermMeanDist = 5
+MoveUTRTermDistStdDev = 2
+
+# Maximum allowed difference between target and actual newly created exon length.
+CreateExonLengthSlop = 9
+
+
+## PARAMETERS RELEVANT TO BASE-SPECIFIC CONSTRAINT SCORES
+
+# Percentage of probabilties to be shuffled when clumping.
+ClumpShufflePct = 25
+
+# Mean and std. deviation of CE clump length (~= correlation distance).
+CEClumpMeanLength = 32
+CEClumpLengthStdDev = 16
+
+# Mean and standard deviation of q. A random acceleration factor is a=1+q
+# (accel.) or a=1/(1+q) (decel.), with equal probability of acc/decel.
+AccelIncrementMean = 2
+AccelIncrementStdDev = 1
