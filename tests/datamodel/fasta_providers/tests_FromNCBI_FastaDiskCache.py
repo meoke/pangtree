@@ -5,7 +5,7 @@ from pathlib import Path
 
 from ddt import ddt
 
-from tests.context import FromNCBI, EmailAddress
+from tests.context import FromNCBI
 from tests.context import pathtools
 from tests.context import pSeq, pNode
 
@@ -13,11 +13,11 @@ from tests.context import pSeq, pNode
 @ddt
 class FromNCBI_FastaDiskCache_Tests(unittest.TestCase):
     def setUp(self) -> None:
-        self.fasta_provider = FromNCBI(EmailAddress('a@gmail.com'), use_cache=False)
+        self.fasta_provider = FromNCBI(use_cache=False)
 
     @unittest.skip('Internet connection required -> long execution')
     def test_1_download_sequence_and_save_to_cache(self):
-        fasta_provider = FromNCBI(EmailAddress('a@gmail.com'), use_cache=True)
+        fasta_provider = FromNCBI(use_cache=True)
         cache_dir_path = pathtools.get_child_path(Path.cwd(), ".fastacache")
         if cache_dir_path.exists():
             shutil.rmtree(cache_dir_path)
@@ -45,7 +45,7 @@ class FromNCBI_FastaDiskCache_Tests(unittest.TestCase):
         self.assertEqual(expected_content, actual_content)
 
     def test_2_read_seqeunce_from_cache_instead_downloading(self):
-        fasta_provider = FromNCBI(EmailAddress('a@gmail.com'), use_cache=True)
+        fasta_provider = FromNCBI(use_cache=True)
         cache_dir_path = pathtools.get_child_path(Path.cwd(), ".fastacache")
         if cache_dir_path.exists():
             shutil.rmtree(cache_dir_path)
