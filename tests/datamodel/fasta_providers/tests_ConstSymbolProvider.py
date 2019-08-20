@@ -17,7 +17,7 @@ class ConstSymbolProviderTests(unittest.TestCase):
     def test_2_symbol_provided(self):
         const_symbol_provider = ConstSymbolProvider(MissingSymbol('*'))
 
-        expected_symbol =pNode.Base('*')
+        expected_symbol = pNode.Base('*')
         actual_symbol = const_symbol_provider.get_base(pSeq.SequenceID('s'), 0)
         self.assertEqual(expected_symbol, actual_symbol)
 

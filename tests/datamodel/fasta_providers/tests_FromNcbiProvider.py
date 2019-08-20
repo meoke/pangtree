@@ -4,7 +4,7 @@ from pathlib import Path
 from ddt import unpack, data, ddt
 
 from tests.context import FromNCBI
-from tests.context import pSeq
+from tests.context import pSeq, SequenceID
 
 
 @ddt
@@ -34,7 +34,7 @@ class FromNCBITests(unittest.TestCase):
         fasta_provider = FromNCBI(use_cache=False)
         sequence_id = ""
         with self.assertRaises(Exception) as err:
-            _ = fasta_provider._download_from_ncbi(sequence_id)
+            _ = fasta_provider._download_from_ncbi(SequenceID(sequence_id))
             self.assertEqual(str(err), f"Cannot download from Entrez sequence of ID: {sequence_id}")
 
     @data((pSeq.SequenceID("plain", False), "plain"),
@@ -48,7 +48,8 @@ class FromNCBITests(unittest.TestCase):
 
         self.assertEqual(expected_guessed_entrez_id, actual_guessed_entrez_id)
 
-    def read_sequence(self, path: Path):
+    @staticmethod
+    def read_sequence(path: Path):
         with open(path) as fasta_file_hanlder:
             _ = fasta_file_hanlder.readline()
             return fasta_file_hanlder.read().upper().replace("\n", "")

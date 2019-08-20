@@ -1,4 +1,3 @@
-import os
 import shutil
 import unittest
 from pathlib import Path
@@ -23,7 +22,6 @@ class FromNCBI_FastaDiskCache_Tests(unittest.TestCase):
             shutil.rmtree(cache_dir_path)
 
         sequence_id = pSeq.SequenceID("AB050936.1", skip_part_before_dot=False)
-        actual_sequence = fasta_provider.get_base(sequence_id, 15)
 
         # cache directory creation
         cache_directory_created = cache_dir_path.exists()

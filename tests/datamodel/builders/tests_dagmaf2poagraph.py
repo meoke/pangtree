@@ -255,8 +255,8 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
         self.assertEqual(expected_poagraph, actual_poagraph)
 
     def test_06_1st_block_separates_into_2_branches_which_connect_in_3rd_block(self):
-        maf_path = Path(self.maf_files_dir + "test_6_1st_block_separates_into_2_branches_which_connect_in_3rd_block.maf")
-
+        maf_path = Path(self.maf_files_dir +
+                        "test_6_1st_block_separates_into_2_branches_which_connect_in_3rd_block.maf")
 
         expected_nodes = [
             pNode.Node(node_id=nid(0), base=pNode.Base('A'), aligned_to=nid(1)),
@@ -437,7 +437,8 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
                               pSeq.SequenceMetadata({'group': '1'})),
             pSeq.SequenceID('seq2'):
                 pSeq.Sequence(pSeq.SequenceID('seq2'),
-                              [pSeq.SequencePath([*map(nid, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19])])],
+                              [pSeq.SequencePath([*map(nid, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+                                                             13, 14, 15, 16, 17, 18, 19])])],
                               pSeq.SequenceMetadata({'group': '2'})),
             pSeq.SequenceID('seq3'):
                 pSeq.Sequence(pSeq.SequenceID('seq3'),
@@ -508,6 +509,7 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
             self.metadatacsv)
 
         self.assertEqual(expected_poagraph, actual_poagraph)
+
 
 if __name__ == '__main__':
     unittest.main()

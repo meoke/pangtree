@@ -9,7 +9,8 @@ class FromFileFastaProviderFastaTests(unittest.TestCase):
     def setUp(self) -> None:
         self.fasta_dir = "tests/datamodel/fasta_providers/files_fasta/"
 
-    def read_sequence(self, path: Path):
+    @staticmethod
+    def read_sequence(path: Path):
         with open(path) as fasta_file_hanlder:
             _ = fasta_file_hanlder.readline()
             return fasta_file_hanlder.read().upper().replace("\n", "")

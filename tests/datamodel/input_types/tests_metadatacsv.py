@@ -24,12 +24,9 @@ class MetadataCSVTests(unittest.TestCase):
         metadata_path = Path(self.csv_files_dir + "test_1_correct.csv")
         csv_content = pathtools.get_file_content_stringio(metadata_path)
 
-        expected_metadata = {pSeq.SequenceID('s1'): {'name': 'sequence1',
-                                    'group': 'A'},
-                             pSeq.SequenceID('s2'): {'name': 'sequence2',
-                                    'group': 'B'},
-                             pSeq.SequenceID('s3'): {'name': 'sequence3',
-                                    'group': 'B'}
+        expected_metadata = {pSeq.SequenceID('s1'): {'name': 'sequence1', 'group': 'A'},
+                             pSeq.SequenceID('s2'): {'name': 'sequence2', 'group': 'B'},
+                             pSeq.SequenceID('s3'): {'name': 'sequence3', 'group': 'B'}
                              }
         m = MetadataCSV(csv_content, metadata_path)
         actual_metadata = m.metadata
@@ -55,12 +52,9 @@ class MetadataCSVTests(unittest.TestCase):
         metadata_path = Path(self.csv_files_dir + "test_4_seqid_is_last.csv")
         csv_content = pathtools.get_file_content_stringio(metadata_path)
 
-        expected_metadata = {pSeq.SequenceID('s1'): {'name': 'sequence1',
-                                    'group': 'A'},
-                             pSeq.SequenceID('s2'): {'name': 'sequence2',
-                                    'group': 'B'},
-                             pSeq.SequenceID('s3'): {'name': 'sequence3',
-                                    'group': 'B'}
+        expected_metadata = {pSeq.SequenceID('s1'): {'name': 'sequence1', 'group': 'A'},
+                             pSeq.SequenceID('s2'): {'name': 'sequence2', 'group': 'B'},
+                             pSeq.SequenceID('s3'): {'name': 'sequence3', 'group': 'B'}
                              }
         m = MetadataCSV(csv_content, metadata_path)
         actual_metadata = m.metadata
@@ -81,7 +75,8 @@ class MetadataCSVTests(unittest.TestCase):
         csv_content = pathtools.get_file_content_stringio(csv_path)
         with self.assertRaises(Exception) as err:
             _ = MetadataCSV(csv_content, csv_path)
-        self.assertEqual("CSV metadata error. Different fields number in line 0 than in header line.", str(err.exception))
+        self.assertEqual("CSV metadata error. Different fields number in line 0 than in header line.",
+                         str(err.exception))
 
     def test_7_not_unique_seqids(self):
         csv_path = Path(self.csv_files_dir + "test_7_not_unique_seqids.csv")
@@ -96,12 +91,9 @@ class MetadataCSVTests(unittest.TestCase):
         metadata_path = Path(self.csv_files_dir + "test_8_seqids_with_dots.csv")
         csv_content = pathtools.get_file_content_stringio(metadata_path)
 
-        expected_metadata = {pSeq.SequenceID('s1.1', skip_part_before_dot=False): {'name': 'sequence1',
-                                    'group': 'A'},
-                             pSeq.SequenceID('s2.1', skip_part_before_dot=False): {'name': 'sequence2',
-                                    'group': 'B'},
-                             pSeq.SequenceID('s3.10', skip_part_before_dot=False): {'name': 'sequence3',
-                                    'group': 'B'}
+        expected_metadata = {pSeq.SequenceID('s1.1', skip_part_before_dot=False): {'name': 'sequence1', 'group': 'A'},
+                             pSeq.SequenceID('s2.1', skip_part_before_dot=False): {'name': 'sequence2', 'group': 'B'},
+                             pSeq.SequenceID('s3.10', skip_part_before_dot=False): {'name': 'sequence3', 'group': 'B'}
                              }
         m = MetadataCSV(csv_content, metadata_path)
         actual_metadata = m.metadata

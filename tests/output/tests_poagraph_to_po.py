@@ -1,7 +1,6 @@
 import unittest
 from pathlib import Path
 
-
 from ddt import unpack, data, ddt
 
 from tests.context import pathtools, pNode, pSeq, pPoagraph, PangenomePO
@@ -40,7 +39,7 @@ class PoagraphToPOTests(unittest.TestCase):
                           pNode.Node(node_id=nid(15), base=bid('A'), aligned_to=nid(16)),
                           pNode.Node(node_id=nid(16), base=bid('C'), aligned_to=nid(17)),
                           pNode.Node(node_id=nid(17), base=bid('G'), aligned_to=nid(15))
-                         ]
+                          ]
 
         poagraph_sequences = {
             pSeq.SequenceID('seq0'):

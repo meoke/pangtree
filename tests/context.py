@@ -6,6 +6,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../p
 from pangtreebuild.datamodel import Node as pNode
 from pangtreebuild.datamodel import Poagraph as pPoagraph
 from pangtreebuild.datamodel import Sequence as pSeq
+from pangtreebuild.datamodel.Sequence import SequenceID
 from pangtreebuild.datamodel import Poagraph as pPoagraph
 from pangtreebuild.datamodel.builders import maf2poagraph, dagmaf2poagraph, po2poagraph
 from pangtreebuild.datamodel.input_types import Maf, MetadataCSV
