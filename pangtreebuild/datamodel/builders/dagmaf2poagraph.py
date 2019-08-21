@@ -1,9 +1,9 @@
 from collections import namedtuple
 from typing import Tuple, List, NewType, Optional, Dict
 
-from mafgraph.graph import Block
-from mafgraph.graph.Arc import Arc
-from mafgraph.mafreader import start_position
+from pangtreebuild.mafgraph.graph import Block
+from pangtreebuild.mafgraph.graph.Arc import Arc
+from pangtreebuild.mafgraph.mafreader import start_position
 
 from pangtreebuild.datamodel.DAGMaf import DAGMaf, DAGMafNode
 from pangtreebuild.datamodel.Sequence import SequenceID, Sequence, SequencePath

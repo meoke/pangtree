@@ -281,9 +281,11 @@ def get_default_output_dir():
     """Creates timestamped child dir under current working directory."""
 
     current_dir = pathtools.get_cwd()
+    output_dir = pathtools.get_child_path(current_dir, "output")
+    pathtools.create_dir(output_dir)
     current_time = pathtools.get_current_time()
-    output_dir_name = "_".join(["output/", current_time])
-    output_dir_path = pathtools.get_child_path(current_dir, output_dir_name)
+    output_dir_name = "_".join(["output", current_time])
+    output_dir_path = pathtools.get_child_path(output_dir, output_dir_name)
     pathtools.create_dir(output_dir_path)
     return output_dir_path
 

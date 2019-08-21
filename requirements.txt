@@ -3,4 +3,3 @@ biopython
 numpy
 jsonpickle
 ddt
--e git+https://github.com/anialisiecka/Mafgraph#egg=Mafgraph
