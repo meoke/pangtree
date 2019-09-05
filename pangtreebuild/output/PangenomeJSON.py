@@ -213,9 +213,9 @@ def to_PangenomeJSON(task_parameters: TaskParameters = None,
                                                                   for seq_id
                                                                   in consensus_node.sequences_ids
                                                                   if seq_id in paths_seq_id_to_int_id.keys()],
-                                           poagraph_nodes_ids=[],
-                                           # poagraph_nodes_ids=consensus_node.consensus_path
-                                           #      if task_parameters.output_with_nodes else [],
+                                           # poagraph_nodes_ids=[],
+                                           poagraph_nodes_ids=consensus_node.consensus_path
+                                                if task_parameters.output_with_nodes else [],
                                            mincomp=consensus_node.mincomp.root_value().value)
                              for consensus_node in consensuses_tree.nodes]
     return PangenomeJSON(task_parameters,

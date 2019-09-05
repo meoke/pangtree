@@ -9,6 +9,9 @@ import os, sys
 from pathlib import Path
 from typing import List, Tuple, Dict
 import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
+from matplotlib.text import Text
+import matplotlib
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../pangtreebuild')))
 import pangtreebuild.tools.pathtools as pathtools
@@ -28,8 +31,8 @@ def get_ebola_consensus_tree(p: float, stop: float, output_dir_name: str) -> Tup
     current_path = Path(os.path.abspath(__file__)).resolve()
     output_dir_path = pathtools.get_child_dir(current_path.parent, output_dir_name)
     consensus_output_dir = pathtools.get_child_dir(output_dir_path, "consensus")
-    multialignment_path = current_path.parent.joinpath("../data/Ebola/genome_whole/input/multialignment.maf")
-    metadata_path = current_path.parent.joinpath("../data/Ebola/genome_whole/input/metadata.csv")
+    multialignment_path = current_path.parent.joinpath("../data/Ebola/multialignment.maf")
+    metadata_path = current_path.parent.joinpath("../data/Ebola/metadata.csv")
     blosum_path = current_path.parent.joinpath("../bin/blosum80.mat")
 
     tp = TaskParameters(running_time="",
@@ -117,11 +120,21 @@ def local_compatibilities_analysis_consensus_coordinates(poagraph: Poagraph, con
             self.labels = labels
 
     def produce_joint_chart(chart_datas: List[Chart], chart_path):
-        fig, axs = plt.subplots(len(chart_datas)+2, 1)
+        matplotlib.rc('text', usetex=True)
+        fig, axs = plt.subplots(len(chart_datas)+1, 1)
         if len(chart_datas) == 5:
             fig.set_size_inches(14.5, 8)
         elif len(chart_datas) == 3:
             fig.set_size_inches(18.5, 6.5)
+
+        genes = [(469, 2689, "NP"),
+                  (3128,4151, "VP35"),
+                  (4478,5459, "VP40"),
+                  (6038,8069, "GP"),
+                  (8508, 9375, "VP30"),
+                  (10344, 11100, "VP24"),
+                  (11580, 18219, "L")]
+
         line_objects = []
         line_labels = []
         for i, cd in enumerate(chart_datas):
@@ -130,38 +143,42 @@ def local_compatibilities_analysis_consensus_coordinates(poagraph: Poagraph, con
                 axs[len(chart_datas)].plot(cd.x, [0 for _ in y], color = 'white')
                 c_label = ebola_consensus_labels[cd.labels[j]][0]
                 color = ebola_consensus_labels[cd.labels[j]][1]
+                c_label = r"\textit{" + c_label + "}"
                 if c_label in line_labels:
                     c_label = '_' + c_label
-                lo = axs[i].plot(cd.x, y, label=c_label, color = color)
-
                 line_labels.append(c_label)
+
+                lo = axs[i].plot(cd.x, y, label=c_label, color = color)
                 line_objects.append(lo)
 
-
-
-
-            axs[i].set_xlabel(f'{ebola_consensus_labels[str(cd.consensus)][0]}')
+            # plot coding areas
+            for g in genes:
+                axs[i].add_patch(Rectangle((g[0], 0), g[1]-g[0], 1,
+                      color= (0.1, 0.2, 0.5, 0.3)))
+            x_label = r"\textit{" + f'{ebola_consensus_labels[str(cd.consensus)][0]}' + "}"
+            axs[i].set_xlabel(x_label)
             axs[i].set_ylim(0, 1)
 
-        fig.legend(loc="lower center",  # Position of legend
-                   borderaxespad=0.1,  # Small spacing around legend box
+        fig.legend(loc="lower right",  # Position of legend
+                   borderaxespad=1,  # Small spacing around legend box
                    title="Consensus sequence",  # Title for the legend
                    ncol=2,
                    )
 
-        for r in [(469, 2689, 1, "NP"),
-                  (3128,4151, 1, "VP35"),
-                  (4478,5459, 1, "VP40"),
-                  (6038,8069, 1, "GP"),
+        for r in [(469, 2689,  "NP"),
+                  (3128,4151,  "VP35"),
+                  (4478,5459,  "VP40"),
+                  (6038,8069,  "GP"),
                   # (6038,7133, 2, "ssGP"),
                   # (6038,6933, 3, "sGP"),
-                  (8508, 9375, 1, "VP30"),
-                  (10344, 11100, 1, "VP24"),
-                  (11580, 18219, 1, "L")]:
-            axs[len(chart_datas)].plot([r[0], r[1]], [r[2], r[2]], color="blue")
-            axs[len(chart_datas)].annotate(r[3], (r[0], r[2]+0.1))
+                  (8508, 9375,  "VP30"),
+                  (10344, 11100,  "VP24"),
+                  (11580, 18219,  "L")]:
 
-        for k in [len(chart_datas), len(chart_datas)+1]:
+            axs[len(chart_datas)].plot([r[0], r[1]], [1, 1], color="white")
+            axs[len(chart_datas)].annotate(r[2], (r[0], 1))
+
+        for k in [len(chart_datas), len(chart_datas)]:
             axs[k].tick_params(
                 axis='x',  # changes apply to the x-axis
                 which='both',  # both major and minor ticks are affected
@@ -180,7 +197,7 @@ def local_compatibilities_analysis_consensus_coordinates(poagraph: Poagraph, con
             axs[k].spines['left'].set_visible(False)
 
 
-        fig.text(0.005, 0.6, 'Compatibility', ha='center', va='center', rotation='vertical')
+        fig.text(0.005, 0.6, 'Local compatibility', ha='center', va='center', rotation='vertical')
 
         fig.tight_layout()
         fig.savefig(chart_path, dpi=100)
@@ -218,7 +235,7 @@ def local_compatibilities_analysis_consensus_coordinates(poagraph: Poagraph, con
         produce_joint_chart(chart_datas, joint_chart_path)
 
     current_path = Path(os.path.abspath(__file__)).resolve()
-    output_dir_path = pathtools.get_child_dir(current_path.parent, "charts_ebola_400_200_left_kreski_v2")
+    output_dir_path = pathtools.get_child_dir(current_path.parent, "charts_ebola_400_200_middle_prostokaty")
 
     for g in groups:
         produce_local_compatibility_chart(g)
@@ -226,16 +243,19 @@ def local_compatibilities_analysis_consensus_coordinates(poagraph: Poagraph, con
 ebola_a = [1, 2, 3]
 ebola_b = [4, 5, 6, 7, 8]
 
-ebola_consensus_labels = {"1": ("Ebola virus", "sienna"),
-                          "2": ("Marburg virus 1980", "green"),
-                          "3": ("Marburg virus 1987", "orange"),
-                          "4": ("Zaire Ebola virus", "grey"),
-                          "5": ("Sudan Ebola virus", "lightgreen"),
-                          "6": ("Reston Ebola virus", "darkviolet"),
-                          "7": ("Bundibugyo 2007 Ebola virus", "hotpink"),
-                          "8": ("Bundibugyo Tai Forest", "yellow")
+ebola_consensus_labels = {"1": ("Zaire ebolavirus", "sienna"),
+                          "2": ("Marburgvirus 1980", "green"),
+                          "3": ("Marburgvirus 1987", "orange"),
+                          "4": ("Zaire (DRC) ebolavirus", "grey"),
+                          "5": ("Sudan ebolavirus", "lightgreen"),
+                          "6": ("Reston ebolavirus", "darkviolet"),
+                          "7": ("Bundibugyo ebolavirus", "hotpink"),
+                          "8": ("Tai Forest ebolavirus", "yellow")
                           }
 sim = [1, 2, 6]
+
+os.environ["PATH"] += os.pathsep + '/usr/local/texlive/2019/bin/x86_64-linux'
+
 
 ebola_poagraph, ebola_consensus_tree = get_ebola_consensus_tree(p=0.25, stop=0.99, output_dir_name="output_ebola")
 local_compatibilities_analysis_consensus_coordinates(ebola_poagraph, ebola_consensus_tree, [ebola_a, ebola_b])

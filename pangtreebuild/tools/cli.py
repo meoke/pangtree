@@ -308,7 +308,7 @@ def get_task_parameters(args: argparse.Namespace, running_time) -> TaskParameter
                           output_path=args.output_dir,
                           output_po=bool(args.output_po),
                           output_fasta=bool(args.output_fasta),
-                          output_with_nodes=False,
+                          output_with_nodes=True,
                           verbose=bool(args.verbose),
                           raw_maf=bool(args.raw_maf),
                           fasta_provider=args.fasta_provider if args.fasta_provider else 'ConstSymbol',
