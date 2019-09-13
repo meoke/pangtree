@@ -37,7 +37,6 @@ def _get_file_extension(arg: str) -> str:
         raise InvalidPath(f"Cannot find file extension in {arg}.")
 
 
-
 def _data_type(data_type: str) -> DataType:
     """Converts command line argument to DataType"""
 
@@ -118,14 +117,6 @@ def _cli_arg(constructor: Callable[[str], T]) -> Callable[[str], T]:
             raise argparse.ArgumentError(f"Incorrect argument {x}") from p
     return _c
 
-class _RangeArgAction(argparse.Action):
-    """Command line argument \'range\' (\'-r\') validation"""
-
-    def __call__(self, parser, namespace, values, option_string=None):
-        if values[1] < values[0]:
-            raise ValueError("First r argument must be smaller or equal than the second r argument")
-        setattr(namespace, self.dest, values)
-
 
 def get_parser() -> argparse.ArgumentParser:
     """Create ArgumentParser for pang module."""
@@ -187,24 +178,6 @@ def get_parser() -> argparse.ArgumentParser:
                    default=consensus_input_types.Hbmin(),
                    help='Simple POA algorithm parameter. '
                         'Hbmin value. ' + inspect.getdoc(Hbmin))
-    p.add_argument('--max',
-                   default='max2',
-                   choices=['max1', 'max2'],
-                   help='Tree POA algorithm parameter. ' +
-                        'Specify which strategy - MAX1 or MAX2 use for finding max cutoff.')
-    p.add_argument('--node',
-                   default='node3',
-                   choices=['node1', 'node2', 'node3', 'node4'],
-                   help='Tree POA algorithm parameter. ' +
-                        'Specify which strategy - NODE1, NODE2, NODE3 or NODE4 use for finding node cutoff.')
-    p.add_argument('--r',
-                   nargs=2,
-                   action='append',
-                   help='Tree POA algorithm, MAX1 strategy parameter. ' + inspect.getdoc(Range))
-    p.add_argument('--multiplier',
-                   type=_cli_arg(consensus_input_types.Multiplier),
-                   default=consensus_input_types.Multiplier(),
-                   help='Tree POA algorithm parameter.' + inspect.getdoc(consensus_input_types.Multiplier))
     p.add_argument('--stop',
                    type=_cli_arg(consensus_input_types.Stop),
                    default=consensus_input_types.Stop(),
@@ -250,33 +223,6 @@ def resolve_fasta_provider(args: argparse.Namespace) -> FastaProvider:
                         "Cannot build pangraph.")
 
 
-def resolve_max_strategy(args: argparse.Namespace) -> FindMaxCutoff:
-    if args.max is None or args.max == "max2":
-        return MAX2()
-    elif args.max == "max1":
-        r = consensus_input_types.Range(args.r)
-        return MAX1(r)
-    else:
-        raise Exception("Not known max cutoff strategy."
-                        "Should be \'max1\' or \'max2\' or None."
-                        "Cannot generate Consensus Tree.")
-
-
-def resolve_node_strategy(args: argparse.Namespace) -> FindNodeCutoff:
-    if args.node is None or args.node == "node3":
-        return NODE3()
-    elif args.node == "node1":
-        return NODE1(args.multiplier)
-    elif args.node == "node2":
-        return NODE2(args.r)
-    elif args.node == "node4":
-        return NODE4()
-    else:
-        raise Exception("Not known node cutoff strategy."
-                        "Should be \'node1\', \'node2\',\'node3\', \'node3\' or None."
-                        "Cannot generate Consensus Tree.")
-
-
 def get_default_output_dir():
     """Creates timestamped child dir under current working directory."""
 
@@ -317,9 +263,5 @@ def get_task_parameters(args: argparse.Namespace, running_time) -> TaskParameter
                           fasta_source_file=args.fasta_path,
                           consensus_type=args.consensus,
                           hbmin=args.hbmin.value if args.hbmin else None,
-                          max_cutoff_option=args.max,
-                          search_range=args.r,
-                          node_cutoff_option=args.node,
-                          multiplier=args.multiplier.value if args.multiplier else None,
                           stop=args.stop.value if args.stop else None,
                           p=args.p.value if args.p else None)

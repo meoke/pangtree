@@ -9,7 +9,7 @@ from pangtreebuild.datamodel.Poagraph import Poagraph
 
 
 class TaskParameters:
-    """Describes all parameters provided for single execution of pang program."""
+    """Describes all parameters provided for single execution of the PangtreeBuild program."""
 
     def __init__(self,
                  running_time: str = None,
@@ -32,10 +32,6 @@ class TaskParameters:
 
                  consensus_type: str = None,
                  hbmin: float = None,
-                 max_cutoff_option: str = None,
-                 search_range: Tuple[float, float] = None,
-                 node_cutoff_option: str = None,
-                 multiplier: float = None,
                  stop: float = None,
                  p: float = None
                  ):
@@ -61,12 +57,6 @@ class TaskParameters:
 
         self.consensus_type: str = consensus_type
         self.hbmin: float = hbmin
-
-        self.max_cutoff_strategy: str = max_cutoff_option
-        self.search_range: Tuple[float, float] = search_range
-
-        self.node_cutoff_strategy: str = node_cutoff_option
-        self.multiplier: float = multiplier
 
         self.stop: float = stop
         self.p: float = p
