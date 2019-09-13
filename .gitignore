@@ -112,3 +112,5 @@ ENV/
 /.fastacache/*
 
 *.fasta
+
+/full_example_data/*
