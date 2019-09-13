@@ -82,7 +82,8 @@ class ToFASTATests(unittest.TestCase):
                                                      pSeq.SequenceID('seq1'): CT.CompatibilityToPath(0.9, P(1)),
                                                      pSeq.SequenceID('seq2'): CT.CompatibilityToPath(0.95, P(1)),
                                                      pSeq.SequenceID('seq3'): CT.CompatibilityToPath(0.6, P(1))},
-                             consensus_path=pSeq.SequencePath([nid(0), nid(2), nid(5), nid(6), nid(10), nid(12), nid(13), nid(16)])),
+                             consensus_path=pSeq.SequencePath([nid(0), nid(2), nid(5), nid(6),
+                                                               nid(10), nid(12), nid(13), nid(16)])),
             # no compatibilities to all, no mincomp
             CT.ConsensusNode(consensus_id=CT.ConsensusNodeID(1),
                              parent_node_id=CT.ConsensusNodeID(0),
@@ -96,6 +97,7 @@ class ToFASTATests(unittest.TestCase):
         actual_consensuses_fasta_content = PangenomeFASTA.consensuses_tree_to_fasta(self.poagraph, consensuses_tree)
         expected_consensuses_fasta_content = pathtools.get_file_content(expected_consensuses_fasta_path)
         self.assertEqual(expected_consensuses_fasta_content, actual_consensuses_fasta_content)
+
 
 if __name__ == '__main__':
     unittest.main()

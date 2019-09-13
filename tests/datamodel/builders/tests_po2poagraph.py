@@ -38,7 +38,7 @@ class Po2poagraphTests(unittest.TestCase):
                           pNode.Node(node_id=nid(15), base=bid('A'), aligned_to=nid(16)),
                           pNode.Node(node_id=nid(16), base=bid('C'), aligned_to=nid(17)),
                           pNode.Node(node_id=nid(17), base=bid('G'), aligned_to=nid(15))
-                         ]
+                          ]
 
         expected_sequences = {
             pSeq.SequenceID('seq0'):
@@ -61,7 +61,7 @@ class Po2poagraphTests(unittest.TestCase):
 
         expected_poagraph = pPoagraph.Poagraph(expected_nodes, expected_sequences)
         nodes, sequences = po2poagraph.get_poagraph(Po(pathtools.get_file_content_stringio(po_path), po_path),
-                                                   self.metadatacsv)
+                                                    self.metadatacsv)
         actual_poagraph = pPoagraph.Poagraph(nodes, sequences)
         self.assertEqual(expected_poagraph, actual_poagraph)
 
@@ -108,7 +108,7 @@ class Po2poagraphTests(unittest.TestCase):
 
         expected_poagraph = pPoagraph.Poagraph(expected_nodes, expected_sequences)
         nodes, sequences = po2poagraph.get_poagraph(Po(pathtools.get_file_content_stringio(po_path), po_path),
-                                                   self.metadatacsv)
+                                                    self.metadatacsv)
         actual_poagraph = pPoagraph.Poagraph(nodes, sequences)
         self.assertEqual(expected_poagraph, actual_poagraph)
 

@@ -264,7 +264,6 @@ class DAGMaf2PoagraphConstSymbolProviderTests(unittest.TestCase):
     def test_6_missing_one_reverted_sequence_middle_minus1_1(self):
         maf_path = Path(self.maf_files_dir + "test_6_missing_one_reverted_sequence_middle_minus1_1.maf")
 
-
         expected_nodes = [
             # block 1 because it is first in DAG and reverted
             pNode.Node(node_id=nid(0), base=pNode.Base('A'), aligned_to=None),
@@ -360,6 +359,7 @@ class DAGMaf2PoagraphConstSymbolProviderTests(unittest.TestCase):
             self.metadatacsv)
 
         self.assertEqual(expected_poagraph, actual_poagraph)
+
 
 if __name__ == '__main__':
     unittest.main()

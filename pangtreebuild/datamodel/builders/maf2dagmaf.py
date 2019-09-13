@@ -1,6 +1,6 @@
 from pangtreebuild.datamodel.DAGMaf import DAGMaf, DAGMafNode
 from pangtreebuild.datamodel.input_types import Maf
-from mafgraph.sorter import sort_mafblocks
+from pangtreebuild.mafgraph.sorter import sort_mafblocks
 from pangtreebuild.tools import logprocess
 
 global_logger = logprocess.get_global_logger()

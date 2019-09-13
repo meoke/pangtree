@@ -153,7 +153,10 @@ def _get_children_nodes_looping(node: ConsensusNode,
                 compatibilities_to_max_c=compatibilities_to_consensus_candidate,
                 so_far_cutoffs=so_far_cutoffs,
                 splitted_node_id=node.consensus_id)
-            if qualified_sequences_ids_candidates == current_candidates:
+
+            if qualified_sequences_ids_candidates == current_candidates or attempt == 10:
+                if attempt == 10:
+                    detailed_logger.info("Attempt treshold 10 exceeded!")
                 consensus_id += 1
 
                 consensus_node = ConsensusNode(

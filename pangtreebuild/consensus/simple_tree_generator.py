@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import Dict
 
 from pangtreebuild.consensus import poa
-from pangtreebuild.consensus.ConsensusTree import ConsensusTree, ConsensusNode, ConsensusNodeID
+from pangtreebuild.consensus.ConsensusTree import ConsensusTree, ConsensusNode, ConsensusNodeID, CompatibilityToPath
 from pangtreebuild.consensus.input_types import Blosum, Hbmin
 from pangtreebuild.consensus.poa import ConsInfo
 from pangtreebuild.datamodel.Poagraph import Poagraph
@@ -30,16 +30,18 @@ def _get_consensus_nodes(poagraph: Poagraph, consensus_paths: Dict[int, ConsInfo
                            sequences_ids=c_info.assigned_sequences_ids,
                            mincomp=mincomp,
                            compatibilities_to_all=compatibilities,
-                           consensus_path=c_info.path)
+                           consensus_path=c_info.path,
+                           children_nodes_ids=[])
         consensus_nodes.append(cn)
 
     node_for_unassigned_sequences = ConsensusNode(parent_node_id=ConsensusNodeID(0),
                                                   sequences_ids=[seq_id
                                                                  for seq_id in poagraph.get_sequences_ids()
                                                                  if seq_id not in assigned_sequences],
-                                                  consensus_id=ConsensusNodeID(len(consensus_nodes)+1))
+                                                  consensus_id=ConsensusNodeID(len(consensus_nodes)+1),
+                                                  mincomp=CompatibilityToPath(0),
+                                                  children_nodes_ids=[])
     consensus_nodes.append(node_for_unassigned_sequences)
-    print(consensus_nodes)
     return consensus_nodes
 
 

@@ -1,0 +1,6 @@
+chr20	cdsutr2exons	exon	8351	8408	0	.	.	gene_index 0; ces CDS:8351-8408;
+chr20	cdsutr2exons	exon	16646	17296	0	.	.	gene_index 0; ces CDS:16646-17058,UTR:17059-17296;
+chr20	cdsutr2exons	exon	63252	63327	0	.	.	gene_index 1; ces UTR:63252-63269,CDS:63270-63327;
+chr20	cdsutr2exons	exon	66056	66392	0	.	.	gene_index 1; ces CDS:66056-66333,UTR:66334-66392;
+chr20	cdsutr2exons	exon	78186	78234	0	.	.	gene_index 2; ces CDS:78186-78234;
+chr20	cdsutr2exons	exon	79415	79804	0	.	.	gene_index 2; ces CDS:79415-79665,UTR:79666-79804;

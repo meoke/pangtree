@@ -1,5 +1,4 @@
 import unittest
-from pathlib import Path
 from typing import List
 
 from ddt import unpack, data, ddt
@@ -80,7 +79,7 @@ class CutoffsTests(unittest.TestCase):
         )
     @unpack
     def test_2_max1_max2_strategy_should_be_equal_for_full_range(self, expected_cutoff_value, compatibilites):
-        max1_strategy: cutoffs.MAX1 = cutoffs.MAX1(Range([0,1]))
+        max1_strategy: cutoffs.MAX1 = cutoffs.MAX1(Range([0, 1]))
         max1_cutoff = max1_strategy.find_max_cutoff(compatibilites).cutoff
         max2_strategy: cutoffs.MAX2 = cutoffs.MAX2()
         max2_cutoff = max2_strategy.find_max_cutoff(compatibilites).cutoff
@@ -221,7 +220,10 @@ class CutoffsTests(unittest.TestCase):
         (0.2, [0.1, 0.25, 0.2], [0.9], 1)
     )
     @unpack
-    def test_node2_strategy_guard_greater_than_all_comps(self, expected_cutoff, compatibilities, so_far_cutoffs, multiplier):
+    def test_node2_strategy_guard_greater_than_all_comps(self,
+                                                         expected_cutoff,
+                                                         compatibilities,
+                                                         so_far_cutoffs, multiplier):
         node2_strategy = cutoffs.NODE2(Multiplier(multiplier))
         compatibilities = [CT.CompatibilityToPath(c) for c in compatibilities]
         so_far_cutoffs = [CT.CompatibilityToPath(c) for c in so_far_cutoffs]
@@ -254,7 +256,7 @@ class CutoffsTests(unittest.TestCase):
 
     def test_node2_no_compatibilities(self):
         with self.assertRaises(ValueError) as err:
-            node2_strategy: cutoffs.NODE2 = cutoffs.NODE2(1)
+            node2_strategy: cutoffs.NODE2 = cutoffs.NODE2(Multiplier(1))
             _ = node2_strategy.find_node_cutoff([], []).cutoff
             self.assertEqual(str(err.exception), f"Empty compatibilities list. Cannot find cutoff.")
 
@@ -323,6 +325,7 @@ class CutoffsTests(unittest.TestCase):
             node3_strategy: cutoffs.NODE4 = cutoffs.NODE4()
             _ = node3_strategy.find_node_cutoff([], []).cutoff
             self.assertEqual(str(err.exception), f"Empty compatibilities list. Cannot find cutoff.")
+
 
 if __name__ == '__main__':
     unittest.main()
