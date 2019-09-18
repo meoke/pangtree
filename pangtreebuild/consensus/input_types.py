@@ -61,25 +61,6 @@ class Hbmin:
             raise ConsensusInputError(f"Hbmin must be in range [0,1].")
 
 
-class Range:
-    """Specify what part of sorted compatibilities should be searched for node cutoff. E.g. [0.2,0.8]"""
-
-    def __init__(self, value: List[Union[str, float]] = None):
-        if len(value) != 2:
-            raise ConsensusInputError("CUTOFF SEARCH RANGE must have length 2.")
-        self.value: Tuple[float, float] = (float(value[0]), float(value[1])) if value else (0, 1)
-        self._raise_exception_if_incorrect(self.value)
-
-    def _raise_exception_if_incorrect(self, value: Tuple[float, float]) -> None:
-        if value[1] < value[0]:
-            raise ConsensusInputError("CUTOFF SEARCH RANGE first value must be smaller or equal to second value.")
-        if value[0] < 0 \
-                or value[0] > 1 \
-                or value[1] < 0 \
-                or value[1] > 1:
-            raise ConsensusInputError("CUTOFF SEARCH RANGE values must be in the range of [0,1].")
-
-
 class Stop:
     """Value of node compatibility above which the node is no more split."""
     
@@ -102,8 +83,4 @@ class P:
         self.value: float = float(value) if value is not None else 1
 
 
-class Multiplier:
-    """NODE1 and NODE2 strategy parameter."""
 
-    def __init__(self, value: Union[str, float] = None):
-        self.value: float = float(value) if value is not None else 1

@@ -22,8 +22,9 @@ from pangtreebuild.output import PangenomePO
 
 from pangtreebuild.output import PangenomeFASTA
 from pangtreebuild.consensus import ConsensusTree as CT
-from pangtreebuild.consensus.input_types import P, Range, ConsensusInputError, Multiplier
+from pangtreebuild.consensus.input_types import P, ConsensusInputError
 from pangtreebuild.consensus import cutoffs, poa
+from pangtreebuild.consensus import tree_generator
 
 
 # from pangenome.pang.arguments.PangenomeParameters import MultialignmentFormat

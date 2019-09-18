@@ -234,7 +234,7 @@ def _get_children_nodes_looping(node: ConsensusNode,
 # def _get_max_compatible_sequences_ids_and_cutoff(compatibilities_to_consensus: Dict[SequenceID, CompatibilityToPath],
 #                                                  splitted_node_id,
 #                                                  so_far_cutoffs: List[CompatibilityToPath] = []) -> List[SequenceID]:
-#     max_cutoff = max_cutoff_strategy.find_max_cutoff([*compatibilities_to_consensus.values()])
+#     max_cutoff = max_cutoff_strategy.find_max_distance([*compatibilities_to_consensus.values()])
 #
 #     tresholds_logger.info(f"Splitting {splitted_node_id}; MAX; {compatibilities_to_consensus}; "
 #                           f"{max_cutoff.cutoff}; {max_cutoff.explanation}")
@@ -277,8 +277,8 @@ class FindCutoffResult:
 def find_node_cutoff(compatibilities: List[CompatibilityToPath],
                      so_far_cutoffs: List[CompatibilityToPath]) -> FindCutoffResult:
     if not so_far_cutoffs:
-        cutoff = get_max2_result(compatibilities)
-        reason = "No so far cutoffs. Use max 2."
+        cutoff = find_max_distance(compatibilities)
+        reason = "No so far cutoffs. Find max distance in sorted values."
     else:
         guard = min(so_far_cutoffs)
         sorted_comp = sorted(compatibilities)
@@ -286,35 +286,30 @@ def find_node_cutoff(compatibilities: List[CompatibilityToPath],
             cutoff = sorted_comp[0]
             reason = "guard < min(compatibilities). Return min(compatibilities)."
         elif guard >= sorted_comp[-1]:
-            cutoff = get_max2_result(compatibilities)
-            reason = "guard > max(compatibilities). Use max 2."
+            cutoff = find_max_distance(compatibilities)
+            reason = "guard > max(compatibilities). Find max distance in sorted values."
         else:
             first_comp_greater_than_guard_index = [i for i, c in enumerate(sorted_comp) if c > guard][0]
-            cutoff = get_max2_result(sorted_comp[0:first_comp_greater_than_guard_index + 1])
-            reason = "Use max 2 on sorted_comp[0:first_comp_greater_than_guard_index + 1]"
+            cutoff = find_max_distance(sorted_comp[0:first_comp_greater_than_guard_index + 1])
+            reason = "Find max distance in sorted_comp[0:first_comp_greater_than_guard_index + 1]"
     return FindCutoffResult(cutoff, reason)
 
 
-def get_max2_result(compatibilities: List[CompatibilityToPath]) -> CompatibilityToPath:
-    return find_max_cutoff(compatibilities).cutoff
+def find_max_distance(compatibilities: List[CompatibilityToPath]) -> CompatibilityToPath:
+    def break_if_empty(compatibilities: List[CompatibilityToPath]) -> None:
+        if not list(compatibilities):
+            raise ValueError("Empty compatibilities list. Cannot find cutoff.")
 
-
-def find_max_cutoff(compatibilities: List[CompatibilityToPath]) -> FindCutoffResult:
     break_if_empty(compatibilities)
-    cutoff = sort_and_get_value_following_max_distance(compatibilities)
-    reason = "Value after max distance in cutoff search range."
-    return FindCutoffResult(cutoff, reason)
+    if len(compatibilities) == 1:
+        return compatibilities[0]
 
-
-def break_if_empty(compatibilities: List[CompatibilityToPath]) -> None:
-    if not list(compatibilities):
-        raise ValueError("Empty compatibilities list. Cannot find cutoff.")
-
-
-def sort_and_get_value_following_max_distance(values: List[CompatibilityToPath]) -> CompatibilityToPath:
-    if len(values) == 1:
-        return values[0]
-    sorted_values = sorted(values)
+    sorted_values = sorted(compatibilities)
     distances = np.array([sorted_values[i + 1] - sorted_values[i] for i in range(len(sorted_values) - 1)])
     max_distance_index: int = np.argmax(distances)
     return sorted_values[max_distance_index + 1]
+
+
+
+
+
