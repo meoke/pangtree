@@ -75,7 +75,7 @@ class Poagraph:
             try:
                 sequence_paths = self.sequences[seq_id].paths
             except KeyError:
-                raise Exception("No sequence with given ID in pangraph.")
+                raise Exception("No sequence with given ID in poagraph.")
             if len(sequence_paths) == 1:
                 sequence_path = sequence_paths[0]
             else:
@@ -112,7 +112,7 @@ class Poagraph:
     def get_sequence_nodes_count(self, seq_id: SequenceID) -> int:
         """Return the sum of lengths of all paths with the seid."""
         if seq_id not in self.sequences:
-            raise Exception("No sequence with given ID in pangraph.")
+            raise Exception("No sequence with given ID in poagraph.")
         return sum([len(path) for path in self.sequences[seq_id].paths])
 
     def get_sequences_ids(self) -> List[SequenceID]:

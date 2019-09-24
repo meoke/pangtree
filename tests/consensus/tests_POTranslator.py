@@ -10,7 +10,7 @@ def b(x): return pNode.Base(x)
 
 
 @ddt
-class PangraphPOTranslator_read_top_consensus_Test(unittest.TestCase):
+class PoagraphPOTranslator_read_top_consensus_Test(unittest.TestCase):
 
     def setUp(self):
         nodes = [pNode.Node(node_id=nid(0), base=b('T'), aligned_to=None, ),
@@ -73,7 +73,7 @@ class PangraphPOTranslator_read_top_consensus_Test(unittest.TestCase):
         expected_consensus_path = [1, 3, 6, 9, 11]
         self.assertEqual(expected_consensus_path, actual_consensus_path[0].path)
 
-    def test_subpangraph_construction_from_pangraph_keep_seq_0_1(self):
+    def test_subpoagraph_construction_from_poagraph_keep_seq_0_1(self):
         translator = poa.PoagraphPOTranslator(self.poagraph, [pSeq.SequenceID('seq0'), pSeq.SequenceID('seq1')])
         actual_po_content = translator.get_input_po_content()
         expected_po_content = "VERSION=pangenome\n"\
@@ -96,7 +96,7 @@ class PangraphPOTranslator_read_top_consensus_Test(unittest.TestCase):
                               "a:L6S0"
         self.assertEqual(expected_po_content, actual_po_content)
 
-    def test_subpangraph_construction_from_pangraph_keep_seq3(self):
+    def test_subpoagraph_construction_from_poagraph_keep_seq3(self):
         translator = poa.PoagraphPOTranslator(self.poagraph, [pSeq.SequenceID('seq3')])
         actual_po_content = translator.get_input_po_content()
         expected_po_content = "VERSION=pangenome\n" \
@@ -115,7 +115,7 @@ class PangraphPOTranslator_read_top_consensus_Test(unittest.TestCase):
                               "c:L5S0"
         self.assertEqual(expected_po_content, actual_po_content)
 
-    def test_subpangraph_construction_full_graph(self):
+    def test_subpoagraph_construction_full_graph(self):
         nodes = [pNode.Node(node_id=nid(0), base=b('A'), aligned_to=None),
                  pNode.Node(node_id=nid(1), base=b('A'), aligned_to=None),
                  pNode.Node(node_id=nid(2), base=b('C'), aligned_to=None),
@@ -146,7 +146,7 @@ class PangraphPOTranslator_read_top_consensus_Test(unittest.TestCase):
                               "t:L3S0"
         self.assertEqual(expected_po_content, actual_po_content)
 
-    def test_subpangraph_should_omit_edges_1(self):
+    def test_subpoagraph_should_omit_edges_1(self):
         nodes = [pNode.Node(node_id=nid(0), base=b('A'), aligned_to=None),
                  pNode.Node(node_id=nid(1), base=b('C'), aligned_to=None),
                  pNode.Node(node_id=nid(2), base=b('C'), aligned_to=None)]
@@ -178,7 +178,7 @@ class PangraphPOTranslator_read_top_consensus_Test(unittest.TestCase):
         self.assertEqual(expected_po_content, actual_po_content)
 
 
-    def test_subpangraph_should_omit_edges_2(self):
+    def test_subpoagraph_should_omit_edges_2(self):
         nodes = [pNode.Node(node_id=nid(0), base=b('A'), aligned_to=None),
                           pNode.Node(node_id=nid(1), base=b('C'), aligned_to=None),
                           pNode.Node(node_id=nid(2), base=b('C'), aligned_to=None)]
@@ -209,8 +209,8 @@ class PangraphPOTranslator_read_top_consensus_Test(unittest.TestCase):
 
         self.assertEqual(expected_po_content, actual_po_content)
 
-    def test_subpangraph_should_omit_in_nodes_and_aligned_nodes(self):
-        #original pangraph
+    def test_subpoagraph_should_omit_in_nodes_and_aligned_nodes(self):
+        #original poagraph
         nodes = [pNode.Node(node_id=nid(0), base=b('A'), aligned_to=None),
                  pNode.Node(node_id=nid(1), base=b('C'), aligned_to=nid(2)),
                  pNode.Node(node_id=nid(2), base=b('T'), aligned_to=nid(1)),
@@ -243,7 +243,7 @@ class PangraphPOTranslator_read_top_consensus_Test(unittest.TestCase):
 
         self.assertEqual(expected_po_content, actual_po_content)
 
-    def test_subpangraph_unfilled_nodes(self):
+    def test_subpoagraph_unfilled_nodes(self):
         symbol_for_uknown = '?'
         nodes = [pNode.Node(node_id=nid(0), base=b('A'), aligned_to=nid(1)),
                  pNode.Node(node_id=nid(1), base=b('C'), aligned_to=nid(0)),

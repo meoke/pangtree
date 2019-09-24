@@ -26,9 +26,9 @@ class UseCache:
 
 
 class FastaProvider(abc.ABC):
-    """Pangraph building from maf file parameter. Ignored when -not_dag parameter is set.
+    """Poagraph building from maf file parameter. Ignored when -not_dag parameter is set.
        Maf file usually contains not full sequences but only parts of them, aligned to each other.
-       To build an exact pangraph the full sequences must be retrieved from: ncbi or local file system."""
+       To build an exact poagraph the full sequences must be retrieved from: ncbi or local file system."""
 
     @abc.abstractmethod
     def get_base(self, sequence_id: SequenceID, i: int) -> Base:

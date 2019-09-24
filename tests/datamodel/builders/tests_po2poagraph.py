@@ -17,7 +17,7 @@ class Po2poagraphTests(unittest.TestCase):
         self.metadatacsv = MetadataCSV(pathtools.get_file_content_stringio(metadata_path), metadata_path)
         self.po_files_dir = 'tests/datamodel/builders/po_files/'
 
-    def test_1_typical_pangraph(self):
+    def test_1_typical_poagraph(self):
         po_path = self.po_files_dir + "test_1.po"
 
         expected_nodes = [pNode.Node(node_id=nid(0), base=bid('A'), aligned_to=nid(1)),

@@ -18,7 +18,7 @@ class PoagraphToPOTests(unittest.TestCase):
     def setUp(self):
         self.po_files_dir = 'tests/output/po_files/'
 
-    def test_1_typical_pangraph(self):
+    def test_1_typical_poagraph(self):
         expected_po_content_path = Path(self.po_files_dir + "test_1.po")
 
         poagraph_nodes = [pNode.Node(node_id=nid(0), base=bid('A'), aligned_to=nid(1)),

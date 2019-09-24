@@ -58,8 +58,8 @@ def get_affinity_tree(poagraph: Poagraph,
 
 def _raise_error_if_invalid_poagraph(poagraph: Poagraph):
     if len(poagraph.sequences) == 0:
-        raise AffinityTreeNodeGenerationException("Invalid pangraph."
-                                                  "No paths in pangraph."
+        raise AffinityTreeNodeGenerationException("Invalid poagraph."
+                                                  "No paths in poagraph."
                                                   "Affinity Tree generation is impossible.")
 
 

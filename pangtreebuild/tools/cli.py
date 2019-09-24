@@ -215,7 +215,7 @@ def resolve_fasta_provider(args: argparse.Namespace) -> FastaProvider:
     else:
         raise Exception("Not known fasta provider."
                         "Should be \'ncbi\' or \'file\' or None."
-                        "Cannot build pangraph.")
+                        "Cannot build poagraph.")
 
 
 def get_default_output_dir():
