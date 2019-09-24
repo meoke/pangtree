@@ -1,7 +1,7 @@
 """This script is prepared for detaild Ebola virus analysis - and for preparing Ebola tree of life. Steps:
 - build Poagraph based on Ebola multialignment (data/Ebola/genome_whole/input/multialignment.maf)
 - run Consensus Tree algorithm (P=0.25, STOP=0.99)
-- for specific groups of generated consensuses (Group 1: 1, 2, 3; Group 2: 4, 5, 6, 7, 8; Group 3: sons of 4) calculate compatibility for each group in this group
+- for specific groups of generated affinitytree (Group 1: 1, 2, 3; Group 2: 4, 5, 6, 7, 8; Group 3: sons of 4) calculate compatibility for each group in this group
 
 """
 
@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import List, Tuple, Dict
 import matplotlib.pyplot as plt
 
-from pangtreebuild.consensus import simple_tree_generator
+from pangtreebuild.affinitytree import simple_tree_generator
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../pangtreebuild')))
 import pangtreebuild.tools.pathtools as pathtools
@@ -19,14 +19,14 @@ import pangtreebuild.datamodel.fasta_providers.FromFile as fp_file
 import pangtreebuild.datamodel.input_types as inp
 from pangtreebuild.datamodel.Poagraph import Poagraph
 from pangtreebuild.datamodel.Node import NodeID, ColumnID
-import pangtreebuild.consensus.tree_generator as tree_generator
-import pangtreebuild.consensus.input_types as cinp
+import pangtreebuild.affinitytree.tree_generator as tree_generator
+import pangtreebuild.affinitytree.input_types as cinp
 from pangtreebuild.output.PangenomeJSON import TaskParameters
-from pangtreebuild.consensus.cutoffs import MAX2, NODE3
-from pangtreebuild.consensus.ConsensusTree import ConsensusTree, ConsensusNode, CompatibilityToPath
+from pangtreebuild.affinitytree.cutoffs import MAX2, NODE3
+from pangtreebuild.affinitytree.ConsensusTree import AffinityTree, AffinityNode, Compatibility
 
 
-def get_ebola_poa_tree(hbmin: float, output_dir_name: str) -> Tuple[Poagraph, ConsensusTree]:
+def get_ebola_poa_tree(hbmin: float, output_dir_name: str) -> Tuple[Poagraph, AffinityTree]:
     current_path = Path(os.path.abspath(__file__)).resolve()
     output_dir_path = pathtools.get_child_dir(current_path.parent, output_dir_name)
     consensus_output_dir = pathtools.get_child_dir(output_dir_path, "consensus")
@@ -47,13 +47,13 @@ def get_ebola_poa_tree(hbmin: float, output_dir_name: str) -> Tuple[Poagraph, Co
     blosum_content = pathtools.get_file_content_stringio(path=blosum_path)
     blosum = cinp.Blosum(blosum_content, blosum_path)
 
-    return poagraph, simple_tree_generator.get_simple_consensus_tree(poagraph,
-                                                       blosum,
-                                                       consensus_output_dir,
-                                                       cinp.Hbmin(hbmin),
-                                                       False)
+    return poagraph, simple_tree_generator.get_simple_affinity_tree(poagraph,
+                                                                    blosum,
+                                                                    consensus_output_dir,
+                                                                    cinp.Hbmin(hbmin),
+                                                                    False)
 
-def get_ebola_consensus_tree(p: float, stop: float, output_dir_name: str) -> Tuple[Poagraph, ConsensusTree]:
+def get_ebola_consensus_tree(p: float, stop: float, output_dir_name: str) -> Tuple[Poagraph, AffinityTree]:
     current_path = Path(os.path.abspath(__file__)).resolve()
     output_dir_path = pathtools.get_child_dir(current_path.parent, output_dir_name)
     consensus_output_dir = pathtools.get_child_dir(output_dir_path, "consensus")
@@ -75,30 +75,30 @@ def get_ebola_consensus_tree(p: float, stop: float, output_dir_name: str) -> Tup
     blosum_content = pathtools.get_file_content_stringio(path=blosum_path)
     blosum = cinp.Blosum(blosum_content, blosum_path)
 
-    return poagraph, tree_generator.get_consensus_tree(poagraph,
-                                             blosum,
-                                             consensus_output_dir,
-                                             cinp.Stop(stop),
-                                             cinp.P(p),
-                                             MAX2(),
-                                             NODE3(),
-                                             False)
+    return poagraph, tree_generator.get_affinity_tree(poagraph,
+                                                      blosum,
+                                                      consensus_output_dir,
+                                                      cinp.Stop(stop),
+                                                      cinp.P(p),
+                                                      MAX2(),
+                                                      NODE3(),
+                                                      False)
 
 
-def add_leaves(consensus_tree:ConsensusTree):
+def add_leaves(consensus_tree:AffinityTree):
     new_nodes = []
     for node in consensus_tree.nodes:
-        if len(node.children_nodes_ids) == 0 and len(node.sequences_ids) > 1:
-            for seq_id in node.sequences_ids:
+        if len(node.children) == 0 and len(node.sequences) > 1:
+            for seq_id in node.sequences:
                 consensus_node_id = len(consensus_tree.nodes)+len(new_nodes)
-                node.children_nodes_ids.append(consensus_node_id)
-                new_nodes.append(ConsensusNode(consensus_id=consensus_node_id,
-                                           parent_node_id=node.consensus_id,
-                                           children_nodes_ids=[],
-                                           sequences_ids=[seq_id],
-                                               mincomp=CompatibilityToPath(1.0)
+                node.children.append(consensus_node_id)
+                new_nodes.append(AffinityNode(id=consensus_node_id,
+                                              parent=node.id,
+                                              children=[],
+                                              sequences=[seq_id],
+                                              mincomp=Compatibility(1.0)
 
-                                           ))
+                                              ))
 
     consensus_tree.nodes.extend(new_nodes)
     return consensus_tree

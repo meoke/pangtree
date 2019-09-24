@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import Tuple
 
 from build.lib.pangtreebuild.datamodel.Node import Node
-from pangtreebuild.consensus.ConsensusTree import ConsensusTree, ConsensusNode, ConsensusNodeID, CompatibilityToPath
+from pangtreebuild.affinitytree.ConsensusTree import AffinityTree, AffinityNode, ConsensusNodeID, Compatibility
 from pangtreebuild.datamodel.Node import NodeID, Base
 from pangtreebuild.datamodel.Poagraph import Poagraph
 from pangtreebuild.datamodel.Sequence import SequenceID, Sequence
@@ -10,41 +10,42 @@ from pangtreebuild.output.PangenomeJSON import str_to_PangenomeJSON
 from pangtreebuild.tools import pathtools
 
 
-def convert_jsonpangenome(path: Path) -> Tuple[Poagraph, ConsensusTree]:
+def convert_jsonpangenome(path: Path) -> Tuple[Poagraph, AffinityTree]:
     jsonpangenome = str_to_PangenomeJSON(pathtools.get_file_content(path))
     poagraph = Poagraph(nodes=[Node(node_id=NodeID(n.id), base=Base(n.base)) for n in jsonpangenome.nodes],
                     sequences={SequenceID(seq.sequence_str_id): Sequence(seqid=SequenceID(seq.sequence_str_id), paths=[], seqmetadata=seq.metadata) for seq in jsonpangenome.sequences},
                     )
     seq_int_to_str_ids = {s.sequence_int_id: s.sequence_str_id for s in jsonpangenome.sequences}
-    consensus_tree = ConsensusTree()
-    consensus_tree.nodes = [ConsensusNode(consensus_id=ConsensusNodeID(c.consensus_node_id),
-                            parent_node_id=ConsensusNodeID(c.parent),
-                            children_nodes_ids=[ConsensusNodeID(child) for child in c.children],
-                            sequences_ids=[SequenceID(seq_int_to_str_ids[seq_int_id]) for seq_int_id in c.sequences_int_ids],
-                            mincomp=CompatibilityToPath(c.mincomp)) for c in jsonpangenome.consensuses]
+    consensus_tree = AffinityTree()
+    consensus_tree.nodes = [AffinityNode(id=ConsensusNodeID(c.consensus_node_id),
+                                         parent=ConsensusNodeID(c.parent),
+                                         children=[ConsensusNodeID(child) for child in c.children],
+                                         sequences=[SequenceID(seq_int_to_str_ids[seq_int_id]) for seq_int_id in c.sequences_int_ids],
+                                         mincomp=Compatibility(c.mincomp)) for c in jsonpangenome.affinitytree]
 
     return poagraph, consensus_tree
 
-def expand_unassigned_node(consensus_tree: ConsensusTree):
+def expand_unassigned_node(consensus_tree: AffinityTree):
     node_to_remove = None
     new_nodes = []
     for node in consensus_tree.nodes:
-        if node.parent_node_id == ConsensusNodeID(0) and node.mincomp == CompatibilityToPath(0):
-            node_to_remove = node.consensus_id
-            for sequence in node.sequences_ids:
-                new_nodes.append(ConsensusNode(consensus_id=ConsensusNodeID(len(consensus_tree.nodes)+len(new_nodes)),
-                                               parent_node_id=ConsensusNodeID(0),
-                                               children_nodes_ids=[],
-                                               sequences_ids=[sequence],
-                                               mincomp=CompatibilityToPath(1.0),
-                                               compatibilities_to_all={},
-                                               consensus_path=[]))
-            node.sequences_ids = []
-            node.children_nodes_ids = []
-        elif node.consensus_id != ConsensusNodeID(0):
-            node.children_nodes_ids = []
+        if node.parent == ConsensusNodeID(0) and node.mincomp == Compatibility(0):
+            node_to_remove = node.id
+            for sequence in node.sequences:
+                new_nodes.append(AffinityNode(
+                    id=ConsensusNodeID(len(consensus_tree.nodes) + len(new_nodes)),
+                    parent=ConsensusNodeID(0),
+                    children=[],
+                    sequences=[sequence],
+                    mincomp=Compatibility(1.0),
+                    compatibilities={},
+                    consensus=[]))
+            node.sequences = []
+            node.children = []
+        elif node.id != ConsensusNodeID(0):
+            node.children = []
     for new_node in new_nodes:
-        consensus_tree.nodes[0].children_nodes_ids.append(new_node.consensus_id)
+        consensus_tree.nodes[0].children.append(new_node.id)
     consensus_tree.nodes.extend(new_nodes)
     return consensus_tree
 

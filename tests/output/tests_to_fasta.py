@@ -1,7 +1,7 @@
 import unittest
 from pathlib import Path
 
-from tests.context import pPoagraph, pNode, pSeq, PangenomeFASTA, CT, P, pathtools
+from tests.context import pPoagraph, pNode, pSeq, PangenomeFASTA, AT, P, pathtools
 
 
 def nid(x): return pNode.NodeID(x)
@@ -67,34 +67,34 @@ class ToFASTATests(unittest.TestCase):
     def test_2_consensuses_tree_fasta(self):
         expected_consensuses_fasta_path = Path(self.fasta_dir + "consensuses.fasta")
 
-        consensuses_tree = CT.ConsensusTree()
-        consensuses_tree.nodes = [
+        affinity_tree = AT.AffinityTree()
+        affinity_tree.nodes = [
             # all members set
-            CT.ConsensusNode(consensus_id=CT.ConsensusNodeID(0),
-                             parent_node_id=CT.ConsensusNodeID(-1),
-                             children_nodes_ids=[CT.ConsensusNodeID(1), CT.ConsensusNodeID(2)],
-                             sequences_ids=[pSeq.SequenceID('seq0'),
-                                            pSeq.SequenceID('seq1'),
-                                            pSeq.SequenceID('seq2'),
-                                            pSeq.SequenceID('seq3')],
-                             mincomp=CT.CompatibilityToPath(0.5, P(1)),
-                             compatibilities_to_all={pSeq.SequenceID('seq0'): CT.CompatibilityToPath(1.0, P(1)),
-                                                     pSeq.SequenceID('seq1'): CT.CompatibilityToPath(0.9, P(1)),
-                                                     pSeq.SequenceID('seq2'): CT.CompatibilityToPath(0.95, P(1)),
-                                                     pSeq.SequenceID('seq3'): CT.CompatibilityToPath(0.6, P(1))},
-                             consensus_path=pSeq.SequencePath([nid(0), nid(2), nid(5), nid(6),
-                                                               nid(10), nid(12), nid(13), nid(16)])),
+            AT.AffinityNode(id=AT.AffinityNodeID(0),
+                            parent=AT.AffinityNodeID(-1),
+                            children=[AT.AffinityNodeID(1), AT.AffinityNodeID(2)],
+                            sequences=[pSeq.SequenceID('seq0'),
+                                       pSeq.SequenceID('seq1'),
+                                       pSeq.SequenceID('seq2'),
+                                       pSeq.SequenceID('seq3')],
+                            mincomp=AT.Compatibility(0.5, P(1)),
+                            compatibilities={pSeq.SequenceID('seq0'): AT.Compatibility(1.0, P(1)),
+                                             pSeq.SequenceID('seq1'): AT.Compatibility(0.9, P(1)),
+                                             pSeq.SequenceID('seq2'): AT.Compatibility(0.95, P(1)),
+                                             pSeq.SequenceID('seq3'): AT.Compatibility(0.6, P(1))},
+                            consensus=pSeq.SequencePath([nid(0), nid(2), nid(5), nid(6),
+                                                         nid(10), nid(12), nid(13), nid(16)])),
             # no compatibilities to all, no mincomp
-            CT.ConsensusNode(consensus_id=CT.ConsensusNodeID(1),
-                             parent_node_id=CT.ConsensusNodeID(0),
-                             sequences_ids=[pSeq.SequenceID('seq0'),
-                                            pSeq.SequenceID('seq1'),
-                                            pSeq.SequenceID('seq2')],
-                             consensus_path=pSeq.SequencePath(
+            AT.AffinityNode(id=AT.AffinityNodeID(1),
+                            parent=AT.AffinityNodeID(0),
+                            sequences=[pSeq.SequenceID('seq0'),
+                                       pSeq.SequenceID('seq1'),
+                                       pSeq.SequenceID('seq2')],
+                            consensus=pSeq.SequencePath(
                                  [nid(0), nid(2), nid(3), nid(6), nid(10), nid(11), nid(13), nid(17)]))
         ]
 
-        actual_consensuses_fasta_content = PangenomeFASTA.consensuses_tree_to_fasta(self.poagraph, consensuses_tree)
+        actual_consensuses_fasta_content = PangenomeFASTA.affinity_tree_to_fasta(self.poagraph, affinity_tree)
         expected_consensuses_fasta_content = pathtools.get_file_content(expected_consensuses_fasta_path)
         self.assertEqual(expected_consensuses_fasta_content, actual_consensuses_fasta_content)
 

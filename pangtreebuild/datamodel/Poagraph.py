@@ -2,8 +2,8 @@ from typing import Optional, List, Tuple, Dict
 from time import time
 from datetime import datetime
 from pangtreebuild.datamodel.fasta_providers.ConstSymbolProvider import ConstSymbolProvider
-from pangtreebuild.consensus.ConsensusTree import CompatibilityToPath
-from pangtreebuild.consensus.input_types import P
+from pangtreebuild.affinitytree.AffinityTree import Compatibility
+from pangtreebuild.affinitytree.input_types import P
 from pangtreebuild.datamodel.DAGMaf import DAGMaf
 from pangtreebuild.datamodel.DataType import DataType
 from pangtreebuild.datamodel.Sequence import SequencePath, SequenceID, Sequence
@@ -69,7 +69,7 @@ class Poagraph:
     def get_compatibilities(self,
                             sequences_ids: List[SequenceID],
                             consensus_path: SequencePath,
-                            p: Optional[P] = P(1)) -> Dict[SequenceID, CompatibilityToPath]:
+                            p: Optional[P] = P(1)) -> Dict[SequenceID, Compatibility]:
         compatibilities = dict()
         for seq_id in sequences_ids:
             try:
@@ -80,8 +80,8 @@ class Poagraph:
                 sequence_path = sequence_paths[0]
             else:
                 sequence_path = [node_id for path in sequence_paths for node_id in path]
-            compatibilities[seq_id] = CompatibilityToPath(len(set(sequence_path).intersection(set(consensus_path))) /
-                                                          len(sequence_path), p)
+            compatibilities[seq_id] = Compatibility(len(set(sequence_path).intersection(set(consensus_path))) /
+                                                    len(sequence_path), p)
         return compatibilities
 
     def get_sequences_weights(self, sequences_ids: List[SequenceID]):

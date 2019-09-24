@@ -3,7 +3,7 @@ from typing import List
 
 from ddt import unpack, data, ddt
 
-from tests.context import pNode, pSeq, pPoagraph, CT, P, cutoffs, tree_generator
+from tests.context import pNode, pSeq, pPoagraph, AT, P, tree_generator
 
 
 def sid(x): return pSeq.SequenceID(x)
@@ -18,11 +18,11 @@ def b(x): return pNode.Base(x)
 @ddt
 class AffinityTreeGenerationTests(unittest.TestCase):
 
-    @data((P(0.5), CT.CompatibilityToPath(0.836660026534076)),
-          (P(1), CT.CompatibilityToPath(0.7)),
-          (P(4), CT.CompatibilityToPath(0.6561)))
+    @data((P(0.5), AT.Compatibility(0.836660026534076)),
+          (P(1), AT.Compatibility(0.7)),
+          (P(4), AT.Compatibility(0.6561)))
     @unpack
-    def test_1_p_parameter_influence(self, p: P, expected_cutoff: CT.CompatibilityToPath):
+    def test_1_p_parameter_influence(self, p: P, expected_cutoff: AT.Compatibility):
         nodes = [pNode.Node(node_id=nid(0), base=b('T'), aligned_to=None),
                  pNode.Node(node_id=nid(1), base=b('A'), aligned_to=None),
                  pNode.Node(node_id=nid(2), base=b('G'), aligned_to=None),
@@ -68,36 +68,36 @@ class AffinityTreeGenerationTests(unittest.TestCase):
 
     @data(
         # single compatibility value
-        (0.5, [CT.CompatibilityToPath(0.5)]),
+        (0.5, [AT.Compatibility(0.5)]),
 
         # two compatibilities values
-        (0.7, [CT.CompatibilityToPath(0.5), CT.CompatibilityToPath(0.7)]),
-        (1, [CT.CompatibilityToPath(1), CT.CompatibilityToPath(0.45)]),
-        (0.9, [CT.CompatibilityToPath(0.9), CT.CompatibilityToPath(0.5)]),
+        (0.7, [AT.Compatibility(0.5), AT.Compatibility(0.7)]),
+        (1, [AT.Compatibility(1), AT.Compatibility(0.45)]),
+        (0.9, [AT.Compatibility(0.9), AT.Compatibility(0.5)]),
 
         # repeated values
-        (0.7, [*map(CT.CompatibilityToPath, [0.5, 0.7, 0.7])]),
-        (0.9, [*map(CT.CompatibilityToPath, [0.9, 0.5, 0.5])]),
-        (1, [*map(CT.CompatibilityToPath, [0.45, 1, 0.45, 0.45])]),
+        (0.7, [*map(AT.Compatibility, [0.5, 0.7, 0.7])]),
+        (0.9, [*map(AT.Compatibility, [0.9, 0.5, 0.5])]),
+        (1, [*map(AT.Compatibility, [0.45, 1, 0.45, 0.45])]),
 
         # many unique compatibilities values
-        (.8, [*map(CT.CompatibilityToPath, [.3, .4, .8])]),
-        (0.91, [*map(CT.CompatibilityToPath, [0.31, 0.32, 0.91, 0.92, 0.93, 0.97])]),
-        (0.91, [*map(CT.CompatibilityToPath, [0.29, 0.3, 0.33, 0.91, 0.92, 0.93, 0.97])]),
-        (1, [*map(CT.CompatibilityToPath, [0.81, 0.75, 0.8, 0.81, 1])]),
-        (0.9, [*map(CT.CompatibilityToPath, [0.5, 0.9, 0.99])]),
-        (0.7, [*map(CT.CompatibilityToPath, [0.2, 0.85, 0.7, 0.8])]),
-        (0.99, [*map(CT.CompatibilityToPath, [0.99, 0.9, 0.99])]),
-        (0.99, [*map(CT.CompatibilityToPath, [0.99])]),
+        (.8, [*map(AT.Compatibility, [.3, .4, .8])]),
+        (0.91, [*map(AT.Compatibility, [0.31, 0.32, 0.91, 0.92, 0.93, 0.97])]),
+        (0.91, [*map(AT.Compatibility, [0.29, 0.3, 0.33, 0.91, 0.92, 0.93, 0.97])]),
+        (1, [*map(AT.Compatibility, [0.81, 0.75, 0.8, 0.81, 1])]),
+        (0.9, [*map(AT.Compatibility, [0.5, 0.9, 0.99])]),
+        (0.7, [*map(AT.Compatibility, [0.2, 0.85, 0.7, 0.8])]),
+        (0.99, [*map(AT.Compatibility, [0.99, 0.9, 0.99])]),
+        (0.99, [*map(AT.Compatibility, [0.99])]),
 
         # repeated distance between values
-        (.4, [*map(CT.CompatibilityToPath, [.3, .4, .5])]),
+        (.4, [*map(AT.Compatibility, [.3, .4, .5])]),
 
         # all the same values
-        (.1, [*map(CT.CompatibilityToPath, [.1, .1, .1])])
+        (.1, [*map(AT.Compatibility, [.1, .1, .1])])
     )
     @unpack
-    def test_2_find_cutoff_no_so_far_values(self, expected_cutoff: float, compatibilities: List[CT.CompatibilityToPath]):
+    def test_2_find_cutoff_no_so_far_values(self, expected_cutoff: float, compatibilities: List[AT.Compatibility]):
         actual_cutoff = tree_generator.find_node_cutoff(compatibilities, []).cutoff
         self.assertEqual(expected_cutoff, actual_cutoff.value)
 
@@ -124,8 +124,8 @@ class AffinityTreeGenerationTests(unittest.TestCase):
     )
     @unpack
     def test_4_find_cutoff_with_so_far_values(self, expected_cutoff, compatibilities, so_far_cutoffs):
-        compatibilities = [CT.CompatibilityToPath(c) for c in compatibilities]
-        so_far_cutoffs = [CT.CompatibilityToPath(c) for c in so_far_cutoffs]
+        compatibilities = [AT.Compatibility(c) for c in compatibilities]
+        so_far_cutoffs = [AT.Compatibility(c) for c in so_far_cutoffs]
         actual_cutoff = tree_generator.find_node_cutoff(compatibilities, so_far_cutoffs).cutoff
         self.assertEqual(expected_cutoff, actual_cutoff.value)
 

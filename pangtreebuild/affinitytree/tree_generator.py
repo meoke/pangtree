@@ -3,10 +3,10 @@ from pathlib import Path
 from typing import List, Dict, Tuple
 import numpy as np
 
-from pangtreebuild.consensus.ConsensusTree import ConsensusTree, ConsensusNode, ConsensusNodeID, CompatibilityToPath
-from pangtreebuild.consensus.input_types import Blosum, Stop, P, Hbmin
+from pangtreebuild.affinitytree.AffinityTree import AffinityTree, AffinityNode, AffinityNodeID, Compatibility
+from pangtreebuild.affinitytree.input_types import Blosum, Stop, P, Hbmin
 from pangtreebuild.datamodel.Poagraph import Poagraph
-from pangtreebuild.consensus import poa
+from pangtreebuild.affinitytree import poa
 from pangtreebuild.datamodel.Sequence import SequenceID, SequencePath
 from pangtreebuild.tools import logprocess
 
@@ -15,23 +15,23 @@ detailed_logger = logprocess.get_logger('details')
 global_logger = logprocess.get_global_logger()
 
 
-class TreeConsensusGenerationException(Exception):
+class AffinityTreeNodeGenerationException(Exception):
     pass
 
 
-def get_consensus_tree(poagraph: Poagraph,
-                       blosum: Blosum,
-                       output_dir: Path,
-                       stop: Stop,
-                       p: P,
-                       verbose: bool) -> ConsensusTree:
-    global_logger.info("Consensuses Tree generation started.")
+def get_affinity_tree(poagraph: Poagraph,
+                      blosum: Blosum,
+                      output_dir: Path,
+                      stop: Stop,
+                      p: P,
+                      verbose: bool) -> AffinityTree:
+    global_logger.info("Affinity Tree generation started.")
     if verbose:
         logprocess.add_file_handler_to_logger(output_dir, "tresholdsCSV", "tresholds.csv", "%(message)s", False)
     _raise_error_if_invalid_poagraph(poagraph)
-    consensus_tree = _init_consensus_tree(poagraph, blosum.filepath, output_dir, p)
+    affinity_tree = _init_affinity_tree(poagraph, blosum.filepath, output_dir, p)
 
-    nodes_to_process = deque([consensus_tree.get_node(ConsensusNodeID(0))])
+    nodes_to_process = deque([affinity_tree.get_node(AffinityNodeID(0))])
     while nodes_to_process:
         node = nodes_to_process.pop()
 
@@ -40,38 +40,38 @@ def get_consensus_tree(poagraph: Poagraph,
                                             output_dir,
                                             blosum.filepath,
                                             p,
-                                            consensus_tree.get_max_node_id())
+                                            affinity_tree.get_max_node_id())
         if len(children_nodes) == 1:
             continue
 
         for child in children_nodes:
-            child.compatibilities_to_all = poagraph.get_compatibilities(sequences_ids=[*poagraph.sequences.keys()],
-                                                                        consensus_path=child.consensus_path,
-                                                                        p=p)
-            node.children_nodes_ids.append(child.consensus_id)
-            consensus_tree.nodes.append(child)
+            child.compatibilities = poagraph.get_compatibilities(sequences_ids=[*poagraph.sequences.keys()],
+                                                                 consensus_path=child.consensus,
+                                                                 p=p)
+            node.children.append(child.id)
+            affinity_tree.nodes.append(child)
             if not _node_is_ready(child, stop):
                 nodes_to_process.append(child)
-    global_logger.info("Consensuses Tree generation finished.\n")
-    return consensus_tree
+    global_logger.info("Affinity Tree generation finished.\n")
+    return affinity_tree
 
 
 def _raise_error_if_invalid_poagraph(poagraph: Poagraph):
     if len(poagraph.sequences) == 0:
-        raise TreeConsensusGenerationException("Invalid pangraph."
-                                               "No paths in pangraph."
-                                               "Cannot find consensuses.")
+        raise AffinityTreeNodeGenerationException("Invalid pangraph."
+                                                  "No paths in pangraph."
+                                                  "Affinity Tree generation is impossible.")
 
 
-def _init_consensus_tree(poagraph: Poagraph, blosum_path: Path, output_dir: Path, p: P) -> ConsensusTree:
-    consensuses_tree = ConsensusTree()
+def _init_affinity_tree(poagraph: Poagraph, blosum_path: Path, output_dir: Path, p: P) -> AffinityTree:
+    affinity_tree = AffinityTree()
     root_node = _get_root_node(poagraph, blosum_path, output_dir, p)
-    consensuses_tree.nodes.append(root_node)
-    return consensuses_tree
+    affinity_tree.nodes.append(root_node)
+    return affinity_tree
 
 
-def _get_root_node(poagraph: Poagraph, blosum_path: Path, output_dir: Path, p: P) -> ConsensusNode:
-    detailed_logger.info("Getting the root consensus node...")
+def _get_root_node(poagraph: Poagraph, blosum_path: Path, output_dir: Path, p: P) -> AffinityNode:
+    detailed_logger.info("Getting the root affinity node...")
     all_poagraph_sequences_ids = poagraph.get_sequences_ids()
     try:
         consensus_paths = poa.get_consensuses(poagraph,
@@ -82,43 +82,43 @@ def _get_root_node(poagraph: Poagraph, blosum_path: Path, output_dir: Path, p: P
                                               hbmin=Hbmin(0),
                                               specific_consensuses_id=[0])
     except poa.NoConsensusError:
-        raise TreeConsensusGenerationException("Cannot find root consensus.")
+        raise AffinityTreeNodeGenerationException("Cannot find root consensus.")
     compatibilities = poagraph.get_compatibilities(all_poagraph_sequences_ids,
                                                    consensus_paths[0].path,
                                                    p=p)
-    consensus_node = ConsensusNode(consensus_id=ConsensusNodeID(0),
-                                   sequences_ids=[*poagraph.sequences.keys()],
-                                   mincomp=_get_min_comp(all_poagraph_sequences_ids, compatibilities),
-                                   compatibilities_to_all=compatibilities,
-                                   consensus_path=consensus_paths[0].path)
-    detailed_logger.info(f"New consensus node created: {str(consensus_node)}")
-    return consensus_node
+    affinity_node = AffinityNode(id=AffinityNodeID(0),
+                                  sequences=[*poagraph.sequences.keys()],
+                                  mincomp=_get_min_comp(all_poagraph_sequences_ids, compatibilities),
+                                  compatibilities=compatibilities,
+                                  consensus=consensus_paths[0].path)
+    detailed_logger.info(f"New affinity node created: {str(affinity_node)}")
+    return affinity_node
 
 
 def _get_min_comp(node_sequences_ids: List[SequenceID],
-                  comps_to_consensus: Dict[SequenceID, CompatibilityToPath]) -> CompatibilityToPath:
+                  comps_to_consensus: Dict[SequenceID, Compatibility]) -> Compatibility:
     compatibilities_of_node_sequences = [comp
                                          for seq_id, comp
                                          in comps_to_consensus.items()
                                          if seq_id in node_sequences_ids]
     if not compatibilities_of_node_sequences:
-        raise TreeConsensusGenerationException("Cannot provide mincomp."
-                                               "No sequences assigned to this consensus node.")
+        raise AffinityTreeNodeGenerationException("Cannot provide mincomp."
+                                               "No sequences assigned to this affinity node.")
     return min(compatibilities_of_node_sequences)
 
 
-def _get_children_nodes_looping(node: ConsensusNode,
-                        poagraph: Poagraph,
-                        output_dir: Path,
-                        blosum_path: Path,
-                        p: P,
-                        current_max_consensus_node_id: int) -> List[ConsensusNode]:
-    children_nodes: List[ConsensusNode] = []
-    not_assigned_sequences_ids: List[SequenceID] = node.sequences_ids
-    detailed_logger.info(f"Getting children nodes for consensus node {node.consensus_id}...")
+def _get_children_nodes_looping(node: AffinityNode,
+                                poagraph: Poagraph,
+                                output_dir: Path,
+                                blosum_path: Path,
+                                p: P,
+                                current_max_affinity_node_id: int) -> List[AffinityNode]:
+    children_nodes: List[AffinityNode] = []
+    not_assigned_sequences_ids: List[SequenceID] = node.sequences
+    detailed_logger.info(f"Getting children nodes for affinity node {node.id}...")
 
-    consensus_id = 0
-    so_far_cutoffs: List[CompatibilityToPath] = []
+    affinity_node_id = 0
+    so_far_cutoffs: List[Compatibility] = []
     while not_assigned_sequences_ids:
         detailed_logger.info(f"### Getting child {len(so_far_cutoffs)}...")
         child_ready = False
@@ -128,7 +128,7 @@ def _get_children_nodes_looping(node: ConsensusNode,
             consensus_candidate = poa.get_consensuses(poagraph,
                                                       current_candidates,
                                                       output_dir,
-                                                      f"parent_{node.consensus_id}_child_{len(so_far_cutoffs)}_attempt_{attempt}",
+                                                      f"parent_{node.id}_child_{len(so_far_cutoffs)}_attempt_{attempt}",
                                                       blosum_path,
                                                       Hbmin(0),
                                                       specific_consensuses_id=[0])[0].path
@@ -139,28 +139,27 @@ def _get_children_nodes_looping(node: ConsensusNode,
             qualified_sequences_ids_candidates, cutoff = _get_qualified_sequences_ids_and_cutoff(
                 compatibilities_to_max_c=compatibilities_to_consensus_candidate,
                 so_far_cutoffs=so_far_cutoffs,
-                splitted_node_id=node.consensus_id)
+                splitted_node_id=node.id)
 
             if qualified_sequences_ids_candidates == current_candidates or attempt == 10:
                 if attempt == 10:
                     detailed_logger.info("Attempt treshold 10 exceeded!")
-                consensus_id += 1
+                affinity_node_id += 1
 
-                consensus_node = ConsensusNode(
-                    consensus_id=ConsensusNodeID(current_max_consensus_node_id + consensus_id),
-                    parent_node_id=node.consensus_id,
-                    sequences_ids=qualified_sequences_ids_candidates,
+                affinity_node = AffinityNode(
+                    id=AffinityNodeID(current_max_affinity_node_id + affinity_node_id),
+                    parent=node.id,
+                    sequences=qualified_sequences_ids_candidates,
                     mincomp=_get_min_comp(node_sequences_ids=qualified_sequences_ids_candidates,
                                           comps_to_consensus=compatibilities_to_consensus_candidate),
-                    consensus_path=SequencePath(consensus_candidate))
-                children_nodes.append(consensus_node)
+                    consensus=SequencePath(consensus_candidate))
+                children_nodes.append(affinity_node)
                 not_assigned_sequences_ids = list(set(not_assigned_sequences_ids) - set(qualified_sequences_ids_candidates))
                 child_ready = True
-                so_far_cutoffs.append(consensus_node.mincomp)
+                so_far_cutoffs.append(affinity_node.mincomp)
             else:
                 current_candidates = qualified_sequences_ids_candidates
                 attempt += 1
-
 
     detailed_logger.info("Children nodes generated.")
 
@@ -174,53 +173,53 @@ def _get_children_nodes_looping(node: ConsensusNode,
 #                         p: P,
 #                         max_cutoff_strategy: FindMaxCutoff,
 #                         node_cutoff_strategy: FindNodeCutoff,
-#                         current_max_consensus_node_id: int) -> List[ConsensusNode]:
+#                         current_max_affinity_node_id: int) -> List[ConsensusNode]:
 #         children_nodes: List[ConsensusNode] = []
-#         not_assigned_sequences_ids: List[SequenceID] = node.sequences_ids
+#         not_assigned_sequences_ids: List[SequenceID] = node.sequences
 #         so_far_cutoffs: List[CompatibilityToPath] = []
-#         detailed_logger.info(f"Getting children nodes for consensus node {node.consensus_id}...")
+#         detailed_logger.info(f"Getting children nodes for consensus node {node.id}...")
 #
 #         while not_assigned_sequences_ids:
 #             detailed_logger.info(f"### Getting child {len(so_far_cutoffs)}...")
-#             consensus_path = poa.get_consensuses(poagraph,
+#             consensus = poa.get_consensuses(poagraph,
 #                                                  not_assigned_sequences_ids,
 #                                                  output_dir,
-#                                                  f"{node.consensus_id}_{len(so_far_cutoffs)}_all",
+#                                                  f"{node.id}_{len(so_far_cutoffs)}_all",
 #                                                  blosum_path,
 #                                                  Hbmin(0),
 #                                                  specific_consensuses_id=[0])[0].path
 #
-#             compatibilities_to_consensus = poagraph.get_compatibilities(sequences_ids=not_assigned_sequences_ids,
-#                                                                         consensus_path=consensus_path,
+#             compatibilities_to_consensus = poagraph.get_compatibilities(sequences=not_assigned_sequences_ids,
+#                                                                         consensus=consensus,
 #                                                                         p=p)
 #             compatibilities_to_consensus[SequenceID("parent")] = node.mincomp
 #
 #             max_sequences_ids, _ = _get_max_compatible_sequences_ids_and_cutoff(max_cutoff_strategy,
 #                                                                   compatibilities_to_consensus,
-#                                                                   splitted_node_id=node.consensus_id)
+#                                                                   splitted_node_id=node.id)
 #             max_consensus_path = poa.get_consensuses(poagraph,
 #                                                      max_sequences_ids,
 #                                                      output_dir,
-#                                                      f"{node.consensus_id}_{len(so_far_cutoffs)}_max",
+#                                                      f"{node.id}_{len(so_far_cutoffs)}_max",
 #                                                      blosum_path,
 #                                                      Hbmin(0),
 #                                                      specific_consensuses_id=[0])[0].path
 #
-#             comps_to_max_consensus = poagraph.get_compatibilities(sequences_ids=not_assigned_sequences_ids,
-#                                                                   consensus_path=max_consensus_path,
+#             comps_to_max_consensus = poagraph.get_compatibilities(sequences=not_assigned_sequences_ids,
+#                                                                   consensus=max_consensus_path,
 #                                                                   p=p)
 #             comps_to_max_consensus[SequenceID("parent")] = node.mincomp
 #
 #             qualified_sequences_ids, node_cutoff = _get_qualified_sequences_ids_and_cutoff(
 #                 node_cutoff_strategy,
 #                 compatibilities_to_max_c=comps_to_max_consensus,
-#                 so_far_cutoffs=so_far_cutoffs, splitted_node_id=node.consensus_id)
-#             consensus_node = ConsensusNode(consensus_id=ConsensusNodeID(current_max_consensus_node_id + len(so_far_cutoffs)+1),
-#                                            parent_node_id=node.consensus_id,
-#                                            sequences_ids=qualified_sequences_ids,
+#                 so_far_cutoffs=so_far_cutoffs, splitted_node_id=node.id)
+#             consensus_node = ConsensusNode(id=AffinityNodeID(current_max_affinity_node_id + len(so_far_cutoffs)+1),
+#                                            parent=node.id,
+#                                            sequences=qualified_sequences_ids,
 #                                            mincomp=_get_min_comp(node_sequences_ids=qualified_sequences_ids,
 #                                                                  comps_to_consensus=comps_to_max_consensus),
-#                                            consensus_path=SequencePath(max_consensus_path))
+#                                            consensus=SequencePath(max_consensus_path))
 #             detailed_logger.info(f"New consensus node created: {str(consensus_node)}")
 #             so_far_cutoffs.append(node_cutoff)
 #             children_nodes.append(consensus_node)
@@ -244,14 +243,14 @@ def _get_children_nodes_looping(node: ConsensusNode,
 #     return max_sequences_ids, max_cutoff
 
 
-def _get_sequences_ids_above_cutoff(compatibilities: Dict[SequenceID, CompatibilityToPath],
-                                    cutoff: CompatibilityToPath) -> List[SequenceID]:
+def _get_sequences_ids_above_cutoff(compatibilities: Dict[SequenceID, Compatibility],
+                                    cutoff: Compatibility) -> List[SequenceID]:
     return [seq_id for seq_id, comp in compatibilities.items() if comp >= cutoff and seq_id != SequenceID("parent")]
 
 
-def _get_qualified_sequences_ids_and_cutoff(compatibilities_to_max_c: Dict[SequenceID, CompatibilityToPath],
-                                            so_far_cutoffs: List[CompatibilityToPath], splitted_node_id) \
-        -> Tuple[List[SequenceID], CompatibilityToPath]:
+def _get_qualified_sequences_ids_and_cutoff(compatibilities_to_max_c: Dict[SequenceID, Compatibility],
+                                            so_far_cutoffs: List[Compatibility], splitted_node_id) \
+        -> Tuple[List[SequenceID], Compatibility]:
     node_cutoff = find_node_cutoff(compatibilities=[*compatibilities_to_max_c.values()],
                                                         so_far_cutoffs=so_far_cutoffs)
     tresholds_logger.info(f"Splitting {splitted_node_id}; NODE; {compatibilities_to_max_c}; "
@@ -262,20 +261,20 @@ def _get_qualified_sequences_ids_and_cutoff(compatibilities_to_max_c: Dict[Seque
     return compatibtle_sequences_ids, node_cutoff.cutoff
 
 
-def _node_is_ready(node: ConsensusNode, stop: Stop) -> bool:
-    if len(node.sequences_ids) == 1 or node.mincomp.root_value() >= stop:
-        detailed_logger.info(f"Node {node.consensus_id} satisfied requirements and won't be split!")
+def _node_is_ready(node: AffinityNode, stop: Stop) -> bool:
+    if len(node.sequences) == 1 or node.mincomp.base_value() >= stop:
+        detailed_logger.info(f"Node {node.id} satisfied requirements and won't be split!")
         return True
     return False
 
 
 class FindCutoffResult:
-    def __init__(self, cutoff: CompatibilityToPath, explanation: str):
-        self.cutoff: CompatibilityToPath = cutoff
+    def __init__(self, cutoff: Compatibility, explanation: str):
+        self.cutoff: Compatibility = cutoff
         self.explanation: str = explanation
 
-def find_node_cutoff(compatibilities: List[CompatibilityToPath],
-                     so_far_cutoffs: List[CompatibilityToPath]) -> FindCutoffResult:
+def find_node_cutoff(compatibilities: List[Compatibility],
+                     so_far_cutoffs: List[Compatibility]) -> FindCutoffResult:
     if not so_far_cutoffs:
         cutoff = find_max_distance(compatibilities)
         reason = "No so far cutoffs. Find max distance in sorted values."
@@ -295,8 +294,8 @@ def find_node_cutoff(compatibilities: List[CompatibilityToPath],
     return FindCutoffResult(cutoff, reason)
 
 
-def find_max_distance(compatibilities: List[CompatibilityToPath]) -> CompatibilityToPath:
-    def break_if_empty(compatibilities: List[CompatibilityToPath]) -> None:
+def find_max_distance(compatibilities: List[Compatibility]) -> Compatibility:
+    def break_if_empty(compatibilities: List[Compatibility]) -> None:
         if not list(compatibilities):
             raise ValueError("Empty compatibilities list. Cannot find cutoff.")
 

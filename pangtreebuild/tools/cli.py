@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import TypeVar, Callable, Optional, Union, List
 
 from pangtreebuild.output.PangenomeJSON import TaskParameters
-from pangtreebuild.consensus.input_types import Blosum, Hbmin
+from pangtreebuild.affinitytree.input_types import Blosum, Hbmin
 from pangtreebuild.datamodel.DataType import DataType
 from pangtreebuild.datamodel.builders import PoagraphBuildException
 from pangtreebuild.datamodel.fasta_providers.FastaProvider import UseCache
@@ -17,7 +17,7 @@ from pangtreebuild.datamodel.fasta_providers.ConstSymbolProvider import ConstSym
 from pangtreebuild.datamodel.fasta_providers.FromNCBI import FromNCBI
 from pangtreebuild.datamodel.fasta_providers.FromFile import FromFile
 
-from pangtreebuild.consensus import input_types as consensus_input_types
+from pangtreebuild.affinitytree import input_types as consensus_input_types
 
 from pangtreebuild.tools import pathtools
 
@@ -117,7 +117,7 @@ def get_parser() -> argparse.ArgumentParser:
     """Create ArgumentParser for pang module."""
 
     p = argparse.ArgumentParser(prog='pangtreebuild',
-                                description='This software builds poagraph and generates consensuses.',
+                                description='This software builds poagraph and generates affinitytree.',
                                 epilog='For more information check github.com/meoke/pang')
     p.add_argument('--output_dir',
                    type=_cli_dir_arg,
@@ -141,7 +141,7 @@ def get_parser() -> argparse.ArgumentParser:
                    default=False,
                    help='Poagraph building from maf file parameter.'
                         'Set if the maf content must not be transformed to DAG before building poagraph. '
-                        'Poagraph that was build in this way provides consensuses tree but the consensuses do not '
+                        'Poagraph that was build in this way provides affinitytree tree but the affinitytree do not '
                         'reflect the real life sequences.')
     p.add_argument('--fasta_provider',
                    metavar="FASTA_PROVIDER",
@@ -183,7 +183,7 @@ def get_parser() -> argparse.ArgumentParser:
                    help='Tree consensus algorithm parameter.' + inspect.getdoc(consensus_input_types.P))
     p.add_argument('--output_fasta',
                    action='store_true',
-                   help='Set if fasta files for sequences and consensuses must be produced.')
+                   help='Set if fasta files for sequences and affinitytree must be produced.')
     p.add_argument('--output_po',
                    action='store_true',
                    default=False,

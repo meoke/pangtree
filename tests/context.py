@@ -21,10 +21,10 @@ from pangtreebuild.datamodel.input_types import MissingSymbol, InputError, Po
 from pangtreebuild.output import PangenomePO
 
 from pangtreebuild.output import PangenomeFASTA
-from pangtreebuild.consensus import ConsensusTree as CT
-from pangtreebuild.consensus.input_types import P, ConsensusInputError
-from pangtreebuild.consensus import cutoffs, poa
-from pangtreebuild.consensus import tree_generator
+from pangtreebuild.affinitytree import AffinityTree as AT
+from pangtreebuild.affinitytree.input_types import P, AffinityTreeInputError
+from pangtreebuild.affinitytree import poa
+from pangtreebuild.affinitytree import tree_generator
 
 
 # from pangenome.pang.arguments.PangenomeParameters import MultialignmentFormat

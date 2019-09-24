@@ -3,7 +3,7 @@ from bisect import bisect_left
 from pathlib import Path
 from typing import List, Dict, Union, Optional
 
-from pangtreebuild.consensus.input_types import Hbmin
+from pangtreebuild.affinitytree.input_types import Hbmin
 from pangtreebuild.datamodel.Node import NodeID
 from pangtreebuild.datamodel.Poagraph import Poagraph
 from pangtreebuild.datamodel.Sequence import SequenceID, SequencePath
