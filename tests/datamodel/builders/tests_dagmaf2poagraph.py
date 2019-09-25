@@ -41,11 +41,11 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
         expected_sequences = {
             pSeq.SequenceID('seq0'):
                 pSeq.Sequence(pSeq.SequenceID('seq0'),
-                              [pSeq.SequencePath([*map(nid, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])])],
+                              [pSeq.SeqPath([*map(nid, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])])],
                               pSeq.SequenceMetadata({'group': '1'})),
             pSeq.SequenceID('seq1'):
                 pSeq.Sequence(pSeq.SequenceID('seq1'),
-                              [pSeq.SequencePath([*map(nid, [0, 1, 2, 3, 4, 5, 6, 7, 8])])],
+                              [pSeq.SeqPath([*map(nid, [0, 1, 2, 3, 4, 5, 6, 7, 8])])],
                               pSeq.SequenceMetadata({'group': '1'})),
             pSeq.SequenceID('seq2'):
                 pSeq.Sequence(pSeq.SequenceID('seq2'),
@@ -82,12 +82,12 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
         expected_sequences = {
             pSeq.SequenceID('seq0'):
                 pSeq.Sequence(pSeq.SequenceID('seq0'),
-                              [pSeq.SequencePath([*map(nid, [0, 2, 4, 7, 8])])],
+                              [pSeq.SeqPath([*map(nid, [0, 2, 4, 7, 8])])],
                               pSeq.SequenceMetadata({'group': '1'})),
             pSeq.SequenceID('seq1'):
                 pSeq.Sequence(pSeq.SequenceID('seq1'),
-                              [pSeq.SequencePath([*map(nid, [1, 3])]),
-                               pSeq.SequencePath([*map(nid, [5, 6])])],
+                              [pSeq.SeqPath([*map(nid, [1, 3])]),
+                               pSeq.SeqPath([*map(nid, [5, 6])])],
                               pSeq.SequenceMetadata({'group': '1'})),
             pSeq.SequenceID('seq2'):
                 pSeq.Sequence(pSeq.SequenceID('seq2'),
@@ -127,15 +127,15 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
         expected_sequences = {
             pSeq.SequenceID('seq0'):
                 pSeq.Sequence(pSeq.SequenceID('seq0'),
-                              [pSeq.SequencePath([*map(nid, [1, 2, 3])])],
+                              [pSeq.SeqPath([*map(nid, [1, 2, 3])])],
                               pSeq.SequenceMetadata({'group': '1'})),
             pSeq.SequenceID('seq1'):
                 pSeq.Sequence(pSeq.SequenceID('seq1'),
-                              [pSeq.SequencePath([*map(nid, [0, 5, 7])])],
+                              [pSeq.SeqPath([*map(nid, [0, 5, 7])])],
                               pSeq.SequenceMetadata({'group': '1'})),
             pSeq.SequenceID('seq2'):
                 pSeq.Sequence(pSeq.SequenceID('seq2'),
-                              [pSeq.SequencePath([*map(nid, [3, 4, 6, 8])])],
+                              [pSeq.SeqPath([*map(nid, [3, 4, 6, 8])])],
                               pSeq.SequenceMetadata({'group': '2'})),
             pSeq.SequenceID('seq3'):
                 pSeq.Sequence(pSeq.SequenceID('seq3'),
@@ -171,11 +171,11 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
                               pSeq.SequenceMetadata({'group': '1'})),
             pSeq.SequenceID('seq1'):
                 pSeq.Sequence(pSeq.SequenceID('seq1'),
-                              [pSeq.SequencePath([*map(nid, [0, 1, 3, 4, 6, 7])])],
+                              [pSeq.SeqPath([*map(nid, [0, 1, 3, 4, 6, 7])])],
                               pSeq.SequenceMetadata({'group': '1'})),
             pSeq.SequenceID('seq2'):
                 pSeq.Sequence(pSeq.SequenceID('seq2'),
-                              [pSeq.SequencePath([*map(nid, [0, 1, 2, 3, 5])])],
+                              [pSeq.SeqPath([*map(nid, [0, 1, 2, 3, 5])])],
                               pSeq.SequenceMetadata({'group': '2'})),
             pSeq.SequenceID('seq3'):
                 pSeq.Sequence(pSeq.SequenceID('seq3'),
@@ -231,19 +231,19 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
         expected_sequences = {
             pSeq.SequenceID('seq0'):
                 pSeq.Sequence(pSeq.SequenceID('seq0'),
-                              [pSeq.SequencePath([*map(nid, [0])])],
+                              [pSeq.SeqPath([*map(nid, [0])])],
                               pSeq.SequenceMetadata({'group': '1'})),
             pSeq.SequenceID('seq1'):
                 pSeq.Sequence(pSeq.SequenceID('seq1'),
-                              [pSeq.SequencePath([*map(nid, [0])])],
+                              [pSeq.SeqPath([*map(nid, [0])])],
                               pSeq.SequenceMetadata({'group': '1'})),
             pSeq.SequenceID('seq2'):
                 pSeq.Sequence(pSeq.SequenceID('seq2'),
-                              [pSeq.SequencePath([*map(nid, [0])])],
+                              [pSeq.SeqPath([*map(nid, [0])])],
                               pSeq.SequenceMetadata({'group': '2'})),
             pSeq.SequenceID('seq3'):
                 pSeq.Sequence(pSeq.SequenceID('seq3'),
-                              [pSeq.SequencePath([*map(nid, [0])])],
+                              [pSeq.SeqPath([*map(nid, [0])])],
                               pSeq.SequenceMetadata({'group': '2'}))
         }
         expected_poagraph = pPoagraph.Poagraph(expected_nodes, expected_sequences)
@@ -278,15 +278,15 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
         expected_sequences = {
             pSeq.SequenceID('seq0'):
                 pSeq.Sequence(pSeq.SequenceID('seq0'),
-                              [pSeq.SequencePath([*map(nid, [0, 3, 4, 8])])],
+                              [pSeq.SeqPath([*map(nid, [0, 3, 4, 8])])],
                               pSeq.SequenceMetadata({'group': '1'})),
             pSeq.SequenceID('seq1'):
                 pSeq.Sequence(pSeq.SequenceID('seq1'),
-                              [pSeq.SequencePath([*map(nid, [1, 3, 5, 6, 7, 9])])],
+                              [pSeq.SeqPath([*map(nid, [1, 3, 5, 6, 7, 9])])],
                               pSeq.SequenceMetadata({'group': '1'})),
             pSeq.SequenceID('seq2'):
                 pSeq.Sequence(pSeq.SequenceID('seq2'),
-                              [pSeq.SequencePath([*map(nid, [2, 3, 5, 10])])],
+                              [pSeq.SeqPath([*map(nid, [2, 3, 5, 10])])],
                               pSeq.SequenceMetadata({'group': '2'})),
             pSeq.SequenceID('seq3'):
                 pSeq.Sequence(pSeq.SequenceID('seq3'),
@@ -330,19 +330,19 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
                               pSeq.SequenceMetadata({'group': '1'})),
             pSeq.SequenceID('seq1'):
                 pSeq.Sequence(pSeq.SequenceID('seq1'),
-                              [pSeq.SequencePath([*map(nid, [0, 1, 2, 4, 6, 8, 9, 10, 11, 12, 14])])],
+                              [pSeq.SeqPath([*map(nid, [0, 1, 2, 4, 6, 8, 9, 10, 11, 12, 14])])],
                               pSeq.SequenceMetadata({'group': '1'})),
             pSeq.SequenceID('seq2'):
                 pSeq.Sequence(pSeq.SequenceID('seq2'),
-                              [pSeq.SequencePath([*map(nid, [0, 1, 2])]),
-                               pSeq.SequencePath([*map(nid, [3, 5])]),
-                               pSeq.SequencePath([*map(nid, [6, 7, 8, 9, 10, 11, 13, 15])])],
+                              [pSeq.SeqPath([*map(nid, [0, 1, 2])]),
+                               pSeq.SeqPath([*map(nid, [3, 5])]),
+                               pSeq.SeqPath([*map(nid, [6, 7, 8, 9, 10, 11, 13, 15])])],
                               pSeq.SequenceMetadata({'group': '2'})),
             pSeq.SequenceID('seq3'):
                 pSeq.Sequence(pSeq.SequenceID('seq3'),
-                              [pSeq.SequencePath([*map(nid, [0, 2])]),
-                               pSeq.SequencePath([*map(nid, [3, 5])]),
-                               pSeq.SequencePath([*map(nid, [6, 7, 8, 9, 11, 12, 15])])],
+                              [pSeq.SeqPath([*map(nid, [0, 2])]),
+                               pSeq.SeqPath([*map(nid, [3, 5])]),
+                               pSeq.SeqPath([*map(nid, [6, 7, 8, 9, 11, 12, 15])])],
                               pSeq.SequenceMetadata({'group': '2'})),
         }
         expected_poagraph = pPoagraph.Poagraph(expected_nodes, expected_sequences)
@@ -377,15 +377,15 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
                               pSeq.SequenceMetadata({'group': '1'})),
             pSeq.SequenceID('seq1'):
                 pSeq.Sequence(pSeq.SequenceID('seq1'),
-                              [pSeq.SequencePath([*map(nid, [0, 1, 3, 4, 5, 7, 8, 9])])],
+                              [pSeq.SeqPath([*map(nid, [0, 1, 3, 4, 5, 7, 8, 9])])],
                               pSeq.SequenceMetadata({'group': '1'})),
             pSeq.SequenceID('seq2'):
                 pSeq.Sequence(pSeq.SequenceID('seq2'),
-                              [pSeq.SequencePath([*map(nid, [0, 1, 2, 3, 4, 6, 7, 8, 9])])],
+                              [pSeq.SeqPath([*map(nid, [0, 1, 2, 3, 4, 6, 7, 8, 9])])],
                               pSeq.SequenceMetadata({'group': '2'})),
             pSeq.SequenceID('seq3'):
                 pSeq.Sequence(pSeq.SequenceID('seq3'),
-                              [pSeq.SequencePath([*map(nid, [0, 1, 2, 3, 4, 6, 7, 9])])],
+                              [pSeq.SeqPath([*map(nid, [0, 1, 2, 3, 4, 6, 7, 9])])],
                               pSeq.SequenceMetadata({'group': '2'})),
         }
         expected_poagraph = pPoagraph.Poagraph(expected_nodes, expected_sequences)
@@ -432,13 +432,13 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
                               pSeq.SequenceMetadata({'group': '1'})),
             pSeq.SequenceID('seq1'):
                 pSeq.Sequence(pSeq.SequenceID('seq1'),
-                              [pSeq.SequencePath([*map(nid, [0, 1, 2, 3, 4, 10, 11, 12, 13, 14])]),
-                               pSeq.SequencePath([*map(nid, [5, 6, 7, 8, 9, 15, 16, 17, 18, 19])])],
+                              [pSeq.SeqPath([*map(nid, [0, 1, 2, 3, 4, 10, 11, 12, 13, 14])]),
+                               pSeq.SeqPath([*map(nid, [5, 6, 7, 8, 9, 15, 16, 17, 18, 19])])],
                               pSeq.SequenceMetadata({'group': '1'})),
             pSeq.SequenceID('seq2'):
                 pSeq.Sequence(pSeq.SequenceID('seq2'),
-                              [pSeq.SequencePath([*map(nid, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
-                                                             13, 14, 15, 16, 17, 18, 19])])],
+                              [pSeq.SeqPath([*map(nid, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+                                                     13, 14, 15, 16, 17, 18, 19])])],
                               pSeq.SequenceMetadata({'group': '2'})),
             pSeq.SequenceID('seq3'):
                 pSeq.Sequence(pSeq.SequenceID('seq3'),
@@ -487,19 +487,19 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
         expected_sequences = {
             pSeq.SequenceID('seq0'):
                 pSeq.Sequence(pSeq.SequenceID('seq0'),
-                              [pSeq.SequencePath([*map(nid, [7, 8, 9, 10, 11, 12, 15, 18, 19, 21])])],
+                              [pSeq.SeqPath([*map(nid, [7, 8, 9, 10, 11, 12, 15, 18, 19, 21])])],
                               pSeq.SequenceMetadata({'group': '1'})),
             pSeq.SequenceID('seq1'):
                 pSeq.Sequence(pSeq.SequenceID('seq1'),
-                              [pSeq.SequencePath([*map(nid, [7, 8, 9, 10, 11, 12, 15, 18, 19, 21])])],
+                              [pSeq.SeqPath([*map(nid, [7, 8, 9, 10, 11, 12, 15, 18, 19, 21])])],
                               pSeq.SequenceMetadata({'group': '1'})),
             pSeq.SequenceID('seq2'):
                 pSeq.Sequence(pSeq.SequenceID('seq2'),
-                              [pSeq.SequencePath([*map(nid, [0, 2, 3, 4, 6, 13, 16, 17, 20, 21])])],
+                              [pSeq.SeqPath([*map(nid, [0, 2, 3, 4, 6, 13, 16, 17, 20, 21])])],
                               pSeq.SequenceMetadata({'group': '2'})),
             pSeq.SequenceID('seq3'):
                 pSeq.Sequence(pSeq.SequenceID('seq3'),
-                              [pSeq.SequencePath([*map(nid, [1, 2, 3, 5, 6, 13, 14, 17, 20, 22])])],
+                              [pSeq.SeqPath([*map(nid, [1, 2, 3, 5, 6, 13, 14, 17, 20, 22])])],
                               pSeq.SequenceMetadata({'group': '2'})),
         }
         expected_poagraph = pPoagraph.Poagraph(expected_nodes, expected_sequences)

@@ -102,7 +102,7 @@ for sample in range(0, 10):
         poagraph, consensus_tree = convert_jsonpangenome(path=Path(f"{dir_path}/pangenome.json"))
         seq_id_to_metadata = {seq_id: seq.seqmetadata for seq_id, seq in poagraph.sequences.items()}
         seq_id_to_metadata = None
-        newick_consensus_tree = consensus_tree.as_newick(seq_id_to_metadata, expand_leaves=True)
+        newick_consensus_tree = consensus_tree.as_newick(seq_id_to_metadata, separate_leaves=True)
         pathtools.save_to_file(newick_consensus_tree, Path(f"{dir_path}/consensus_tree_extended.newick"))
 
 

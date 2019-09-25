@@ -66,6 +66,7 @@ class Stop:
     
     def __init__(self, value: Union[str, float] = None):
         self.value: float = float(value) if value is not None else 0.99
+        self.p = 1
         self._raise_exception_if_incorrect(self.value)
 
     def _raise_exception_if_incorrect(self, value: float) -> None:

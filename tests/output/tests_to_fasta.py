@@ -37,7 +37,7 @@ class ToFASTATests(unittest.TestCase):
         poagraph_sequences = {
             pSeq.SequenceID('seq0'):
                 pSeq.Sequence(pSeq.SequenceID('seq0'),
-                              [pSeq.SequencePath([*map(nid, [0, 2, 4, 6, 7, 8, 12, 14, 16])])],
+                              [pSeq.SeqPath([*map(nid, [0, 2, 4, 6, 7, 8, 12, 14, 16])])],
                               pSeq.SequenceMetadata({'group': '1'})),
             pSeq.SequenceID('seq1'):
                 pSeq.Sequence(pSeq.SequenceID('seq1'),
@@ -45,13 +45,13 @@ class ToFASTATests(unittest.TestCase):
                               pSeq.SequenceMetadata({'group': '1'})),
             pSeq.SequenceID('seq2'):
                 pSeq.Sequence(pSeq.SequenceID('seq2'),
-                              [pSeq.SequencePath([*map(nid, [3, 4, 6, 7, 10, 12])]),
-                               pSeq.SequencePath([*map(nid, [14, 17])])],
+                              [pSeq.SeqPath([*map(nid, [3, 4, 6, 7, 10, 12])]),
+                               pSeq.SeqPath([*map(nid, [14, 17])])],
                               pSeq.SequenceMetadata({'group': '1'})),
             pSeq.SequenceID('seq3'):
                 pSeq.Sequence(pSeq.SequenceID('seq3'),
-                              [pSeq.SequencePath([*map(nid, [11])]),
-                               pSeq.SequencePath([*map(nid, [13, 14, 15])])],
+                              [pSeq.SeqPath([*map(nid, [11])]),
+                               pSeq.SeqPath([*map(nid, [13, 14, 15])])],
                               pSeq.SequenceMetadata({'group': '1'})),
         }
 
@@ -70,7 +70,7 @@ class ToFASTATests(unittest.TestCase):
         affinity_tree = AT.AffinityTree()
         affinity_tree.nodes = [
             # all members set
-            AT.AffinityNode(id=AT.AffinityNodeID(0),
+            AT.AffinityNode(id_=AT.AffinityNodeID(0),
                             parent=AT.AffinityNodeID(-1),
                             children=[AT.AffinityNodeID(1), AT.AffinityNodeID(2)],
                             sequences=[pSeq.SequenceID('seq0'),
@@ -82,15 +82,15 @@ class ToFASTATests(unittest.TestCase):
                                              pSeq.SequenceID('seq1'): AT.Compatibility(0.9, P(1)),
                                              pSeq.SequenceID('seq2'): AT.Compatibility(0.95, P(1)),
                                              pSeq.SequenceID('seq3'): AT.Compatibility(0.6, P(1))},
-                            consensus=pSeq.SequencePath([nid(0), nid(2), nid(5), nid(6),
-                                                         nid(10), nid(12), nid(13), nid(16)])),
+                            consensus=pSeq.SeqPath([nid(0), nid(2), nid(5), nid(6),
+                                                 nid(10), nid(12), nid(13), nid(16)])),
             # no compatibilities to all, no mincomp
-            AT.AffinityNode(id=AT.AffinityNodeID(1),
+            AT.AffinityNode(id_=AT.AffinityNodeID(1),
                             parent=AT.AffinityNodeID(0),
                             sequences=[pSeq.SequenceID('seq0'),
                                        pSeq.SequenceID('seq1'),
                                        pSeq.SequenceID('seq2')],
-                            consensus=pSeq.SequencePath(
+                            consensus=pSeq.SeqPath(
                                  [nid(0), nid(2), nid(3), nid(6), nid(10), nid(11), nid(13), nid(17)]))
         ]
 

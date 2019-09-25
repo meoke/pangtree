@@ -33,19 +33,19 @@ class PoagraphPOTranslator_read_top_consensus_Test(unittest.TestCase):
         sequences = {
             pSeq.SequenceID('seq0'):
                 pSeq.Sequence(pSeq.SequenceID('seq0'),
-                              [pSeq.SequencePath([*map(nid, [0, 1, 3, 5, 9, 10, 13])])],
+                              [pSeq.SeqPath([*map(nid, [0, 1, 3, 5, 9, 10, 13])])],
                               pSeq.SequenceMetadata({'group': '1'})),
             pSeq.SequenceID('seq1'):
                 pSeq.Sequence(pSeq.SequenceID('seq1'),
-                              [pSeq.SequencePath([*map(nid, [1, 3, 6, 9, 11])])],
+                              [pSeq.SeqPath([*map(nid, [1, 3, 6, 9, 11])])],
                               pSeq.SequenceMetadata({'group': '1'})),
             pSeq.SequenceID('seq2'):
                 pSeq.Sequence(pSeq.SequenceID('seq2'),
-                              [pSeq.SequencePath([*map(nid, [2, 4, 7, 9, 11, 12])])],
+                              [pSeq.SeqPath([*map(nid, [2, 4, 7, 9, 11, 12])])],
                               pSeq.SequenceMetadata({'group': '1'})),
             pSeq.SequenceID('seq3'):
                 pSeq.Sequence(pSeq.SequenceID('seq3'),
-                              [pSeq.SequencePath([*map(nid, [2, 4, 8, 9, 11, 12, 14])])],
+                              [pSeq.SeqPath([*map(nid, [2, 4, 8, 9, 11, 12, 14])])],
                               pSeq.SequenceMetadata({'group': '1'})),
         }
 
@@ -126,7 +126,7 @@ class PoagraphPOTranslator_read_top_consensus_Test(unittest.TestCase):
         sequences = {
             pSeq.SequenceID('seq0'):
                 pSeq.Sequence(pSeq.SequenceID('seq0'),
-                              [pSeq.SequencePath([*map(nid, [0, 1, 2, 3, 4])])],
+                              [pSeq.SeqPath([*map(nid, [0, 1, 2, 3, 4])])],
                               pSeq.SequenceMetadata({'group': '1'}))
         }
         poagraph = pPoagraph.Poagraph(nodes, sequences)
@@ -154,11 +154,11 @@ class PoagraphPOTranslator_read_top_consensus_Test(unittest.TestCase):
         sequences = {
             pSeq.SequenceID('seq1'):
                 pSeq.Sequence(pSeq.SequenceID('seq1'),
-                              [pSeq.SequencePath([*map(nid, [0, 2])])],
+                              [pSeq.SeqPath([*map(nid, [0, 2])])],
                               pSeq.SequenceMetadata({'group': '1'})),
             pSeq.SequenceID('seq2'):
                 pSeq.Sequence(pSeq.SequenceID('seq2'),
-                              [pSeq.SequencePath([*map(nid, [0, 1, 2])])],
+                              [pSeq.SeqPath([*map(nid, [0, 1, 2])])],
                               pSeq.SequenceMetadata({'group': '1'}))
         }
         poagraph = pPoagraph.Poagraph(nodes, sequences)
@@ -186,11 +186,11 @@ class PoagraphPOTranslator_read_top_consensus_Test(unittest.TestCase):
         sequences = {
             pSeq.SequenceID('seq1'):
                 pSeq.Sequence(pSeq.SequenceID('seq1'),
-                              [pSeq.SequencePath([*map(nid, [0, 2])])],
+                              [pSeq.SeqPath([*map(nid, [0, 2])])],
                               pSeq.SequenceMetadata({'group': '1'})),
             pSeq.SequenceID('seq2'):
                 pSeq.Sequence(pSeq.SequenceID('seq2'),
-                              [pSeq.SequencePath([*map(nid, [0, 1, 2])])],
+                              [pSeq.SeqPath([*map(nid, [0, 1, 2])])],
                               pSeq.SequenceMetadata({'group': '1'}))
         }
         poagraph = pPoagraph.Poagraph(nodes, sequences)
@@ -219,11 +219,11 @@ class PoagraphPOTranslator_read_top_consensus_Test(unittest.TestCase):
         sequences = {
             pSeq.SequenceID('seq1'):
                 pSeq.Sequence(pSeq.SequenceID('seq1'),
-                              [pSeq.SequencePath([*map(nid, [0, 1, 3])])],
+                              [pSeq.SeqPath([*map(nid, [0, 1, 3])])],
                               pSeq.SequenceMetadata({'group': '1'})),
             pSeq.SequenceID('seq2'):
                 pSeq.Sequence(pSeq.SequenceID('seq2'),
-                              [pSeq.SequencePath([*map(nid, [0, 2, 3])])],
+                              [pSeq.SeqPath([*map(nid, [0, 2, 3])])],
                               pSeq.SequenceMetadata({'group': '1'}))
         }
         poagraph = pPoagraph.Poagraph(nodes, sequences)
@@ -258,11 +258,11 @@ class PoagraphPOTranslator_read_top_consensus_Test(unittest.TestCase):
         sequences = {
             pSeq.SequenceID('seq1'):
                 pSeq.Sequence(pSeq.SequenceID('seq1'),
-                              [pSeq.SequencePath([*map(nid, [0, 2, 3, 4, 7, 8])])],
+                              [pSeq.SeqPath([*map(nid, [0, 2, 3, 4, 7, 8])])],
                               pSeq.SequenceMetadata({'group': '1'})),
             pSeq.SequenceID('seq2'):
                 pSeq.Sequence(pSeq.SequenceID('seq2'),
-                              [pSeq.SequencePath([*map(nid, [1, 2, 5, 6, 7, 8])])],
+                              [pSeq.SeqPath([*map(nid, [1, 2, 5, 6, 7, 8])])],
                               pSeq.SequenceMetadata({'group': '1'}))
         }
         poagraph = pPoagraph.Poagraph(nodes, sequences)

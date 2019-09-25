@@ -3,8 +3,8 @@ from typing import NewType, List, Any, Dict
 from pangtreebuild.datamodel.builders.PoagraphBuildException import PoagraphBuildException
 from pangtreebuild.datamodel.Node import NodeID
 
-SequencePath = NewType('SequencePath', List[NodeID])
-SequenceMetadata = NewType('SequenceMetadata', Dict[str, Any])
+SeqPath = NewType('SeqPath', List[NodeID])
+SequenceMetadata = NewType('Metadata', Dict[str, Any])
 
 
 class SequenceID:
@@ -49,9 +49,9 @@ class SequenceID:
 
 
 class Sequence:
-    def __init__(self, seqid: SequenceID, paths: List[SequencePath], seqmetadata: SequenceMetadata):
+    def __init__(self, seqid: SequenceID, paths: List[SeqPath], seqmetadata: SequenceMetadata):
         self.seqid: SequenceID = seqid
-        self.paths: List[SequencePath] = paths
+        self.paths: List[SeqPath] = paths
         self.seqmetadata: SequenceMetadata = seqmetadata
 
     def __str__(self):

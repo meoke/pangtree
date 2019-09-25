@@ -2,7 +2,7 @@ from collections import namedtuple
 from typing import List, Optional, Tuple, Dict
 
 from pangtreebuild.datamodel.Node import Base, NodeID, Node
-from pangtreebuild.datamodel.Sequence import Sequence, SequenceID, SequencePath
+from pangtreebuild.datamodel.Sequence import Sequence, SequenceID, SeqPath
 from pangtreebuild.datamodel.input_types import Po, MetadataCSV
 
 # global_logger = loggingtools.get_global_logger()
@@ -70,7 +70,7 @@ def _get_poagraph_paths_and_nodes(po_lines: List[str],
         Tuple[List[Node], Dict[SequenceID, Sequence]]:
     nodes_count = int(_extract_line_value(po_lines[3]))
     paths_count = int(_extract_line_value(po_lines[4]))
-    #todo uzupelniac kolumn id
+    #todo uzupelniac kolumn id_
     nodes: List[Node] = [None] * nodes_count
     node_id = 0
     for i in range(5 + paths_count * 2, 5 + paths_count * 2 + nodes_count):
@@ -83,7 +83,7 @@ def _get_poagraph_paths_and_nodes(po_lines: List[str],
             if len(sequences[seq_id].paths) == 1:
                 sequences[seq_id].paths[0].append(NodeID(node_id))
             else:
-                sequences[seq_id].paths.append(SequencePath([NodeID(node_id)]))
+                sequences[seq_id].paths.append(SeqPath([NodeID(node_id)]))
         node_id += 1
     return nodes, sequences
 

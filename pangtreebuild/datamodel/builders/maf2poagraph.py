@@ -4,7 +4,7 @@ from Bio import AlignIO
 from Bio.Align import MultipleSeqAlignment
 
 from pangtreebuild.datamodel.Node import NodeID, ColumnID, Node, Base, BlockID
-from pangtreebuild.datamodel.Sequence import SequenceID, Sequence, SequencePath
+from pangtreebuild.datamodel.Sequence import SequenceID, Sequence, SeqPath
 from pangtreebuild.datamodel.input_types import Maf, MetadataCSV
 from pangtreebuild.tools import logprocess
 
@@ -73,9 +73,9 @@ def _get_next_aligned_node_id(current_column_i: NodeID, column_nodes_ids: List[N
 
 def _add_node_do_sequence(sequence: Sequence, node_id: NodeID) -> Sequence:
     if sequence.paths:
-        a = SequencePath([node_id])
-        updated_path = SequencePath(sequence.paths[-1] + a)
+        a = SeqPath([node_id])
+        updated_path = SeqPath(sequence.paths[-1] + a)
         newpaths = [sequence.paths[:-1] + updated_path]
     else:
-        newpaths = [SequencePath([node_id])]
+        newpaths = [SeqPath([node_id])]
     return Sequence(sequence.seqid, newpaths, sequence.seqmetadata)

@@ -25,7 +25,7 @@ def affinity_tree_to_fasta(poagraph: Poagraph, affinity_tree: AffinityTree) -> s
                             for node_id in affinity_node.consensus])
         missing_mincomp_symbol = "?"
         leaf = "" if len(affinity_node.children) > 1 else ",".join([str(seq_id) for seq_id in affinity_node.sequences])
-        fasta_lines.append(f">AffinityNode{affinity_node.id}|"
+        fasta_lines.append(f">AffinityNode{affinity_node.id_}|"
                            f"leaf_for={leaf}|"
                            f"mincomp={affinity_node.mincomp if affinity_node.mincomp is not None else missing_mincomp_symbol}|"
                            f"sequences_count={len(affinity_node.sequences)}|"

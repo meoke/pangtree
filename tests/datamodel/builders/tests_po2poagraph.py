@@ -43,19 +43,19 @@ class Po2poagraphTests(unittest.TestCase):
         expected_sequences = {
             pSeq.SequenceID('seq0'):
                 pSeq.Sequence(pSeq.SequenceID('seq0'),
-                              [pSeq.SequencePath([*map(nid, [0, 2, 4, 6, 7, 8, 12, 14, 16])])],
+                              [pSeq.SeqPath([*map(nid, [0, 2, 4, 6, 7, 8, 12, 14, 16])])],
                               pSeq.SequenceMetadata({'group': '1'})),
             pSeq.SequenceID('seq1'):
                 pSeq.Sequence(pSeq.SequenceID('seq1'),
-                              [pSeq.SequencePath([*map(nid, [1, 2, 5, 6, 7, 9])])],
+                              [pSeq.SeqPath([*map(nid, [1, 2, 5, 6, 7, 9])])],
                               pSeq.SequenceMetadata({'group': '1'})),
             pSeq.SequenceID('seq2'):
                 pSeq.Sequence(pSeq.SequenceID('seq2'),
-                              [pSeq.SequencePath([*map(nid, [3, 4, 6, 7, 10, 12, 14, 17])])],
+                              [pSeq.SeqPath([*map(nid, [3, 4, 6, 7, 10, 12, 14, 17])])],
                               pSeq.SequenceMetadata({'group': '2'})),
             pSeq.SequenceID('seq3'):
                 pSeq.Sequence(pSeq.SequenceID('seq3'),
-                              [pSeq.SequencePath([*map(nid, [11, 13, 14, 15])])],
+                              [pSeq.SeqPath([*map(nid, [11, 13, 14, 15])])],
                               pSeq.SequenceMetadata({'group': '2'}))
         }
 
@@ -82,11 +82,11 @@ class Po2poagraphTests(unittest.TestCase):
         expected_sequences = {
             pSeq.SequenceID('seq0'):
                 pSeq.Sequence(pSeq.SequenceID('seq0'),
-                              [pSeq.SequencePath([*map(nid, [0, 3, 4, 5, 6, 8])])],
+                              [pSeq.SeqPath([*map(nid, [0, 3, 4, 5, 6, 8])])],
                               pSeq.SequenceMetadata({'group': '1'})),
             pSeq.SequenceID('seq1'):
                 pSeq.Sequence(pSeq.SequenceID('seq1'),
-                              [pSeq.SequencePath([*map(nid, [1, 2, 4, 5, 7, 8])])],
+                              [pSeq.SeqPath([*map(nid, [1, 2, 4, 5, 7, 8])])],
                               pSeq.SequenceMetadata({'group': '1'})),
             pSeq.SequenceID('seq2'):
                 pSeq.Sequence(pSeq.SequenceID('seq2'),
@@ -98,11 +98,11 @@ class Po2poagraphTests(unittest.TestCase):
                               pSeq.SequenceMetadata({'group': '2'})),
             pSeq.SequenceID('CONSENS0'):
                 pSeq.Sequence(pSeq.SequenceID('CONSENS0'),
-                              [pSeq.SequencePath([*map(nid, [0, 3, 4, 5, 7, 8])])],
+                              [pSeq.SeqPath([*map(nid, [0, 3, 4, 5, 7, 8])])],
                               pSeq.SequenceMetadata({})),
             pSeq.SequenceID('CONSENS1'):
                 pSeq.Sequence(pSeq.SequenceID('CONSENS1'),
-                              [pSeq.SequencePath([*map(nid, [1, 2, 4, 5, 6, 8])])],
+                              [pSeq.SeqPath([*map(nid, [1, 2, 4, 5, 6, 8])])],
                               pSeq.SequenceMetadata({}))
         }
 

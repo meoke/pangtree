@@ -3,10 +3,10 @@ from bisect import bisect_left
 from pathlib import Path
 from typing import List, Dict, Union, Optional
 
-from pangtreebuild.affinitytree.input_types import Hbmin
+from pangtreebuild.affinitytree.parameters import Hbmin
 from pangtreebuild.datamodel.Node import NodeID
 from pangtreebuild.datamodel.Poagraph import Poagraph
-from pangtreebuild.datamodel.Sequence import SequenceID, SequencePath
+from pangtreebuild.datamodel.Sequence import SequenceID, SeqPath
 from pangtreebuild.output.PangenomePO import NodePO, SequencePO
 from pangtreebuild.tools import pathtools
 import pangtreebuild.output.PangenomePO as PangenomePO
@@ -26,11 +26,11 @@ class ConsInfo:
                  fullname: str,
                  po_consensus_id: Optional[str] = None,
                  assigned_sequences_ids: Optional[List[SequenceID]] = None,
-                 path: Optional[SequencePath] = None):
+                 path: Optional[SeqPath] = None):
         self.fullname: str = fullname
         self.po_consensus_id: str = po_consensus_id
         self.assigned_sequences_ids: List[SequenceID] = assigned_sequences_ids
-        self.path: SequencePath = path
+        self.path: SeqPath = path
 
 
 def get_consensuses(poagraph: Poagraph, sequences_ids: List[SequenceID], output_dir: Path, job_name: str,

@@ -184,7 +184,7 @@ def to_PangenomeJSON(task_parameters: TaskParameters = None,
                                for seq_id in sorted_sequences_ids]
 
     # if dagmaf:
-    #     dagmaf_nodes = [MafNode(id=n.id,
+    #     dagmaf_nodes = [MafNode(id_=n.id_,
     #                             orient=n.orient,
     #                             out_edges=[MafEdge(edge_type=edge.edge_type,
     #                                                sequences=edge.sequences,
@@ -192,21 +192,21 @@ def to_PangenomeJSON(task_parameters: TaskParameters = None,
     #                     for n in dagmaf.dagmaf_nodes]
 
     if affinity_tree:
-        affinity_tree_nodes = [AffinityNode(affinity_node_id=consensus_node.id,
-                                          name=f"CONSENSUS{consensus_node.id}",
-                                          parent_node_id=consensus_node.parent,
-                                          children_nodes_ids=consensus_node.children,
-                                          comp_to_all_sequences={seq_id: comp.base_value().value
+        affinity_tree_nodes = [AffinityNode(affinity_node_id=consensus_node.id_,
+                                            name=f"CONSENSUS{consensus_node.id_}",
+                                            parent_node_id=consensus_node.parent,
+                                            children_nodes_ids=consensus_node.children,
+                                            comp_to_all_sequences={seq_id: comp.base_value().value
                                                                   for seq_id, comp
                                                                   in consensus_node.compatibilities.items()},
-                                          sequences_int_ids=[paths_seq_id_to_int_id[seq_id]
+                                            sequences_int_ids=[paths_seq_id_to_int_id[seq_id]
                                                                   for seq_id
                                                                   in consensus_node.sequences
                                                                   if seq_id in paths_seq_id_to_int_id.keys()],
-                                          # poagraph_nodes_ids=[],
-                                          poagraph_nodes_ids=consensus_node.consensus
+                                            # poagraph_nodes_ids=[],
+                                            poagraph_nodes_ids=consensus_node.consensus
                                                 if task_parameters.output_with_nodes else [],
-                                          mincomp=consensus_node.mincomp.base_value().value)
+                                            mincomp=consensus_node.mincomp.base_value().value)
                              for consensus_node in affinity_tree.nodes]
     return PangenomeJSON(task_parameters,
                          pangenome_sequences,
@@ -235,7 +235,7 @@ def str_to_PangenomeJSON(s: str) -> PangenomeJSON:
         for k, v in pangenome_dict['task_parameters'].items():
             task_parameters.__dict__[k] = v
     if 'dagmaf_nodes' in pangenome_dict:
-        dagmaf_nodes = [MafNode(node_id=dagmaf_node['id'],
+        dagmaf_nodes = [MafNode(node_id=dagmaf_node['id_'],
                                 orient=dagmaf_node['orient'],
                                 out_edges=[MafEdge(edge_type=edge['edge_type'],
                                                        sequences=edge['sequences'],
@@ -243,7 +243,7 @@ def str_to_PangenomeJSON(s: str) -> PangenomeJSON:
                         for dagmaf_node in pangenome_dict['dagmaf_nodes']]
 
     if "nodes" in pangenome_dict:
-        pangenome_nodes = [Node(node_id=node["id"],
+        pangenome_nodes = [Node(node_id=node["id_"],
                                 base=node['base'],
                                 column_id=node['column_id'],
                                 block_id=node['block_id'],

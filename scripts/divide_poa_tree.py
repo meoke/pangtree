@@ -56,8 +56,8 @@ for sample in range(0, 1):
         dir_path = f"../data/Ebola/output/analysis_1408_034144/{sample}_{p}__output/"
         # dir_path = f"../data/Simulated1/output/analysis_0808_035057/{sample}_{p}__output/"
         poagraph, consensus_tree = convert_jsonpangenome(path=Path(f"{dir_path}/pangenome.json"))
-        # seq_id_to_metadata = {seq_id: seq.seqmetadata for seq_id, seq in poagraph.sequences.items()}
+        # seq_id_to_name = {seq_id: seq.seqmetadata for seq_id, seq in poagraph.sequences.items()}
         seq_id_to_metadata = None
         consensus_tree = expand_unassigned_node(consensus_tree)
-        newick_consensus_tree = consensus_tree.as_newick(seq_id_to_metadata, expand_leaves=True)
+        newick_consensus_tree = consensus_tree.as_newick(seq_id_to_metadata, separate_leaves=True)
         pathtools.save_to_file(newick_consensus_tree, Path(f"{dir_path}/consensus_tree_extended_2.newick"))

@@ -1,139 +1,139 @@
-from typing import List, NewType, Dict, Optional
 import math
+from typing import List, NewType, Dict, Optional
+
 from newick import Node
-from pangtreebuild.affinitytree.input_types import P
-from pangtreebuild.datamodel.Sequence import SequenceID, SequencePath
+from pangtreebuild.datamodel.Sequence import SequenceID, SeqPath, SequenceMetadata
+from pangtreebuild.affinitytree.Compatibility import Compatibility
 
 AffinityNodeID = NewType('AffinityNodeID', int)
 
 
-class AffinityTreeException(Exception):
-    """Any exception connected with Affinity Tree"""
-
-    pass
-
-
-class Compatibility:
-    """Asymetric similiarity measure of two poagraph paths.
-
-    Attributes:
-        compatibility (float): Raw compatibility value - count of common nodes devided by length of one of the paths.
-        p (P): Parameter to control compatibility value interpretation. Compatibility is raised to the power of P.
-    """
-
-    def __init__(self, compatibility: float, p: P = P(1)):
-        self.value: float = compatibility**p.value
-        self.p: float = p.value
-
-    def __eq__(self, other):
-        return self.value == other.value
-
-    def __lt__(self, other):
-        return self.value < other.value
-
-    def __le__(self, other):
-        return self.value <= other.value
-
-    def __gt__(self, other):
-        return self.value > other.value
-
-    def __ge__(self, other):
-        return self.value >= other.value
-
-    def __sub__(self, other):
-        if self.p != other.p:
-            raise AffinityTreeException("Cannot subtract compatibilities: different P values.")
-        return Compatibility(self.value - other.value, P(self.p))
-
-    def __str__(self):
-        return f"""{self.value}"""
-
-    def __repr__(self):
-        return f"""{self.value}"""
-
-    def base_value(self):
-        """Get compatibility value without transformation using P."""
-        return Compatibility(self.value ** (1 / self.p))
-
-
 class AffinityNode(object):
-    """Affinity Tree node
+    """Node of Affinity Tree.
 
     Attributes:
-        id (AffinityNodeID): Affinity Node ID.
-        parent (AffinityNodeID): ID of the parent node.
+        id_ (AffinityNodeID): ID of this node
+        parent (AffinityNodeID): ID of the parent node
         children(List[AffinityNodeID]): IDs of the children nodes.
         sequences(List[SequenceID]): IDs of the sequences assigned to this node.
-        mincomp(Compatibility): minimum from the compatibilities of this consensus to the assigned sequences
+        mincomp(Compatibility): Minimum from the compatibilities of this consensus to the assigned sequences
         compatibilities(Dict[SequenceID, Compatibility]): Dictionary of compatibilities to any sequences.
-        consensus(SequencePath): path of the consensus defined as path in corresponding Poagraph.
+        consensus(SeqPath): Path of the consensus defined as path in corresponding Poagraph.
     """
 
     def __init__(self,
-                 id: AffinityNodeID,
+                 id_: AffinityNodeID,
                  parent: Optional[AffinityNodeID] = None,
                  children: Optional[List[AffinityNodeID]] = None,
                  sequences: Optional[List[SequenceID]] = None,
                  mincomp: Optional[Compatibility] = None,
                  compatibilities: Optional[Dict[SequenceID, Compatibility]] = None,
-                 consensus: Optional[SequencePath] = None):
-        self.id: AffinityNodeID = id
+                 consensus: Optional[SeqPath] = None):
+        """Creates Affinity Tree node.
+
+        Arguments:
+        id_: Affinity Node ID.
+        parent: ID of the parent node.
+        children: IDs of the children nodes.
+        sequences: IDs of the sequences assigned to this node.
+        mincomp: Minimum from the compatibilities of this consensus to the assigned sequences
+        compatibilities: Dictionary of compatibilities SequenceID:Compatibility to any sequences.
+        consensus: Path of the consensus defined as path in corresponding Poagraph.
+        """
+
+        self.id_: AffinityNodeID = id_
         self.parent: AffinityNodeID = parent
         self.children: List[AffinityNodeID] = children if children else []
         self.sequences: List[SequenceID] = sequences if sequences else []
         self.mincomp: Compatibility = mincomp if mincomp else Compatibility(0)
         self.compatibilities: Dict[SequenceID, Compatibility] = compatibilities if compatibilities else {}
-        self.consensus: SequencePath = consensus
+        self.consensus: SeqPath = consensus
 
     def __str__(self):
-        return f"ID: {self.id}, "\
-            f"parent: {self.parent}, " \
-            f"children: {self.children}, " \
-            f"mincomp: {self.mincomp.value}, " \
-            f"consensuss length: {len(self.consensus)}, "\
-            f"sequences: {self.sequences}."
+        return f"ID: {self.id_}, "\
+               f"parent: {self.parent}, " \
+               f"children: {self.children}, " \
+               f"mincomp: {str(self.mincomp)}, " \
+               f"consensus length: {len(self.consensus)}, "\
+               f"sequences: {self.sequences}."
 
     def __eq__(self, other):
         return self.parent == other.parent and \
-               self.id == other.id and \
+               self.id_ == other.id and \
                self.sequences == other.sequences and \
-               math.isclose(self.mincomp.valuem, other.mincomp.value) and \
+               math.isclose(self.mincomp.value, other.mincomp.value) and \
                self.compatibilities == other.compatibilities and \
                self.consensus == other.consensus
 
 
 class AffinityTree:
     """
-    Affinity Tree storage.
+    Affinity Tree defined as list of nodes.
+
+    Attributes:
+        nodes (List[AffinityNode]): All nodes of the tree. Relations between nodes are described by their attributes.
     """
 
-    def __init__(self):
-        self.nodes: List[AffinityNode] = []
+    def __init__(self, nodes: Optional[List[AffinityNode]] = None):
+        """Creates Affinity Tree object. No correctness checking is performed.
 
-    def get_node(self, node_id: AffinityNodeID) -> AffinityNode:
-        """Returns affinity npode with given ID."""
+        Arguments:
+            nodes: Nodes of the tree.
+        """
+
+        self.nodes: List[AffinityNode] = nodes if nodes else []
+
+    def get_node(self, id_: AffinityNodeID) -> AffinityNode:
+        """Returns affinity node with given ID.
+
+        Arguments:
+            id_: ID of the node to return.
+
+        Returns:
+            Affinity Node of given ID.
+
+        Raises:
+            KeyError: No node with given ID exists in this Affinity Tree.
+        """
 
         for node in self.nodes:
-            if node.id == node_id:
+            if node.id_ == id_:
                 return node
-        raise AffinityTreeException("No node with given ID.")
+        raise KeyError("No node with given ID.")
 
-    def get_max_node_id(self):
+    def get_max_node_id(self) -> AffinityNodeID:
+        """Returns the largest number used as the tree node ID.
+
+        Returns:
+            The largest AffinityNodeID used in this Affinity Tree. Returns AffinityNodeID(-1) if the tree has no nodes.
+        """
 
         if len(self.nodes) == 0:
-            return -1
-        return max([node.id for node in self.nodes])
+            return AffinityNodeID(-1)
+        return max([node.id_ for node in self.nodes])
 
-    def as_newick(self, seq_id_to_seq_name: Dict[SequenceID, str] = None, expand_leaves=False):
-        return self._convert_to_newick(seq_id_to_seq_name, expand_leaves)
+    def as_newick(self, seq_id_to_metadata: Dict[SequenceID, SequenceMetadata] = None, separate_leaves=False) -> str:
+        """Returns Affinity Tree in Newick format.
 
-    def _convert_to_newick(self, seq_id_to_metadata: Dict[SequenceID, str] = None, expand_newick = False) -> str:
-        def newick_nhx(newick_tree):
+        Arguments:
+            seq_id_to_metadata: Dictionary of sequences IDs to the desired name used in newick file. For example:
+                                {SequenceID('KM0123'): 'cat',
+                                SequenceID('ZX124'): 'dog'}
+            separate_leaves: A switch to control if tree leaves having assigned multiple sequences should have appended
+                             children singleton leaves single sequence assigned.
 
-            label = newick_tree.name or ''
-            if newick_tree._length:
+        Returns:
+            A string with the Affinity Tree converted to newick format. https://en.wikipedia.org/wiki/Newick_format
+            If the tree has no nodes, an empty string is returned.
+        """
+
+        def _newick_nhx(newick_node: Node) -> str:
+            """Converts newick tree to newick string"""
+
+            node_label = newick_node.name or ''
+            if newick_node._length:
                 for cn in sorted_nodes:
-                    if str(cn.id) == newick_tree.name:
+                    if str(cn.id_) == newick_node.name:
                         if seq_id_to_metadata:
                             if len(cn.sequences) == 1:
                                 name = seq_id_to_metadata[cn.sequences[0]]["name"]
@@ -141,43 +141,43 @@ class AffinityTree:
                                 seqid = cn.sequences[0]
                                 metadata = f"[&&NHX:name={name}:group={group}:seqid={seqid}:mincomp={cn.mincomp}]"
                             elif len(cn.sequences) == 0:
-                                name = f"EmptyAffinityNode {cn.id}"
+                                name = f"EmptyAffinityNode {cn.id_}"
                                 metadata = f"[&&NHX:name={name}:mincomp={cn.mincomp}]"
                             else:
-                                name = f"AffinityNode {cn.id}"
+                                name = f"AffinityNode {cn.id_}"
                                 metadata = f"[&&NHX:name={name}:mincomp={cn.mincomp}]"
                         else:
                             if len(cn.sequences) == 1:
                                 name = cn.sequences[0]
                             elif len(cn.sequences) == 0:
-                                name = f"EmptyAffinityNode {cn.id}"
+                                name = f"EmptyAffinityNode {cn.id_}"
                             else:
-                                name = f"AffinityNode {cn.id}"
+                                name = f"AffinityNode {cn.id_}"
                             mincomp = cn.mincomp
                             metadata = f"[&&NHX:name={name}:mincomp={mincomp}]"
                 try:
-                    label += ':' + newick_tree._length + metadata
+                    node_label += ':' + newick_node._length + metadata
                 except:
                     print("metadata")
-            descendants = ','.join([newick_nhx(n) for n in newick_tree.descendants])
+            descendants = ','.join([_newick_nhx(n) for n in newick_node.descendants])
             if descendants:
                 descendants = '(' + descendants + ')'
-            return descendants + label
+            return descendants + node_label
 
         if not self.nodes:
-            return None
+            return ""
 
-        sorted_nodes = sorted(self.nodes, key=lambda x: x.id)
+        sorted_nodes = sorted(self.nodes, key=lambda x: x.id_)
 
-        if expand_newick:
+        if separate_leaves:
             new_leaves_count = 0
             for node in self.nodes:
                 if len(node.children) == 0 and len(node.sequences) > 1:
                     for seq_id in node.sequences:
                         affinity_node_id = len(self.nodes) + new_leaves_count
                         node.children.append(affinity_node_id)
-                        sorted_nodes.append(AffinityNode(id=AffinityNodeID(affinity_node_id),
-                                                         parent=node.id,
+                        sorted_nodes.append(AffinityNode(id_=AffinityNodeID(affinity_node_id),
+                                                         parent=node.id_,
                                                          children=[],
                                                          sequences=[seq_id],
                                                          mincomp=Compatibility(1.0)
@@ -191,7 +191,7 @@ class AffinityTree:
             node_parent_label = n[0]
             node = n[1]
 
-            label = str(node.id)
+            label = str(node.id_)
             if node.parent is None:
                 length = "1"
             else:
@@ -208,4 +208,4 @@ class AffinityTree:
 
             for child in node.children:
                 nodes_to_process.append((label, sorted_nodes[child]))
-        return "(" + newick_nhx(newick_tree) + ")"
+        return "(" + _newick_nhx(newick_tree) + ")"

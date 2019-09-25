@@ -3,10 +3,10 @@ from time import time
 from datetime import datetime
 from pangtreebuild.datamodel.fasta_providers.ConstSymbolProvider import ConstSymbolProvider
 from pangtreebuild.affinitytree.AffinityTree import Compatibility
-from pangtreebuild.affinitytree.input_types import P
+from pangtreebuild.affinitytree.parameters import P
 from pangtreebuild.datamodel.DAGMaf import DAGMaf
 from pangtreebuild.datamodel.DataType import DataType
-from pangtreebuild.datamodel.Sequence import SequencePath, SequenceID, Sequence
+from pangtreebuild.datamodel.Sequence import SeqPath, SequenceID, Sequence
 from pangtreebuild.datamodel.Node import Node
 from pangtreebuild.datamodel.builders import maf2poagraph, maf2dagmaf, dagmaf2poagraph, po2poagraph
 from pangtreebuild.datamodel.input_types import Po, Maf, MetadataCSV, MissingSymbol
@@ -68,7 +68,7 @@ class Poagraph:
 
     def get_compatibilities(self,
                             sequences_ids: List[SequenceID],
-                            consensus_path: SequencePath,
+                            consensus_path: SeqPath,
                             p: Optional[P] = P(1)) -> Dict[SequenceID, Compatibility]:
         compatibilities = dict()
         for seq_id in sequences_ids:

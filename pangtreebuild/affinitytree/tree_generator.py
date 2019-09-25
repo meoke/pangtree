@@ -4,10 +4,10 @@ from typing import List, Dict, Tuple
 import numpy as np
 
 from pangtreebuild.affinitytree.AffinityTree import AffinityTree, AffinityNode, AffinityNodeID, Compatibility
-from pangtreebuild.affinitytree.input_types import Blosum, Stop, P, Hbmin
+from pangtreebuild.affinitytree.parameters import Blosum, Stop, P, Hbmin
 from pangtreebuild.datamodel.Poagraph import Poagraph
 from pangtreebuild.affinitytree import poa
-from pangtreebuild.datamodel.Sequence import SequenceID, SequencePath
+from pangtreebuild.datamodel.Sequence import SequenceID, SeqPath
 from pangtreebuild.tools import logprocess
 
 tresholds_logger = logprocess.get_logger('tresholdsCSV')
@@ -48,7 +48,7 @@ def get_affinity_tree(poagraph: Poagraph,
             child.compatibilities = poagraph.get_compatibilities(sequences_ids=[*poagraph.sequences.keys()],
                                                                  consensus_path=child.consensus,
                                                                  p=p)
-            node.children.append(child.id)
+            node.children.append(child.id_)
             affinity_tree.nodes.append(child)
             if not _node_is_ready(child, stop):
                 nodes_to_process.append(child)
@@ -86,11 +86,11 @@ def _get_root_node(poagraph: Poagraph, blosum_path: Path, output_dir: Path, p: P
     compatibilities = poagraph.get_compatibilities(all_poagraph_sequences_ids,
                                                    consensus_paths[0].path,
                                                    p=p)
-    affinity_node = AffinityNode(id=AffinityNodeID(0),
-                                  sequences=[*poagraph.sequences.keys()],
-                                  mincomp=_get_min_comp(all_poagraph_sequences_ids, compatibilities),
-                                  compatibilities=compatibilities,
-                                  consensus=consensus_paths[0].path)
+    affinity_node = AffinityNode(id_=AffinityNodeID(0),
+                                 sequences=[*poagraph.sequences.keys()],
+                                 mincomp=_get_min_comp(all_poagraph_sequences_ids, compatibilities),
+                                 compatibilities=compatibilities,
+                                 consensus=consensus_paths[0].path)
     detailed_logger.info(f"New affinity node created: {str(affinity_node)}")
     return affinity_node
 
@@ -115,7 +115,7 @@ def _get_children_nodes_looping(node: AffinityNode,
                                 current_max_affinity_node_id: int) -> List[AffinityNode]:
     children_nodes: List[AffinityNode] = []
     not_assigned_sequences_ids: List[SequenceID] = node.sequences
-    detailed_logger.info(f"Getting children nodes for affinity node {node.id}...")
+    detailed_logger.info(f"Getting children nodes for affinity node {node.id_}...")
 
     affinity_node_id = 0
     so_far_cutoffs: List[Compatibility] = []
@@ -128,7 +128,7 @@ def _get_children_nodes_looping(node: AffinityNode,
             consensus_candidate = poa.get_consensuses(poagraph,
                                                       current_candidates,
                                                       output_dir,
-                                                      f"parent_{node.id}_child_{len(so_far_cutoffs)}_attempt_{attempt}",
+                                                      f"parent_{node.id_}_child_{len(so_far_cutoffs)}_attempt_{attempt}",
                                                       blosum_path,
                                                       Hbmin(0),
                                                       specific_consensuses_id=[0])[0].path
@@ -139,7 +139,7 @@ def _get_children_nodes_looping(node: AffinityNode,
             qualified_sequences_ids_candidates, cutoff = _get_qualified_sequences_ids_and_cutoff(
                 compatibilities_to_max_c=compatibilities_to_consensus_candidate,
                 so_far_cutoffs=so_far_cutoffs,
-                splitted_node_id=node.id)
+                splitted_node_id=node.id_)
 
             if qualified_sequences_ids_candidates == current_candidates or attempt == 10:
                 if attempt == 10:
@@ -147,12 +147,12 @@ def _get_children_nodes_looping(node: AffinityNode,
                 affinity_node_id += 1
 
                 affinity_node = AffinityNode(
-                    id=AffinityNodeID(current_max_affinity_node_id + affinity_node_id),
-                    parent=node.id,
+                    id_=AffinityNodeID(current_max_affinity_node_id + affinity_node_id),
+                    parent=node.id_,
                     sequences=qualified_sequences_ids_candidates,
                     mincomp=_get_min_comp(node_sequences_ids=qualified_sequences_ids_candidates,
                                           comps_to_consensus=compatibilities_to_consensus_candidate),
-                    consensus=SequencePath(consensus_candidate))
+                    consensus=SeqPath(consensus_candidate))
                 children_nodes.append(affinity_node)
                 not_assigned_sequences_ids = list(set(not_assigned_sequences_ids) - set(qualified_sequences_ids_candidates))
                 child_ready = True
@@ -177,14 +177,14 @@ def _get_children_nodes_looping(node: AffinityNode,
 #         children_nodes: List[ConsensusNode] = []
 #         not_assigned_sequences_ids: List[SequenceID] = node.sequences
 #         so_far_cutoffs: List[CompatibilityToPath] = []
-#         detailed_logger.info(f"Getting children nodes for consensus node {node.id}...")
+#         detailed_logger.info(f"Getting children nodes for consensus node {node.id_}...")
 #
 #         while not_assigned_sequences_ids:
 #             detailed_logger.info(f"### Getting child {len(so_far_cutoffs)}...")
 #             consensus = poa.get_consensuses(poagraph,
 #                                                  not_assigned_sequences_ids,
 #                                                  output_dir,
-#                                                  f"{node.id}_{len(so_far_cutoffs)}_all",
+#                                                  f"{node.id_}_{len(so_far_cutoffs)}_all",
 #                                                  blosum_path,
 #                                                  Hbmin(0),
 #                                                  specific_consensuses_id=[0])[0].path
@@ -196,11 +196,11 @@ def _get_children_nodes_looping(node: AffinityNode,
 #
 #             max_sequences_ids, _ = _get_max_compatible_sequences_ids_and_cutoff(max_cutoff_strategy,
 #                                                                   compatibilities_to_consensus,
-#                                                                   splitted_node_id=node.id)
+#                                                                   splitted_node_id=node.id_)
 #             max_consensus_path = poa.get_consensuses(poagraph,
 #                                                      max_sequences_ids,
 #                                                      output_dir,
-#                                                      f"{node.id}_{len(so_far_cutoffs)}_max",
+#                                                      f"{node.id_}_{len(so_far_cutoffs)}_max",
 #                                                      blosum_path,
 #                                                      Hbmin(0),
 #                                                      specific_consensuses_id=[0])[0].path
@@ -213,13 +213,13 @@ def _get_children_nodes_looping(node: AffinityNode,
 #             qualified_sequences_ids, node_cutoff = _get_qualified_sequences_ids_and_cutoff(
 #                 node_cutoff_strategy,
 #                 compatibilities_to_max_c=comps_to_max_consensus,
-#                 so_far_cutoffs=so_far_cutoffs, splitted_node_id=node.id)
-#             consensus_node = ConsensusNode(id=AffinityNodeID(current_max_affinity_node_id + len(so_far_cutoffs)+1),
-#                                            parent=node.id,
+#                 so_far_cutoffs=so_far_cutoffs, splitted_node_id=node.id_)
+#             consensus_node = ConsensusNode(id_=AffinityNodeID(current_max_affinity_node_id + len(so_far_cutoffs)+1),
+#                                            parent=node.id_,
 #                                            sequences=qualified_sequences_ids,
 #                                            mincomp=_get_min_comp(node_sequences_ids=qualified_sequences_ids,
 #                                                                  comps_to_consensus=comps_to_max_consensus),
-#                                            consensus=SequencePath(max_consensus_path))
+#                                            consensus=Path(max_consensus_path))
 #             detailed_logger.info(f"New consensus node created: {str(consensus_node)}")
 #             so_far_cutoffs.append(node_cutoff)
 #             children_nodes.append(consensus_node)
@@ -263,7 +263,7 @@ def _get_qualified_sequences_ids_and_cutoff(compatibilities_to_max_c: Dict[Seque
 
 def _node_is_ready(node: AffinityNode, stop: Stop) -> bool:
     if len(node.sequences) == 1 or node.mincomp.base_value() >= stop:
-        detailed_logger.info(f"Node {node.id} satisfied requirements and won't be split!")
+        detailed_logger.info(f"Node {node.id_} satisfied requirements and won't be split!")
         return True
     return False
 

@@ -60,8 +60,8 @@ def main():
         else:
             seq_id_to_metadata = None
 
-        newick_affinity_tree = affinity_tree.as_newick(seq_id_to_metadata, expand_leaves=False)
-        newick_affinity_tree_extended = affinity_tree.as_newick(seq_id_to_metadata, expand_leaves=True)
+        newick_affinity_tree = affinity_tree.as_newick(seq_id_to_metadata, separate_leaves=False)
+        newick_affinity_tree_extended = affinity_tree.as_newick(seq_id_to_metadata, separate_leaves=True)
 
         pathtools.save_to_file(newick_affinity_tree, pathtools.get_child_path(args.output_dir, "affinity_tree.newick"))
         pathtools.save_to_file(newick_affinity_tree_extended, pathtools.get_child_path(args.output_dir, "affinity_tree_extended.newick"))

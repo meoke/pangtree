@@ -43,15 +43,15 @@ class Maf2poagraphTests(unittest.TestCase):
         expected_sequences = {
             pSeq.SequenceID('seq0'):
                 pSeq.Sequence(pSeq.SequenceID('seq0'),
-                              [pSeq.SequencePath([*map(nid, [1, 3, 4, 6, 8, 9, 11, 12])])],
+                              [pSeq.SeqPath([*map(nid, [1, 3, 4, 6, 8, 9, 11, 12])])],
                               pSeq.SequenceMetadata({'group': '1'})),
             pSeq.SequenceID('seq1'):
                 pSeq.Sequence(pSeq.SequenceID('seq1'),
-                              [pSeq.SequencePath([*map(nid, [2, 3, 4, 10, 11, 12, 13, 14])])],
+                              [pSeq.SeqPath([*map(nid, [2, 3, 4, 10, 11, 12, 13, 14])])],
                               pSeq.SequenceMetadata({'group': '1'})),
             pSeq.SequenceID('seq2'):
                 pSeq.Sequence(pSeq.SequenceID('seq2'),
-                              [pSeq.SequencePath([*map(nid, [0, 2, 5, 6, 7, 10, 11, 12, 14])])],
+                              [pSeq.SeqPath([*map(nid, [0, 2, 5, 6, 7, 10, 11, 12, 14])])],
                               pSeq.SequenceMetadata({'group': '2'})),
             pSeq.SequenceID('seq3'):
                 pSeq.Sequence(pSeq.SequenceID('seq3'),

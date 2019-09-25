@@ -38,29 +38,29 @@ class AffinityTreeGenerationTests(unittest.TestCase):
         sequences = {
             pSeq.SequenceID('seq0'):
                 pSeq.Sequence(pSeq.SequenceID('seq0'),
-                              [pSeq.SequencePath([*map(nid, [10, 11, 12, 13, 14, 15, 16, 17, 18, 9])])],
+                              [pSeq.SeqPath([*map(nid, [10, 11, 12, 13, 14, 15, 16, 17, 18, 9])])],
                               pSeq.SequenceMetadata({})),
             pSeq.SequenceID('seq1'):
                 pSeq.Sequence(pSeq.SequenceID('seq1'),
-                              [pSeq.SequencePath([*map(nid, [10, 11, 12, 13, 14, 15, 16, 17, 8, 9])])],
+                              [pSeq.SeqPath([*map(nid, [10, 11, 12, 13, 14, 15, 16, 17, 8, 9])])],
                               pSeq.SequenceMetadata({})),
             pSeq.SequenceID('seq2'):
                 pSeq.Sequence(pSeq.SequenceID('seq2'),
-                              [pSeq.SequencePath([*map(nid, [10, 11, 12, 13, 14, 15, 16, 7, 8, 9])])],
+                              [pSeq.SeqPath([*map(nid, [10, 11, 12, 13, 14, 15, 16, 7, 8, 9])])],
                               pSeq.SequenceMetadata({})),
             pSeq.SequenceID('seq3'):
                 pSeq.Sequence(pSeq.SequenceID('seq3'),
-                              [pSeq.SequencePath([*map(nid, [10, 11, 12, 3, 4, 5, 6, 7, 8, 9])])],
+                              [pSeq.SeqPath([*map(nid, [10, 11, 12, 3, 4, 5, 6, 7, 8, 9])])],
                               pSeq.SequenceMetadata({})),
             pSeq.SequenceID('seq4'):
                 pSeq.Sequence(pSeq.SequenceID('seq3'),
-                              [pSeq.SequencePath([*map(nid, [10, 11, 2, 3, 4, 5, 6, 7, 8, 9])])],
+                              [pSeq.SeqPath([*map(nid, [10, 11, 2, 3, 4, 5, 6, 7, 8, 9])])],
                               pSeq.SequenceMetadata({}))
         }
 
         poagraph = pPoagraph.Poagraph(nodes, sequences)
 
-        consensus_path = pSeq.SequencePath([*map(nid, [10, 11, 12, 13, 14, 15, 16, 17, 18, 19])])
+        consensus_path = pSeq.SeqPath([*map(nid, [10, 11, 12, 13, 14, 15, 16, 17, 18, 19])])
         compatibilities = poagraph.get_compatibilities(poagraph.get_sequences_ids(), consensus_path, p)
 
         actual_cutoff = tree_generator.find_node_cutoff([c for c in compatibilities.values()], []).cutoff

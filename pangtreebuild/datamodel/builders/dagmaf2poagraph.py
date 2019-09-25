@@ -6,7 +6,7 @@ from pangtreebuild.mafgraph.graph.Arc import Arc
 from pangtreebuild.mafgraph.mafreader import start_position
 
 from pangtreebuild.datamodel.DAGMaf import DAGMaf, DAGMafNode
-from pangtreebuild.datamodel.Sequence import SequenceID, Sequence, SequencePath
+from pangtreebuild.datamodel.Sequence import SequenceID, Sequence, SeqPath
 from pangtreebuild.datamodel.Node import Node, ColumnID, BlockID, NodeID, Base
 from pangtreebuild.datamodel.builders.PoagraphBuildException import PoagraphBuildException
 from pangtreebuild.datamodel.fasta_providers import FastaProvider
@@ -154,18 +154,18 @@ def _add_node_to_sequence(build_state: _BuildState,
                           node_id: NodeID) -> None:
     q = build_state.sequences[seq_id].paths
     if len(build_state.sequences[seq_id].paths) == 0 or join_with is None:
-        build_state.sequences[seq_id].paths.append(SequencePath([node_id]))
+        build_state.sequences[seq_id].paths.append(SeqPath([node_id]))
     else:
         for path in build_state.sequences[seq_id].paths:
             if path[-1] == join_with:
                 path.append(node_id)
                 return
 
-        raise PoagraphBuildException("Cannot find path with specified last node id.")
+        raise PoagraphBuildException("Cannot find path with specified last node id_.")
 
 
 def _process_block(build_state: _BuildState, block: DAGMafNode):
-    # global_logger.info(f"Processing block {block.id}...")
+    # global_logger.info(f"Processing block {block.id_}...")
     current_node_id = _get_max_node_id(build_state.nodes)
     block_width = len(block.alignment[0].seq)
     paths_join_info = _get_paths_join_info(block, build_state.free_edges)
