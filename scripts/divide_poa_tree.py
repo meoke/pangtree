@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import Tuple
 
 from build.lib.pangtreebuild.datamodel.Node import Node
-from pangtreebuild.affinitytree.ConsensusTree import AffinityTree, AffinityNode, ConsensusNodeID, Compatibility
+from pangtreebuild.affinity_tree.ConsensusTree import AffinityTree, AffinityNode, ConsensusNodeID, Compatibility
 from pangtreebuild.datamodel.Node import NodeID, Base
 from pangtreebuild.datamodel.Poagraph import Poagraph
 from pangtreebuild.datamodel.Sequence import SequenceID, Sequence

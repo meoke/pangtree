@@ -6,13 +6,13 @@ import datetime
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../pangtreebuild')))
 from pangtreebuild.datamodel.fasta_providers.ConstSymbolProvider import ConstSymbolProvider
-from pangtreebuild.affinitytree import tree_generator, simple_tree_generator
 from pangtreebuild.datamodel.input_types import Maf, Po
 from pangtreebuild.datamodel.Poagraph import Poagraph
 from pangtreebuild.tools import cli, pathtools, logprocess
 from pangtreebuild.output.PangenomeJSON import to_PangenomeJSON, TaskParameters, to_json, to_pickle, load_pickle, str_to_PangenomeJSON
 from pangtreebuild.output.PangenomePO import poagraph_to_PangenomePO
 from pangtreebuild.output.PangenomeFASTA import poagraph_to_fasta, affinity_tree_to_fasta
+from pangtreebuild.affinity_tree import builders as at_builders
 
 def main():
     parser = cli.get_parser()
@@ -42,13 +42,13 @@ def main():
         consensus_output_dir = pathtools.get_child_dir(args.output_dir, "consensus")
 
         if args.consensus == 'poa':
-            affinity_tree = simple_tree_generator.get_simple_affinity_tree(poagraph,
+            affinity_tree = at_builders.build_poa_affinity_tree(poagraph,
                                                                             blosum,
                                                                             consensus_output_dir,
                                                                             args.hbmin,
                                                                             args.verbose)
         elif args.consensus == 'tree':
-            affinity_tree = tree_generator.get_affinity_tree(poagraph,
+            affinity_tree = at_builders.build_affinity_tree(poagraph,
                                                               blosum,
                                                               consensus_output_dir,
                                                               args.stop,

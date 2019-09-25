@@ -1,4 +1,4 @@
-from pangtreebuild.affinitytree.AffinityTree import AffinityTree
+from pangtreebuild.affinity_tree.structure import AffinityTree
 from pangtreebuild.datamodel.Poagraph import Poagraph
 
 

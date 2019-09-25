@@ -1,9 +1,11 @@
-import os
+"""Functions to call poa software."""
+
 from bisect import bisect_left
+import os
 from pathlib import Path
 from typing import List, Dict, Union, Optional
 
-from pangtreebuild.affinitytree.parameters import Hbmin
+from pangtreebuild.affinity_tree.parameters import Hbmin
 from pangtreebuild.datamodel.Node import NodeID
 from pangtreebuild.datamodel.Poagraph import Poagraph
 from pangtreebuild.datamodel.Sequence import SequenceID, SeqPath

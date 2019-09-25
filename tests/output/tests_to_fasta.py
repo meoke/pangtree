@@ -1,7 +1,7 @@
 import unittest
 from pathlib import Path
 
-from tests.context import pPoagraph, pNode, pSeq, PangenomeFASTA, AT, P, pathtools
+from tests.context import pPoagraph, pNode, pSeq, PangenomeFASTA, at_structure, P, pathtools
 
 
 def nid(x): return pNode.NodeID(x)
@@ -67,26 +67,26 @@ class ToFASTATests(unittest.TestCase):
     def test_2_consensuses_tree_fasta(self):
         expected_consensuses_fasta_path = Path(self.fasta_dir + "consensuses.fasta")
 
-        affinity_tree = AT.AffinityTree()
+        affinity_tree = at_structure.AffinityTree()
         affinity_tree.nodes = [
             # all members set
-            AT.AffinityNode(id_=AT.AffinityNodeID(0),
-                            parent=AT.AffinityNodeID(-1),
-                            children=[AT.AffinityNodeID(1), AT.AffinityNodeID(2)],
+            at_structure.AffinityNode(id_=at_structure.AffinityNodeID(0),
+                            parent=at_structure.AffinityNodeID(-1),
+                            children=[at_structure.AffinityNodeID(1), at_structure.AffinityNodeID(2)],
                             sequences=[pSeq.SequenceID('seq0'),
                                        pSeq.SequenceID('seq1'),
                                        pSeq.SequenceID('seq2'),
                                        pSeq.SequenceID('seq3')],
-                            mincomp=AT.Compatibility(0.5, P(1)),
-                            compatibilities={pSeq.SequenceID('seq0'): AT.Compatibility(1.0, P(1)),
-                                             pSeq.SequenceID('seq1'): AT.Compatibility(0.9, P(1)),
-                                             pSeq.SequenceID('seq2'): AT.Compatibility(0.95, P(1)),
-                                             pSeq.SequenceID('seq3'): AT.Compatibility(0.6, P(1))},
+                            mincomp=at_structure.Compatibility(0.5, P(1)),
+                            compatibilities={pSeq.SequenceID('seq0'): at_structure.Compatibility(1.0, P(1)),
+                                             pSeq.SequenceID('seq1'): at_structure.Compatibility(0.9, P(1)),
+                                             pSeq.SequenceID('seq2'): at_structure.Compatibility(0.95, P(1)),
+                                             pSeq.SequenceID('seq3'): at_structure.Compatibility(0.6, P(1))},
                             consensus=pSeq.SeqPath([nid(0), nid(2), nid(5), nid(6),
                                                  nid(10), nid(12), nid(13), nid(16)])),
             # no compatibilities to all, no mincomp
-            AT.AffinityNode(id_=AT.AffinityNodeID(1),
-                            parent=AT.AffinityNodeID(0),
+            at_structure.AffinityNode(id_=at_structure.AffinityNodeID(1),
+                            parent=at_structure.AffinityNodeID(0),
                             sequences=[pSeq.SequenceID('seq0'),
                                        pSeq.SequenceID('seq1'),
                                        pSeq.SequenceID('seq2')],

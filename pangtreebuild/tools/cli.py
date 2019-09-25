@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import TypeVar, Callable, Optional, Union, List
 
 from pangtreebuild.output.PangenomeJSON import TaskParameters
-from pangtreebuild.affinitytree.parameters import Blosum, Hbmin
+from pangtreebuild.affinity_tree.parameters import Blosum, Hbmin
 from pangtreebuild.datamodel.DataType import DataType
 from pangtreebuild.datamodel.builders import PoagraphBuildException
 from pangtreebuild.datamodel.fasta_providers.FastaProvider import UseCache
@@ -17,7 +17,7 @@ from pangtreebuild.datamodel.fasta_providers.ConstSymbolProvider import ConstSym
 from pangtreebuild.datamodel.fasta_providers.FromNCBI import FromNCBI
 from pangtreebuild.datamodel.fasta_providers.FromFile import FromFile
 
-from pangtreebuild.affinitytree import parameters as consensus_input_types
+from pangtreebuild.affinity_tree import parameters as consensus_input_types
 
 from pangtreebuild.tools import pathtools
 

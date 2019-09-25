@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import List, Tuple, Dict
 import matplotlib.pyplot as plt
 
-from pangtreebuild.affinitytree import simple_tree_generator
+from pangtreebuild.affinity_tree import simple_tree_generator
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../pangtreebuild')))
 import pangtreebuild.tools.pathtools as pathtools
@@ -19,11 +19,11 @@ import pangtreebuild.datamodel.fasta_providers.FromFile as fp_file
 import pangtreebuild.datamodel.input_types as inp
 from pangtreebuild.datamodel.Poagraph import Poagraph
 from pangtreebuild.datamodel.Node import NodeID, ColumnID
-import pangtreebuild.affinitytree.tree_generator as tree_generator
-import pangtreebuild.affinitytree.input_types as cinp
+import pangtreebuild.affinity_tree.tree_generator as tree_generator
+import pangtreebuild.affinity_tree.input_types as cinp
 from pangtreebuild.output.PangenomeJSON import TaskParameters
-from pangtreebuild.affinitytree.cutoffs import MAX2, NODE3
-from pangtreebuild.affinitytree.ConsensusTree import AffinityTree, AffinityNode, Compatibility
+from pangtreebuild.affinity_tree.cutoffs import MAX2, NODE3
+from pangtreebuild.affinity_tree.ConsensusTree import AffinityTree, AffinityNode, Compatibility
 
 
 def get_ebola_poa_tree(hbmin: float, output_dir_name: str) -> Tuple[Poagraph, AffinityTree]:

@@ -21,7 +21,7 @@ from pangtreebuild.datamodel.input_types import MissingSymbol, InputError, Po
 from pangtreebuild.output import PangenomePO
 
 from pangtreebuild.output import PangenomeFASTA
-from pangtreebuild.affinitytree import AffinityTree as AT
-from pangtreebuild.affinitytree.parameters import P
-from pangtreebuild.affinitytree import poa
-from pangtreebuild.affinitytree import tree_generator
+from pangtreebuild.affinity_tree import structure as at_structure
+from pangtreebuild.affinity_tree.parameters import P
+from pangtreebuild.affinity_tree import poa
+from pangtreebuild.affinity_tree import builders as at_builders

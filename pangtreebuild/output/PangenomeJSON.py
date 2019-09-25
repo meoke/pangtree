@@ -3,7 +3,7 @@ from typing import Dict, List, Union, Tuple
 import jsonpickle
 import pickle
 
-from pangtreebuild.affinitytree.AffinityTree import AffinityTree
+from pangtreebuild.affinity_tree.structure import AffinityTree
 from pangtreebuild.datamodel.DAGMaf import DAGMaf
 from pangtreebuild.datamodel.Poagraph import Poagraph
 

@@ -20,11 +20,11 @@ import pangtreebuild.datamodel.fasta_providers.FromFile as fp_file
 import pangtreebuild.datamodel.input_types as inp
 from pangtreebuild.datamodel.Poagraph import Poagraph
 from pangtreebuild.datamodel.Node import NodeID, ColumnID
-import pangtreebuild.affinitytree.tree_generator as tree_generator
-import pangtreebuild.affinitytree.input_types as cinp
+import pangtreebuild.affinity_tree.tree_generator as tree_generator
+import pangtreebuild.affinity_tree.input_types as cinp
 from pangtreebuild.output.PangenomeJSON import TaskParameters
-from pangtreebuild.affinitytree.cutoffs import MAX2, NODE3
-from pangtreebuild.affinitytree.ConsensusTree import AffinityTree
+from pangtreebuild.affinity_tree.cutoffs import MAX2, NODE3
+from pangtreebuild.affinity_tree.ConsensusTree import AffinityTree
 
 
 def get_ebola_consensus_tree(p: float, stop: float, output_dir_name: str) -> Tuple[Poagraph, AffinityTree]:

@@ -2,8 +2,8 @@ from typing import Optional, List, Tuple, Dict
 from time import time
 from datetime import datetime
 from pangtreebuild.datamodel.fasta_providers.ConstSymbolProvider import ConstSymbolProvider
-from pangtreebuild.affinitytree.AffinityTree import Compatibility
-from pangtreebuild.affinitytree.parameters import P
+from pangtreebuild.affinity_tree.structure import Compatibility
+from pangtreebuild.affinity_tree.parameters import P
 from pangtreebuild.datamodel.DAGMaf import DAGMaf
 from pangtreebuild.datamodel.DataType import DataType
 from pangtreebuild.datamodel.Sequence import SeqPath, SequenceID, Sequence

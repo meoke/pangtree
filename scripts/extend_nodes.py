@@ -10,14 +10,14 @@ from pathlib import Path
 from typing import List, Tuple, Dict
 import matplotlib.pyplot as plt
 
-from pangtreebuild.affinitytree import simple_tree_generator
+from pangtreebuild.affinity_tree import simple_tree_generator
 from pangtreebuild.datamodel.Sequence import Sequence, SequenceID
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../pangtreebuild')))
 import pangtreebuild.tools.pathtools as pathtools
 from pangtreebuild.datamodel.Poagraph import Poagraph
 from pangtreebuild.datamodel.Node import Node, NodeID, Base
-from pangtreebuild.affinitytree.ConsensusTree import AffinityTree, AffinityNode, Compatibility, ConsensusNodeID
+from pangtreebuild.affinity_tree.ConsensusTree import AffinityTree, AffinityNode, Compatibility, ConsensusNodeID
 from pangtreebuild.output.PangenomeJSON import str_to_PangenomeJSON, PangenomeJSON
 
 
