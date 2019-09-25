@@ -22,6 +22,6 @@ from pangtreebuild.output import PangenomePO
 
 from pangtreebuild.output import PangenomeFASTA
 from pangtreebuild.affinitytree import AffinityTree as AT
-from pangtreebuild.affinitytree.parameters import P, AffinityTreeInputError
+from pangtreebuild.affinitytree.parameters import P
 from pangtreebuild.affinitytree import poa
 from pangtreebuild.affinitytree import tree_generator

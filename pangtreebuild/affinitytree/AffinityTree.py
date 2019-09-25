@@ -1,8 +1,10 @@
+"""AffinityTree and related objects: AffinityNode, AffinityNodeID definitions."""
+
 import math
 from typing import List, NewType, Dict, Optional
 
 from newick import Node
-from pangtreebuild.datamodel.Sequence import SequenceID, SeqPath, SequenceMetadata
+from pangtreebuild.datamodel import Sequence
 from pangtreebuild.affinitytree.Compatibility import Compatibility
 
 AffinityNodeID = NewType('AffinityNodeID', int)
@@ -10,6 +12,15 @@ AffinityNodeID = NewType('AffinityNodeID', int)
 
 class AffinityNode(object):
     """Node of Affinity Tree.
+
+    Args:
+        id_: Affinity Node ID.
+        parent: ID of the parent node.
+        children: IDs of the children nodes.
+        sequences: IDs of the sequences assigned to this node.
+        mincomp: Minimum from the compatibilities of this consensus to the assigned sequences
+        compatibilities: Dictionary of compatibilities SequenceID:Compatibility to any sequences.
+        consensus: Path of the consensus defined as path in corresponding Poagraph.
 
     Attributes:
         id_ (AffinityNodeID): ID of this node
@@ -25,29 +36,17 @@ class AffinityNode(object):
                  id_: AffinityNodeID,
                  parent: Optional[AffinityNodeID] = None,
                  children: Optional[List[AffinityNodeID]] = None,
-                 sequences: Optional[List[SequenceID]] = None,
+                 sequences: Optional[List[Sequence.SequenceID]] = None,
                  mincomp: Optional[Compatibility] = None,
-                 compatibilities: Optional[Dict[SequenceID, Compatibility]] = None,
-                 consensus: Optional[SeqPath] = None):
-        """Creates Affinity Tree node.
-
-        Arguments:
-        id_: Affinity Node ID.
-        parent: ID of the parent node.
-        children: IDs of the children nodes.
-        sequences: IDs of the sequences assigned to this node.
-        mincomp: Minimum from the compatibilities of this consensus to the assigned sequences
-        compatibilities: Dictionary of compatibilities SequenceID:Compatibility to any sequences.
-        consensus: Path of the consensus defined as path in corresponding Poagraph.
-        """
-
+                 compatibilities: Optional[Dict[Sequence.SequenceID, Compatibility]] = None,
+                 consensus: Optional[Sequence.SeqPath] = None):
         self.id_: AffinityNodeID = id_
         self.parent: AffinityNodeID = parent
         self.children: List[AffinityNodeID] = children if children else []
-        self.sequences: List[SequenceID] = sequences if sequences else []
+        self.sequences: List[Sequence.SequenceID] = sequences if sequences else []
         self.mincomp: Compatibility = mincomp if mincomp else Compatibility(0)
-        self.compatibilities: Dict[SequenceID, Compatibility] = compatibilities if compatibilities else {}
-        self.consensus: SeqPath = consensus
+        self.compatibilities: Dict[Sequence.SequenceID, Compatibility] = compatibilities if compatibilities else {}
+        self.consensus: Sequence.SeqPath = consensus
 
     def __str__(self):
         return f"ID: {self.id_}, "\
@@ -66,27 +65,26 @@ class AffinityNode(object):
                self.consensus == other.consensus
 
 
-class AffinityTree:
+class AffinityTree(object):
     """
     Affinity Tree defined as list of nodes.
+
+    No correctness checking is performed.
+
+    Args:
+        nodes: Nodes of the tree.
 
     Attributes:
         nodes (List[AffinityNode]): All nodes of the tree. Relations between nodes are described by their attributes.
     """
 
     def __init__(self, nodes: Optional[List[AffinityNode]] = None):
-        """Creates Affinity Tree object. No correctness checking is performed.
-
-        Arguments:
-            nodes: Nodes of the tree.
-        """
-
         self.nodes: List[AffinityNode] = nodes if nodes else []
 
     def get_node(self, id_: AffinityNodeID) -> AffinityNode:
         """Returns affinity node with given ID.
 
-        Arguments:
+        Args:
             id_: ID of the node to return.
 
         Returns:
@@ -112,10 +110,10 @@ class AffinityTree:
             return AffinityNodeID(-1)
         return max([node.id_ for node in self.nodes])
 
-    def as_newick(self, seq_id_to_metadata: Dict[SequenceID, SequenceMetadata] = None, separate_leaves=False) -> str:
+    def as_newick(self, seq_id_to_metadata: Dict[Sequence.SequenceID, Sequence.SequenceMetadata] = None, separate_leaves=False) -> str:
         """Returns Affinity Tree in Newick format.
 
-        Arguments:
+        Args:
             seq_id_to_metadata: Dictionary of sequences IDs to the desired name used in newick file. For example:
                                 {SequenceID('KM0123'): 'cat',
                                 SequenceID('ZX124'): 'dog'}
