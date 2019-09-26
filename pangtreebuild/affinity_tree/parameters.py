@@ -75,7 +75,11 @@ class Hbmin(object):
     """Poa algorithm parameter - the minimum value of sequence compatibility to generated consensus.
 
     Args:
-        value: Hbmin value.
+        value: Hbmin value. Must be in range [0,1].
+
+    Raises:
+        ValueError: If hbmin value is not in [0,1].
+        TypeError: If value is not floatable.
 
     Attributes:
         value (float): Hbmin value.

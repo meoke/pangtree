@@ -52,7 +52,7 @@ class PoagraphPOTranslator_read_top_consensus_Test(unittest.TestCase):
         self.poagraph = pPoagraph.Poagraph(nodes, sequences)
 
     def test_read_consensus_path_seq1_only_in_input(self):
-        translator = poa.PoagraphPOTranslator(self.poagraph, [pSeq.SequenceID('seq1')])
+        translator = poa._PoagraphPOTranslator(self.poagraph, [pSeq.SequenceID('seq1')])
         _ = translator.get_input_po_content()
 
         poa_lines = ["VERSION=pangenome\n",
@@ -74,7 +74,7 @@ class PoagraphPOTranslator_read_top_consensus_Test(unittest.TestCase):
         self.assertEqual(expected_consensus_path, actual_consensus_path[0].path)
 
     def test_subpoagraph_construction_from_poagraph_keep_seq_0_1(self):
-        translator = poa.PoagraphPOTranslator(self.poagraph, [pSeq.SequenceID('seq0'), pSeq.SequenceID('seq1')])
+        translator = poa._PoagraphPOTranslator(self.poagraph, [pSeq.SequenceID('seq0'), pSeq.SequenceID('seq1')])
         actual_po_content = translator.get_input_po_content()
         expected_po_content = "VERSION=pangenome\n"\
                               "NAME=pangenome\n"\
@@ -97,7 +97,7 @@ class PoagraphPOTranslator_read_top_consensus_Test(unittest.TestCase):
         self.assertEqual(expected_po_content, actual_po_content)
 
     def test_subpoagraph_construction_from_poagraph_keep_seq3(self):
-        translator = poa.PoagraphPOTranslator(self.poagraph, [pSeq.SequenceID('seq3')])
+        translator = poa._PoagraphPOTranslator(self.poagraph, [pSeq.SequenceID('seq3')])
         actual_po_content = translator.get_input_po_content()
         expected_po_content = "VERSION=pangenome\n" \
                               "NAME=pangenome\n" \
@@ -130,7 +130,7 @@ class PoagraphPOTranslator_read_top_consensus_Test(unittest.TestCase):
                               pSeq.SequenceMetadata({'group': '1'}))
         }
         poagraph = pPoagraph.Poagraph(nodes, sequences)
-        translator = poa.PoagraphPOTranslator(poagraph, [pSeq.SequenceID('seq0')])
+        translator = poa._PoagraphPOTranslator(poagraph, [pSeq.SequenceID('seq0')])
         actual_po_content = translator.get_input_po_content()
         expected_po_content = "VERSION=pangenome\n" \
                               "NAME=pangenome\n" \
@@ -163,7 +163,7 @@ class PoagraphPOTranslator_read_top_consensus_Test(unittest.TestCase):
         }
         poagraph = pPoagraph.Poagraph(nodes, sequences)
 
-        translator = poa.PoagraphPOTranslator(poagraph, [pSeq.SequenceID('seq2')])
+        translator = poa._PoagraphPOTranslator(poagraph, [pSeq.SequenceID('seq2')])
         actual_po_content = translator.get_input_po_content()
         expected_po_content = "VERSION=pangenome\n" \
                               "NAME=pangenome\n" \
@@ -195,7 +195,7 @@ class PoagraphPOTranslator_read_top_consensus_Test(unittest.TestCase):
         }
         poagraph = pPoagraph.Poagraph(nodes, sequences)
 
-        translator = poa.PoagraphPOTranslator(poagraph, [pSeq.SequenceID('seq1')])
+        translator = poa._PoagraphPOTranslator(poagraph, [pSeq.SequenceID('seq1')])
         actual_po_content = translator.get_input_po_content()
         expected_po_content = "VERSION=pangenome\n" \
                               "NAME=pangenome\n" \
@@ -228,7 +228,7 @@ class PoagraphPOTranslator_read_top_consensus_Test(unittest.TestCase):
         }
         poagraph = pPoagraph.Poagraph(nodes, sequences)
 
-        translator = poa.PoagraphPOTranslator(poagraph, [pSeq.SequenceID('seq2')])
+        translator = poa._PoagraphPOTranslator(poagraph, [pSeq.SequenceID('seq2')])
         actual_po_content = translator.get_input_po_content()
         expected_po_content = "VERSION=pangenome\n" \
                               "NAME=pangenome\n" \
@@ -267,8 +267,8 @@ class PoagraphPOTranslator_read_top_consensus_Test(unittest.TestCase):
         }
         poagraph = pPoagraph.Poagraph(nodes, sequences)
 
-        translator = poa.PoagraphPOTranslator(poagraph, [pSeq.SequenceID('seq1'),
-                                                         pSeq.SequenceID('seq2')])
+        translator = poa._PoagraphPOTranslator(poagraph, [pSeq.SequenceID('seq1'),
+                                                          pSeq.SequenceID('seq2')])
         actual_po_content = translator.get_input_po_content()
         expected_po_content = "VERSION=pangenome\n" \
                               "NAME=pangenome\n" \

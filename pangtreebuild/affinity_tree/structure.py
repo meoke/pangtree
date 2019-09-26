@@ -34,27 +34,27 @@ class Compatibility(object):
         else:
             return
 
-    def __eq__(self, other: "Compatibility") -> bool:
+    def __eq__(self, other: Union["Compatibility", parameters.Stop]) -> bool:
         self._check_p_equality(other)
         return self.value == other.value
 
-    def __lt__(self, other: "Compatibility") -> bool:
+    def __lt__(self, other: Union["Compatibility", parameters.Stop]) -> bool:
         self._check_p_equality(other)
         return self.value < other.value
 
-    def __le__(self, other: "Compatibility") -> bool:
+    def __le__(self, other: Union["Compatibility", parameters.Stop]) -> bool:
         self._check_p_equality(other)
         return self.value <= other.value
 
-    def __gt__(self, other: "Compatibility") -> bool:
+    def __gt__(self, other: Union["Compatibility", parameters.Stop]) -> bool:
         self._check_p_equality(other)
         return self.value > other.value
 
-    def __ge__(self, other: "Compatibility") -> bool:
+    def __ge__(self, other: Union["Compatibility", parameters.Stop]) -> bool:
         self._check_p_equality(other)
         return self.value >= other.value
 
-    def __sub__(self, other: "Compatibility") -> "Compatibility":
+    def __sub__(self, other: Union["Compatibility", parameters.Stop]) -> "Compatibility":
         self._check_p_equality(other)
         return Compatibility(self.value - other.value, parameters.P(self.p))
 
