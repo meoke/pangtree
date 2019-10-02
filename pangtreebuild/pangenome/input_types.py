@@ -3,7 +3,7 @@ from io import StringIO
 from typing import Optional, Dict, Any, List
 from pathlib import Path
 
-from pangtreebuild.datamodel.Sequence import SequenceID
+from pangtreebuild.poagraph import sequence
 
 
 class InputError(Exception):
@@ -31,7 +31,7 @@ class MetadataCSV:
     def __init__(self, filecontent: StringIO, filename: Optional[Path]):
         filecontent = filecontent.read()
         self.filename: Path = filename
-        self.metadata: Dict[SequenceID, Dict[str, Any]] = self.csv_to_dict(filecontent)
+        self.metadata: Dict[sequence.SequenceID, Dict[str, Any]] = self.csv_to_dict(filecontent)
 
     @classmethod
     def csv_to_dict(cls, filecontent: str):
@@ -40,7 +40,7 @@ class MetadataCSV:
 
         d = {}
         for row in rd:
-            seqid = SequenceID(row['seqid'], skip_part_before_dot=False)
+            seqid = sequence.SequenceID(row['seqid'], skip_part_before_dot=False)
             if seqid in d:
                 raise InputError("Not unique values seqid column in metadata file. Make them unique.")
             d[seqid] = dict(row)
@@ -62,7 +62,7 @@ class MetadataCSV:
         if headers.count('seqid') > 1:
             raise InputError('Only one \'seqid\' column in metadata csv is allowed.')
 
-    def get_all_sequences_ids(self) -> List[SequenceID]:
+    def get_all_sequences_ids(self) -> List[sequence.SequenceID]:
         return [*self.metadata.keys()]
 
     def get_sequence_metadata(self, seq_id) -> Dict[str, Any]:

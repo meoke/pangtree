@@ -5,18 +5,23 @@ from pangtreebuild.mafgraph.graph import Block
 from pangtreebuild.mafgraph.graph.Arc import Arc
 from pangtreebuild.mafgraph.mafreader import start_position
 
-from pangtreebuild.datamodel.DAGMaf import DAGMaf, DAGMafNode
-from pangtreebuild.datamodel.Sequence import SequenceID, Sequence, SeqPath
-from pangtreebuild.datamodel.Node import Node, ColumnID, BlockID, NodeID, Base
-from pangtreebuild.datamodel.builders.PoagraphBuildException import PoagraphBuildException
-from pangtreebuild.datamodel.fasta_providers import FastaProvider
-from pangtreebuild.datamodel.input_types import MetadataCSV
+from pangtreebuild.poagraph.DAGMaf import DAGMaf, DAGMafNode
+from pangtreebuild.poagraph.Sequence import SequenceID, Sequence, SeqPath
+from pangtreebuild.poagraph.Node import Node, ColumnID, BlockID, NodeID, Base
+from pangtreebuild.poagraph.fasta_providers import FastaProvider
+from pangtreebuild.poagraph.input_types import MetadataCSV
 
 from pangtreebuild.tools import logprocess
 
 
+
 global_logger = logprocess.get_global_logger()
 detailed_logger = logprocess.get_logger("details")
+
+
+class PoagraphBuildException(Exception):
+    pass
+
 
 MafSequenceID = NewType('MafSequenceID', str)
 

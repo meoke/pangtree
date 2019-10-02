@@ -1,9 +1,9 @@
 from collections import namedtuple
 from typing import List, Optional, Tuple, Dict
 
-from pangtreebuild.datamodel.Node import Base, NodeID, Node
-from pangtreebuild.datamodel.Sequence import Sequence, SequenceID, SeqPath
-from pangtreebuild.datamodel.input_types import Po, MetadataCSV
+from pangtreebuild.poagraph.Node import Base, NodeID, Node
+from pangtreebuild.poagraph.Sequence import Sequence, SequenceID, SeqPath
+from pangtreebuild.poagraph.input_types import Po, MetadataCSV
 
 # global_logger = loggingtools.get_global_logger()
 # detailed_logger = loggingtools.get_logger("details")

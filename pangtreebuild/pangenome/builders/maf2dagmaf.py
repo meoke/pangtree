@@ -1,5 +1,5 @@
-from pangtreebuild.datamodel.DAGMaf import DAGMaf, DAGMafNode
-from pangtreebuild.datamodel.input_types import Maf
+from pangtreebuild.poagraph.DAGMaf import DAGMaf, DAGMafNode
+from pangtreebuild.poagraph.input_types import Maf
 from pangtreebuild.mafgraph.sorter import sort_mafblocks
 from pangtreebuild.tools import logprocess
 

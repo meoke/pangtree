@@ -1,2 +1,0 @@
-class PoagraphBuildException(Exception):
-    pass
