@@ -50,7 +50,7 @@ class Blosum(object):
         self._blosum_symbols_line = blosum_symbols_line
 
     def check_if_symbol_is_present(self, missing_symbol: str) -> bool:
-        """Checks if missing_symbol is present in the matrix.
+        """Checks if missing_base is present in the matrix.
 
         Args:
             missing_symbol: The symbol to be searched for in the BLOSUM matrix.
@@ -59,7 +59,7 @@ class Blosum(object):
             bool: True if the symbol is included in the BLOSUM matrix. Otherwise an exception is raised.
 
         Raises:
-            ValueError: If missing_symbol has length other than 1 or the symbol is not included in the BLOSUM matrix.
+            ValueError: If missing_base has length other than 1 or the symbol is not included in the BLOSUM matrix.
         """
 
         blosum_symbols = str.strip(self._blosum_symbols_line).split(" ")

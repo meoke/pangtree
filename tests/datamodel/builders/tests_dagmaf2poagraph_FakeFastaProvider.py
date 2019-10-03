@@ -4,7 +4,7 @@ from pathlib import Path
 from ...context import pNode
 from ...context import pSeq
 from ...context import Maf, MetadataCSV
-from ...context import pPoagraph, FastaProvider
+from ...context import pPoagraph, fasta_providers
 from ...context import pathtools
 
 
@@ -16,7 +16,7 @@ def bid(x): return pNode.BlockID(x)
 
 class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
 
-    class FakeFastaProvider(FastaProvider):
+    class FakeFastaProvider(fasta_providers.FastaProvider):
         def __init__(self):
             self.sources = {
                 pSeq.SequenceID("seq0"): "",

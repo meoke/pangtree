@@ -7,9 +7,8 @@ import subprocess
 from typing import List, Dict, Union, Optional
 
 from pangtreebuild.affinity_tree import parameters
-from pangtreebuild.datamodel.Node import NodeID
-from pangtreebuild.datamodel.Poagraph import Poagraph
-from pangtreebuild.datamodel.Sequence import SequenceID, SeqPath
+from pangtreebuild.pangenome import poagraph
+from pangtreebuild.pangenome.parameters import multialignment
 from pangtreebuild.output.PangenomePO import NodePO, SequencePO
 import pangtreebuild.output.PangenomePO as PangenomePO
 from pangtreebuild.tools import pathtools
@@ -32,29 +31,29 @@ class ConsInfo(object):
     Args:
         fullname: Consensus path name. Eg. "CONSENS0"
         po_consensus_id: Consensus ID used in PO file to indicate it is present in a node. Eg. "S0"
-        assigned_sequences_ids: IDs of sequences assigned to this consensus.
+        assigned_sequences_ids: IDs of _sequences assigned to this consensus.
         path: List of nodes of this consensus.
 
     Attributes:
         fullname (str): Consensus name.
         po_consensus_id: Consensus ID used in PO file to indicate it is present in a node. Eg. "S0"
-        assigned_sequences_ids: IDs of sequences assigned to this consensus.
+        assigned_sequences_ids: IDs of _sequences assigned to this consensus.
         path: List of nodes of this consensus.
     """
 
     def __init__(self,
                  fullname: str,
                  po_consensus_id: Optional[str] = None,
-                 assigned_sequences_ids: Optional[List[SequenceID]] = None,
-                 path: Optional[SeqPath] = None):
+                 assigned_sequences_ids: Optional[List[multialignment.SequenceID]] = None,
+                 path: Optional[poagraph.SeqPath] = None):
         self.fullname: str = fullname
         self.po_consensus_id: str = po_consensus_id
-        self.assigned_sequences_ids: List[SequenceID] = assigned_sequences_ids
-        self.path: SeqPath = path
+        self.assigned_sequences_ids: List[multialignment.SequenceID] = assigned_sequences_ids
+        self.path: poagraph.SeqPath = path
 
 
-def get_consensuses(poagraph: Poagraph,
-                    sequences_ids: List[SequenceID],
+def get_consensuses(poagraph: poagraph.Poagraph,
+                    sequences_ids: List[multialignment.SequenceID],
                     output_dir: Path,
                     job_name: str,
                     blosum_path: Path,
@@ -64,7 +63,7 @@ def get_consensuses(poagraph: Poagraph,
 
     Args:
         poagraph: Poagraph used as input to poa software. It may be cropped by using sequences_ids argument.
-        sequences_ids: IDs of the sequences that should be kept in poagraph being input to poa.
+        sequences_ids: IDs of the _sequences that should be kept in poagraph being input to poa.
         output_dir: Full path to the directory used by poa software as temporary storage place.
         job_name: Name of the task used to label produced file names.
         blosum_path: Full path to the Blosum file used as poa's input.
@@ -75,7 +74,7 @@ def get_consensuses(poagraph: Poagraph,
         Dictionary of consensus numbers and corresponding information as ConsInfo object.
 
     Raises:
-        NoConsensusError: If no consensus was found for given Poagraph and set of selected sequences.
+        NoConsensusError: If no consensus was found for given Poagraph and set of selected _sequences.
     """
     poa_input_path = pathtools.get_child_path(output_dir, f"{job_name}_in_pangenome.po")
     poa_output_path = pathtools.get_child_path(output_dir, f"{job_name}_out_pangenome.po")
@@ -128,20 +127,20 @@ class _PoagraphPOTranslator:
         sequences_ids: Sequences to be kept in the final PO file which stores Poagraph.
 
     Attributes:
-        poagraph (Poagraph): The orginal poagraph.
-        sequences_ids (List[SequenceID]): List of sequences IDs to be included in poa input.
-        new_to_old: Dict[NodeID, NodeID]: Mapping of temporary poagraph nodes IDs to the original ones.
-        old_to_new: Dict[NodeID, NodeID] = Mapping of the original poagraph nodes IDs to the temporary ones.
-        seq_old_to_new: Dict[SequenceID, int] = Mapping of the original sequences IDs to temporary integer ones.
-        seq_new_to_old: Dict[int, SequenceID] = Mapping of the temporary int IDs of sequences to the original ones.
+        poagraph (poagraph.Poagraph): The orginal poagraph.
+        sequences_ids (List[multialignment.SequenceID]): List of _sequences IDs to be included in poa input.
+        new_to_old: Dict[poagraph.NodeID, poagraph.NodeID]: Mapping of temporary poagraph nodes IDs to the original ones.
+        old_to_new: Dict[poagraph.NodeID, poagraph.NodeID] = Mapping of the original poagraph nodes IDs to the temporary ones.
+        seq_old_to_new: Dict[multialignment.SequenceID, int] = Mapping of the original _sequences IDs to temporary integer ones.
+        seq_new_to_old: Dict[int, multialignment.SequenceID] = Mapping of the temporary int IDs of _sequences to the original ones.
     """
-    def __init__(self, poagraph: Poagraph, sequences_ids: List[SequenceID]):
-        self.poagraph: Poagraph = poagraph
-        self.sequences_ids: List[SequenceID] = sequences_ids
-        self.new_to_old: Dict[NodeID, NodeID] = None
-        self.old_to_new: Dict[NodeID, NodeID] = None
-        self.seq_old_to_new: Dict[SequenceID, int] = None
-        self.seq_new_to_old: Dict[int, SequenceID] = None
+    def __init__(self, poagraph: poagraph.Poagraph, sequences_ids: List[multialignment.SequenceID]):
+        self.poagraph: poagraph.Poagraph = poagraph
+        self.sequences_ids: List[multialignment.SequenceID] = sequences_ids
+        self.new_to_old: Dict[poagraph.NodeID, poagraph.NodeID] = None
+        self.old_to_new: Dict[poagraph.NodeID, poagraph.NodeID] = None
+        self.seq_old_to_new: Dict[multialignment.SequenceID, int] = None
+        self.seq_new_to_old: Dict[int, multialignment.SequenceID] = None
 
     def get_input_po_content(self) -> str:
         """Convert poagraph to PO file content."""
@@ -158,14 +157,14 @@ class _PoagraphPOTranslator:
         self.seq_old_to_new = {seq_id: i for i, seq_id in enumerate(self.sequences_ids)}
         self.seq_new_to_old = {i: seq_id for seq_id, i in self.seq_old_to_new.items()}
 
-        po_nodes = [NodePO(base=self.poagraph.nodes[self.new_to_old[new_node_id]].base.value,
+        po_nodes = [NodePO(base=self.poagraph.nodes[self.new_to_old[new_node_id]]._base.value,
                            aligned_to=self._get_aligned_node(self.new_to_old[new_node_id], sorted_nodes_ids_to_keep),
                            in_nodes=set(),
                            sequences_ids=[]
                            )
                     for new_node_id in range(len(nodes_ids_to_keep))]
 
-        sequences_weight: Dict[SequenceID, int] = self.poagraph.get_sequences_weights(self.sequences_ids)
+        sequences_weight: Dict[multialignment.SequenceID, int] = self.poagraph.get_sequences_weights(self.sequences_ids)
         po_sequences = [SequencePO(name=self.seq_new_to_old[new_seq_id],
                                    nodes_count=self.poagraph.get_sequence_nodes_count(self.seq_new_to_old[new_seq_id]),
                                    weight=sequences_weight[self.seq_new_to_old[new_seq_id]],
@@ -191,8 +190,8 @@ class _PoagraphPOTranslator:
         return PangenomePO.poagraph_elements_to_PangenomePO(po_nodes, po_sequences, self.poagraph.datatype)
 
     def _get_aligned_node(self,
-                          old_node_id: NodeID,
-                          sorted_nodes_ids_to_keep: List[NodeID]) -> Union[NodeID, None]:
+                          old_node_id: poagraph.NodeID,
+                          sorted_nodes_ids_to_keep: List[poagraph.NodeID]) -> Union[poagraph.NodeID, None]:
         """Get aligned node ID or None if it there is no aligned node.
 
         Args:

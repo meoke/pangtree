@@ -2,7 +2,7 @@ import unittest
 from pathlib import Path
 
 
-from tests.context import FromFile, pSeq, pNode
+from tests.context import fasta_providers, pSeq, pNode
 
 
 class FromFileFastaProviderFastaTests(unittest.TestCase):
@@ -18,7 +18,7 @@ class FromFileFastaProviderFastaTests(unittest.TestCase):
     def raise_error_if_unequal(self,
                                sequence_id: pSeq.SequenceID,
                                expected_sequence: str,
-                               fasta_provider: FromFile) -> None:
+                               fasta_provider: fasta_providers.FromFile) -> None:
         for i, expected_symbol in enumerate(expected_sequence):
             expected_base = pNode.Base(expected_symbol)
             actual_base = fasta_provider.get_base(sequence_id, i)
@@ -26,7 +26,7 @@ class FromFileFastaProviderFastaTests(unittest.TestCase):
 
     def test_1_one_sequence(self):
         fasta_path = self.fasta_dir + "test_1_one_sequence.fasta"
-        fasta_provider = FromFile(Path(fasta_path))
+        fasta_provider = fasta_providers.FromFile(Path(fasta_path))
 
         sequence_id = pSeq.SequenceID("seq1")
         expected_sequence = self.read_sequence(fasta_path)
@@ -36,7 +36,7 @@ class FromFileFastaProviderFastaTests(unittest.TestCase):
     def test_2_three_sequences(self):
         fasta_path = self.fasta_dir + "test_2_three_sequences.fasta"
 
-        fasta_provider = FromFile(Path(fasta_path))
+        fasta_provider = fasta_providers.FromFile(Path(fasta_path))
 
         sequence_id_1 = pSeq.SequenceID("seq1")
         self.raise_error_if_unequal(sequence_id_1, "ACTGGGTGGGA", fasta_provider)
@@ -51,9 +51,9 @@ class FromFileFastaProviderFastaTests(unittest.TestCase):
         fasta_path = self.fasta_dir + "test_3_empty_sequence_name.fasta"
 
         with self.assertRaises(Exception) as exp:
-            _ = FromFile(Path(fasta_path))
+            _ = fasta_providers.FromFile(Path(fasta_path))
 
-        expected_message = "No sequences in fasta provided as fasta source or incorrect fasta."
+        expected_message = "No _sequences in fasta provided as fasta source or incorrect fasta."
         actual_message = str(exp.exception)
         self.assertEqual(expected_message, actual_message)
 
@@ -61,7 +61,7 @@ class FromFileFastaProviderFastaTests(unittest.TestCase):
         fasta_path = self.fasta_dir + "test_4_empty_sequence.fasta"
 
         with self.assertRaises(Exception) as exp:
-            _ = FromFile(Path(fasta_path))
+            _ = fasta_providers.FromFile(Path(fasta_path))
 
         expected_message = "Empty sequence in fasta source file. " \
                            "Provide the sequence or remove its identifier."
@@ -72,9 +72,9 @@ class FromFileFastaProviderFastaTests(unittest.TestCase):
         fasta_path = self.fasta_dir + "test_5_empty_fasta.fasta"
 
         with self.assertRaises(Exception) as exp:
-            _ = FromFile(Path(fasta_path))
+            _ = fasta_providers.FromFile(Path(fasta_path))
 
-        expected_message = "No sequences in fasta provided as fasta source or incorrect fasta."
+        expected_message = "No _sequences in fasta provided as fasta source or incorrect fasta."
         actual_message = str(exp.exception)
         self.assertEqual(expected_message, actual_message)
 
@@ -82,7 +82,7 @@ class FromFileFastaProviderFastaTests(unittest.TestCase):
         fasta_path = self.fasta_dir + "test_6_repeated_sequences.fasta"
 
         with self.assertRaises(Exception) as exp:
-            _ = FromFile(Path(fasta_path))
+            _ = fasta_providers.FromFile(Path(fasta_path))
 
         expected_message = "Incorrect fasta provided as fasta source. Sequences ids are not unique."
         actual_message = str(exp.exception)

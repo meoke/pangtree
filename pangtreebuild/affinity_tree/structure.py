@@ -3,74 +3,12 @@
 import math
 from typing import List, NewType, Dict, Optional, Union, Any
 
-from pangtreebuild.affinity_tree import parameters
 from newick import Node
-from pangtreebuild.datamodel import Sequence
-
+from pangtreebuild.pangenome import poagraph as p_structure
+from pangtreebuild.pangenome.parameters import multialignment
 
 AffinityNodeID = NewType('AffinityNodeID', int)
 
-
-class Compatibility(object):
-    """Asymetric similiarity measure of two poagraph paths.
-
-    Args:
-        compatibility: Raw compatibility value - count of common nodes devided by length of one of the paths.
-        p: Parameter to control compatibility value interpretation. Compatibility is raised to the power of P.
-
-    Attributes:
-        value (float): Compatibility value raised to the power of p.
-        p (float): P parameter value.
-
-    """
-
-    def __init__(self, compatibility: float, p: parameters.P = parameters.P(1)):
-        self.value: float = compatibility**p.value
-        self.p: float = p.value
-
-    def _check_p_equality(self, other: Union["Compatibility", Any]) -> None:
-        if isinstance(other, Compatibility):
-            assert self.p == other.p, 'Cannot compare compatibilities with different p values.'
-        else:
-            return
-
-    def __eq__(self, other: Union["Compatibility", parameters.Stop]) -> bool:
-        self._check_p_equality(other)
-        return self.value == other.value
-
-    def __lt__(self, other: Union["Compatibility", parameters.Stop]) -> bool:
-        self._check_p_equality(other)
-        return self.value < other.value
-
-    def __le__(self, other: Union["Compatibility", parameters.Stop]) -> bool:
-        self._check_p_equality(other)
-        return self.value <= other.value
-
-    def __gt__(self, other: Union["Compatibility", parameters.Stop]) -> bool:
-        self._check_p_equality(other)
-        return self.value > other.value
-
-    def __ge__(self, other: Union["Compatibility", parameters.Stop]) -> bool:
-        self._check_p_equality(other)
-        return self.value >= other.value
-
-    def __sub__(self, other: Union["Compatibility", parameters.Stop]) -> "Compatibility":
-        self._check_p_equality(other)
-        return Compatibility(self.value - other.value, parameters.P(self.p))
-
-    def __str__(self) -> str:
-        return f"""{self.value}"""
-
-    def __repr__(self) -> str:
-        return f"""value: {self.value}, p: {self.p}"""
-
-    def base_value(self) -> "Compatibility":
-        """Get compatibility value without P transformation.
-
-        Returns:
-        Compatibility object with the original compatibility value and P=1."""
-
-        return Compatibility(self.value ** (1 / self.p))
 
 
 class AffinityNode(object):
@@ -80,18 +18,18 @@ class AffinityNode(object):
         id_: Affinity Node ID.
         parent: ID of the parent node.
         children: IDs of the children nodes.
-        sequences: IDs of the sequences assigned to this node.
-        mincomp: Minimum from the compatibilities of this consensus to the assigned sequences
-        compatibilities: Dictionary of compatibilities SequenceID:Compatibility to any sequences.
+        sequences: IDs of the _sequences assigned to this node.
+        mincomp: Minimum from the compatibilities of this consensus to the assigned _sequences
+        compatibilities: Dictionary of compatibilities SequenceID:Compatibility to any _sequences.
         consensus: Path of the consensus defined as path in corresponding Poagraph.
 
     Attributes:
         id_ (AffinityNodeID): ID of this node
         parent (AffinityNodeID): ID of the parent node
         children(List[AffinityNodeID]): IDs of the children nodes.
-        sequences(List[SequenceID]): IDs of the sequences assigned to this node.
-        mincomp(Compatibility): Minimum from the compatibilities of this consensus to the assigned sequences
-        compatibilities(Dict[SequenceID, Compatibility]): Dictionary of compatibilities to any sequences.
+        sequences(List[SequenceID]): IDs of the _sequences assigned to this node.
+        mincomp(Compatibility): Minimum from the compatibilities of this consensus to the assigned _sequences
+        compatibilities(Dict[SequenceID, Compatibility]): Dictionary of compatibilities to any _sequences.
         consensus(SeqPath): Path of the consensus defined as path in corresponding Poagraph.
     """
 
@@ -99,17 +37,17 @@ class AffinityNode(object):
                  id_: AffinityNodeID,
                  parent: Optional[AffinityNodeID] = None,
                  children: Optional[List[AffinityNodeID]] = None,
-                 sequences: Optional[List[Sequence.SequenceID]] = None,
-                 mincomp: Optional[Compatibility] = None,
-                 compatibilities: Optional[Dict[Sequence.SequenceID, Compatibility]] = None,
-                 consensus: Optional[Sequence.SeqPath] = None):
+                 sequences: Optional[List[multialignment.SequenceID]] = None,
+                 mincomp: Optional[p_structure.Compatibility] = None,
+                 compatibilities: Optional[Dict[multialignment.SequenceID, p_structure.Compatibility]] = None,
+                 consensus: Optional[p_structure.SeqPath] = None):
         self.id_: AffinityNodeID = id_
         self.parent: AffinityNodeID = parent
         self.children: List[AffinityNodeID] = children if children else []
-        self.sequences: List[Sequence.SequenceID] = sequences if sequences else []
-        self.mincomp: Compatibility = mincomp if mincomp else Compatibility(0)
-        self.compatibilities: Dict[Sequence.SequenceID, Compatibility] = compatibilities if compatibilities else {}
-        self.consensus: Sequence.SeqPath = consensus
+        self.sequences: List[multialignment.SequenceID] = sequences if sequences else []
+        self.mincomp: p_structure.Compatibility = mincomp if mincomp else p_structure.Compatibility(0)
+        self.compatibilities: Dict[multialignment.SequenceID, p_structure.Compatibility] = compatibilities if compatibilities else {}
+        self.consensus: p_structure.SeqPath = consensus
 
     def __str__(self):
         return f"ID: {self.id_}, "\
@@ -117,7 +55,7 @@ class AffinityNode(object):
                f"children: {self.children}, " \
                f"mincomp: {str(self.mincomp)}, " \
                f"consensus length: {len(self.consensus)}, "\
-               f"sequences: {self.sequences}."
+               f"_sequences: {self.sequences}."
 
     def __eq__(self, other):
         return self.parent == other.parent and \
@@ -173,14 +111,14 @@ class AffinityTree(object):
             return AffinityNodeID(-1)
         return max([node.id_ for node in self.nodes])
 
-    def as_newick(self, seq_id_to_metadata: Dict[Sequence.SequenceID, Sequence.SequenceMetadata] = None, separate_leaves=False) -> str:
+    def as_newick(self, seq_id_to_metadata: Dict[multialignment.SequenceID, p_structure.SequenceMetadata] = None, separate_leaves=False) -> str:
         """Returns Affinity Tree in Newick format.
 
         Args:
-            seq_id_to_metadata: Dictionary of sequences IDs to the desired name used in newick file. For example:
+            seq_id_to_metadata: Dictionary of _sequences IDs to the desired name used in newick file. For example:
                                 {SequenceID('KM0123'): 'cat',
                                 SequenceID('ZX124'): 'dog'}
-            separate_leaves: A switch to control if tree leaves having assigned multiple sequences should have appended
+            separate_leaves: A switch to control if tree leaves having assigned multiple _sequences should have appended
                              children singleton leaves single sequence assigned.
 
         Returns:
@@ -241,7 +179,7 @@ class AffinityTree(object):
                                                          parent=node.id_,
                                                          children=[],
                                                          sequences=[seq_id],
-                                                         mincomp=Compatibility(1.0)
+                                                         mincomp=p_structure.Compatibility(1.0)
                                                          ))
                         new_leaves_count += 1
 

@@ -1,11 +1,11 @@
-"""Missing nucleotides providers."""
+"""Missing in MAF nucleotide or protein providers."""
 
 import abc
 from io import StringIO
 import os
 from pathlib import Path
 import re
-from typing import NewType, Dict, Optional
+from typing import Dict, Optional
 import zipfile
 
 from Bio import Entrez
@@ -14,8 +14,8 @@ from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 
 
-from pangtreebuild.pangenome import pangenome
-from pangtreebuild.pangenome import structure
+from pangtreebuild.pangenome import poagraph
+from pangtreebuild.pangenome.parameters import multialignment
 from pangtreebuild.tools import pathtools, logprocess
 
 detailed_logger = logprocess.get_logger("details")
@@ -34,7 +34,7 @@ class FastaProvider(abc.ABC):
     To build an exact poagraph the full _sequences must be retrieved from NCBI database or FASTA file."""
 
     @abc.abstractmethod
-    def get_base(self, sequence_id: pangenome.SequenceID, i: int) -> pangenome.Base:
+    def get_base(self, sequence_id: multialignment.SequenceID, i: int) -> poagraph.Base:
         """Returns base at position i in sequence identified by sequence_id.
 
         Args:
@@ -88,13 +88,13 @@ class ConstBaseProvider(FastaProvider):
         missing_base: the character to be always returned as missing base
 
     Attributes:
-        missing_base (pangenome.Base): the character always returned as missing base
+        missing_base (poagraph.Base): the character always returned as missing base
     """
 
     def __init__(self, missing_base: MissingBase):
-        self.missing_base: pangenome.Base = pangenome.Base(missing_base.value)
+        self.missing_base: poagraph.Base = poagraph.Base(missing_base.value)
 
-    def get_base(self, sequence_id: pangenome.SequenceID, i: int) -> pangenome.Base:
+    def get_base(self, sequence_id: multialignment.SequenceID, i: int) -> poagraph.Base:
         """Returns const base symbol.
 
         Args:
@@ -116,9 +116,9 @@ class FromFile(FastaProvider):
     """
 
     def __init__(self, fastas_file: Path):
-        self._sequences: Dict[pangenome.SequenceID, str] = self._read_fastas(fastas_file)
+        self._sequences: Dict[multialignment.SequenceID, str] = self._read_fastas(fastas_file)
 
-    def get_base(self, sequence_id: pangenome.SequenceID, i: int) -> pangenome.Base:
+    def get_base(self, sequence_id: multialignment.SequenceID, i: int) -> poagraph.Base:
         """Returns base at position i in sequence identified by sequence_id.
 
         Args:
@@ -133,9 +133,9 @@ class FromFile(FastaProvider):
             raise FastaProviderException(f"Wrong sequence id: {sequence_id}. ")
         if i > len(self._sequences[sequence_id]):
             raise FastaProviderException(f"Index {i} is to large for sequence {sequence_id}.")
-        return pangenome.Base(self._sequences[sequence_id][i])
+        return poagraph.Base(self._sequences[sequence_id][i])
 
-    def _read_fastas(self, fastas_file: Path) -> Dict[pangenome.SequenceID, str]:
+    def _read_fastas(self, fastas_file: Path) -> Dict[multialignment.SequenceID, str]:
         """Check if fasta is a single file or zipped files and reads its content to internal dictionary.
 
         Args:
@@ -162,7 +162,7 @@ class FromFile(FastaProvider):
                 raise FastaProviderException("Unknown fasta file format. "
                                              "Available file formats: zip, fasta/fna/faa.")
 
-    def _read_zip(self, zip_path: Path) -> Dict[pangenome.SequenceID, str]:
+    def _read_zip(self, zip_path: Path) -> Dict[multialignment.SequenceID, str]:
         """For given zip of fastas reads the sequences into a dictionary.
 
         Args:
@@ -190,7 +190,7 @@ class FromFile(FastaProvider):
             raise FastaProviderException("No sequences in zip provided as fasta source or incorrect fastas in zip.")
         return fastas_dict
 
-    def _read_fasta(self, fasta_path: Path) -> Dict[pangenome.SequenceID, str]:
+    def _read_fasta(self, fasta_path: Path) -> Dict[multialignment.SequenceID, str]:
         """Read sequences content from a single fasta file.
 
         Args:
@@ -210,7 +210,7 @@ class FromFile(FastaProvider):
             raise FastaProviderException("No _sequences in fasta provided as fasta source or incorrect fasta.")
         return fastas_dict
 
-    def _add_record_to_dict(self, record: SeqRecord, fastas_dict: Dict[pangenome.SequenceID, str]) -> None:
+    def _add_record_to_dict(self, record: SeqRecord, fastas_dict: Dict[multialignment.SequenceID, str]) -> None:
         """Checks if given sequence is not empty and is not present in the dict yet. Adds it to it if not.
 
         Args:
@@ -222,12 +222,9 @@ class FromFile(FastaProvider):
         if len(record.seq) == 0:
             raise FastaProviderException("Empty sequence in fasta source file. "
                                          "Provide the sequence or remove its identifier.")
-        if pangenome.SequenceID(str(record.id)) in fastas_dict.keys():
+        if multialignment.SequenceID(str(record.id)) in fastas_dict.keys():
             raise FastaProviderException("Incorrect fasta provided as fasta source. Sequences ids are not unique.")
-        fastas_dict[pangenome.SequenceID(str(record.id))] = record.seq
-
-
-NCBISequenceID = NewType("NCBISequenceID", str)
+        fastas_dict[multialignment.SequenceID(str(record.id))] = record.seq
 
 
 class FromNCBI(FastaProvider):
@@ -239,11 +236,11 @@ class FromNCBI(FastaProvider):
 
     def __init__(self, use_cache: bool):
         Entrez.email = "paulinahyzy@gmail.com"
-        self._fasta_disk_cache = FastaDiskCache(Path(os.getcwd()))
+        self._fasta_disk_cache = _FastaDiskCache(Path(os.getcwd()))
         self._use_cache = use_cache
-        self._sequences: Dict[pangenome.SequenceID, str] = {}
+        self._sequences: Dict[multialignment.SequenceID, str] = {}
 
-    def get_base(self, sequence_id: pangenome.SequenceID, i: int) -> pangenome.Base:
+    def get_base(self, sequence_id: multialignment.SequenceID, i: int) -> poagraph.Base:
         """Returns base at position i in sequence identified in NCBI by sequence_id or sth similar.
 
         Args:
@@ -264,9 +261,9 @@ class FromNCBI(FastaProvider):
             else:
                 self._sequences[sequence_id] = self._download_from_ncbi(sequence_id)
 
-        return pangenome.Base(self._sequences[sequence_id][i])
+        return poagraph.Base(self._sequences[sequence_id][i])
 
-    def _download_from_ncbi(self, sequence_id: pangenome.SequenceID) -> str:
+    def _download_from_ncbi(self, sequence_id: multialignment.SequenceID) -> str:
         """Connects to NCBI and downloads full sequence identified by sequence_id or sth similar.
 
         Args:
@@ -288,7 +285,7 @@ class FromNCBI(FastaProvider):
         except Exception as ex:
             raise ConnectionError(f"Cannot download from Entrez sequence of ID: {sequence_id}") from ex
 
-    def _guess_ncbi_sequence_id(self, seqid: pangenome.SequenceID) -> str:
+    def _guess_ncbi_sequence_id(self, seqid: multialignment.SequenceID) -> str:
         """Tries to guess sequence id by searching for version indicator.
 
         Args:
@@ -311,7 +308,8 @@ class FromNCBI(FastaProvider):
         detailed_logger.info(f"{seqid} translated to {guessed_entrez_name}")
         return guessed_entrez_name
 
-class FastaDiskCache(object):
+
+class _FastaDiskCache(object):
     """Manages caching sequences downloaded from NCBI.
 
     Args:
@@ -322,7 +320,7 @@ class FastaDiskCache(object):
         self._parent_dir = parent_dir
         self._cache_dir = pathtools.get_child_path(parent_dir, ".fastacache")
 
-    def sequence_is_cached(self, sequence_id: pangenome.SequenceID) -> bool:
+    def sequence_is_cached(self, sequence_id: multialignment.SequenceID) -> bool:
         """Returns information whether sequence identified by sequence_id is cached.
 
         Args:
@@ -343,10 +341,10 @@ class FastaDiskCache(object):
     def _cache_dir_exists(self) -> bool:
         return pathtools.dir_exists(self._cache_dir)
 
-    def _get_cached_filepath(self, seq_id: pangenome.SequenceID) -> Path:
+    def _get_cached_filepath(self, seq_id: multialignment.SequenceID) -> Path:
         return pathtools.get_child_path(self._cache_dir, f"{seq_id}.fasta")
 
-    def read_from_cache(self, seq_id: pangenome.SequenceID) -> str:
+    def read_from_cache(self, seq_id: multialignment.SequenceID) -> str:
         """Gets full sequence identified by seq_id from cached local file.
 
         Args:
@@ -369,7 +367,7 @@ class FastaDiskCache(object):
         else:
             detailed_logger.warning(".fastacache directory not created, as it already exists.")
 
-    def _save_to_cache(self, seq_id: pangenome.SequenceID, sequence: str) -> None:
+    def _save_to_cache(self, seq_id: multialignment.SequenceID, sequence: str) -> None:
         detailed_logger.info(f"Caching sequence {seq_id}...")
         if not self._cache_dir_exists():
             self._create_cache_dir()

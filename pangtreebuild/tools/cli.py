@@ -7,16 +7,9 @@ from typing import TypeVar, Callable, Optional, Union, List
 
 from pangtreebuild.output.PangenomeJSON import TaskParameters
 from pangtreebuild.affinity_tree.parameters import Blosum, Hbmin
-from pangtreebuild.datamodel.DataType import DataType
-from pangtreebuild.datamodel.builders import PoagraphBuildException
-from pangtreebuild.datamodel.fasta_providers.FastaProvider import UseCache
-from pangtreebuild.datamodel.input_types import Maf, MetadataCSV, Po, MissingSymbol
-
-from pangtreebuild.datamodel.fasta_providers import FastaProvider
-from pangtreebuild.datamodel.fasta_providers.ConstSymbolProvider import ConstSymbolProvider
-from pangtreebuild.datamodel.fasta_providers.FromNCBI import FromNCBI
-from pangtreebuild.datamodel.fasta_providers.FromFile import FromFile
-
+from pangtreebuild.pangenome import poagraph
+from pangtreebuild.pangenome.parameters import multialignment
+from pangtreebuild.pangenome.parameters import missings
 from pangtreebuild.affinity_tree import parameters as consensus_input_types
 
 from pangtreebuild.tools import pathtools
@@ -36,7 +29,7 @@ def _get_file_extension(arg: str) -> str:
         raise InvalidPath(f"Cannot find file extension in {arg}.")
 
 
-def _data_type(data_type: str) -> DataType:
+def _data_type(data_type: str) -> poagraph.DataType:
     """Converts command line argument to DataType"""
 
     if data_type == "p":
@@ -46,7 +39,7 @@ def _data_type(data_type: str) -> DataType:
     else:
         raise argparse.ArgumentError("Unknown data type. \'p\' for proteins or \'n\' for nucleotides available.")
     try:
-        dt = DataType[data_type_full_name]
+        dt = poagraph.DataType[data_type_full_name]
         return dt
     except KeyError:
         raise argparse.ArgumentError("Data type parsing error.")
@@ -82,22 +75,22 @@ def _cli_file_arg(arg: str, constructor: Callable[[StringIO, Optional[Path]], T]
         file_content = StringIO(infile.read())
         try:
             return constructor(file_content, filepath)
-        except PoagraphBuildException as p:
+        except Exception as p:
             raise argparse.ArgumentError("Incorrect file content") from p
 
 
-def _mulitalignment_file(x: str) -> Union[Maf, Po]:
+def _mulitalignment_file(x: str) -> Union[multialignment.Maf, multialignment.Po]:
     file_type = _get_file_extension(x)
     if file_type == 'maf':
-        return _cli_file_arg(x, Maf)
+        return _cli_file_arg(x, multialignment.Maf)
     elif file_type == 'po':
-        return _cli_file_arg(x, Po)
+        return _cli_file_arg(x, multialignment.Po)
     else:
         raise InvalidPath("Only multialignment files with .maf or .po can be processed.")
 
 
-def _metadata_file(x: str) -> MetadataCSV:
-    return _cli_file_arg(x, MetadataCSV)
+def _metadata_file(x: str) -> multialignment.MetadataCSV:
+    return _cli_file_arg(x, multialignment.MetadataCSV)
 
 
 def _blosum_file(x: str) -> Blosum:
@@ -108,7 +101,7 @@ def _cli_arg(constructor: Callable[[str], T]) -> Callable[[str], T]:
     def _c(x):
         try:
             return constructor(x)
-        except PoagraphBuildException as p:
+        except Exception as p:
             raise argparse.ArgumentError(f"Incorrect argument {x}") from p
     return _c
 
@@ -130,33 +123,33 @@ def get_parser() -> argparse.ArgumentParser:
                    help='Path to the multialignment file.')
     p.add_argument('--datatype',
                    type=_data_type,
-                   default=DataType.Nucleotides,
-                   help='\'n\' for nucleotides, \'p\' for proteins. ' + inspect.getdoc(DataType))
+                   default=poagraph.DataType.Nucleotides,
+                   help='\'n\' for nucleotides, \'p\' for proteins. ' + inspect.getdoc(poagraph.DataType))
     p.add_argument('--metadata',
                    metavar='METADATA_PATH',
                    type=_metadata_file,
-                   help='Path to the csv file with metadata. ' + inspect.getdoc(MetadataCSV))
+                   help='Path to the csv file with metadata. ' + inspect.getdoc(multialignment.MetadataCSV))
     p.add_argument('--raw_maf',
                    action='store_true',
                    default=False,
                    help='Poagraph building from maf file parameter.'
                         'Set if the maf content must not be transformed to DAG before building poagraph. '
                         'Poagraph that was build in this way provides affinitytree tree but the affinitytree do not '
-                        'reflect the real life sequences.')
+                        'reflect the real life _sequences.')
     p.add_argument('--fasta_provider',
                    metavar="FASTA_PROVIDER",
                    choices=['ncbi', 'file'],
-                   help='Maf file may not include full sequences. '
+                   help='Maf file may not include full _sequences. '
                         'In such case an additional data source is needed. '
                         'Use \'ncbi\' for NCBI (then CACHE option is available) or \'file\' for file (then provide also FASTA_PATH). MISSING_SYMBOL is used if this argument is omitted. ')
     p.add_argument('--missing_symbol',
                    metavar='MISSING_SYMBOL',
-                   type=_cli_arg(MissingSymbol),
-                   help=inspect.getdoc(MissingSymbol))
+                   type=_cli_arg(missings.MissingBase),
+                   help=inspect.getdoc(missings.MissingBase))
     p.add_argument('--cache',
                    action='store_true',
-                   help='Set if fastas downloaded from NCBI should be cached locally in .fastacache folder. '
-                        + inspect.getdoc(UseCache))
+                   help="""Set if fastas downloaded from NCBI should be cached locally in .fastacache folder. Used if Fasta Provider is NCBI.
+                           Sequences downloaded from NCBI are stored and reused between uses of this program.""")
     p.add_argument('--fasta_path',
                    metavar="FASTA_PATH",
                    type=_path_if_valid,
@@ -183,7 +176,7 @@ def get_parser() -> argparse.ArgumentParser:
                    help='Tree consensus algorithm parameter.' + inspect.getdoc(consensus_input_types.P))
     p.add_argument('--output_fasta',
                    action='store_true',
-                   help='Set if fasta files for sequences and affinitytree must be produced.')
+                   help='Set if fasta files for _sequences and affinitytree must be produced.')
     p.add_argument('--output_po',
                    action='store_true',
                    default=False,
@@ -199,19 +192,19 @@ def get_parser() -> argparse.ArgumentParser:
     return p
 
 
-def resolve_fasta_provider(args: argparse.Namespace) -> FastaProvider:
+def resolve_fasta_provider(args: argparse.Namespace) -> missings.FastaProvider:
     if args.fasta_provider is None:
         if args.missing_symbol is None:
-            return ConstSymbolProvider(MissingSymbol())
+            return missings.ConstBaseProvider(missings.MissingBase())
         else:
-            return ConstSymbolProvider(args.missing_symbol)
+            return missings.ConstBaseProvider(args.missing_symbol)
     elif args.fasta_provider == 'ncbi':
         use_cache = args.cache if args.cache else False
-        return FromNCBI(use_cache)
+        return missings.FromNCBI(use_cache)
     elif args.fasta_provider == 'file':
         if args.fasta_path is None:
             raise Exception("Fasta file source must be specified. It must be provided when fasta source is \'local\'.")
-        return FromFile(args.fasta_path)
+        return missings.FromFile(args.fasta_path)
     else:
         raise Exception("Not known fasta provider."
                         "Should be \'ncbi\' or \'file\' or None."
@@ -254,7 +247,7 @@ def get_task_parameters(args: argparse.Namespace, running_time) -> TaskParameter
                           raw_maf=bool(args.raw_maf),
                           fasta_provider=args.fasta_provider if args.fasta_provider else 'ConstSymbol',
                           cache=bool(args.cache),
-                          missing_base_symbol=args.missing_symbol.value if args.missing_symbol else MissingSymbol().value,
+                          missing_base_symbol=args.missing_symbol.value if args.missing_symbol else missings.MissingBase().value,
                           fasta_source_file=args.fasta_path,
                           consensus_type=args.consensus,
                           hbmin=args.hbmin.value if args.hbmin else None,

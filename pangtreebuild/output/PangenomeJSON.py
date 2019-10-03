@@ -4,8 +4,9 @@ import jsonpickle
 import pickle
 
 from pangtreebuild.affinity_tree.structure import AffinityTree
-from pangtreebuild.datamodel.DAGMaf import DAGMaf
-from pangtreebuild.datamodel.Poagraph import Poagraph
+from pangtreebuild.pangenome.DAGMaf import DAGMaf
+
+from pangtreebuild.pangenome.poagraph import Poagraph
 
 
 class TaskParameters:
@@ -74,7 +75,7 @@ class Node:
 
 
 class Sequence:
-    """Describes genome sequences present in specific Poagraph."""
+    """Describes genome _sequences present in specific Poagraph."""
 
     def __init__(self,
                  sequence_int_id: int,
@@ -187,7 +188,7 @@ def to_PangenomeJSON(task_parameters: TaskParameters = None,
     #     dagmaf_nodes = [MafNode(id_=n.id_,
     #                             orient=n.orient,
     #                             out_edges=[MafEdge(edge_type=edge.edge_type,
-    #                                                sequences=edge.sequences,
+    #                                                _sequences=edge._sequences,
     #                                                to_block=edge.to) for edge in n.out_edges])
     #                     for n in dagmaf.dagmaf_nodes]
 
@@ -238,25 +239,25 @@ def str_to_PangenomeJSON(s: str) -> PangenomeJSON:
         dagmaf_nodes = [MafNode(node_id=dagmaf_node['id_'],
                                 orient=dagmaf_node['orient'],
                                 out_edges=[MafEdge(edge_type=edge['edge_type'],
-                                                       sequences=edge['sequences'],
+                                                       sequences=edge['_sequences'],
                                                        to_block=edge['to_block']) for edge in dagmaf_node['out_edges']])
                         for dagmaf_node in pangenome_dict['dagmaf_nodes']]
 
     if "nodes" in pangenome_dict:
         pangenome_nodes = [Node(node_id=node["id_"],
-                                base=node['base'],
+                                base=node['_base'],
                                 column_id=node['column_id'],
                                 block_id=node['block_id'],
                                 aligned_to=node['aligned_to'])
                            for node in pangenome_dict['nodes']]
 
-    if 'sequences' in pangenome_dict:
+    if '_sequences' in pangenome_dict:
         pangenome_sequences = [Sequence(sequence_int_id=sequence['sequence_int_id'],
                                         sequence_str_id=sequence['sequence_str_id'],
                                         metadata=sequence['metadata'],
                                         nodes_ids=sequence['nodes_ids']
                                         )
-                               for sequence in pangenome_dict['sequences']]
+                               for sequence in pangenome_dict['_sequences']]
 
     if 'affinitytree' in pangenome_dict:
         affinity_tree_nodes = [AffinityNode(affinity_node_id=consensus_node['affinity_node_id'],

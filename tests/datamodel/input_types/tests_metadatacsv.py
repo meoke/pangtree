@@ -3,7 +3,7 @@ from pathlib import Path
 
 from ddt import unpack, data, ddt
 
-from ...context import MetadataCSV, pathtools, pSeq, ConstSymbolProvider, MissingSymbol, pPoagraph, Maf, Po
+from ...context import MetadataCSV, pathtools, pSeq, fasta_providers, MissingSymbol, pPoagraph, Maf, Po
 
 
 def sid(x): return pSeq.SequenceID(x)
@@ -18,7 +18,7 @@ class MetadataCSVTests(unittest.TestCase):
     def setUp(self) -> None:
         self.csv_files_dir = 'tests/datamodel/input_types/csv_files/'
         self.alignment_files_dir = 'tests/datamodel/input_types/alignment_files/'
-        self.fasta_provider = ConstSymbolProvider(MissingSymbol())
+        self.fasta_provider = fasta_providers.ConstSymbolProvider(MissingSymbol())
 
     def test_1_correct(self):
         metadata_path = Path(self.csv_files_dir + "test_1_correct.csv")

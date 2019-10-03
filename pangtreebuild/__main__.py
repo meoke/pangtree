@@ -3,11 +3,11 @@ import sys
 import datetime
 
 
-
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../pangtreebuild')))
-from pangtreebuild.datamodel.fasta_providers.ConstSymbolProvider import ConstSymbolProvider
-from pangtreebuild.datamodel.input_types import Maf, Po
-from pangtreebuild.datamodel.Poagraph import Poagraph
+from pangtreebuild.pangenome.parameters import missings
+from pangtreebuild.pangenome.parameters import multialignment
+from pangtreebuild.pangenome import builder
+
 from pangtreebuild.tools import cli, pathtools, logprocess
 from pangtreebuild.output.PangenomeJSON import to_PangenomeJSON, TaskParameters, to_json, to_pickle, load_pickle, str_to_PangenomeJSON
 from pangtreebuild.output.PangenomePO import poagraph_to_PangenomePO
@@ -25,19 +25,19 @@ def main():
         logprocess.disable_all_loggers()
 
     poagraph, dagmaf, fasta_provider = None, None, None
-    if isinstance(args.multialignment, Maf) and args.raw_maf:
-        poagraph = Poagraph.build_from_maf(args.multialignment, args.metadata)
-    elif isinstance(args.multialignment, Maf) and not args.raw_maf:
+    if isinstance(args.multialignment, multialignment.Maf) and args.raw_maf:
+        poagraph = builder.build_from_maf(args.multialignment, args.metadata)
+    elif isinstance(args.multialignment, multialignment.Maf) and not args.raw_maf:
         fasta_provider = cli.resolve_fasta_provider(args)
-        poagraph, dagmaf = Poagraph.build_from_dagmaf(args.multialignment, fasta_provider, args.metadata)
-    elif isinstance(args.multialignment, Po):
-        poagraph = Poagraph.build_from_po(args.multialignment, args.metadata)
+        poagraph, dagmaf = builder.build_from_dagmaf(args.multialignment, fasta_provider, args.metadata)
+    elif isinstance(args.multialignment, multialignment.Po):
+        poagraph = builder.build_from_po(args.multialignment, args.metadata)
 
     affinity_tree = None
     if args.consensus is not None:
         blosum = args.blosum if args.blosum else cli.get_default_blosum()
-        if fasta_provider is not None and isinstance(fasta_provider, ConstSymbolProvider):
-            blosum.check_if_symbol_is_present(fasta_provider.missing_symbol.as_str())
+        if fasta_provider is not None and isinstance(fasta_provider, missings.ConstBaseProvider):
+            blosum.check_if_symbol_is_present(fasta_provider.missing_base.as_str())
 
         consensus_output_dir = pathtools.get_child_dir(args.output_dir, "consensus")
 
@@ -73,7 +73,7 @@ def main():
 
     if args.output_fasta:
         sequences_fasta = poagraph_to_fasta(poagraph)
-        pathtools.save_to_file(sequences_fasta, pathtools.get_child_path(args.output_dir, "sequences.fasta"))
+        pathtools.save_to_file(sequences_fasta, pathtools.get_child_path(args.output_dir, "_sequences.fasta"))
         if affinity_tree:
             consensuses_fasta = affinity_tree_to_fasta(poagraph, affinity_tree)
             pathtools.save_to_file(consensuses_fasta, pathtools.get_child_path(args.output_dir, "affinitytree.fasta"))

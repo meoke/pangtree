@@ -4,7 +4,7 @@ from pathlib import Path
 from ...context import pNode
 from ...context import pSeq
 from ...context import Maf, MetadataCSV
-from ...context import pPoagraph, MissingSymbol, ConstSymbolProvider
+from ...context import pPoagraph, MissingSymbol, fasta_providers
 from ...context import pathtools
 
 
@@ -59,7 +59,7 @@ class DAGMaf2PoagraphConstSymbolProviderTests(unittest.TestCase):
         expected_poagraph = pPoagraph.Poagraph(expected_nodes, expected_sequences)
         actual_poagraph, _ = pPoagraph.Poagraph.build_from_dagmaf(
             Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
-            ConstSymbolProvider(self.missing_n),
+            fasta_providers.ConstSymbolProvider(self.missing_n),
             self.metadatacsv)
 
         self.assertEqual(expected_poagraph, actual_poagraph)
@@ -106,7 +106,7 @@ class DAGMaf2PoagraphConstSymbolProviderTests(unittest.TestCase):
         expected_poagraph = pPoagraph.Poagraph(expected_nodes, expected_sequences)
         actual_poagraph, _ = pPoagraph.Poagraph.build_from_dagmaf(
             Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
-            ConstSymbolProvider(self.missing_n),
+            fasta_providers.ConstSymbolProvider(self.missing_n),
             self.metadatacsv)
 
         self.assertEqual(expected_poagraph, actual_poagraph)
@@ -157,7 +157,7 @@ class DAGMaf2PoagraphConstSymbolProviderTests(unittest.TestCase):
         expected_poagraph = pPoagraph.Poagraph(expected_nodes, expected_sequences)
         actual_poagraph, _ = pPoagraph.Poagraph.build_from_dagmaf(
             Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
-            ConstSymbolProvider(self.missing_n),
+            fasta_providers.ConstSymbolProvider(self.missing_n),
             self.metadatacsv)
 
         self.assertEqual(expected_poagraph, actual_poagraph)
@@ -206,7 +206,7 @@ class DAGMaf2PoagraphConstSymbolProviderTests(unittest.TestCase):
         expected_poagraph = pPoagraph.Poagraph(expected_nodes, expected_sequences)
         actual_poagraph, _ = pPoagraph.Poagraph.build_from_dagmaf(
             Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
-            ConstSymbolProvider(self.missing_n),
+            fasta_providers.ConstSymbolProvider(self.missing_n),
             self.metadatacsv)
 
         self.assertEqual(expected_poagraph, actual_poagraph)
@@ -256,7 +256,7 @@ class DAGMaf2PoagraphConstSymbolProviderTests(unittest.TestCase):
         expected_poagraph = pPoagraph.Poagraph(expected_nodes, expected_sequences)
         actual_poagraph, _ = pPoagraph.Poagraph.build_from_dagmaf(
             Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
-            ConstSymbolProvider(self.missing_n),
+            fasta_providers.ConstSymbolProvider(self.missing_n),
             self.metadatacsv)
 
         self.assertEqual(expected_poagraph, actual_poagraph)
@@ -306,7 +306,7 @@ class DAGMaf2PoagraphConstSymbolProviderTests(unittest.TestCase):
         expected_poagraph = pPoagraph.Poagraph(expected_nodes, expected_sequences)
         actual_poagraph, _ = pPoagraph.Poagraph.build_from_dagmaf(
             Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
-            ConstSymbolProvider(self.missing_n),
+            fasta_providers.ConstSymbolProvider(self.missing_n),
             self.metadatacsv)
 
         self.assertEqual(expected_poagraph, actual_poagraph)
@@ -355,7 +355,7 @@ class DAGMaf2PoagraphConstSymbolProviderTests(unittest.TestCase):
         expected_poagraph = pPoagraph.Poagraph(expected_nodes, expected_sequences)
         actual_poagraph, _ = pPoagraph.Poagraph.build_from_dagmaf(
             Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
-            ConstSymbolProvider(self.missing_n),
+            fasta_providers.ConstSymbolProvider(self.missing_n),
             self.metadatacsv)
 
         self.assertEqual(expected_poagraph, actual_poagraph)

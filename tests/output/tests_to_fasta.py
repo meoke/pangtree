@@ -58,7 +58,7 @@ class ToFASTATests(unittest.TestCase):
         self.poagraph = pPoagraph.Poagraph(poagraph_nodes, poagraph_sequences)
 
     def test_1_sequences_fasta(self):
-        expected_sequences_fasta_path = Path(self.fasta_dir + "sequences.fasta")
+        expected_sequences_fasta_path = Path(self.fasta_dir + "_sequences.fasta")
 
         actual_sequences_fasta_content = PangenomeFASTA.poagraph_to_fasta(self.poagraph)
         expected_sequences_fasta_content = pathtools.get_file_content(expected_sequences_fasta_path)

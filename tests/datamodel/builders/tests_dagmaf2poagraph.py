@@ -4,7 +4,7 @@ from pathlib import Path
 from ...context import pNode
 from ...context import pSeq
 from ...context import Maf, MetadataCSV
-from ...context import pPoagraph, ConstSymbolProvider, MissingSymbol
+from ...context import pPoagraph, fasta_providers, MissingSymbol
 from ...context import pathtools
 
 
@@ -20,7 +20,7 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
         metadata_path = Path("tests/datamodel/seq_metadata.csv")
         self.metadatacsv = MetadataCSV(pathtools.get_file_content_stringio(metadata_path), metadata_path)
         self.maf_files_dir = 'tests/datamodel/builders/maf_files_with_cycles_or_reversion/'
-        self.fasta_provider = ConstSymbolProvider(MissingSymbol())
+        self.fasta_provider = fasta_providers.ConstSymbolProvider(MissingSymbol())
 
     def test_00_simple(self):
         maf_path = Path(self.maf_files_dir + "test_0_simple.maf")

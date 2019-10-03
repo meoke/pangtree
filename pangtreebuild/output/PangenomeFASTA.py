@@ -1,5 +1,5 @@
 from pangtreebuild.affinity_tree.structure import AffinityTree
-from pangtreebuild.datamodel.Poagraph import Poagraph
+from pangtreebuild.pangenome.poagraph import Poagraph
 
 
 def poagraph_to_fasta(poagraph: Poagraph) -> str:

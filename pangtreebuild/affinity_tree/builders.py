@@ -10,8 +10,8 @@ from pangtreebuild.affinity_tree import parameters
 from pangtreebuild.affinity_tree import poa
 from pangtreebuild.affinity_tree import structure
 
-from pangtreebuild.datamodel.Poagraph import Poagraph
-from pangtreebuild.datamodel.Sequence import SequenceID, SeqPath
+from pangtreebuild.pangenome import poagraph as poagraph_datamodel
+from pangtreebuild.pangenome.parameters import multialignment
 
 
 global_logger = logprocess.get_global_logger()
@@ -25,7 +25,7 @@ class AffinityTreeBuildException(Exception):
     pass
 
 
-def build_poa_affinity_tree(poagraph: Poagraph,
+def build_poa_affinity_tree(poagraph: poagraph_datamodel.Poagraph,
                             blosum: parameters.Blosum,
                             output_dir: Path,
                             hbmin: parameters.Hbmin,
@@ -33,12 +33,12 @@ def build_poa_affinity_tree(poagraph: Poagraph,
     """Builds Affinity Tree coherent with poa software.
 
     This method builds a simple version of Affinity Tree as it uses a single call to poa software.
-    Poa provides division of sequences in Poagraph into consistent groups with a consensus path assigned to every group.
+    Poa provides division of _sequences in Poagraph into consistent groups with a consensus path assigned to every group.
     These groups are converted in this method to Affinity Tree nodes and connected with a dummy root node so the result
     is coherent with pangtree definition of Affinity Tree.
 
     Args:
-        poagraph: Poagraph containing sequences to be divided into groups (Affinity Tree nodes).
+        poagraph: Poagraph containing _sequences to be divided into groups (Affinity Tree nodes).
         blosum: BLOSUM matrix.
         output_dir: Path to a directory that can be used by poa software.
         hbmin: Parameter required by poa software. The minimum value of sequence compatibility to generated consensus.
@@ -70,7 +70,7 @@ def build_poa_affinity_tree(poagraph: Poagraph,
                                                                 for seq_id in poagraph.get_sequences_ids()
                                                                 if seq_id not in assigned_sequences],
                                                      id_=structure.AffinityNodeID(len(at_nodes) + 1),
-                                                     mincomp=structure.Compatibility(0),
+                                                     mincomp=poagraph.Compatibility(0),
                                                      children=[])
         at_nodes.append(node_for_unassigned_sequences)
         return at_nodes
@@ -95,7 +95,7 @@ def build_poa_affinity_tree(poagraph: Poagraph,
     return affinity_tree
 
 
-def build_affinity_tree(poagraph: Poagraph,
+def build_affinity_tree(poagraph: poagraph_datamodel.Poagraph,
                         blosum: parameters.Blosum,
                         output_dir: Path,
                         stop: parameters.Stop,
@@ -107,7 +107,7 @@ def build_affinity_tree(poagraph: Poagraph,
     the above-mentioned paper.
 
     Args:
-        poagraph: Poagraph containing sequences to be divided into groups (Affinity Tree nodes).
+        poagraph: Poagraph containing _sequences to be divided into groups (Affinity Tree nodes).
         blosum: BLOSUM matrix.
         output_dir: Path to a directory that can be used by poa software.
         stop: Value of mincomp above which the affinity tree node is no more split.
@@ -154,7 +154,7 @@ def build_affinity_tree(poagraph: Poagraph,
     return affinity_tree
 
 
-def _raise_error_if_invalid_poagraph(poagraph: Poagraph) -> None:
+def _raise_error_if_invalid_poagraph(poagraph: poagraph_datamodel.Poagraph) -> None:
     """Checks if any sequence is present in the input poagraph.
 
     Args:
@@ -169,11 +169,11 @@ def _raise_error_if_invalid_poagraph(poagraph: Poagraph) -> None:
                                               "Affinity Tree generation is impossible.")
 
 
-def _get_root_node(poagraph: Poagraph,
+def _get_root_node(poagraph: poagraph_datamodel.Poagraph,
                    blosum_path: Path,
                    output_dir: Path,
                    p: parameters.P) -> structure.AffinityNode:
-    """Creates root node of the Affinity Tree with assigned consensus path and all sequences."""
+    """Creates root node of the Affinity Tree with assigned consensus path and all _sequences."""
 
     detailed_logger.info("Getting the root affinity node...")
     all_poagraph_sequences_ids = poagraph.get_sequences_ids()
@@ -200,7 +200,7 @@ def _get_root_node(poagraph: Poagraph,
 
 
 def _get_children_nodes_looping(node: structure.AffinityNode,
-                                poagraph: Poagraph,
+                                poagraph: poagraph_datamodel.Poagraph,
                                 output_dir: Path,
                                 blosum_path: Path,
                                 p: parameters.P,
@@ -208,11 +208,11 @@ def _get_children_nodes_looping(node: structure.AffinityNode,
     """Generates children of given Affinity Tree node."""
 
     children_nodes: List[structure.AffinityNode] = []
-    not_assigned_sequences_ids: List[SequenceID] = node.sequences
+    not_assigned_sequences_ids: List[multialignment.SequenceID] = node.sequences
     detailed_logger.info(f"Getting children nodes for affinity node {node.id_}...")
 
     affinity_node_id = 0
-    so_far_cutoffs: List[structure.Compatibility] = []
+    so_far_cutoffs: List[poagraph.Compatibility] = []
     while not_assigned_sequences_ids:
         detailed_logger.info(f"### Getting child {len(so_far_cutoffs)}...")
         child_ready = False
@@ -229,7 +229,7 @@ def _get_children_nodes_looping(node: structure.AffinityNode,
             compatibilities_to_consensus_candidate = poagraph.get_compatibilities(sequences_ids=not_assigned_sequences_ids,
                                                                                   consensus_path=consensus_candidate,
                                                                                   p=p)
-            compatibilities_to_consensus_candidate[SequenceID("parent")] = node.mincomp
+            compatibilities_to_consensus_candidate[multialignment.SequenceID("parent")] = node.mincomp
             qualified_sequences_ids_candidates, cutoff = _get_qualified_sequences_ids_and_cutoff(
                 compatibilities_to_max_c=compatibilities_to_consensus_candidate,
                 so_far_cutoffs=so_far_cutoffs,
@@ -246,7 +246,7 @@ def _get_children_nodes_looping(node: structure.AffinityNode,
                     sequences=qualified_sequences_ids_candidates,
                     mincomp=_get_min_comp(node_sequences_ids=qualified_sequences_ids_candidates,
                                           comps_to_consensus=compatibilities_to_consensus_candidate),
-                    consensus=SeqPath(consensus_candidate))
+                    consensus=poagraph_datamodel.SeqPath(consensus_candidate))
                 children_nodes.append(affinity_node)
                 not_assigned_sequences_ids = list(set(not_assigned_sequences_ids) - set(qualified_sequences_ids_candidates))
                 child_ready = True
@@ -260,12 +260,12 @@ def _get_children_nodes_looping(node: structure.AffinityNode,
     return children_nodes
 
 
-def _get_min_comp(node_sequences_ids: List[SequenceID],
-                  comps_to_consensus: Dict[SequenceID, structure.Compatibility]) -> structure.Compatibility:
-    """Find minimum compatibility from the compatibilities of given sequences.
+def _get_min_comp(node_sequences_ids: List[multialignment.SequenceID],
+                  comps_to_consensus: Dict[multialignment.SequenceID, poagraph_datamodel.Compatibility]) -> poagraph_datamodel.Compatibility:
+    """Find minimum compatibility from the compatibilities of given _sequences.
 
     Args:
-        node_sequences_ids: List of sequences IDs that the search is limited to.
+        node_sequences_ids: List of _sequences IDs that the search is limited to.
         comps_to_consensus: Source of compatibilities values.
 
     Returns:
@@ -281,27 +281,27 @@ def _get_min_comp(node_sequences_ids: List[SequenceID],
                                          if seq_id in node_sequences_ids]
     if not compatibilities_of_node_sequences:
         raise AffinityTreeBuildException("Cannot provide mincomp."
-                                         "No sequences assigned to this affinity node.")
+                                         "No _sequences assigned to this affinity node.")
     return min(compatibilities_of_node_sequences)
 
 
-def _get_qualified_sequences_ids_and_cutoff(compatibilities_to_max_c: Dict[SequenceID, structure.Compatibility],
-                                            so_far_cutoffs: List[structure.Compatibility], splitted_node_id) \
-        -> Tuple[List[SequenceID], structure.Compatibility]:
-    """Choose sequences qualified to be enclosed in single node based on their compatibilities values."""
+def _get_qualified_sequences_ids_and_cutoff(compatibilities_to_max_c: Dict[multialignment.SequenceID, poagraph_datamodel.Compatibility],
+                                            so_far_cutoffs: List[poagraph_datamodel.Compatibility], splitted_node_id) \
+        -> Tuple[List[multialignment.SequenceID], poagraph_datamodel.Compatibility]:
+    """Choose _sequences qualified to be enclosed in single node based on their compatibilities values."""
 
     node_cutoff = _find_node_cutoff(compatibilities=[*compatibilities_to_max_c.values()],
                                     so_far_cutoffs=so_far_cutoffs)
     tresholds_logger.info(f"Splitting {splitted_node_id}; NODE; {compatibilities_to_max_c}; "
                           f"{node_cutoff.cutoff}; {node_cutoff.explanation}")
     compatibtle_sequences_ids = _get_sequences_ids_above_cutoff(compatibilities_to_max_c, node_cutoff.cutoff)
-    detailed_logger.info(f"{len(compatibtle_sequences_ids)} sequences ({compatibtle_sequences_ids} are "
+    detailed_logger.info(f"{len(compatibtle_sequences_ids)} _sequences ({compatibtle_sequences_ids} are "
                          f"qualified to be enclosed in this node, mincomp = {node_cutoff.cutoff}.")
     return compatibtle_sequences_ids, node_cutoff.cutoff
 
 
 def _node_is_ready(node: structure.AffinityNode, stop: parameters.Stop) -> bool:
-    """Checks if the node should be further split based on Stop parameter and count of sequences assigned.
+    """Checks if the node should be further split based on Stop parameter and count of _sequences assigned.
 
     Args:
         node: Node to be checked.
@@ -328,13 +328,13 @@ class FindCutoffResult:
         cutoff (Compatibility): The minimum accepted Compatibility value.
         explanation (str): The explanation of the choice.
     """
-    def __init__(self, cutoff: structure.Compatibility, explanation: str):
-        self.cutoff: structure.Compatibility = cutoff
+    def __init__(self, cutoff: poagraph_datamodel.Compatibility, explanation: str):
+        self.cutoff: poagraph_datamodel.Compatibility = cutoff
         self.explanation: str = explanation
 
 
-def _find_node_cutoff(compatibilities: List[structure.Compatibility],
-                      so_far_cutoffs: List[structure.Compatibility]) -> FindCutoffResult:
+def _find_node_cutoff(compatibilities: List[poagraph_datamodel.Compatibility],
+                      so_far_cutoffs: List[poagraph_datamodel.Compatibility]) -> FindCutoffResult:
     """Searches for cutoff.
 
     Args:
@@ -364,7 +364,7 @@ def _find_node_cutoff(compatibilities: List[structure.Compatibility],
     return FindCutoffResult(cutoff, reason)
 
 
-def _find_max_distance(compatibilities: List[structure.Compatibility]) -> structure.Compatibility:
+def _find_max_distance(compatibilities: List[poagraph_datamodel.Compatibility]) -> poagraph_datamodel.Compatibility:
     """Sorts compatibilities and searches for the largest gap.
 
     Args:
@@ -377,7 +377,7 @@ def _find_max_distance(compatibilities: List[structure.Compatibility]) -> struct
         ValueError: If provided compatibilities list is empty.
     """
 
-    def break_if_empty(compatibilities: List[structure.Compatibility]) -> None:
+    def break_if_empty(compatibilities: List[poagraph_datamodel.Compatibility]) -> None:
         if not list(compatibilities):
             raise ValueError("Empty compatibilities list. Cannot find cutoff.")
 
@@ -391,15 +391,15 @@ def _find_max_distance(compatibilities: List[structure.Compatibility]) -> struct
     return sorted_values[max_distance_index + 1]
 
 
-def _get_sequences_ids_above_cutoff(compatibilities: Dict[SequenceID, structure.Compatibility],
-                                    cutoff: structure.Compatibility) -> List[SequenceID]:
+def _get_sequences_ids_above_cutoff(compatibilities: Dict[multialignment.SequenceID, poagraph_datamodel.Compatibility],
+                                    cutoff: poagraph_datamodel.Compatibility) -> List[multialignment.SequenceID]:
     """Filters the Seuqences IDs to find the ones with compatibility above required treshold.
 
     Args:
-        compatibilities: Dictionary of sequences IDs and corresponding compatibilities.
-        cutoff: Required minimum compatibility value of the qualified sequences.
+        compatibilities: Dictionary of _sequences IDs and corresponding compatibilities.
+        cutoff: Required minimum compatibility value of the qualified _sequences.
 
     Returns:
         List of Sequences IDs that have greater compatibility than required cutoff value.
     """
-    return [seq_id for seq_id, comp in compatibilities.items() if comp >= cutoff and seq_id != SequenceID("parent")]
+    return [seq_id for seq_id, comp in compatibilities.items() if comp >= cutoff and seq_id != multialignment.SequenceID("parent")]
