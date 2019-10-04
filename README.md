@@ -48,7 +48,7 @@ python3 -m pangtreebuild [args]
 | METADATA | --metadata | No | Optional information about sequences in csv format. The only required column: \'seqid\' and its value must match multialignment files identifiers as described in *Sequence Naming Convention* (below). Example: data/Ebola/input/metadata.csv
 | RAW_MAF | --raw_maf | No, default=False | Build PO-MSA without transforming multialignment (MAF file) to DAG. PO-MSA built in this way does not reflect real life sequences.
 | FASTA_PROVIDER | --fasta_provider | No | Nucleotides source if any residues are missed in the multialignment. Possible values: 'ncbi', 'file'. If not specified: MISSING_NUCLEOTIDE is used.
-| MISSING_BASE | --missing_base | No, default='?' | Symbol for missing nucleotides used if no FASTA_PROVIDER is given.
+| MISSING_SYMBOL | --missing_symbol | No, default='?' | Symbol for missing nucleotides used if no FASTA_PROVIDER is given.
 | CACHE | --cache | No, default='Yes' | If True, sequences downloaded from NCBI are stored on local disc and reused between program calls, used if FASTA_PROVIDER is 'ncbi'
 | FASTA_FILE | -fasta_source_file | Yes if FASTA_PROVIDER='FILE' | Path to fasta file or zipped fasta files with whole sequences present in multialignment, used if FASTA_PROVIDER is 'FILE'.
 | Arguments affecting Consensuses Tree construction: |
