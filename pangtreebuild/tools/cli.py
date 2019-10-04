@@ -3,15 +3,13 @@ import inspect
 import os
 from io import StringIO
 from pathlib import Path
-from typing import TypeVar, Callable, Optional, Union, List
+from typing import TypeVar, Callable, Optional, Union
 
-from pangtreebuild.output.PangenomeJSON import TaskParameters
-from pangtreebuild.affinity_tree.parameters import Blosum, Hbmin
-from pangtreebuild.pangenome import poagraph
+from pangtreebuild.output.json import TaskParameters
+from pangtreebuild.affinity_tree import parameters as at_params
+from pangtreebuild.pangenome import graph
 from pangtreebuild.pangenome.parameters import multialignment
 from pangtreebuild.pangenome.parameters import missings
-from pangtreebuild.affinity_tree import parameters as consensus_input_types
-
 from pangtreebuild.tools import pathtools
 
 
@@ -29,7 +27,7 @@ def _get_file_extension(arg: str) -> str:
         raise InvalidPath(f"Cannot find file extension in {arg}.")
 
 
-def _data_type(data_type: str) -> poagraph.DataType:
+def _data_type(data_type: str) -> graph.DataType:
     """Converts command line argument to DataType"""
 
     if data_type == "p":
@@ -39,7 +37,7 @@ def _data_type(data_type: str) -> poagraph.DataType:
     else:
         raise argparse.ArgumentError("Unknown data type. \'p\' for proteins or \'n\' for nucleotides available.")
     try:
-        dt = poagraph.DataType[data_type_full_name]
+        dt = graph.DataType[data_type_full_name]
         return dt
     except KeyError:
         raise argparse.ArgumentError("Data type parsing error.")
@@ -93,8 +91,8 @@ def _metadata_file(x: str) -> multialignment.MetadataCSV:
     return _cli_file_arg(x, multialignment.MetadataCSV)
 
 
-def _blosum_file(x: str) -> Blosum:
-    return _cli_file_arg(x, Blosum)
+def _blosum_file(x: str) -> at_params.Blosum:
+    return _cli_file_arg(x, at_params.Blosum)
 
 
 def _cli_arg(constructor: Callable[[str], T]) -> Callable[[str], T]:
@@ -123,8 +121,8 @@ def get_parser() -> argparse.ArgumentParser:
                    help='Path to the multialignment file.')
     p.add_argument('--datatype',
                    type=_data_type,
-                   default=poagraph.DataType.Nucleotides,
-                   help='\'n\' for nucleotides, \'p\' for proteins. ' + inspect.getdoc(poagraph.DataType))
+                   default=graph.DataType.Nucleotides,
+                   help='\'n\' for nucleotides, \'p\' for proteins. ' + inspect.getdoc(graph.DataType))
     p.add_argument('--metadata',
                    metavar='METADATA_PATH',
                    type=_metadata_file,
@@ -133,7 +131,7 @@ def get_parser() -> argparse.ArgumentParser:
                    action='store_true',
                    default=False,
                    help='Poagraph building from maf file parameter.'
-                        'Set if the maf content must not be transformed to DAG before building poagraph. '
+                        'Set if the maf content must not be transformed to DAG before building graph. '
                         'Poagraph that was build in this way provides affinitytree tree but the affinitytree do not '
                         'reflect the real life _sequences.')
     p.add_argument('--fasta_provider',
@@ -160,20 +158,20 @@ def get_parser() -> argparse.ArgumentParser:
     p.add_argument('--blosum',
                    type=_blosum_file,
                    metavar='BLOSUM_PATH',
-                   help='Path to the blosum file. ' + inspect.getdoc(Blosum))
+                   help='Path to the blosum file. ' + inspect.getdoc(at_params.Blosum))
     p.add_argument('--hbmin',
-                   type=_cli_arg(Hbmin),
-                   default=consensus_input_types.Hbmin(),
+                   type=_cli_arg(at_params.Hbmin),
+                   default=at_params.Hbmin(),
                    help='Simple POA algorithm parameter. '
-                        'Hbmin value. ' + inspect.getdoc(Hbmin))
+                        'Hbmin value. ' + inspect.getdoc(at_params.Hbmin))
     p.add_argument('--stop',
-                   type=_cli_arg(consensus_input_types.Stop),
-                   default=consensus_input_types.Stop(),
-                   help='Tree POA algorithm parameter.' + inspect.getdoc(consensus_input_types.Stop))
+                   type=_cli_arg(at_params.Stop),
+                   default=at_params.Stop(),
+                   help='Tree POA algorithm parameter.' + inspect.getdoc(at_params.Stop))
     p.add_argument('--p',
-                   type=_cli_arg(consensus_input_types.P),
-                   default=consensus_input_types.P(),
-                   help='Tree consensus algorithm parameter.' + inspect.getdoc(consensus_input_types.P))
+                   type=_cli_arg(at_params.P),
+                   default=at_params.P(),
+                   help='Tree consensus algorithm parameter.' + inspect.getdoc(at_params.P))
     p.add_argument('--output_fasta',
                    action='store_true',
                    help='Set if fasta files for _sequences and affinitytree must be produced.')
@@ -193,6 +191,8 @@ def get_parser() -> argparse.ArgumentParser:
 
 
 def resolve_fasta_provider(args: argparse.Namespace) -> missings.FastaProvider:
+    """Returns fasta provider based on parsed arguments."""
+
     if args.fasta_provider is None:
         if args.missing_symbol is None:
             return missings.ConstBaseProvider(missings.MissingBase())
@@ -208,7 +208,7 @@ def resolve_fasta_provider(args: argparse.Namespace) -> missings.FastaProvider:
     else:
         raise Exception("Not known fasta provider."
                         "Should be \'ncbi\' or \'file\' or None."
-                        "Cannot build poagraph.")
+                        "Cannot build graph.")
 
 
 def get_default_output_dir():
@@ -226,13 +226,16 @@ def get_default_output_dir():
 
 def get_default_blosum():
     """Returns default blosum file: Blosum80.mat"""
+
     parent_dir = Path(os.path.dirname(os.path.abspath(__file__)) + '/')
     default_blosum_path = pathtools.get_child_path(parent_dir, "../../bin/blosum80.mat")
     blosum_content = pathtools.get_file_content_stringio(default_blosum_path)
-    return Blosum(blosum_content, default_blosum_path)
+    return at_params.Blosum(blosum_content, default_blosum_path)
 
 
 def get_task_parameters(args: argparse.Namespace, running_time) -> TaskParameters:
+    """Returns TaskParameters object based on parsed arguments."""
+
     return TaskParameters(running_time=running_time,
                           multialignment_file_path=args.multialignment.filename,
                           multialignment_format=str(type(args.multialignment).__name__),

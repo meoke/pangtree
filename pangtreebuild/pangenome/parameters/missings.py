@@ -14,7 +14,7 @@ from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 
 
-from pangtreebuild.pangenome import poagraph
+from pangtreebuild.pangenome import graph
 from pangtreebuild.pangenome.parameters import multialignment
 from pangtreebuild.tools import pathtools, logprocess
 
@@ -34,7 +34,7 @@ class FastaProvider(abc.ABC):
     To build an exact poagraph the full _sequences must be retrieved from NCBI database or FASTA file."""
 
     @abc.abstractmethod
-    def get_base(self, sequence_id: multialignment.SequenceID, i: int) -> poagraph.Base:
+    def get_base(self, sequence_id: multialignment.SequenceID, i: int) -> graph.Base:
         """Returns base at position i in sequence identified by sequence_id.
 
         Args:
@@ -88,13 +88,13 @@ class ConstBaseProvider(FastaProvider):
         missing_base: the character to be always returned as missing base
 
     Attributes:
-        missing_base (poagraph.Base): the character always returned as missing base
+        missing_base (graph.Base): the character always returned as missing base
     """
 
     def __init__(self, missing_base: MissingBase):
-        self.missing_base: poagraph.Base = poagraph.Base(missing_base.value)
+        self.missing_base: graph.Base = graph.Base(missing_base.value)
 
-    def get_base(self, sequence_id: multialignment.SequenceID, i: int) -> poagraph.Base:
+    def get_base(self, sequence_id: multialignment.SequenceID, i: int) -> graph.Base:
         """Returns const base symbol.
 
         Args:
@@ -118,7 +118,7 @@ class FromFile(FastaProvider):
     def __init__(self, fastas_file: Path):
         self._sequences: Dict[multialignment.SequenceID, str] = self._read_fastas(fastas_file)
 
-    def get_base(self, sequence_id: multialignment.SequenceID, i: int) -> poagraph.Base:
+    def get_base(self, sequence_id: multialignment.SequenceID, i: int) -> graph.Base:
         """Returns base at position i in sequence identified by sequence_id.
 
         Args:
@@ -133,7 +133,7 @@ class FromFile(FastaProvider):
             raise FastaProviderException(f"Wrong sequence id: {sequence_id}. ")
         if i > len(self._sequences[sequence_id]):
             raise FastaProviderException(f"Index {i} is to large for sequence {sequence_id}.")
-        return poagraph.Base(self._sequences[sequence_id][i])
+        return graph.Base(self._sequences[sequence_id][i])
 
     def _read_fastas(self, fastas_file: Path) -> Dict[multialignment.SequenceID, str]:
         """Check if fasta is a single file or zipped files and reads its content to internal dictionary.
@@ -240,7 +240,7 @@ class FromNCBI(FastaProvider):
         self._use_cache = use_cache
         self._sequences: Dict[multialignment.SequenceID, str] = {}
 
-    def get_base(self, sequence_id: multialignment.SequenceID, i: int) -> poagraph.Base:
+    def get_base(self, sequence_id: multialignment.SequenceID, i: int) -> graph.Base:
         """Returns base at position i in sequence identified in NCBI by sequence_id or sth similar.
 
         Args:
@@ -261,7 +261,7 @@ class FromNCBI(FastaProvider):
             else:
                 self._sequences[sequence_id] = self._download_from_ncbi(sequence_id)
 
-        return poagraph.Base(self._sequences[sequence_id][i])
+        return graph.Base(self._sequences[sequence_id][i])
 
     def _download_from_ncbi(self, sequence_id: multialignment.SequenceID) -> str:
         """Connects to NCBI and downloads full sequence identified by sequence_id or sth similar.

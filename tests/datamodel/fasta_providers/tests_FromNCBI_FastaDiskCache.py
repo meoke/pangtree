@@ -4,24 +4,23 @@ from pathlib import Path
 
 from ddt import ddt
 
-from tests.context import fasta_providers
+from tests.context import missings, graph, multialignment
 from tests.context import pathtools
-from tests.context import pSeq, pNode
 
 
 @ddt
 class FromNCBI_FastaDiskCache_Tests(unittest.TestCase):
     def setUp(self) -> None:
-        self.fasta_provider = fasta_providers.FromNCBI(use_cache=False)
+        self.fasta_provider = missings.FromNCBI(use_cache=False)
 
     @unittest.skip('Internet connection required -> long execution')
     def test_1_download_sequence_and_save_to_cache(self):
-        fasta_provider = fasta_providers.FromNCBI(use_cache=True)
+        fasta_provider = missings.FromNCBI(use_cache=True)
         cache_dir_path = pathtools.get_child_path(Path.cwd(), ".fastacache")
         if cache_dir_path.exists():
             shutil.rmtree(cache_dir_path)
 
-        sequence_id = pSeq.SequenceID("AB050936.1", skip_part_before_dot=False)
+        sequence_id = multialignment.SequenceID("AB050936.1", skip_part_before_dot=False)
 
         # cache directory creation
         cache_directory_created = cache_dir_path.exists()
@@ -34,7 +33,7 @@ class FromNCBI_FastaDiskCache_Tests(unittest.TestCase):
         self.assertTrue(file_created_in_cache)
 
         # file content
-        control_fasta_path = Path('tests/data/fasta_providers/fasta_ncbi/AB050936.1.fasta')
+        control_fasta_path = Path('tests/data/missings/fasta_ncbi/AB050936.1.fasta')
 
         with open(control_fasta_path) as fasta_file_hanlder:
             expected_content = fasta_file_hanlder.read()
@@ -43,15 +42,15 @@ class FromNCBI_FastaDiskCache_Tests(unittest.TestCase):
         self.assertEqual(expected_content, actual_content)
 
     def test_2_read_seqeunce_from_cache_instead_downloading(self):
-        fasta_provider = fasta_providers.FromNCBI(use_cache=True)
+        fasta_provider = missings.FromNCBI(use_cache=True)
         cache_dir_path = pathtools.get_child_path(Path.cwd(), ".fastacache")
         if cache_dir_path.exists():
             shutil.rmtree(cache_dir_path)
 
         cache_dir_path.mkdir()
-        sequence_id = pSeq.SequenceID("seq1")
+        sequence_id = multialignment.SequenceID("seq1")
         fake_sequence = "foo"
-        expected_base = pNode.Base("o")
+        expected_base = graph.Base("o")
         fake_fasta_path = pathtools.get_child_path(cache_dir_path, f"{sequence_id}.fasta")
         with open(fake_fasta_path, 'w') as fake_fasta_handler:
             fake_fasta_handler.write(f">{sequence_id} cached\n{fake_sequence}")

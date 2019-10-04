@@ -1,10 +1,10 @@
 """AffinityTree and related objects definitions: AffinityNode, AffinityNodeID, Compatibility."""
 
 import math
-from typing import List, NewType, Dict, Optional, Union, Any
+from typing import List, NewType, Dict, Optional
 
-from newick import Node
-from pangtreebuild.pangenome import poagraph as p_structure
+import newick
+from pangtreebuild.pangenome import graph
 from pangtreebuild.pangenome.parameters import multialignment
 
 AffinityNodeID = NewType('AffinityNodeID', int)
@@ -38,16 +38,16 @@ class AffinityNode(object):
                  parent: Optional[AffinityNodeID] = None,
                  children: Optional[List[AffinityNodeID]] = None,
                  sequences: Optional[List[multialignment.SequenceID]] = None,
-                 mincomp: Optional[p_structure.Compatibility] = None,
-                 compatibilities: Optional[Dict[multialignment.SequenceID, p_structure.Compatibility]] = None,
-                 consensus: Optional[p_structure.SeqPath] = None):
+                 mincomp: Optional[graph.Compatibility] = None,
+                 compatibilities: Optional[Dict[multialignment.SequenceID, graph.Compatibility]] = None,
+                 consensus: Optional[graph.SeqPath] = None):
         self.id_: AffinityNodeID = id_
         self.parent: AffinityNodeID = parent
         self.children: List[AffinityNodeID] = children if children else []
         self.sequences: List[multialignment.SequenceID] = sequences if sequences else []
-        self.mincomp: p_structure.Compatibility = mincomp if mincomp else p_structure.Compatibility(0)
-        self.compatibilities: Dict[multialignment.SequenceID, p_structure.Compatibility] = compatibilities if compatibilities else {}
-        self.consensus: p_structure.SeqPath = consensus
+        self.mincomp: graph.Compatibility = mincomp if mincomp else graph.Compatibility(0)
+        self.compatibilities: Dict[multialignment.SequenceID, graph.Compatibility] = compatibilities if compatibilities else {}
+        self.consensus: graph.SeqPath = consensus
 
     def __str__(self):
         return f"ID: {self.id_}, "\
@@ -111,7 +111,7 @@ class AffinityTree(object):
             return AffinityNodeID(-1)
         return max([node.id_ for node in self.nodes])
 
-    def as_newick(self, seq_id_to_metadata: Dict[multialignment.SequenceID, p_structure.SequenceMetadata] = None, separate_leaves=False) -> str:
+    def as_newick(self, seq_id_to_metadata: Dict[multialignment.SequenceID, graph.SequenceMetadata] = None, separate_leaves=False) -> str:
         """Returns Affinity Tree in Newick format.
 
         Args:
@@ -126,7 +126,7 @@ class AffinityTree(object):
             If the tree has no nodes, an empty string is returned.
         """
 
-        def _newick_nhx(newick_node: Node) -> str:
+        def _newick_nhx(newick_node: newick.Node) -> str:
             """Converts newick tree to newick string"""
 
             node_label = newick_node.name or ''
@@ -179,7 +179,7 @@ class AffinityTree(object):
                                                          parent=node.id_,
                                                          children=[],
                                                          sequences=[seq_id],
-                                                         mincomp=p_structure.Compatibility(1.0)
+                                                         mincomp=graph.Compatibility(1.0)
                                                          ))
                         new_leaves_count += 1
 
@@ -197,7 +197,7 @@ class AffinityTree(object):
                 parent_minComp = sorted_nodes[node.parent].mincomp.base_value().value
                 length = str((1 - parent_minComp) - (1 - node.mincomp.base_value().value))
 
-            newick_node = Node(name=label, length=length)
+            newick_node = newick.Node(name=label, length=length)
 
             if newick_tree is None:
                 newick_tree = newick_node

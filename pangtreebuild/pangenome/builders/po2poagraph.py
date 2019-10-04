@@ -1,11 +1,9 @@
 from collections import namedtuple
 from typing import List, Optional, Tuple, Dict
 
-from pangtreebuild.pangenome import poagraph
+from pangtreebuild.pangenome import graph
 from pangtreebuild.pangenome.parameters import multialignment
 
-# global_logger = loggingtools.get_global_logger()
-# detailed_logger = loggingtools.get_logger("details")
 
 POSequenceInfo = namedtuple('POSequenceInfo', ['name',
                                                'nodes_count',
@@ -16,6 +14,16 @@ POSequenceInfo = namedtuple('POSequenceInfo', ['name',
 
 
 def get_poagraph(po: multialignment.Po, metadataCsv: multialignment.MetadataCSV):
+    """Returns poagraph elements based on multialignment PO file and metadata.
+
+    Args:
+        po: Multaalignment in PO format.
+        metadataCsv: MetadataCSV.
+
+    Returns:
+        Tuple of poagraph elements.
+    """
+
     po_lines = po.filecontent.readlines()
     sequences_info = _get_sequences_info_from_po(po_lines)
     initial_sequences = _init_sequences(sequences_info, metadataCsv)
@@ -31,10 +39,10 @@ def _extract_line_value(line: str) -> str:
 
 
 def _init_sequences(sequences_info: Dict[int, POSequenceInfo],
-                    metadata: Optional[multialignment.MetadataCSV]) -> Dict[multialignment.SequenceID, poagraph.Sequence]:
+                    metadata: Optional[multialignment.MetadataCSV]) -> Dict[multialignment.SequenceID, graph.Sequence]:
     metadata_sequences_ids = metadata.get_all_sequences_ids() if metadata else []
     po_sequences_ids = [seq_info.name for seq_info in sequences_info.values()]
-    initial_sequences = {seq_id: poagraph.Sequence(seqid=seq_id,
+    initial_sequences = {seq_id: graph.Sequence(seqid=seq_id,
                                           paths=[],
                                           seqmetadata=metadata.get_sequence_metadata(seq_id)
                                           if metadata else {})
@@ -65,24 +73,24 @@ def _get_sequences_info_from_po(po_lines: List[str]) -> Dict[int, POSequenceInfo
 
 def _get_poagraph_paths_and_nodes(po_lines: List[str],
                                   sequences_info: Dict[int, POSequenceInfo],
-                                  sequences: Dict[multialignment.SequenceID, poagraph.Sequence]) -> \
-        Tuple[List[poagraph.Node], Dict[multialignment.SequenceID, poagraph.Sequence]]:
+                                  sequences: Dict[multialignment.SequenceID, graph.Sequence]) -> \
+        Tuple[List[graph.Node], Dict[multialignment.SequenceID, graph.Sequence]]:
     nodes_count = int(_extract_line_value(po_lines[3]))
     paths_count = int(_extract_line_value(po_lines[4]))
     #todo uzupelniac kolumn id_
-    nodes: List[poagraph.Node] = [None] * nodes_count
+    nodes: List[graph.Node] = [None] * nodes_count
     node_id = 0
     for i in range(5 + paths_count * 2, 5 + paths_count * 2 + nodes_count):
         node_line = po_lines[i]
-        base = poagraph.Base(node_line[0].upper())
+        base = graph.Base(node_line[0].upper())
         in_nodes, po_sequences_ids, aligned_to = _extract_node_parameters(node_line)
         sequences_ids = [sequences_info[po_sequences_id].name for po_sequences_id in po_sequences_ids]
-        nodes[node_id] = poagraph.Node(poagraph.NodeID(node_id), base, poagraph.NodeID(aligned_to))
+        nodes[node_id] = graph.Node(graph.NodeID(node_id), base, graph.NodeID(aligned_to))
         for seq_id in sequences_ids:
             if len(sequences[seq_id].paths) == 1:
-                sequences[seq_id].paths[0].append(poagraph.NodeID(node_id))
+                sequences[seq_id].paths[0].append(graph.NodeID(node_id))
             else:
-                sequences[seq_id].paths.append(poagraph.SeqPath([poagraph.NodeID(node_id)]))
+                sequences[seq_id].paths.append(graph.SeqPath([graph.NodeID(node_id)]))
         node_id += 1
     return nodes, sequences
 

@@ -2,7 +2,7 @@
 
 from enum import Enum
 import numpy as np
-from typing import Any, Dict, List, NewType, Optional, Union, Tuple
+from typing import Any, Dict, List, NewType, Optional, Union
 
 from pangtreebuild.affinity_tree import parameters as at_params
 from pangtreebuild.pangenome.parameters import multialignment
@@ -323,8 +323,8 @@ class Poagraph(object):
         return [*self.sequences.keys()]
 
     @staticmethod
-    def _complement_metadata_for_sequences_absent_in_metadata_provided(poagraph: 'Poagraph',
-                                                                       metadata: multialignment.MetadataCSV) -> None:
+    def complement_metadata_for_sequences_absent_in_metadata_provided(poagraph: 'Poagraph',
+                                                                      metadata: multialignment.MetadataCSV) -> None:
         """Complements metadata in given poagraph using provided metadata.
 
         Args:

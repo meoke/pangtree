@@ -4,15 +4,15 @@ import datetime
 
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../pangtreebuild')))
+from pangtreebuild.affinity_tree import builders as at_builders
+from pangtreebuild.output import fasta
+from pangtreebuild.output import json
+from pangtreebuild.output import po
+from pangtreebuild.pangenome import builder
 from pangtreebuild.pangenome.parameters import missings
 from pangtreebuild.pangenome.parameters import multialignment
-from pangtreebuild.pangenome import builder
-
 from pangtreebuild.tools import cli, pathtools, logprocess
-from pangtreebuild.output.PangenomeJSON import to_PangenomeJSON, TaskParameters, to_json, to_pickle, load_pickle, str_to_PangenomeJSON
-from pangtreebuild.output.PangenomePO import poagraph_to_PangenomePO
-from pangtreebuild.output.PangenomeFASTA import poagraph_to_fasta, affinity_tree_to_fasta
-from pangtreebuild.affinity_tree import builders as at_builders
+
 
 def main():
     parser = cli.get_parser()
@@ -68,23 +68,23 @@ def main():
 
 
     if args.output_po:
-        pangenome_po = poagraph_to_PangenomePO(poagraph)
+        pangenome_po = po.poagraph_to_PangenomePO(poagraph)
         pathtools.save_to_file(pangenome_po, pathtools.get_child_path(args.output_dir, "poagraph.po"))
 
     if args.output_fasta:
-        sequences_fasta = poagraph_to_fasta(poagraph)
+        sequences_fasta = fasta.poagraph_to_fasta(poagraph)
         pathtools.save_to_file(sequences_fasta, pathtools.get_child_path(args.output_dir, "_sequences.fasta"))
         if affinity_tree:
-            consensuses_fasta = affinity_tree_to_fasta(poagraph, affinity_tree)
+            consensuses_fasta = fasta.affinity_tree_to_fasta(poagraph, affinity_tree)
             pathtools.save_to_file(consensuses_fasta, pathtools.get_child_path(args.output_dir, "affinitytree.fasta"))
 
     end = datetime.datetime.now()
-    pangenomejson = to_PangenomeJSON(task_parameters=cli.get_task_parameters(args, running_time=f"{end-start}s"),
+    pangenomejson = json.to_PangenomeJSON(task_parameters=cli.get_task_parameters(args, running_time=f"{end-start}s"),
                                      poagraph=poagraph,
                                      dagmaf=dagmaf,
                                      affinity_tree=affinity_tree)
 
-    pangenome_json_str = to_json(pangenomejson)
+    pangenome_json_str = json.to_json(pangenomejson)
     pathtools.save_to_file(pangenome_json_str, pathtools.get_child_path(args.output_dir, "pangenome.json"))
 
 

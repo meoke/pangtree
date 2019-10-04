@@ -1,12 +1,10 @@
-from typing import Dict, List, Union, Tuple
-
 import jsonpickle
 import pickle
+from typing import Dict, List, Union, Tuple
 
-from pangtreebuild.affinity_tree.structure import AffinityTree
+from pangtreebuild.affinity_tree import tree
+from pangtreebuild.pangenome import graph
 from pangtreebuild.pangenome.DAGMaf import DAGMaf
-
-from pangtreebuild.pangenome.poagraph import Poagraph
 
 
 class TaskParameters:
@@ -153,9 +151,9 @@ class PangenomeJSON:
 
 
 def to_PangenomeJSON(task_parameters: TaskParameters = None,
-                     poagraph: Poagraph = None,
+                     poagraph: graph.Poagraph = None,
                      dagmaf: DAGMaf = None,
-                     affinity_tree: AffinityTree = None):
+                     affinity_tree: tree.AffinityTree = None):
     """Converts pangenome specific objects to jsonable representation."""
 
     paths_seq_id_to_int_id = dict()
@@ -223,13 +221,23 @@ def to_json(pangenomejson: PangenomeJSON) -> str:
 
 
 def to_pickle(pangenomejson: PangenomeJSON) -> str:
+    """PangenomeJSON to str by pickling.
+    """
+
     return pickle.dumps(pangenomejson)
 
 
 def load_pickle(s: str) -> PangenomeJSON:
+    """Str do PangenomeJSON by depickling.
+    """
+
     return pickle.loads(s)
 
+
 def str_to_PangenomeJSON(s: str) -> PangenomeJSON:
+    """Str to PangenomeJSON.
+    """
+
     pangenome_dict = jsonpickle.loads(s)
     if 'task_parameters' in pangenome_dict:
         task_parameters = TaskParameters()

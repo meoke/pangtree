@@ -1,8 +1,17 @@
-from pangtreebuild.affinity_tree.structure import AffinityTree
-from pangtreebuild.pangenome.poagraph import Poagraph
+from pangtreebuild.affinity_tree import tree
+from pangtreebuild.pangenome import graph
 
 
-def poagraph_to_fasta(poagraph: Poagraph) -> str:
+def poagraph_to_fasta(poagraph: graph.Poagraph) -> str:
+    """Converts poagraph to FASTA format.
+
+    Args:
+        poagraph: Poagraph to be converted.
+
+    Returns:
+        Fasta formatted string ready to be saved to file.
+    """
+
     fasta_lines = []
     for seq_id, sequence in poagraph.sequences.items():
         if poagraph.get_sequence_nodes_count(seq_id) == 0:
@@ -16,7 +25,17 @@ def poagraph_to_fasta(poagraph: Poagraph) -> str:
     return "\n".join(fasta_lines)
 
 
-def affinity_tree_to_fasta(poagraph: Poagraph, affinity_tree: AffinityTree) -> str:
+def affinity_tree_to_fasta(poagraph: graph.Poagraph, affinity_tree: tree.AffinityTree) -> str:
+    """Converts Affinity tree to FASTA formatted string.
+
+    Args:
+        poagraph: Poagraph linked to the affinity_tree.
+        affinity_tree: Consensus paths from this affinty tree will be converted to FASTA.
+
+    Returns:
+        Fasta formatted string with consensus paths from given affinty tree.
+    """
+
     fasta_lines = []
     for affinity_node in affinity_tree.nodes:
         if affinity_node.consensus is None or len(affinity_node.consensus) == 0:

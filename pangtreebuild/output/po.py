@@ -1,14 +1,15 @@
 from typing import List, Tuple, Callable
 
-from pangtreebuild.pangenome import poagraph
+from pangtreebuild.pangenome import graph
+
 
 class NodePO:
     """Poagraph node representation in po file."""
 
     def __init__(self,
                  base: bytes,
-                 aligned_to: poagraph.NodeID,
-                 in_nodes: List[poagraph.NodeID],
+                 aligned_to: graph.NodeID,
+                 in_nodes: List[graph.NodeID],
                  sequences_ids: List[int]):
         self.base = base
         self.aligned_to = aligned_to
@@ -24,7 +25,7 @@ class SequencePO:
                  nodes_count: int,
                  weight: int,
                  consensus_id: int,
-                 start_node_id: poagraph.NodeID):
+                 start_node_id: graph.NodeID):
         self.name = name
         self.nodes_count = nodes_count
         self.weight = weight
@@ -32,14 +33,14 @@ class SequencePO:
         self.start_node_id = start_node_id
 
 
-def poagraph_to_PangenomePO(poagraph: poagraph.Poagraph) -> str:
+def poagraph_to_PangenomePO(poagraph: graph.Poagraph) -> str:
     """Converts poagraph to .po file."""
 
     po_nodes, po_sequences = _convert_to_po_input_data(poagraph)
     return poagraph_elements_to_PangenomePO(po_nodes, po_sequences, poagraph.datatype)
 
 
-def poagraph_elements_to_PangenomePO(po_nodes: List[NodePO], po_sequences: List[SequencePO], datatype: poagraph.DataType) -> str:
+def poagraph_elements_to_PangenomePO(po_nodes: List[NodePO], po_sequences: List[SequencePO], datatype: graph.DataType) -> str:
     """Converts po specific elements to po file."""
 
     introduction_lines = "\n".join(_get_introduction_lines(len(po_nodes), len(po_sequences)))
@@ -48,13 +49,13 @@ def poagraph_elements_to_PangenomePO(po_nodes: List[NodePO], po_sequences: List[
     return "\n".join([introduction_lines, sequences_lines, nodes_lines])
 
 
-def _convert_to_po_input_data(poagraph: poagraph.Poagraph) -> Tuple[List[NodePO], List[SequencePO]]:
+def _convert_to_po_input_data(poagraph: graph.Poagraph) -> Tuple[List[NodePO], List[SequencePO]]:
     po_nodes = []
     po_sequences = []
     sequences_weights = poagraph.get_sequences_weights(poagraph.get_sequences_ids())
 
     for node in poagraph.nodes:
-        po_nodes.append(NodePO(base=node.base.value,
+        po_nodes.append(NodePO(base=node._base.value,
                                aligned_to=node.aligned_to,
                                in_nodes=set(),
                                sequences_ids=[]))
@@ -110,7 +111,7 @@ def _get_sequences_lines(po_sequences: List[SequencePO]) -> List[str]:
     return po_sequences_lines
 
 
-def _get_nodes_lines(po_nodes: List[NodePO], datatype: poagraph.DataType) -> List[str]:
+def _get_nodes_lines(po_nodes: List[NodePO], datatype: graph.DataType) -> List[str]:
     if not po_nodes:
         raise Exception("No nodes info to write in PO file.")
     i = 0
@@ -127,7 +128,7 @@ def _get_nodes_lines(po_nodes: List[NodePO], datatype: poagraph.DataType) -> Lis
     return po_nodes_lines
 
 
-def _get_in_nodes_info(in_nodes: List[poagraph.NodeID]) -> str:
+def _get_in_nodes_info(in_nodes: List[graph.NodeID]) -> str:
     return "".join([f'L{i}' for i in in_nodes])
 
 
@@ -135,14 +136,14 @@ def _get_sources_info(sources_ids: List[int]) -> str:
     return "".join([f'S{i}' for i in sources_ids])
 
 
-def _get_aligned_to_info(aligned_to: poagraph.NodeID) -> str:
+def _get_aligned_to_info(aligned_to: graph.NodeID) -> str:
     return f"A{aligned_to}" if aligned_to is not None else ""
 
 
-def _get_node_code_conversion_function(datatype: poagraph.DataType) -> Callable[[bytes], str]:
-    if datatype.value == poagraph.DataType.Proteins.value:
+def _get_node_code_conversion_function(datatype: graph.DataType) -> Callable[[bytes], str]:
+    if datatype.value == graph.DataType.Proteins.value:
         return _get_protein_node_code
-    elif datatype.value == poagraph.DataType.Nucleotides.value:
+    elif datatype.value == graph.DataType.Nucleotides.value:
         return _get_nucleotides_node_code
     else:
         raise Exception("Unknown data type. Cannot create PO file.")

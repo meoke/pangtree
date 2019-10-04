@@ -4,14 +4,12 @@ from typing import Tuple, List, NewType, Optional, Dict
 from pangtreebuild.mafgraph.graph import Block
 from pangtreebuild.mafgraph.graph.Arc import Arc
 from pangtreebuild.mafgraph.mafreader import start_position
-
-from pangtreebuild.pangenome.DAGMaf import DAGMaf, DAGMafNode
-from pangtreebuild.pangenome import poagraph
+from pangtreebuild.pangenome import graph
+from pangtreebuild.pangenome import DAGMaf
 from pangtreebuild.pangenome.parameters import missings
 from pangtreebuild.pangenome.parameters import multialignment
 
 from pangtreebuild.tools import logprocess
-
 
 
 global_logger = logprocess.get_global_logger()
@@ -19,6 +17,8 @@ detailed_logger = logprocess.get_logger("details")
 
 
 class PoagraphBuildException(Exception):
+    """Any exception connected with building poagraph."""
+
     pass
 
 
@@ -39,29 +39,40 @@ Edge = namedtuple('Edge', ['seq_id',
 
 class _BuildState:
     def __init__(self,
-                 initial_nodes: List[poagraph.Node],
-                 initial_sequences: Dict[multialignment.SequenceID, poagraph.Sequence],
+                 initial_nodes: List[graph.Node],
+                 initial_sequences: Dict[multialignment.SequenceID, graph.Sequence],
                  initial_edges: Dict[multialignment.SequenceID, List[Edge]],
                  seqs_info: Dict[multialignment.SequenceID, List[SequenceInfo]],
-                 initial_column_id: poagraph.ColumnID,
+                 initial_column_id: graph.ColumnID,
                  fasta_provider: missings.FastaProvider):
-        self.nodes: List[poagraph.Node] = initial_nodes
-        self.sequences: Dict[multialignment.SequenceID, poagraph.Sequence] = initial_sequences
+        self.nodes: List[graph.Node] = initial_nodes
+        self.sequences: Dict[multialignment.SequenceID, graph.Sequence] = initial_sequences
         self.free_edges: Dict[multialignment.SequenceID, List[Edge]] = initial_edges
         self.seqs_info: Dict[multialignment.SequenceID, List[SequenceInfo]] = seqs_info
-        self.column_id: poagraph.ColumnID = initial_column_id
+        self.column_id: graph.ColumnID = initial_column_id
         self.fasta_provider: missings.FastaProvider = fasta_provider
 
 
-def get_poagraph(dagmaf: DAGMaf,
+def get_poagraph(dagmaf: DAGMaf.DAGMaf,
                  fasta_provider: missings.FastaProvider,
-                 metadata: Optional[multialignment.MetadataCSV]) -> Tuple[List[poagraph.Node], Dict[multialignment.SequenceID, poagraph.Sequence]]:
+                 metadata: Optional[multialignment.MetadataCSV]) -> Tuple[List[graph.Node], Dict[multialignment.SequenceID, graph.Sequence]]:
+    """Gets poagraph from given dagmaf using specified fasta_provider and metadata.
+
+    Args:
+        dagmaf: DagMaf that will be converted to Poagraph.
+        fasta_provider: Provider of symbols missing in DagMaf.
+        metadata: MetadataCSV.
+
+    Returns:
+        Tuple of poagraph elements.
+    """
+
     sequences_in_dagmaf = _get_sequences_ids(dagmaf)
     build_state = _BuildState(initial_nodes=[],
                               initial_sequences=_init_sequences(sequences_in_dagmaf, metadata),
                               initial_edges=_init_free_edges(sequences_in_dagmaf),
                               seqs_info=_get_seqs_info(dagmaf, sequences_in_dagmaf),
-                              initial_column_id=poagraph.ColumnID(-1),
+                              initial_column_id=graph.ColumnID(-1),
                               fasta_provider=fasta_provider)
 
     _complement_starting_nodes(build_state)
@@ -74,14 +85,14 @@ def get_poagraph(dagmaf: DAGMaf,
     return build_state.nodes, build_state.sequences
 
 
-def _get_sequences_ids(dagmaf: DAGMaf) -> List[multialignment.SequenceID]:
+def _get_sequences_ids(dagmaf: DAGMaf.DAGMaf) -> List[multialignment.SequenceID]:
     return list({multialignment.SequenceID(seq.id) for block in dagmaf.dagmaf_nodes for seq in block.alignment})
 
 
 def _init_sequences(sequences_in_dagmaf: List[multialignment.SequenceID],
-                    metadata: Optional[multialignment.MetadataCSV]) -> Dict[multialignment.SequenceID, poagraph.Sequence]:
+                    metadata: Optional[multialignment.MetadataCSV]) -> Dict[multialignment.SequenceID, graph.Sequence]:
     metadata_sequences_ids = metadata.get_all_sequences_ids() if metadata else []
-    initial_sequences = {seq_id: poagraph.Sequence(seqid=seq_id,
+    initial_sequences = {seq_id: graph.Sequence(seqid=seq_id,
                                           paths=[],
                                           seqmetadata=metadata.get_sequence_metadata(seq_id)
                                           if metadata else {})
@@ -94,12 +105,12 @@ def _init_free_edges(maf_sequences_ids: List[multialignment.SequenceID]) -> Dict
     return {seq_id: [] for seq_id in maf_sequences_ids}
 
 
-def _get_seqs_info(dagmaf: DAGMaf, sequences_in_dagmaf: List[multialignment.SequenceID]) -> Dict[multialignment.SequenceID, List[SequenceInfo]]:
+def _get_seqs_info(dagmaf: DAGMaf.DAGMaf, sequences_in_dagmaf: List[multialignment.SequenceID]) -> Dict[multialignment.SequenceID, List[SequenceInfo]]:
     seqs_info = {seq_id: [] for seq_id in sequences_in_dagmaf}
 
     for n in dagmaf.dagmaf_nodes:
         for seq in n.alignment:
-            seqs_info[multialignment.SequenceID(seq.id)].append(SequenceInfo(block_id=poagraph.BlockID(n.id),
+            seqs_info[multialignment.SequenceID(seq.id)].append(SequenceInfo(block_id=graph.BlockID(n.id),
                                                               start=start_position(seq),
                                                               strand=seq.annotations["strand"],
                                                               size=seq.annotations["size"],
@@ -126,13 +137,13 @@ def _complement_starting_nodes(build_state: _BuildState) -> None:
 def _complement_sequence_starting_nodes(build_state: _BuildState,
                                         seq_id: multialignment.SequenceID,
                                         first_block_sinfo: SequenceInfo) -> None:
-    current_node_id: poagraph.NodeID = _get_max_node_id(build_state.nodes)
+    current_node_id: graph.NodeID = _get_max_node_id(build_state.nodes)
     column_id = -first_block_sinfo.start
     join_with = None
     for i in range(first_block_sinfo.start):
         current_node_id += 1
         missing_nucleotide = _get_missing_nucleotide(build_state.fasta_provider, seq_id, i)
-        build_state.nodes += [poagraph.Node(node_id=current_node_id,
+        build_state.nodes += [graph.Node(node_id=current_node_id,
                                    base=missing_nucleotide,
                                    column_id=column_id)]
         _add_node_to_sequence(build_state, seq_id=seq_id, join_with=join_with, node_id=current_node_id)
@@ -144,21 +155,21 @@ def _complement_sequence_starting_nodes(build_state: _BuildState,
                                             last_node_id=current_node_id)]
 
 
-def _get_max_node_id(nodes: List[poagraph.Node]) -> poagraph.NodeID:
-    return poagraph.NodeID(len(nodes) - 1)
+def _get_max_node_id(nodes: List[graph.Node]) -> graph.NodeID:
+    return graph.NodeID(len(nodes) - 1)
 
 
-def _get_missing_nucleotide(fasta_provider, seq_id: multialignment.SequenceID, i: int) -> poagraph.Base:
+def _get_missing_nucleotide(fasta_provider, seq_id: multialignment.SequenceID, i: int) -> graph.Base:
     return fasta_provider.get_base(seq_id, i)
 
 
 def _add_node_to_sequence(build_state: _BuildState,
                           seq_id: multialignment.SequenceID,
-                          join_with: poagraph.NodeID,
-                          node_id: poagraph.NodeID) -> None:
+                          join_with: graph.NodeID,
+                          node_id: graph.NodeID) -> None:
     q = build_state.sequences[seq_id].paths
     if len(build_state.sequences[seq_id].paths) == 0 or join_with is None:
-        build_state.sequences[seq_id].paths.append(poagraph.SeqPath([node_id]))
+        build_state.sequences[seq_id].paths.append(graph.SeqPath([node_id]))
     else:
         for path in build_state.sequences[seq_id].paths:
             if path[-1] == join_with:
@@ -168,7 +179,7 @@ def _add_node_to_sequence(build_state: _BuildState,
         raise PoagraphBuildException("Cannot find path with specified last node id_.")
 
 
-def _process_block(build_state: _BuildState, block: DAGMafNode):
+def _process_block(build_state: _BuildState, block: DAGMaf.DAGMafNode):
     # global_logger.info(f"Processing block {block.id_}...")
     current_node_id = _get_max_node_id(build_state.nodes)
     block_width = len(block.alignment[0].seq)
@@ -183,8 +194,8 @@ def _process_block(build_state: _BuildState, block: DAGMafNode):
         for i, nucl in enumerate(nodes_codes):
             current_node_id += 1
             maf_seqs_id = [seq_id for seq_id, n in sequence_name_to_nucleotide.items() if n == nucl]
-            build_state.nodes += [poagraph.Node(node_id=current_node_id,
-                                       base=poagraph.Base(nucl),
+            build_state.nodes += [graph.Node(node_id=current_node_id,
+                                       base=graph.Base(nucl),
                                        aligned_to=_get_next_aligned_node_id(i, column_nodes_ids),
                                        column_id=build_state.column_id,
                                        block_id=block.id)]
@@ -199,8 +210,8 @@ def _process_block(build_state: _BuildState, block: DAGMafNode):
 
 
 def _get_paths_join_info(block: Block,
-                         free_edges: Dict[multialignment.SequenceID, List[Edge]]) -> Dict[multialignment.SequenceID, Optional[poagraph.NodeID]]:
-    paths_join_info: Dict[multialignment.SequenceID, Optional[poagraph.NodeID]] = dict()
+                         free_edges: Dict[multialignment.SequenceID, List[Edge]]) -> Dict[multialignment.SequenceID, Optional[graph.NodeID]]:
+    paths_join_info: Dict[multialignment.SequenceID, Optional[graph.NodeID]] = dict()
     for seq in block.alignment:
         seq_id = multialignment.SequenceID(seq.id)
         paths_join_info[seq_id] = None
@@ -210,9 +221,9 @@ def _get_paths_join_info(block: Block,
     return paths_join_info
 
 
-def _get_max_column_id(nodes: List[poagraph.Node]) -> poagraph.ColumnID:
+def _get_max_column_id(nodes: List[graph.Node]) -> graph.ColumnID:
     current_columns_ids = [node.column_id for node in nodes]
-    return max(current_columns_ids) if current_columns_ids else poagraph.ColumnID(-1)
+    return max(current_columns_ids) if current_columns_ids else graph.ColumnID(-1)
 
 
 def _get_column_nucleotides_sorted_codes(seq_to_nucl: Dict[multialignment.SequenceID, str]) -> List[str]:
@@ -224,7 +235,7 @@ def _get_column_nucleotides_sorted_codes(seq_to_nucl: Dict[multialignment.Sequen
              if nucleotide is not '-']))
 
 
-def _get_next_aligned_node_id(current_column_i, column_nodes_ids) -> Optional[poagraph.NodeID]:
+def _get_next_aligned_node_id(current_column_i, column_nodes_ids) -> Optional[graph.NodeID]:
     if len(column_nodes_ids) > 1:
         return column_nodes_ids[(current_column_i + 1) % len(column_nodes_ids)]
     return None
@@ -232,7 +243,7 @@ def _get_next_aligned_node_id(current_column_i, column_nodes_ids) -> Optional[po
 
 def _add_block_out_edges_to_free_edges(build_state: _BuildState,
                                        block: Block,
-                                       join_info: Dict[multialignment.SequenceID, poagraph.NodeID]):
+                                       join_info: Dict[multialignment.SequenceID, graph.NodeID]):
     for edge in block.out_edges:
         _ = _get_correct_edge_type(edge)
         for seq in edge.sequences:
@@ -257,7 +268,7 @@ def _complement_sequence_middles_if_needed(build_state: _BuildState,
                                            block: Block,
                                            edge: Arc,
                                            seq,
-                                           last_node_id: poagraph.NodeID):
+                                           last_node_id: graph.NodeID):
     seq_id = multialignment.SequenceID(seq[0].seq_id)
     left_block_sinfo, right_block_sinfo = _get_edge_sinfos(seqs_info=build_state.seqs_info,
                                                            from_block_id=block.id,
@@ -283,7 +294,7 @@ def _complement_sequence_middles_if_needed(build_state: _BuildState,
             column_id += 1
             current_node_id += 1
             missing_nucleotide = _get_missing_nucleotide(build_state.fasta_provider, seq_id, i)
-            build_state.nodes += [poagraph.Node(node_id=current_node_id,
+            build_state.nodes += [graph.Node(node_id=current_node_id,
                                        base=missing_nucleotide,
                                        aligned_to=None,
                                        column_id=column_id,
@@ -298,7 +309,7 @@ def _complement_sequence_middles_if_needed(build_state: _BuildState,
 
 
 def _get_edge_sinfos(seqs_info: Dict[multialignment.SequenceID, List[SequenceInfo]],
-                     from_block_id: poagraph.BlockID,
+                     from_block_id: graph.BlockID,
                      edge: Arc,
                      seq_id: multialignment.SequenceID) -> Tuple[SequenceInfo, SequenceInfo]:
     left_seq_info, right_seq_info = None, None
@@ -337,7 +348,7 @@ def _should_join_with_next_node(edge_type: Tuple[int, int]) -> bool:
                                      "Cannot decide if complemented nucleotides must be joined with next block.")
 
 
-def _manage_endings(build_state: _BuildState, block: Block, join_info: Dict[multialignment.SequenceID, poagraph.NodeID]):
+def _manage_endings(build_state: _BuildState, block: Block, join_info: Dict[multialignment.SequenceID, graph.NodeID]):
     sequences_ending_in_this_block = _get_ending_sequences(build_state.seqs_info, block)
     for seq_id in sequences_ending_in_this_block:
         block_sinfo: SequenceInfo = _get_sinfo(build_state.seqs_info[seq_id], block.id)
@@ -384,7 +395,7 @@ def _complement_sequence_middle_nodes(build_state: _BuildState,
                                       seq_id: multialignment.SequenceID,
                                       last_pos,
                                       next_pos,
-                                      last_node_id: poagraph.NodeID) -> poagraph.NodeID:
+                                      last_node_id: graph.NodeID) -> graph.NodeID:
     current_node_id = _get_max_node_id(build_state.nodes)
     column_id = build_state.column_id
     join_with = last_node_id
@@ -392,7 +403,7 @@ def _complement_sequence_middle_nodes(build_state: _BuildState,
         column_id += 1
         current_node_id += 1
         missing_nucleotide = _get_missing_nucleotide(build_state.fasta_provider, seq_id, i)
-        build_state.nodes += [poagraph.Node(node_id=current_node_id,
+        build_state.nodes += [graph.Node(node_id=current_node_id,
                                    base=missing_nucleotide,
                                    aligned_to=None,
                                    column_id=column_id,
