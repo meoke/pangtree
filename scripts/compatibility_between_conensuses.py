@@ -1,7 +1,7 @@
 """This script is prepared for detaild Ebola virus analysis. Steps:
 - build Poagraph based on Ebola multialignment (data/Ebola/genome_whole/input/multialignment.maf)
 - run Consensus Tree algorithm (P=0.25, STOP=0.99)
-- for specific groups of generated consensuses (Group 1: 1, 2, 3; Group 2: 4, 5, 6, 7, 8; Group 3: sons of 4) calculate compatibility for each group in this group
+- for specific groups of generated affinitytree (Group 1: 1, 2, 3; Group 2: 4, 5, 6, 7, 8; Group 3: sons of 4) calculate compatibility for each group in this group
 
 """
 
@@ -15,19 +15,19 @@ import matplotlib
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../pangtreebuild')))
 import pangtreebuild.tools.pathtools as pathtools
-import pangtreebuild.datamodel.fasta_providers.FromNCBI as fp_ncbi
-import pangtreebuild.datamodel.fasta_providers.FromFile as fp_file
-import pangtreebuild.datamodel.input_types as inp
-from pangtreebuild.datamodel.Poagraph import Poagraph
-from pangtreebuild.datamodel.Node import NodeID, ColumnID
-import pangtreebuild.consensus.tree_generator as tree_generator
-import pangtreebuild.consensus.input_types as cinp
+import pangtreebuild.pangenome.fasta_providers.FromNCBI as fp_ncbi
+import pangtreebuild.pangenome.fasta_providers.FromFile as fp_file
+import pangtreebuild.pangenome.input_types as inp
+from pangtreebuild.pangenome.Poagraph import Poagraph
+from pangtreebuild.pangenome.Node import NodeID, ColumnID
+import pangtreebuild.affinity_tree.tree_generator as tree_generator
+import pangtreebuild.affinity_tree.input_types as cinp
 from pangtreebuild.output.PangenomeJSON import TaskParameters
-from pangtreebuild.consensus.cutoffs import MAX2, NODE3
-from pangtreebuild.consensus.ConsensusTree import ConsensusTree
+from pangtreebuild.affinity_tree.cutoffs import MAX2, NODE3
+from pangtreebuild.affinity_tree.ConsensusTree import AffinityTree
 
 
-def get_ebola_consensus_tree(p: float, stop: float, output_dir_name: str) -> Tuple[Poagraph, ConsensusTree]:
+def get_ebola_consensus_tree(p: float, stop: float, output_dir_name: str) -> Tuple[Poagraph, AffinityTree]:
     current_path = Path(os.path.abspath(__file__)).resolve()
     output_dir_path = pathtools.get_child_dir(current_path.parent, output_dir_name)
     consensus_output_dir = pathtools.get_child_dir(output_dir_path, "consensus")
@@ -73,23 +73,23 @@ def get_ebola_consensus_tree(p: float, stop: float, output_dir_name: str) -> Tup
     blosum_content = pathtools.get_file_content_stringio(path=blosum_path)
     blosum = cinp.Blosum(blosum_content, blosum_path)
 
-    return poagraph, tree_generator.get_consensus_tree(poagraph,
-                                             blosum,
-                                             consensus_output_dir,
-                                             cinp.Stop(stop),
-                                             cinp.P(p),
-                                             MAX2(),
-                                             NODE3(),
-                                             False)
+    return poagraph, tree_generator.get_affinity_tree(poagraph,
+                                                      blosum,
+                                                      consensus_output_dir,
+                                                      cinp.Stop(stop),
+                                                      cinp.P(p),
+                                                      MAX2(),
+                                                      NODE3(),
+                                                      False)
 
 
-def global_compatibilities_analysis(consensus_tree: ConsensusTree, groups: List[List[int]]) -> None:
+def global_compatibilities_analysis(consensus_tree: AffinityTree, groups: List[List[int]]) -> None:
     def calc_comp(consensuses_group: List[int]):
         pairwise_compatibilities = {}
         for i in consensuses_group:
-            i_nodes = set(consensus_tree.nodes[i].consensus_path)
+            i_nodes = set(consensus_tree.nodes[i].consensus)
             for j in consensuses_group:
-                j_nodes = set(consensus_tree.nodes[j].consensus_path)
+                j_nodes = set(consensus_tree.nodes[j].consensus)
                 pairwise_compatibilities[f"comp_{i}_{j}"] = len(i_nodes.intersection(j_nodes)) / len(i_nodes)
 
         for k, v in pairwise_compatibilities.items():
@@ -99,7 +99,7 @@ def global_compatibilities_analysis(consensus_tree: ConsensusTree, groups: List[
         calc_comp(g)
 
 
-def local_compatibilities_analysis_consensus_coordinates(poagraph: Poagraph, consensus_tree: ConsensusTree, groups: List[List[int]]) -> None:
+def local_compatibilities_analysis_consensus_coordinates(poagraph: Poagraph, consensus_tree: AffinityTree, groups: List[List[int]]) -> None:
     def produce_chart(x, ys, labels, chart_path):
         fig, ax = plt.subplots()
         for i, y in enumerate(ys):
@@ -210,13 +210,13 @@ def local_compatibilities_analysis_consensus_coordinates(poagraph: Poagraph, con
         joint_chart_path = output_dir_path.joinpath(f"{joint_chart_name}.png")
         chart_datas = []
         for consensus in consensuses_group:
-            consensus_path = consensus_tree.nodes[consensus].consensus_path
+            consensus_path = consensus_tree.nodes[consensus].consensus
             consensus_length = len(consensus_path)
             ys = []
             labels = []
             for consensus_to_compare in set(consensuses_group) - {consensus}:
                 y = []
-                consensus_to_compare_path = consensus_tree.nodes[consensus_to_compare].consensus_path
+                consensus_to_compare_path = consensus_tree.nodes[consensus_to_compare].consensus
                 frame_start = 0
                 frame_end = frame_start + frame_size
                 x=[]

@@ -2,7 +2,7 @@ import unittest
 from pathlib import Path
 
 
-from tests.context import FromFile, pSeq, pNode
+from tests.context import missings, graph, multialignment
 
 
 class FromFileFastaProviderFastaTests(unittest.TestCase):
@@ -16,19 +16,19 @@ class FromFileFastaProviderFastaTests(unittest.TestCase):
             return fasta_file_hanlder.read().upper().replace("\n", "")
 
     def raise_error_if_unequal(self,
-                               sequence_id: pSeq.SequenceID,
+                               sequence_id: multialignment.SequenceID,
                                expected_sequence: str,
-                               fasta_provider: FromFile) -> None:
+                               fasta_provider: missings.FromFile) -> None:
         for i, expected_symbol in enumerate(expected_sequence):
-            expected_base = pNode.Base(expected_symbol)
+            expected_base = graph.Base(expected_symbol)
             actual_base = fasta_provider.get_base(sequence_id, i)
             self.assertEqual(expected_base, actual_base)
 
     def test_1_one_sequence_one_file_in_zip(self):
         fasta_path = self.fasta_dir + "test_1_one_sequence_one_file_in_zip.zip"
-        fasta_provider = FromFile(Path(fasta_path))
+        fasta_provider = missings.FromFile(Path(fasta_path))
 
-        sequence_id = pSeq.SequenceID("seq1")
+        sequence_id = multialignment.SequenceID("seq1")
         expected_sequence = "ACTGGGTGGGA"
 
         self.raise_error_if_unequal(sequence_id, expected_sequence, fasta_provider)
@@ -36,22 +36,22 @@ class FromFileFastaProviderFastaTests(unittest.TestCase):
     def test_2_three_sequences_in_two_files_in_zip(self):
         fasta_path = self.fasta_dir + "test_2_three_sequences_in_two_files_in_zip.zip"
 
-        fasta_provider = FromFile(Path(fasta_path))
+        fasta_provider = missings.FromFile(Path(fasta_path))
 
-        sequence_id_1 = pSeq.SequenceID("seq1")
+        sequence_id_1 = multialignment.SequenceID("seq1")
         self.raise_error_if_unequal(sequence_id_1, "ACTGGGTGGGA", fasta_provider)
 
-        sequence_id_2 = pSeq.SequenceID("seq2")
+        sequence_id_2 = multialignment.SequenceID("seq2")
         self.raise_error_if_unequal(sequence_id_2, "AA", fasta_provider)
 
-        sequence_id_3 = pSeq.SequenceID("seq3")
+        sequence_id_3 = multialignment.SequenceID("seq3")
         self.raise_error_if_unequal(sequence_id_3, "GT", fasta_provider)
 
     def test_3_empty_sequence_name(self):
         fasta_path = self.fasta_dir + "test_3_empty_sequence_name.zip"
 
         with self.assertRaises(Exception) as exp:
-            _ = FromFile(Path(fasta_path))
+            _ = missings.FromFile(Path(fasta_path))
 
         expected_message = "No sequences in zip provided as fasta source or incorrect fastas in zip."
         actual_message = str(exp.exception)
@@ -61,7 +61,7 @@ class FromFileFastaProviderFastaTests(unittest.TestCase):
         fasta_path = self.fasta_dir + "test_4_empty_sequence.zip"
 
         with self.assertRaises(Exception) as exp:
-            _ = FromFile(Path(fasta_path))
+            _ = missings.FromFile(Path(fasta_path))
 
         expected_message = "Empty sequence in fasta source file. " \
                            "Provide the sequence or remove its identifier."
@@ -72,7 +72,7 @@ class FromFileFastaProviderFastaTests(unittest.TestCase):
         fasta_path = self.fasta_dir + "test_5_empty_fasta.zip"
 
         with self.assertRaises(Exception) as exp:
-            _ = FromFile(Path(fasta_path))
+            _ = missings.FromFile(Path(fasta_path))
 
         expected_message = "No sequences in zip provided as fasta source or incorrect fastas in zip."
         actual_message = str(exp.exception)
@@ -82,7 +82,7 @@ class FromFileFastaProviderFastaTests(unittest.TestCase):
         fasta_path = self.fasta_dir + "test_6_empty_zip.zip"
 
         with self.assertRaises(Exception) as exp:
-            _ = FromFile(Path(fasta_path))
+            _ = missings.FromFile(Path(fasta_path))
 
         expected_message = "Incorrect zip fasta source."
         actual_message = str(exp.exception)
@@ -92,7 +92,7 @@ class FromFileFastaProviderFastaTests(unittest.TestCase):
         fasta_path = self.fasta_dir + "test_7_no_fasta_in_zip.zip"
 
         with self.assertRaises(Exception) as exp:
-            _ = FromFile(Path(fasta_path))
+            _ = missings.FromFile(Path(fasta_path))
 
         expected_message = "No sequences in zip provided as fasta source or incorrect fastas in zip."
         actual_message = str(exp.exception)

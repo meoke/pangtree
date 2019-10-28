@@ -1,29 +1,28 @@
 import unittest
 
-from ...context import ConstSymbolProvider, MissingSymbol, InputError
-from ...context import pSeq, pNode
+from ...context import missings, graph, multialignment
 
 
 class ConstSymbolProviderTests(unittest.TestCase):
 
     def test_1_no_symbol_provided(self):
-        missing_symbol = MissingSymbol()
-        const_symbol_provider = ConstSymbolProvider(missing_symbol)
+        missing_symbol = missings.MissingBase()
+        const_symbol_provider = missings.ConstBaseProvider(missing_symbol)
 
-        expected_symbol = pNode.Base('?')
-        actual_symbol = const_symbol_provider.get_base(pSeq.SequenceID('s'), 0)
+        expected_symbol = graph.Base('?')
+        actual_symbol = const_symbol_provider.get_base(multialignment.SequenceID('s'), 0)
         self.assertEqual(expected_symbol, actual_symbol)
 
     def test_2_symbol_provided(self):
-        const_symbol_provider = ConstSymbolProvider(MissingSymbol('*'))
+        const_symbol_provider = missings.ConstBaseProvider(missings.MissingBase('*'))
 
-        expected_symbol = pNode.Base('*')
-        actual_symbol = const_symbol_provider.get_base(pSeq.SequenceID('s'), 0)
+        expected_symbol = graph.Base('*')
+        actual_symbol = const_symbol_provider.get_base(multialignment.SequenceID('s'), 0)
         self.assertEqual(expected_symbol, actual_symbol)
 
     def test_3_incorrect_missing_symbol(self):
-        with self.assertRaises(InputError) as e:
-            _ = MissingSymbol('**')
+        with self.assertRaises(ValueError) as e:
+            _ = missings.MissingBase('**')
 
         expected_message = 'Missing symbol must be a single character.'
         actual_message = str(e.exception)

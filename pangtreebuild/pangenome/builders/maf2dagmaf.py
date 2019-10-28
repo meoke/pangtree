@@ -1,19 +1,27 @@
-from pangtreebuild.datamodel.DAGMaf import DAGMaf, DAGMafNode
-from pangtreebuild.datamodel.input_types import Maf
 from pangtreebuild.mafgraph.sorter import sort_mafblocks
+from pangtreebuild.pangenome import DAGMaf
+from pangtreebuild.pangenome.parameters import multialignment
 from pangtreebuild.tools import logprocess
 
 global_logger = logprocess.get_global_logger()
 
 
-def get_dagmaf(maf: Maf) -> DAGMaf:
+def get_dagmaf(maf: multialignment.Maf) -> DAGMaf.DAGMaf:
+    """Converts MAF to DagMaf.
+
+    Args:
+        maf: MAF to be converted.
+
+    Returns:
+         DagMaf built from the MAF.
+    """
     sorted_blocks = sort_mafblocks(maf.filecontent)
     dagmafnodes = [
-        DAGMafNode(block_id=b.id,
+        DAGMaf.DAGMafNode(block_id=b.id,
                    alignment=b.alignment,
                    orient=b.orient,
                    order=b.order(),
                    out_edges=b.out_edges)
         for b in sorted_blocks
     ]
-    return DAGMaf(dagmafnodes)
+    return DAGMaf.DAGMaf(dagmafnodes)
