@@ -15,11 +15,11 @@ import matplotlib
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../pangtreebuild')))
 import pangtreebuild.tools.pathtools as pathtools
-import pangtreebuild.datamodel.fasta_providers.FromNCBI as fp_ncbi
-import pangtreebuild.datamodel.fasta_providers.FromFile as fp_file
-import pangtreebuild.datamodel.input_types as inp
-from pangtreebuild.datamodel.Poagraph import Poagraph
-from pangtreebuild.datamodel.Node import NodeID, ColumnID
+import pangtreebuild.pangenome.fasta_providers.FromNCBI as fp_ncbi
+import pangtreebuild.pangenome.fasta_providers.FromFile as fp_file
+import pangtreebuild.pangenome.input_types as inp
+from pangtreebuild.pangenome.Poagraph import Poagraph
+from pangtreebuild.pangenome.Node import NodeID, ColumnID
 import pangtreebuild.affinity_tree.tree_generator as tree_generator
 import pangtreebuild.affinity_tree.input_types as cinp
 from pangtreebuild.output.PangenomeJSON import TaskParameters

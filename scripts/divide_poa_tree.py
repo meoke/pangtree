@@ -3,9 +3,9 @@ from typing import Tuple
 
 from build.lib.pangtreebuild.datamodel.Node import Node
 from pangtreebuild.affinity_tree.ConsensusTree import AffinityTree, AffinityNode, ConsensusNodeID, Compatibility
-from pangtreebuild.datamodel.Node import NodeID, Base
-from pangtreebuild.datamodel.Poagraph import Poagraph
-from pangtreebuild.datamodel.Sequence import SequenceID, Sequence
+from pangtreebuild.pangenome.Node import NodeID, Base
+from pangtreebuild.pangenome.Poagraph import Poagraph
+from pangtreebuild.pangenome.Sequence import SequenceID, Sequence
 from pangtreebuild.output.PangenomeJSON import str_to_PangenomeJSON
 from pangtreebuild.tools import pathtools
 
