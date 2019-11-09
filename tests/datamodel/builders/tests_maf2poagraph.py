@@ -15,7 +15,7 @@ class Maf2poagraphTests(unittest.TestCase):
 
     def setUp(self):
         metadata_path = Path("tests/datamodel/seq_metadata.csv")
-        self.metadatacsv = multialignment.MetadataCSV(pathtools.get_file_content_stringio(metadata_path), metadata_path)
+        self.metadatacsv = msa.MetadataCSV(pathtools.get_file_content_stringio(metadata_path), metadata_path)
         self.maf_files_dir = 'tests/datamodel/builders/maf_files/'
 
     def test_1_messy_sequences(self):
@@ -39,24 +39,24 @@ class Maf2poagraphTests(unittest.TestCase):
         ]
 
         expected_sequences = {
-            multialignment.SequenceID('seq0'):
-                graph.Sequence(multialignment.SequenceID('seq0'),
+            msa.SequenceID('seq0'):
+                graph.Sequence(msa.SequenceID('seq0'),
                               [graph.SeqPath([*map(nid, [1, 3, 4, 6, 8, 9, 11, 12])])],
                               graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq1'):
-                graph.Sequence(multialignment.SequenceID('seq1'),
+            msa.SequenceID('seq1'):
+                graph.Sequence(msa.SequenceID('seq1'),
                               [graph.SeqPath([*map(nid, [2, 3, 4, 10, 11, 12, 13, 14])])],
                               graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq2'):
-                graph.Sequence(multialignment.SequenceID('seq2'),
+            msa.SequenceID('seq2'):
+                graph.Sequence(msa.SequenceID('seq2'),
                               [graph.SeqPath([*map(nid, [0, 2, 5, 6, 7, 10, 11, 12, 14])])],
                               graph.SequenceMetadata({'group': '2'})),
-            multialignment.SequenceID('seq3'):
-                graph.Sequence(multialignment.SequenceID('seq3'),
+            msa.SequenceID('seq3'):
+                graph.Sequence(msa.SequenceID('seq3'),
                               [],
                               graph.SequenceMetadata({'group': '2'}))
         }
-        actual_nodes, actual_sequences = maf2poagraph.get_poagraph(multialignment.Maf(pathtools.get_file_content_stringio(maf_path),
+        actual_nodes, actual_sequences = maf2poagraph.get_poagraph(msa.Maf(pathtools.get_file_content_stringio(maf_path),
                                                                        maf_path),
                                                                    self.metadatacsv)
 

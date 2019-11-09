@@ -15,7 +15,7 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
 
     def setUp(self):
         metadata_path = Path("tests/datamodel/seq_metadata.csv")
-        self.metadatacsv = multialignment.MetadataCSV(pathtools.get_file_content_stringio(metadata_path), metadata_path)
+        self.metadatacsv = msa.MetadataCSV(pathtools.get_file_content_stringio(metadata_path), metadata_path)
         self.maf_files_dir = 'tests/datamodel/builders/maf_files_with_cycles_or_reversion/'
         self.fasta_provider = missings.ConstBaseProvider(missings.MissingBase())
 
@@ -36,26 +36,26 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
         ]
 
         expected_sequences = {
-            multialignment.SequenceID('seq0'):
-                graph.Sequence(multialignment.SequenceID('seq0'),
+            msa.SequenceID('seq0'):
+                graph.Sequence(msa.SequenceID('seq0'),
                               [graph.SeqPath([*map(nid, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])])],
                               graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq1'):
-                graph.Sequence(multialignment.SequenceID('seq1'),
+            msa.SequenceID('seq1'):
+                graph.Sequence(msa.SequenceID('seq1'),
                               [graph.SeqPath([*map(nid, [0, 1, 2, 3, 4, 5, 6, 7, 8])])],
                               graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq2'):
-                graph.Sequence(multialignment.SequenceID('seq2'),
+            msa.SequenceID('seq2'):
+                graph.Sequence(msa.SequenceID('seq2'),
                               [],
                               graph.SequenceMetadata({'group': '2'})),
-            multialignment.SequenceID('seq3'):
-                graph.Sequence(multialignment.SequenceID('seq3'),
+            msa.SequenceID('seq3'):
+                graph.Sequence(msa.SequenceID('seq3'),
                               [],
                               graph.SequenceMetadata({'group': '2'})),
         }
         expected_poagraph = graph.Poagraph(expected_nodes, expected_sequences)
         actual_poagraph, _ = builder.build_from_dagmaf(
-            multialignment.Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
+            msa.Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
             self.fasta_provider,
             self.metadatacsv)
 
@@ -77,27 +77,27 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
         ]
 
         expected_sequences = {
-            multialignment.SequenceID('seq0'):
-                graph.Sequence(multialignment.SequenceID('seq0'),
+            msa.SequenceID('seq0'):
+                graph.Sequence(msa.SequenceID('seq0'),
                               [graph.SeqPath([*map(nid, [0, 2, 4, 7, 8])])],
                               graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq1'):
-                graph.Sequence(multialignment.SequenceID('seq1'),
+            msa.SequenceID('seq1'):
+                graph.Sequence(msa.SequenceID('seq1'),
                               [graph.SeqPath([*map(nid, [1, 3])]),
                                graph.SeqPath([*map(nid, [5, 6])])],
                               graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq2'):
-                graph.Sequence(multialignment.SequenceID('seq2'),
+            msa.SequenceID('seq2'):
+                graph.Sequence(msa.SequenceID('seq2'),
                               [],
                               graph.SequenceMetadata({'group': '2'})),
-            multialignment.SequenceID('seq3'):
-                graph.Sequence(multialignment.SequenceID('seq3'),
+            msa.SequenceID('seq3'):
+                graph.Sequence(msa.SequenceID('seq3'),
                               [],
                               graph.SequenceMetadata({'group': '2'})),
         }
         expected_poagraph = graph.Poagraph(expected_nodes, expected_sequences)
         actual_poagraph, _ = builder.build_from_dagmaf(
-            multialignment.Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
+            msa.Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
             self.fasta_provider,
             self.metadatacsv)
 
@@ -122,26 +122,26 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
         ]
 
         expected_sequences = {
-            multialignment.SequenceID('seq0'):
-                graph.Sequence(multialignment.SequenceID('seq0'),
+            msa.SequenceID('seq0'):
+                graph.Sequence(msa.SequenceID('seq0'),
                               [graph.SeqPath([*map(nid, [1, 2, 3])])],
                               graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq1'):
-                graph.Sequence(multialignment.SequenceID('seq1'),
+            msa.SequenceID('seq1'):
+                graph.Sequence(msa.SequenceID('seq1'),
                               [graph.SeqPath([*map(nid, [0, 5, 7])])],
                               graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq2'):
-                graph.Sequence(multialignment.SequenceID('seq2'),
+            msa.SequenceID('seq2'):
+                graph.Sequence(msa.SequenceID('seq2'),
                               [graph.SeqPath([*map(nid, [3, 4, 6, 8])])],
                               graph.SequenceMetadata({'group': '2'})),
-            multialignment.SequenceID('seq3'):
-                graph.Sequence(multialignment.SequenceID('seq3'),
+            msa.SequenceID('seq3'):
+                graph.Sequence(msa.SequenceID('seq3'),
                               [],
                               graph.SequenceMetadata({'group': '2'}))
         }
         expected_poagraph = graph.Poagraph(expected_nodes, expected_sequences)
         actual_poagraph, _ = builder.build_from_dagmaf(
-            multialignment.Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
+            msa.Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
             self.fasta_provider,
             self.metadatacsv)
 
@@ -162,26 +162,26 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
         ]
 
         expected_sequences = {
-            multialignment.SequenceID('seq0'):
-                graph.Sequence(multialignment.SequenceID('seq0'),
+            msa.SequenceID('seq0'):
+                graph.Sequence(msa.SequenceID('seq0'),
                               [],
                               graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq1'):
-                graph.Sequence(multialignment.SequenceID('seq1'),
+            msa.SequenceID('seq1'):
+                graph.Sequence(msa.SequenceID('seq1'),
                               [graph.SeqPath([*map(nid, [0, 1, 3, 4, 6, 7])])],
                               graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq2'):
-                graph.Sequence(multialignment.SequenceID('seq2'),
+            msa.SequenceID('seq2'):
+                graph.Sequence(msa.SequenceID('seq2'),
                               [graph.SeqPath([*map(nid, [0, 1, 2, 3, 5])])],
                               graph.SequenceMetadata({'group': '2'})),
-            multialignment.SequenceID('seq3'):
-                graph.Sequence(multialignment.SequenceID('seq3'),
+            msa.SequenceID('seq3'):
+                graph.Sequence(msa.SequenceID('seq3'),
                               [],
                               graph.SequenceMetadata({'group': '2'}))
         }
         expected_poagraph = graph.Poagraph(expected_nodes, expected_sequences)
         actual_poagraph, _ = builder.build_from_dagmaf(
-            multialignment.Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
+            msa.Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
             self.fasta_provider,
             self.metadatacsv)
 
@@ -193,26 +193,26 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
         expected_nodes = []
 
         expected_sequences = {
-            multialignment.SequenceID('seq0'):
-                graph.Sequence(multialignment.SequenceID('seq0'),
+            msa.SequenceID('seq0'):
+                graph.Sequence(msa.SequenceID('seq0'),
                               [],
                               graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq1'):
-                graph.Sequence(multialignment.SequenceID('seq1'),
+            msa.SequenceID('seq1'):
+                graph.Sequence(msa.SequenceID('seq1'),
                               [],
                               graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq2'):
-                graph.Sequence(multialignment.SequenceID('seq2'),
+            msa.SequenceID('seq2'):
+                graph.Sequence(msa.SequenceID('seq2'),
                               [],
                               graph.SequenceMetadata({'group': '2'})),
-            multialignment.SequenceID('seq3'):
-                graph.Sequence(multialignment.SequenceID('seq3'),
+            msa.SequenceID('seq3'):
+                graph.Sequence(msa.SequenceID('seq3'),
                               [],
                               graph.SequenceMetadata({'group': '2'}))
         }
         expected_poagraph = graph.Poagraph(expected_nodes, expected_sequences)
         actual_poagraph, _ = builder.build_from_dagmaf(
-            multialignment.Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
+            msa.Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
             self.fasta_provider,
             self.metadatacsv)
 
@@ -226,26 +226,26 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
         ]
 
         expected_sequences = {
-            multialignment.SequenceID('seq0'):
-                graph.Sequence(multialignment.SequenceID('seq0'),
+            msa.SequenceID('seq0'):
+                graph.Sequence(msa.SequenceID('seq0'),
                               [graph.SeqPath([*map(nid, [0])])],
                               graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq1'):
-                graph.Sequence(multialignment.SequenceID('seq1'),
+            msa.SequenceID('seq1'):
+                graph.Sequence(msa.SequenceID('seq1'),
                               [graph.SeqPath([*map(nid, [0])])],
                               graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq2'):
-                graph.Sequence(multialignment.SequenceID('seq2'),
+            msa.SequenceID('seq2'):
+                graph.Sequence(msa.SequenceID('seq2'),
                               [graph.SeqPath([*map(nid, [0])])],
                               graph.SequenceMetadata({'group': '2'})),
-            multialignment.SequenceID('seq3'):
-                graph.Sequence(multialignment.SequenceID('seq3'),
+            msa.SequenceID('seq3'):
+                graph.Sequence(msa.SequenceID('seq3'),
                               [graph.SeqPath([*map(nid, [0])])],
                               graph.SequenceMetadata({'group': '2'}))
         }
         expected_poagraph = graph.Poagraph(expected_nodes, expected_sequences)
         actual_poagraph, _ = builder.build_from_dagmaf(
-            multialignment.Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
+            msa.Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
             self.fasta_provider,
             self.metadatacsv)
 
@@ -273,26 +273,26 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
         ]
 
         expected_sequences = {
-            multialignment.SequenceID('seq0'):
-                graph.Sequence(multialignment.SequenceID('seq0'),
+            msa.SequenceID('seq0'):
+                graph.Sequence(msa.SequenceID('seq0'),
                               [graph.SeqPath([*map(nid, [0, 3, 4, 8])])],
                               graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq1'):
-                graph.Sequence(multialignment.SequenceID('seq1'),
+            msa.SequenceID('seq1'):
+                graph.Sequence(msa.SequenceID('seq1'),
                               [graph.SeqPath([*map(nid, [1, 3, 5, 6, 7, 9])])],
                               graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq2'):
-                graph.Sequence(multialignment.SequenceID('seq2'),
+            msa.SequenceID('seq2'):
+                graph.Sequence(msa.SequenceID('seq2'),
                               [graph.SeqPath([*map(nid, [2, 3, 5, 10])])],
                               graph.SequenceMetadata({'group': '2'})),
-            multialignment.SequenceID('seq3'):
-                graph.Sequence(multialignment.SequenceID('seq3'),
+            msa.SequenceID('seq3'):
+                graph.Sequence(msa.SequenceID('seq3'),
                               [],
                               graph.SequenceMetadata({'group': '2'}))
         }
         expected_poagraph = graph.Poagraph(expected_nodes, expected_sequences)
         actual_poagraph, _ = builder.build_from_dagmaf(
-            multialignment.Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
+            msa.Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
             self.fasta_provider,
             self.metadatacsv)
 
@@ -321,22 +321,22 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
         ]
 
         expected_sequences = {
-            multialignment.SequenceID('seq0'):
-                graph.Sequence(multialignment.SequenceID('seq0'),
+            msa.SequenceID('seq0'):
+                graph.Sequence(msa.SequenceID('seq0'),
                               [],
                               graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq1'):
-                graph.Sequence(multialignment.SequenceID('seq1'),
+            msa.SequenceID('seq1'):
+                graph.Sequence(msa.SequenceID('seq1'),
                               [graph.SeqPath([*map(nid, [0, 1, 2, 4, 6, 8, 9, 10, 11, 12, 14])])],
                               graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq2'):
-                graph.Sequence(multialignment.SequenceID('seq2'),
+            msa.SequenceID('seq2'):
+                graph.Sequence(msa.SequenceID('seq2'),
                               [graph.SeqPath([*map(nid, [0, 1, 2])]),
                                graph.SeqPath([*map(nid, [3, 5])]),
                                graph.SeqPath([*map(nid, [6, 7, 8, 9, 10, 11, 13, 15])])],
                               graph.SequenceMetadata({'group': '2'})),
-            multialignment.SequenceID('seq3'):
-                graph.Sequence(multialignment.SequenceID('seq3'),
+            msa.SequenceID('seq3'):
+                graph.Sequence(msa.SequenceID('seq3'),
                               [graph.SeqPath([*map(nid, [0, 2])]),
                                graph.SeqPath([*map(nid, [3, 5])]),
                                graph.SeqPath([*map(nid, [6, 7, 8, 9, 11, 12, 15])])],
@@ -344,7 +344,7 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
         }
         expected_poagraph = graph.Poagraph(expected_nodes, expected_sequences)
         actual_poagraph, _ = builder.build_from_dagmaf(
-            multialignment.Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
+            msa.Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
             self.fasta_provider,
             self.metadatacsv)
 
@@ -368,26 +368,26 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
         ]
 
         expected_sequences = {
-            multialignment.SequenceID('seq0'):
-                graph.Sequence(multialignment.SequenceID('seq0'),
+            msa.SequenceID('seq0'):
+                graph.Sequence(msa.SequenceID('seq0'),
                               [],
                               graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq1'):
-                graph.Sequence(multialignment.SequenceID('seq1'),
+            msa.SequenceID('seq1'):
+                graph.Sequence(msa.SequenceID('seq1'),
                               [graph.SeqPath([*map(nid, [0, 1, 3, 4, 5, 7, 8, 9])])],
                               graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq2'):
-                graph.Sequence(multialignment.SequenceID('seq2'),
+            msa.SequenceID('seq2'):
+                graph.Sequence(msa.SequenceID('seq2'),
                               [graph.SeqPath([*map(nid, [0, 1, 2, 3, 4, 6, 7, 8, 9])])],
                               graph.SequenceMetadata({'group': '2'})),
-            multialignment.SequenceID('seq3'):
-                graph.Sequence(multialignment.SequenceID('seq3'),
+            msa.SequenceID('seq3'):
+                graph.Sequence(msa.SequenceID('seq3'),
                               [graph.SeqPath([*map(nid, [0, 1, 2, 3, 4, 6, 7, 9])])],
                               graph.SequenceMetadata({'group': '2'})),
         }
         expected_poagraph = graph.Poagraph(expected_nodes, expected_sequences)
         actual_poagraph, _ = builder.build_from_dagmaf(
-            multialignment.Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
+            msa.Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
             self.fasta_provider,
             self.metadatacsv)
 
@@ -423,28 +423,28 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
         ]
 
         expected_sequences = {
-            multialignment.SequenceID('seq0'):
-                graph.Sequence(multialignment.SequenceID('seq0'),
+            msa.SequenceID('seq0'):
+                graph.Sequence(msa.SequenceID('seq0'),
                               [],
                               graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq1'):
-                graph.Sequence(multialignment.SequenceID('seq1'),
+            msa.SequenceID('seq1'):
+                graph.Sequence(msa.SequenceID('seq1'),
                               [graph.SeqPath([*map(nid, [0, 1, 2, 3, 4, 10, 11, 12, 13, 14])]),
                                graph.SeqPath([*map(nid, [5, 6, 7, 8, 9, 15, 16, 17, 18, 19])])],
                               graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq2'):
-                graph.Sequence(multialignment.SequenceID('seq2'),
+            msa.SequenceID('seq2'):
+                graph.Sequence(msa.SequenceID('seq2'),
                               [graph.SeqPath([*map(nid, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
                                                      13, 14, 15, 16, 17, 18, 19])])],
                               graph.SequenceMetadata({'group': '2'})),
-            multialignment.SequenceID('seq3'):
-                graph.Sequence(multialignment.SequenceID('seq3'),
+            msa.SequenceID('seq3'):
+                graph.Sequence(msa.SequenceID('seq3'),
                               [],
                               graph.SequenceMetadata({'group': '2'})),
         }
         expected_poagraph = graph.Poagraph(expected_nodes, expected_sequences)
         actual_poagraph, _ = builder.build_from_dagmaf(
-            multialignment.Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
+            msa.Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
             self.fasta_provider,
             self.metadatacsv)
 
@@ -482,26 +482,26 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
         ]
 
         expected_sequences = {
-            multialignment.SequenceID('seq0'):
-                graph.Sequence(multialignment.SequenceID('seq0'),
+            msa.SequenceID('seq0'):
+                graph.Sequence(msa.SequenceID('seq0'),
                               [graph.SeqPath([*map(nid, [7, 8, 9, 10, 11, 12, 15, 18, 19, 21])])],
                               graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq1'):
-                graph.Sequence(multialignment.SequenceID('seq1'),
+            msa.SequenceID('seq1'):
+                graph.Sequence(msa.SequenceID('seq1'),
                               [graph.SeqPath([*map(nid, [7, 8, 9, 10, 11, 12, 15, 18, 19, 21])])],
                               graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq2'):
-                graph.Sequence(multialignment.SequenceID('seq2'),
+            msa.SequenceID('seq2'):
+                graph.Sequence(msa.SequenceID('seq2'),
                               [graph.SeqPath([*map(nid, [0, 2, 3, 4, 6, 13, 16, 17, 20, 21])])],
                               graph.SequenceMetadata({'group': '2'})),
-            multialignment.SequenceID('seq3'):
-                graph.Sequence(multialignment.SequenceID('seq3'),
+            msa.SequenceID('seq3'):
+                graph.Sequence(msa.SequenceID('seq3'),
                               [graph.SeqPath([*map(nid, [1, 2, 3, 5, 6, 13, 14, 17, 20, 22])])],
                               graph.SequenceMetadata({'group': '2'})),
         }
         expected_poagraph = graph.Poagraph(expected_nodes, expected_sequences)
         actual_poagraph, _ = builder.build_from_dagmaf(
-            multialignment.Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
+            msa.Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
             self.fasta_provider,
             self.metadatacsv)
 

@@ -35,21 +35,21 @@ class ToFASTATests(unittest.TestCase):
                           graph.Node(node_id=nid(17), base=bid('G'), aligned_to=nid(15))]
 
         poagraph_sequences = {
-            multialignment.SequenceID('seq0'):
-                graph.Sequence(multialignment.SequenceID('seq0'),
+            msa.SequenceID('seq0'):
+                graph.Sequence(msa.SequenceID('seq0'),
                               [graph.SeqPath([*map(nid, [0, 2, 4, 6, 7, 8, 12, 14, 16])])],
                               graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq1'):
-                graph.Sequence(multialignment.SequenceID('seq1'),
+            msa.SequenceID('seq1'):
+                graph.Sequence(msa.SequenceID('seq1'),
                               [],
                               graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq2'):
-                graph.Sequence(multialignment.SequenceID('seq2'),
+            msa.SequenceID('seq2'):
+                graph.Sequence(msa.SequenceID('seq2'),
                               [graph.SeqPath([*map(nid, [3, 4, 6, 7, 10, 12])]),
                                graph.SeqPath([*map(nid, [14, 17])])],
                               graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq3'):
-                graph.Sequence(multialignment.SequenceID('seq3'),
+            msa.SequenceID('seq3'):
+                graph.Sequence(msa.SequenceID('seq3'),
                               [graph.SeqPath([*map(nid, [11])]),
                                graph.SeqPath([*map(nid, [13, 14, 15])])],
                               graph.SequenceMetadata({'group': '1'})),
@@ -73,23 +73,23 @@ class ToFASTATests(unittest.TestCase):
             tree.AffinityNode(id_=tree.AffinityNodeID(0),
                             parent=tree.AffinityNodeID(-1),
                             children=[tree.AffinityNodeID(1), tree.AffinityNodeID(2)],
-                            sequences=[multialignment.SequenceID('seq0'),
-                                       multialignment.SequenceID('seq1'),
-                                       multialignment.SequenceID('seq2'),
-                                       multialignment.SequenceID('seq3')],
+                            sequences=[msa.SequenceID('seq0'),
+                                       msa.SequenceID('seq1'),
+                                       msa.SequenceID('seq2'),
+                                       msa.SequenceID('seq3')],
                             mincomp=graph.Compatibility(0.5, at_params.P(1)),
-                            compatibilities={multialignment.SequenceID('seq0'): graph.Compatibility(1.0, at_params.P(1)),
-                                             multialignment.SequenceID('seq1'): graph.Compatibility(0.9, at_params.P(1)),
-                                             multialignment.SequenceID('seq2'): graph.Compatibility(0.95, at_params.P(1)),
-                                             multialignment.SequenceID('seq3'): graph.Compatibility(0.6, at_params.P(1))},
+                            compatibilities={msa.SequenceID('seq0'): graph.Compatibility(1.0, at_params.P(1)),
+                                             msa.SequenceID('seq1'): graph.Compatibility(0.9, at_params.P(1)),
+                                             msa.SequenceID('seq2'): graph.Compatibility(0.95, at_params.P(1)),
+                                             msa.SequenceID('seq3'): graph.Compatibility(0.6, at_params.P(1))},
                             consensus=graph.SeqPath([nid(0), nid(2), nid(5), nid(6),
                                                  nid(10), nid(12), nid(13), nid(16)])),
             # no compatibilities to all, no mincomp
             tree.AffinityNode(id_=tree.AffinityNodeID(1),
                             parent=tree.AffinityNodeID(0),
-                            sequences=[multialignment.SequenceID('seq0'),
-                                       multialignment.SequenceID('seq1'),
-                                       multialignment.SequenceID('seq2')],
+                            sequences=[msa.SequenceID('seq0'),
+                                       msa.SequenceID('seq1'),
+                                       msa.SequenceID('seq2')],
                             consensus=graph.SeqPath(
                                  [nid(0), nid(2), nid(3), nid(6), nid(10), nid(11), nid(13), nid(17)]))
         ]

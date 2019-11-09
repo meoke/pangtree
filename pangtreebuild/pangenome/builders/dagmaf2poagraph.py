@@ -7,7 +7,7 @@ from pangtreebuild.mafgraph.mafreader import start_position
 from pangtreebuild.pangenome import graph
 from pangtreebuild.pangenome import DAGMaf
 from pangtreebuild.pangenome.parameters import missings
-from pangtreebuild.pangenome.parameters import multialignment
+from pangtreebuild.pangenome.parameters import msa
 
 from pangtreebuild.tools import logprocess
 
@@ -40,22 +40,22 @@ Edge = namedtuple('Edge', ['seq_id',
 class _BuildState:
     def __init__(self,
                  initial_nodes: List[graph.Node],
-                 initial_sequences: Dict[multialignment.SequenceID, graph.Sequence],
-                 initial_edges: Dict[multialignment.SequenceID, List[Edge]],
-                 seqs_info: Dict[multialignment.SequenceID, List[SequenceInfo]],
+                 initial_sequences: Dict[msa.SequenceID, graph.Sequence],
+                 initial_edges: Dict[msa.SequenceID, List[Edge]],
+                 seqs_info: Dict[msa.SequenceID, List[SequenceInfo]],
                  initial_column_id: graph.ColumnID,
                  fasta_provider: missings.FastaProvider):
         self.nodes: List[graph.Node] = initial_nodes
-        self.sequences: Dict[multialignment.SequenceID, graph.Sequence] = initial_sequences
-        self.free_edges: Dict[multialignment.SequenceID, List[Edge]] = initial_edges
-        self.seqs_info: Dict[multialignment.SequenceID, List[SequenceInfo]] = seqs_info
+        self.sequences: Dict[msa.SequenceID, graph.Sequence] = initial_sequences
+        self.free_edges: Dict[msa.SequenceID, List[Edge]] = initial_edges
+        self.seqs_info: Dict[msa.SequenceID, List[SequenceInfo]] = seqs_info
         self.column_id: graph.ColumnID = initial_column_id
         self.fasta_provider: missings.FastaProvider = fasta_provider
 
 
 def get_poagraph(dagmaf: DAGMaf.DAGMaf,
                  fasta_provider: missings.FastaProvider,
-                 metadata: Optional[multialignment.MetadataCSV]) -> Tuple[List[graph.Node], Dict[multialignment.SequenceID, graph.Sequence]]:
+                 metadata: Optional[msa.MetadataCSV]) -> Tuple[List[graph.Node], Dict[msa.SequenceID, graph.Sequence]]:
     """Gets poagraph from given dagmaf using specified fasta_provider and metadata.
 
     Args:
@@ -85,12 +85,12 @@ def get_poagraph(dagmaf: DAGMaf.DAGMaf,
     return build_state.nodes, build_state.sequences
 
 
-def _get_sequences_ids(dagmaf: DAGMaf.DAGMaf) -> List[multialignment.SequenceID]:
-    return list({multialignment.SequenceID(seq.id) for block in dagmaf.dagmaf_nodes for seq in block.alignment})
+def _get_sequences_ids(dagmaf: DAGMaf.DAGMaf) -> List[msa.SequenceID]:
+    return list({msa.SequenceID(seq.id) for block in dagmaf.dagmaf_nodes for seq in block.alignment})
 
 
-def _init_sequences(sequences_in_dagmaf: List[multialignment.SequenceID],
-                    metadata: Optional[multialignment.MetadataCSV]) -> Dict[multialignment.SequenceID, graph.Sequence]:
+def _init_sequences(sequences_in_dagmaf: List[msa.SequenceID],
+                    metadata: Optional[msa.MetadataCSV]) -> Dict[msa.SequenceID, graph.Sequence]:
     metadata_sequences_ids = metadata.get_all_sequences_ids() if metadata else []
     initial_sequences = {seq_id: graph.Sequence(seqid=seq_id,
                                           paths=[],
@@ -101,22 +101,22 @@ def _init_sequences(sequences_in_dagmaf: List[multialignment.SequenceID],
     return initial_sequences
 
 
-def _init_free_edges(maf_sequences_ids: List[multialignment.SequenceID]) -> Dict[multialignment.SequenceID, List[Edge]]:
+def _init_free_edges(maf_sequences_ids: List[msa.SequenceID]) -> Dict[msa.SequenceID, List[Edge]]:
     return {seq_id: [] for seq_id in maf_sequences_ids}
 
 
-def _get_seqs_info(dagmaf: DAGMaf.DAGMaf, sequences_in_dagmaf: List[multialignment.SequenceID]) -> Dict[multialignment.SequenceID, List[SequenceInfo]]:
+def _get_seqs_info(dagmaf: DAGMaf.DAGMaf, sequences_in_dagmaf: List[msa.SequenceID]) -> Dict[msa.SequenceID, List[SequenceInfo]]:
     seqs_info = {seq_id: [] for seq_id in sequences_in_dagmaf}
 
     for n in dagmaf.dagmaf_nodes:
         for seq in n.alignment:
-            seqs_info[multialignment.SequenceID(seq.id)].append(SequenceInfo(block_id=graph.BlockID(n.id),
+            seqs_info[msa.SequenceID(seq.id)].append(SequenceInfo(block_id=graph.BlockID(n.id),
                                                               start=start_position(seq),
                                                               strand=seq.annotations["strand"],
                                                               size=seq.annotations["size"],
                                                               srcSize=seq.annotations["srcSize"],
                                                               orient=n.orient))
-    absents_sequences: List[multialignment.SequenceID] = []
+    absents_sequences: List[msa.SequenceID] = []
     for seq_id, seq_info_list in seqs_info.items():
         if seq_info_list:
             seqs_info[seq_id] = sorted(seq_info_list, key=lambda si: si.start)
@@ -135,7 +135,7 @@ def _complement_starting_nodes(build_state: _BuildState) -> None:
 
 
 def _complement_sequence_starting_nodes(build_state: _BuildState,
-                                        seq_id: multialignment.SequenceID,
+                                        seq_id: msa.SequenceID,
                                         first_block_sinfo: SequenceInfo) -> None:
     current_node_id: graph.NodeID = _get_max_node_id(build_state.nodes)
     column_id = -first_block_sinfo.start
@@ -159,12 +159,12 @@ def _get_max_node_id(nodes: List[graph.Node]) -> graph.NodeID:
     return graph.NodeID(len(nodes) - 1)
 
 
-def _get_missing_nucleotide(fasta_provider, seq_id: multialignment.SequenceID, i: int) -> graph.Base:
+def _get_missing_nucleotide(fasta_provider, seq_id: msa.SequenceID, i: int) -> graph.Base:
     return fasta_provider.get_base(seq_id, i)
 
 
 def _add_node_to_sequence(build_state: _BuildState,
-                          seq_id: multialignment.SequenceID,
+                          seq_id: msa.SequenceID,
                           join_with: graph.NodeID,
                           node_id: graph.NodeID) -> None:
     q = build_state.sequences[seq_id].paths
@@ -201,7 +201,7 @@ def _process_block(build_state: _BuildState, block: DAGMaf.DAGMafNode):
                                        block_id=block.id)]
 
             for maf_seq_id in maf_seqs_id:
-                seq_id = multialignment.SequenceID(maf_seq_id)
+                seq_id = msa.SequenceID(maf_seq_id)
                 _add_node_to_sequence(build_state, seq_id, paths_join_info[seq_id], current_node_id)
                 paths_join_info[seq_id] = current_node_id
 
@@ -210,10 +210,10 @@ def _process_block(build_state: _BuildState, block: DAGMaf.DAGMafNode):
 
 
 def _get_paths_join_info(block: Block,
-                         free_edges: Dict[multialignment.SequenceID, List[Edge]]) -> Dict[multialignment.SequenceID, Optional[graph.NodeID]]:
-    paths_join_info: Dict[multialignment.SequenceID, Optional[graph.NodeID]] = dict()
+                         free_edges: Dict[msa.SequenceID, List[Edge]]) -> Dict[msa.SequenceID, Optional[graph.NodeID]]:
+    paths_join_info: Dict[msa.SequenceID, Optional[graph.NodeID]] = dict()
     for seq in block.alignment:
-        seq_id = multialignment.SequenceID(seq.id)
+        seq_id = msa.SequenceID(seq.id)
         paths_join_info[seq_id] = None
         for i, edge in enumerate(free_edges[seq_id]):
             if edge.to_block_id == block.id:
@@ -226,7 +226,7 @@ def _get_max_column_id(nodes: List[graph.Node]) -> graph.ColumnID:
     return max(current_columns_ids) if current_columns_ids else graph.ColumnID(-1)
 
 
-def _get_column_nucleotides_sorted_codes(seq_to_nucl: Dict[multialignment.SequenceID, str]) -> List[str]:
+def _get_column_nucleotides_sorted_codes(seq_to_nucl: Dict[msa.SequenceID, str]) -> List[str]:
     return sorted(
         set(
             [nucleotide
@@ -243,11 +243,11 @@ def _get_next_aligned_node_id(current_column_i, column_nodes_ids) -> Optional[gr
 
 def _add_block_out_edges_to_free_edges(build_state: _BuildState,
                                        block: Block,
-                                       join_info: Dict[multialignment.SequenceID, graph.NodeID]):
+                                       join_info: Dict[msa.SequenceID, graph.NodeID]):
     for edge in block.out_edges:
         _ = _get_correct_edge_type(edge)
         for seq in edge.sequences:
-            seq_id = multialignment.SequenceID(seq[0].seq_id)
+            seq_id = msa.SequenceID(seq[0].seq_id)
             last_node_id = _complement_sequence_middles_if_needed(build_state=build_state,
                                                                   block=block,
                                                                   edge=edge,
@@ -269,7 +269,7 @@ def _complement_sequence_middles_if_needed(build_state: _BuildState,
                                            edge: Arc,
                                            seq,
                                            last_node_id: graph.NodeID):
-    seq_id = multialignment.SequenceID(seq[0].seq_id)
+    seq_id = msa.SequenceID(seq[0].seq_id)
     left_block_sinfo, right_block_sinfo = _get_edge_sinfos(seqs_info=build_state.seqs_info,
                                                            from_block_id=block.id,
                                                            edge=edge,
@@ -308,10 +308,10 @@ def _complement_sequence_middles_if_needed(build_state: _BuildState,
             return None
 
 
-def _get_edge_sinfos(seqs_info: Dict[multialignment.SequenceID, List[SequenceInfo]],
+def _get_edge_sinfos(seqs_info: Dict[msa.SequenceID, List[SequenceInfo]],
                      from_block_id: graph.BlockID,
                      edge: Arc,
-                     seq_id: multialignment.SequenceID) -> Tuple[SequenceInfo, SequenceInfo]:
+                     seq_id: msa.SequenceID) -> Tuple[SequenceInfo, SequenceInfo]:
     left_seq_info, right_seq_info = None, None
     for sinfo in seqs_info[seq_id]:
         if sinfo.block_id == from_block_id:
@@ -348,7 +348,7 @@ def _should_join_with_next_node(edge_type: Tuple[int, int]) -> bool:
                                      "Cannot decide if complemented nucleotides must be joined with next block.")
 
 
-def _manage_endings(build_state: _BuildState, block: Block, join_info: Dict[multialignment.SequenceID, graph.NodeID]):
+def _manage_endings(build_state: _BuildState, block: Block, join_info: Dict[msa.SequenceID, graph.NodeID]):
     sequences_ending_in_this_block = _get_ending_sequences(build_state.seqs_info, block)
     for seq_id in sequences_ending_in_this_block:
         block_sinfo: SequenceInfo = _get_sinfo(build_state.seqs_info[seq_id], block.id)
@@ -366,7 +366,7 @@ def _manage_endings(build_state: _BuildState, block: Block, join_info: Dict[mult
                                                    last_node_id=last_node_id))
 
 
-def _get_ending_sequences(seqs_info: Dict[multialignment.SequenceID, List[SequenceInfo]], block: Block) -> List[multialignment.SequenceID]:
+def _get_ending_sequences(seqs_info: Dict[msa.SequenceID, List[SequenceInfo]], block: Block) -> List[msa.SequenceID]:
     sequences_ending_in_this_block = []
     for seq_id, sinfo_list in seqs_info.items():
         last_block_sinfo = sinfo_list[-1]
@@ -392,7 +392,7 @@ def _sequence_not_complete(last_block_sinfo: SequenceInfo) -> bool:
 
 
 def _complement_sequence_middle_nodes(build_state: _BuildState,
-                                      seq_id: multialignment.SequenceID,
+                                      seq_id: msa.SequenceID,
                                       last_pos,
                                       next_pos,
                                       last_node_id: graph.NodeID) -> graph.NodeID:

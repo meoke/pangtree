@@ -1,12 +1,12 @@
 from pangtreebuild.mafgraph.sorter import sort_mafblocks
 from pangtreebuild.pangenome import DAGMaf
-from pangtreebuild.pangenome.parameters import multialignment
+from pangtreebuild.pangenome.parameters import msa
 from pangtreebuild.tools import logprocess
 
 global_logger = logprocess.get_global_logger()
 
 
-def get_dagmaf(maf: multialignment.Maf) -> DAGMaf.DAGMaf:
+def get_dagmaf(maf: msa.Maf) -> DAGMaf.DAGMaf:
     """Converts MAF to DagMaf.
 
     Args:

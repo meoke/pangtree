@@ -8,7 +8,7 @@ from typing import List, Dict, Union, Optional
 
 from pangtreebuild.affinity_tree import parameters
 from pangtreebuild.pangenome import graph
-from pangtreebuild.pangenome.parameters import multialignment
+from pangtreebuild.pangenome.parameters import msa
 from pangtreebuild.output import po
 from pangtreebuild.tools import pathtools
 from pangtreebuild.tools import logprocess
@@ -36,23 +36,23 @@ class ConsInfo(object):
     Attributes:
         fullname (str): Consensus name.
         po_consensus_id (str): Consensus ID used in PO file to indicate it is present in a node. Eg. "S0"
-        assigned_sequences_ids (List[multialignment.SequenceID]): IDs of _sequences assigned to this consensus.
+        assigned_sequences_ids (List[msa.SequenceID]): IDs of _sequences assigned to this consensus.
         path (graph.SeqPath): List of nodes of this consensus.
     """
 
     def __init__(self,
                  fullname: str,
                  po_consensus_id: Optional[str] = None,
-                 assigned_sequences_ids: Optional[List[multialignment.SequenceID]] = None,
+                 assigned_sequences_ids: Optional[List[msa.SequenceID]] = None,
                  path: Optional[graph.SeqPath] = None):
         self.fullname: str = fullname
         self.po_consensus_id: str = po_consensus_id
-        self.assigned_sequences_ids: List[multialignment.SequenceID] = assigned_sequences_ids
+        self.assigned_sequences_ids: List[msa.SequenceID] = assigned_sequences_ids
         self.path: graph.SeqPath = path
 
 
 def get_consensuses(poagraph: graph.Poagraph,
-                    sequences_ids: List[multialignment.SequenceID],
+                    sequences_ids: List[msa.SequenceID],
                     output_dir: Path,
                     job_name: str,
                     blosum_path: Path,
@@ -127,19 +127,19 @@ class _PoagraphPOTranslator:
 
     Attributes:
         poagraph (poagraph.Poagraph): The orginal poagraph.
-        sequences_ids (List[multialignment.SequenceID]): List of _sequences IDs to be included in poa input.
+        sequences_ids (List[msa.SequenceID]): List of _sequences IDs to be included in poa input.
         new_to_old: Dict[poagraph.NodeID, poagraph.NodeID]: Mapping of temporary poagraph nodes IDs to the original ones.
         old_to_new: Dict[poagraph.NodeID, poagraph.NodeID] = Mapping of the original poagraph nodes IDs to the temporary ones.
-        seq_old_to_new: Dict[multialignment.SequenceID, int] = Mapping of the original _sequences IDs to temporary integer ones.
-        seq_new_to_old: Dict[int, multialignment.SequenceID] = Mapping of the temporary int IDs of _sequences to the original ones.
+        seq_old_to_new: Dict[msa.SequenceID, int] = Mapping of the original _sequences IDs to temporary integer ones.
+        seq_new_to_old: Dict[int, msa.SequenceID] = Mapping of the temporary int IDs of _sequences to the original ones.
     """
-    def __init__(self, poagraph: graph.Poagraph, sequences_ids: List[multialignment.SequenceID]):
+    def __init__(self, poagraph: graph.Poagraph, sequences_ids: List[msa.SequenceID]):
         self.poagraph: graph.Poagraph = poagraph
-        self.sequences_ids: List[multialignment.SequenceID] = sequences_ids
+        self.sequences_ids: List[msa.SequenceID] = sequences_ids
         self.new_to_old: Dict[graph.NodeID, graph.NodeID] = None
         self.old_to_new: Dict[graph.NodeID, graph.NodeID] = None
-        self.seq_old_to_new: Dict[multialignment.SequenceID, int] = None
-        self.seq_new_to_old: Dict[int, multialignment.SequenceID] = None
+        self.seq_old_to_new: Dict[msa.SequenceID, int] = None
+        self.seq_new_to_old: Dict[int, msa.SequenceID] = None
 
     def get_input_po_content(self) -> str:
         """Convert poagraph to PO file content."""
@@ -163,7 +163,7 @@ class _PoagraphPOTranslator:
                            )
                     for new_node_id in range(len(nodes_ids_to_keep))]
 
-        sequences_weight: Dict[multialignment.SequenceID, int] = self.poagraph.get_sequences_weights(self.sequences_ids)
+        sequences_weight: Dict[msa.SequenceID, int] = self.poagraph.get_sequences_weights(self.sequences_ids)
         po_sequences = [po.SequencePO(name=self.seq_new_to_old[new_seq_id],
                                    nodes_count=self.poagraph.get_sequence_nodes_count(self.seq_new_to_old[new_seq_id]),
                                    weight=sequences_weight[self.seq_new_to_old[new_seq_id]],

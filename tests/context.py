@@ -5,7 +5,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../p
 
 from pangtreebuild.pangenome import graph
 from pangtreebuild.pangenome import builder
-from pangtreebuild.pangenome.parameters import multialignment
+from pangtreebuild.pangenome.parameters import msa
 from pangtreebuild.pangenome.builders import maf2poagraph, dagmaf2poagraph, po2poagraph
 import pangtreebuild.tools.pathtools as pathtools
 from pangtreebuild.pangenome.parameters import missings

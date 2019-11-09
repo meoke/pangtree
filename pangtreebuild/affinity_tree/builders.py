@@ -11,7 +11,7 @@ from pangtreebuild.affinity_tree import poa
 from pangtreebuild.affinity_tree import tree
 
 from pangtreebuild.pangenome import graph
-from pangtreebuild.pangenome.parameters import multialignment
+from pangtreebuild.pangenome.parameters import msa
 
 
 global_logger = logprocess.get_global_logger()
@@ -208,7 +208,7 @@ def _get_children_nodes_looping(node: tree.AffinityNode,
     """Generates children of given Affinity Tree node."""
 
     children_nodes: List[tree.AffinityNode] = []
-    not_assigned_sequences_ids: List[multialignment.SequenceID] = node.sequences
+    not_assigned_sequences_ids: List[msa.SequenceID] = node.sequences
     detailed_logger.info(f"Getting children nodes for affinity node {node.id_}...")
 
     affinity_node_id = 0
@@ -229,7 +229,7 @@ def _get_children_nodes_looping(node: tree.AffinityNode,
             compatibilities_to_consensus_candidate = poagraph.get_compatibilities(sequences_ids=not_assigned_sequences_ids,
                                                                                   consensus_path=consensus_candidate,
                                                                                   p=p)
-            compatibilities_to_consensus_candidate[multialignment.SequenceID("parent")] = node.mincomp
+            compatibilities_to_consensus_candidate[msa.SequenceID("parent")] = node.mincomp
             qualified_sequences_ids_candidates, cutoff = _get_qualified_sequences_ids_and_cutoff(
                 compatibilities_to_max_c=compatibilities_to_consensus_candidate,
                 so_far_cutoffs=so_far_cutoffs,
@@ -260,8 +260,8 @@ def _get_children_nodes_looping(node: tree.AffinityNode,
     return children_nodes
 
 
-def _get_min_comp(node_sequences_ids: List[multialignment.SequenceID],
-                  comps_to_consensus: Dict[multialignment.SequenceID, graph.Compatibility]) -> graph.Compatibility:
+def _get_min_comp(node_sequences_ids: List[msa.SequenceID],
+                  comps_to_consensus: Dict[msa.SequenceID, graph.Compatibility]) -> graph.Compatibility:
     """Find minimum compatibility from the compatibilities of given _sequences.
 
     Args:
@@ -285,9 +285,9 @@ def _get_min_comp(node_sequences_ids: List[multialignment.SequenceID],
     return min(compatibilities_of_node_sequences)
 
 
-def _get_qualified_sequences_ids_and_cutoff(compatibilities_to_max_c: Dict[multialignment.SequenceID, graph.Compatibility],
+def _get_qualified_sequences_ids_and_cutoff(compatibilities_to_max_c: Dict[msa.SequenceID, graph.Compatibility],
                                             so_far_cutoffs: List[graph.Compatibility], splitted_node_id) \
-        -> Tuple[List[multialignment.SequenceID], graph.Compatibility]:
+        -> Tuple[List[msa.SequenceID], graph.Compatibility]:
     """Choose _sequences qualified to be enclosed in single node based on their compatibilities values."""
 
     node_cutoff = _find_node_cutoff(compatibilities=[*compatibilities_to_max_c.values()],
@@ -391,8 +391,8 @@ def _find_max_distance(compatibilities: List[graph.Compatibility]) -> graph.Comp
     return sorted_values[max_distance_index + 1]
 
 
-def _get_sequences_ids_above_cutoff(compatibilities: Dict[multialignment.SequenceID, graph.Compatibility],
-                                    cutoff: graph.Compatibility) -> List[multialignment.SequenceID]:
+def _get_sequences_ids_above_cutoff(compatibilities: Dict[msa.SequenceID, graph.Compatibility],
+                                    cutoff: graph.Compatibility) -> List[msa.SequenceID]:
     """Filters the Seuqences IDs to find the ones with compatibility above required treshold.
 
     Args:
@@ -402,4 +402,4 @@ def _get_sequences_ids_above_cutoff(compatibilities: Dict[multialignment.Sequenc
     Returns:
         List of Sequences IDs that have greater compatibility than required cutoff value.
     """
-    return [seq_id for seq_id, comp in compatibilities.items() if comp >= cutoff and seq_id != multialignment.SequenceID("parent")]
+    return [seq_id for seq_id, comp in compatibilities.items() if comp >= cutoff and seq_id != msa.SequenceID("parent")]

@@ -8,7 +8,7 @@ from typing import TypeVar, Callable, Optional, Union
 from pangtreebuild.output.json import TaskParameters
 from pangtreebuild.affinity_tree import parameters as at_params
 from pangtreebuild.pangenome import graph
-from pangtreebuild.pangenome.parameters import multialignment
+from pangtreebuild.pangenome.parameters import msa
 from pangtreebuild.pangenome.parameters import missings
 from pangtreebuild.tools import pathtools
 
@@ -77,18 +77,18 @@ def _cli_file_arg(arg: str, constructor: Callable[[StringIO, Optional[Path]], T]
             raise argparse.ArgumentError("Incorrect file content") from p
 
 
-def _mulitalignment_file(x: str) -> Union[multialignment.Maf, multialignment.Po]:
+def _mulitalignment_file(x: str) -> Union[msa.Maf, msa.Po]:
     file_type = _get_file_extension(x)
     if file_type == 'maf':
-        return _cli_file_arg(x, multialignment.Maf)
+        return _cli_file_arg(x, msa.Maf)
     elif file_type == 'po':
-        return _cli_file_arg(x, multialignment.Po)
+        return _cli_file_arg(x, msa.Po)
     else:
         raise InvalidPath("Only multialignment files with .maf or .po can be processed.")
 
 
-def _metadata_file(x: str) -> multialignment.MetadataCSV:
-    return _cli_file_arg(x, multialignment.MetadataCSV)
+def _metadata_file(x: str) -> msa.MetadataCSV:
+    return _cli_file_arg(x, msa.MetadataCSV)
 
 
 def _blosum_file(x: str) -> at_params.Blosum:
@@ -126,7 +126,7 @@ def get_parser() -> argparse.ArgumentParser:
     p.add_argument('--metadata',
                    metavar='METADATA_PATH',
                    type=_metadata_file,
-                   help='Path to the csv file with metadata. ' + inspect.getdoc(multialignment.MetadataCSV))
+                   help='Path to the csv file with metadata. ' + inspect.getdoc(msa.MetadataCSV))
     p.add_argument('--raw_maf',
                    action='store_true',
                    default=False,
@@ -237,7 +237,7 @@ def get_task_parameters(args: argparse.Namespace, running_time) -> TaskParameter
     """Returns TaskParameters object based on parsed arguments."""
 
     return TaskParameters(running_time=running_time,
-                          multialignment_file_path=args.multialignment.filename,
+                          multialignment_file_path=args.msa.filename,
                           multialignment_format=str(type(args.multialignment).__name__),
                           datatype=args.datatype.name,
                           metadata_file_path=args.metadata.filename if args.metadata else None,

@@ -10,7 +10,7 @@ from pangtreebuild.output import json
 from pangtreebuild.output import po
 from pangtreebuild.pangenome import builder
 from pangtreebuild.pangenome.parameters import missings
-from pangtreebuild.pangenome.parameters import multialignment
+from pangtreebuild.pangenome.parameters import msa
 from pangtreebuild.tools import cli, pathtools, logprocess
 
 
@@ -25,12 +25,12 @@ def main():
         logprocess.disable_all_loggers()
 
     poagraph, dagmaf, fasta_provider = None, None, None
-    if isinstance(args.multialignment, multialignment.Maf) and args.raw_maf:
+    if isinstance(args.multialignment, msa.Maf) and args.raw_maf:
         poagraph = builder.build_from_maf(args.multialignment, args.metadata)
-    elif isinstance(args.multialignment, multialignment.Maf) and not args.raw_maf:
+    elif isinstance(args.multialignment, msa.Maf) and not args.raw_maf:
         fasta_provider = cli.resolve_fasta_provider(args)
         poagraph, dagmaf = builder.build_from_dagmaf(args.multialignment, fasta_provider, args.metadata)
-    elif isinstance(args.multialignment, multialignment.Po):
+    elif isinstance(args.multialignment, msa.Po):
         poagraph = builder.build_from_po(args.multialignment, args.metadata)
 
     affinity_tree = None

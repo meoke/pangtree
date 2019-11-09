@@ -14,7 +14,7 @@ class Po2poagraphTests(unittest.TestCase):
 
     def setUp(self):
         metadata_path = Path("tests/datamodel/seq_metadata.csv")
-        self.metadatacsv = multialignment.MetadataCSV(pathtools.get_file_content_stringio(metadata_path), metadata_path)
+        self.metadatacsv = msa.MetadataCSV(pathtools.get_file_content_stringio(metadata_path), metadata_path)
         self.po_files_dir = 'tests/datamodel/builders/po_files/'
 
     def test_1_typical_poagraph(self):
@@ -41,26 +41,26 @@ class Po2poagraphTests(unittest.TestCase):
                           ]
 
         expected_sequences = {
-            multialignment.SequenceID('seq0'):
-                graph.Sequence(multialignment.SequenceID('seq0'),
+            msa.SequenceID('seq0'):
+                graph.Sequence(msa.SequenceID('seq0'),
                               [graph.SeqPath([*map(nid, [0, 2, 4, 6, 7, 8, 12, 14, 16])])],
                               graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq1'):
-                graph.Sequence(multialignment.SequenceID('seq1'),
+            msa.SequenceID('seq1'):
+                graph.Sequence(msa.SequenceID('seq1'),
                               [graph.SeqPath([*map(nid, [1, 2, 5, 6, 7, 9])])],
                               graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq2'):
-                graph.Sequence(multialignment.SequenceID('seq2'),
+            msa.SequenceID('seq2'):
+                graph.Sequence(msa.SequenceID('seq2'),
                               [graph.SeqPath([*map(nid, [3, 4, 6, 7, 10, 12, 14, 17])])],
                               graph.SequenceMetadata({'group': '2'})),
-            multialignment.SequenceID('seq3'):
-                graph.Sequence(multialignment.SequenceID('seq3'),
+            msa.SequenceID('seq3'):
+                graph.Sequence(msa.SequenceID('seq3'),
                               [graph.SeqPath([*map(nid, [11, 13, 14, 15])])],
                               graph.SequenceMetadata({'group': '2'}))
         }
 
         expected_poagraph = graph.Poagraph(expected_nodes, expected_sequences)
-        nodes, sequences = po2poagraph.get_poagraph(multialignment.Po(pathtools.get_file_content_stringio(po_path), po_path),
+        nodes, sequences = po2poagraph.get_poagraph(msa.Po(pathtools.get_file_content_stringio(po_path), po_path),
                                                     self.metadatacsv)
         actual_poagraph = graph.Poagraph(nodes, sequences)
         self.assertEqual(expected_poagraph, actual_poagraph)
@@ -80,34 +80,34 @@ class Po2poagraphTests(unittest.TestCase):
                           ]
 
         expected_sequences = {
-            multialignment.SequenceID('seq0'):
-                graph.Sequence(multialignment.SequenceID('seq0'),
+            msa.SequenceID('seq0'):
+                graph.Sequence(msa.SequenceID('seq0'),
                               [graph.SeqPath([*map(nid, [0, 3, 4, 5, 6, 8])])],
                               graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq1'):
-                graph.Sequence(multialignment.SequenceID('seq1'),
+            msa.SequenceID('seq1'):
+                graph.Sequence(msa.SequenceID('seq1'),
                               [graph.SeqPath([*map(nid, [1, 2, 4, 5, 7, 8])])],
                               graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq2'):
-                graph.Sequence(multialignment.SequenceID('seq2'),
+            msa.SequenceID('seq2'):
+                graph.Sequence(msa.SequenceID('seq2'),
                               [],
                               graph.SequenceMetadata({'group': '2'})),
-            multialignment.SequenceID('seq3'):
-                graph.Sequence(multialignment.SequenceID('seq3'),
+            msa.SequenceID('seq3'):
+                graph.Sequence(msa.SequenceID('seq3'),
                               [],
                               graph.SequenceMetadata({'group': '2'})),
-            multialignment.SequenceID('CONSENS0'):
-                graph.Sequence(multialignment.SequenceID('CONSENS0'),
+            msa.SequenceID('CONSENS0'):
+                graph.Sequence(msa.SequenceID('CONSENS0'),
                               [graph.SeqPath([*map(nid, [0, 3, 4, 5, 7, 8])])],
                               graph.SequenceMetadata({})),
-            multialignment.SequenceID('CONSENS1'):
-                graph.Sequence(multialignment.SequenceID('CONSENS1'),
+            msa.SequenceID('CONSENS1'):
+                graph.Sequence(msa.SequenceID('CONSENS1'),
                               [graph.SeqPath([*map(nid, [1, 2, 4, 5, 6, 8])])],
                               graph.SequenceMetadata({}))
         }
 
         expected_poagraph = graph.Poagraph(expected_nodes, expected_sequences)
-        nodes, sequences = po2poagraph.get_poagraph(multialignment.Po(pathtools.get_file_content_stringio(po_path), po_path),
+        nodes, sequences = po2poagraph.get_poagraph(msa.Po(pathtools.get_file_content_stringio(po_path), po_path),
                                                     self.metadatacsv)
         actual_poagraph = graph.Poagraph(nodes, sequences)
         self.assertEqual(expected_poagraph, actual_poagraph)

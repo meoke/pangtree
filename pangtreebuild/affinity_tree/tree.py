@@ -5,7 +5,7 @@ from typing import List, NewType, Dict, Optional
 
 import newick
 from pangtreebuild.pangenome import graph
-from pangtreebuild.pangenome.parameters import multialignment
+from pangtreebuild.pangenome.parameters import msa
 
 AffinityNodeID = NewType('AffinityNodeID', int)
 
@@ -37,16 +37,16 @@ class AffinityNode(object):
                  id_: AffinityNodeID,
                  parent: Optional[AffinityNodeID] = None,
                  children: Optional[List[AffinityNodeID]] = None,
-                 sequences: Optional[List[multialignment.SequenceID]] = None,
+                 sequences: Optional[List[msa.SequenceID]] = None,
                  mincomp: Optional[graph.Compatibility] = None,
-                 compatibilities: Optional[Dict[multialignment.SequenceID, graph.Compatibility]] = None,
+                 compatibilities: Optional[Dict[msa.SequenceID, graph.Compatibility]] = None,
                  consensus: Optional[graph.SeqPath] = None):
         self.id_: AffinityNodeID = id_
         self.parent: AffinityNodeID = parent
         self.children: List[AffinityNodeID] = children if children else []
-        self.sequences: List[multialignment.SequenceID] = sequences if sequences else []
+        self.sequences: List[msa.SequenceID] = sequences if sequences else []
         self.mincomp: graph.Compatibility = mincomp if mincomp else graph.Compatibility(0)
-        self.compatibilities: Dict[multialignment.SequenceID, graph.Compatibility] = compatibilities if compatibilities else {}
+        self.compatibilities: Dict[msa.SequenceID, graph.Compatibility] = compatibilities if compatibilities else {}
         self.consensus: graph.SeqPath = consensus
 
     def __str__(self):
@@ -111,7 +111,7 @@ class AffinityTree(object):
             return AffinityNodeID(-1)
         return max([node.id_ for node in self.nodes])
 
-    def as_newick(self, seq_id_to_metadata: Dict[multialignment.SequenceID, graph.SequenceMetadata] = None, separate_leaves=False) -> str:
+    def as_newick(self, seq_id_to_metadata: Dict[msa.SequenceID, graph.SequenceMetadata] = None, separate_leaves=False) -> str:
         """Returns Affinity Tree in Newick format.
 
         Args:

@@ -6,7 +6,7 @@ from ddt import unpack, data, ddt
 from tests.context import graph, tree, at_builders, at_params, multialignment
 
 
-def sid(x): return multialignment.SequenceID(x)
+def sid(x): return msa.SequenceID(x)
 
 
 def nid(x): return graph.NodeID(x)
@@ -36,24 +36,24 @@ class AffinityTreeGenerationTests(unittest.TestCase):
                  ]
 
         sequences = {
-            multialignment.SequenceID('seq0'):
-                graph.Sequence(multialignment.SequenceID('seq0'),
+            msa.SequenceID('seq0'):
+                graph.Sequence(msa.SequenceID('seq0'),
                               [graph.SeqPath([*map(nid, [10, 11, 12, 13, 14, 15, 16, 17, 18, 9])])],
                               graph.SequenceMetadata({})),
-            multialignment.SequenceID('seq1'):
-                graph.Sequence(multialignment.SequenceID('seq1'),
+            msa.SequenceID('seq1'):
+                graph.Sequence(msa.SequenceID('seq1'),
                               [graph.SeqPath([*map(nid, [10, 11, 12, 13, 14, 15, 16, 17, 8, 9])])],
                               graph.SequenceMetadata({})),
-            multialignment.SequenceID('seq2'):
-                graph.Sequence(multialignment.SequenceID('seq2'),
+            msa.SequenceID('seq2'):
+                graph.Sequence(msa.SequenceID('seq2'),
                               [graph.SeqPath([*map(nid, [10, 11, 12, 13, 14, 15, 16, 7, 8, 9])])],
                               graph.SequenceMetadata({})),
-            multialignment.SequenceID('seq3'):
-                graph.Sequence(multialignment.SequenceID('seq3'),
+            msa.SequenceID('seq3'):
+                graph.Sequence(msa.SequenceID('seq3'),
                               [graph.SeqPath([*map(nid, [10, 11, 12, 3, 4, 5, 6, 7, 8, 9])])],
                               graph.SequenceMetadata({})),
-            multialignment.SequenceID('seq4'):
-                graph.Sequence(multialignment.SequenceID('seq3'),
+            msa.SequenceID('seq4'):
+                graph.Sequence(msa.SequenceID('seq3'),
                               [graph.SeqPath([*map(nid, [10, 11, 2, 3, 4, 5, 6, 7, 8, 9])])],
                               graph.SequenceMetadata({}))
         }

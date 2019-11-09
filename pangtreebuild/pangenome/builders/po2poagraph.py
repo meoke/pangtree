@@ -2,7 +2,7 @@ from collections import namedtuple
 from typing import List, Optional, Tuple, Dict
 
 from pangtreebuild.pangenome import graph
-from pangtreebuild.pangenome.parameters import multialignment
+from pangtreebuild.pangenome.parameters import msa
 
 
 POSequenceInfo = namedtuple('POSequenceInfo', ['name',
@@ -13,7 +13,7 @@ POSequenceInfo = namedtuple('POSequenceInfo', ['name',
                                                'additional_info'])
 
 
-def get_poagraph(po: multialignment.Po, metadataCsv: multialignment.MetadataCSV):
+def get_poagraph(po: msa.Po, metadataCsv: msa.MetadataCSV):
     """Returns poagraph elements based on multialignment PO file and metadata.
 
     Args:
@@ -39,7 +39,7 @@ def _extract_line_value(line: str) -> str:
 
 
 def _init_sequences(sequences_info: Dict[int, POSequenceInfo],
-                    metadata: Optional[multialignment.MetadataCSV]) -> Dict[multialignment.SequenceID, graph.Sequence]:
+                    metadata: Optional[msa.MetadataCSV]) -> Dict[msa.SequenceID, graph.Sequence]:
     metadata_sequences_ids = metadata.get_all_sequences_ids() if metadata else []
     po_sequences_ids = [seq_info.name for seq_info in sequences_info.values()]
     initial_sequences = {seq_id: graph.Sequence(seqid=seq_id,
@@ -61,7 +61,7 @@ def _get_sequences_info_from_po(po_lines: List[str]) -> Dict[int, POSequenceInfo
         detailed_info = _extract_line_value(detailed_info_line).split(' ')
         if len(detailed_info) < 5:
             raise Exception(f"Expeceted SOURCEINFO=[5 parameters]. Got {detailed_info_line} instead.")
-        sequences_info[po_seq_id] = POSequenceInfo(name=multialignment.SequenceID(path_name),
+        sequences_info[po_seq_id] = POSequenceInfo(name=msa.SequenceID(path_name),
                                                    nodes_count=detailed_info[0],
                                                    start_node=detailed_info[1],
                                                    weight=detailed_info[2],
@@ -73,8 +73,8 @@ def _get_sequences_info_from_po(po_lines: List[str]) -> Dict[int, POSequenceInfo
 
 def _get_poagraph_paths_and_nodes(po_lines: List[str],
                                   sequences_info: Dict[int, POSequenceInfo],
-                                  sequences: Dict[multialignment.SequenceID, graph.Sequence]) -> \
-        Tuple[List[graph.Node], Dict[multialignment.SequenceID, graph.Sequence]]:
+                                  sequences: Dict[msa.SequenceID, graph.Sequence]) -> \
+        Tuple[List[graph.Node], Dict[msa.SequenceID, graph.Sequence]]:
     nodes_count = int(_extract_line_value(po_lines[3]))
     paths_count = int(_extract_line_value(po_lines[4]))
     #todo uzupelniac kolumn id_

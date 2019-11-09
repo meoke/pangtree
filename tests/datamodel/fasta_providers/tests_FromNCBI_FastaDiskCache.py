@@ -20,7 +20,7 @@ class FromNCBI_FastaDiskCache_Tests(unittest.TestCase):
         if cache_dir_path.exists():
             shutil.rmtree(cache_dir_path)
 
-        sequence_id = multialignment.SequenceID("AB050936.1", skip_part_before_dot=False)
+        sequence_id = msa.SequenceID("AB050936.1", skip_part_before_dot=False)
 
         # cache directory creation
         cache_directory_created = cache_dir_path.exists()
@@ -48,7 +48,7 @@ class FromNCBI_FastaDiskCache_Tests(unittest.TestCase):
             shutil.rmtree(cache_dir_path)
 
         cache_dir_path.mkdir()
-        sequence_id = multialignment.SequenceID("seq1")
+        sequence_id = msa.SequenceID("seq1")
         fake_sequence = "foo"
         expected_base = graph.Base("o")
         fake_fasta_path = pathtools.get_child_path(cache_dir_path, f"{sequence_id}.fasta")

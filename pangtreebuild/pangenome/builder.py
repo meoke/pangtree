@@ -1,14 +1,14 @@
 from typing import Optional, Tuple
 
-from pangtreebuild.pangenome.parameters import multialignment
+from pangtreebuild.pangenome.parameters import msa
 from pangtreebuild.pangenome import graph
 from pangtreebuild.pangenome.builders import maf2poagraph, maf2dagmaf, dagmaf2poagraph, po2poagraph
 from pangtreebuild.pangenome.parameters import missings
 from pangtreebuild.pangenome import DAGMaf
 
 
-def build_from_maf(maf: multialignment.Maf,
-                   metadata: Optional[multialignment.MetadataCSV] = None,
+def build_from_maf(maf: msa.Maf,
+                   metadata: Optional[msa.MetadataCSV] = None,
                    datatype: Optional[graph.DataType] = graph.DataType.Nucleotides) -> graph.Poagraph:
     """Builds poagraph from MAF file.
 
@@ -29,10 +29,10 @@ def build_from_maf(maf: multialignment.Maf,
     return p
 
 
-def build_from_dagmaf(maf: multialignment.Maf,
+def build_from_dagmaf(maf: msa.Maf,
                       fasta_provider: Optional[missings.FastaProvider] = missings.ConstBaseProvider(
                           missings.MissingBase()),
-                      metadata: Optional[multialignment.MetadataCSV] = None,
+                      metadata: Optional[msa.MetadataCSV] = None,
                       datatype: Optional[graph.DataType] = graph.DataType.Nucleotides) -> Tuple[graph.Poagraph, DAGMaf.DAGMaf]:
     """Converts MAF to DagMaf and builds poagraph from MAF file.
 
@@ -55,8 +55,8 @@ def build_from_dagmaf(maf: multialignment.Maf,
     return p, dagmaf
 
 
-def build_from_po(po: multialignment.Po,
-                  metadata: Optional[multialignment.MetadataCSV] = None,
+def build_from_po(po: msa.Po,
+                  metadata: Optional[msa.MetadataCSV] = None,
                   datatype: Optional[graph.DataType] = graph.DataType.Nucleotides) -> graph.Poagraph:
     """Builds poagraph from PO file.
 
