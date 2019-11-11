@@ -337,4 +337,3 @@ class Poagraph(object):
             for h in headers:
                 if h not in seq.seqmetadata:
                     seq.seqmetadata[h] = None
-

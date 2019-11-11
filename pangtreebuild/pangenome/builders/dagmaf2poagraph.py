@@ -55,8 +55,9 @@ class _BuildState:
 
 def get_poagraph(dagmaf: DAGMaf.DAGMaf,
                  fasta_provider: missings.FastaProvider,
-                 metadata: Optional[msa.MetadataCSV]) -> Tuple[List[graph.Node], Dict[msa.SequenceID, graph.Sequence]]:
-    """Gets poagraph from given dagmaf using specified fasta_provider and metadata.
+                 metadata: Optional[msa.MetadataCSV]) -> \
+        Tuple[List[graph.Node], Dict[msa.SequenceID, graph.Sequence]]:
+    """Gets poagraph from given dagmaf using fasta_provider and metadata.
 
     Args:
         dagmaf: DagMaf that will be converted to Poagraph.
@@ -86,36 +87,42 @@ def get_poagraph(dagmaf: DAGMaf.DAGMaf,
 
 
 def _get_sequences_ids(dagmaf: DAGMaf.DAGMaf) -> List[msa.SequenceID]:
-    return list({msa.SequenceID(seq.id) for block in dagmaf.dagmaf_nodes for seq in block.alignment})
+    return list({msa.SequenceID(seq.id)
+                 for block in dagmaf.dagmaf_nodes
+                 for seq in block.alignment})
 
 
 def _init_sequences(sequences_in_dagmaf: List[msa.SequenceID],
-                    metadata: Optional[msa.MetadataCSV]) -> Dict[msa.SequenceID, graph.Sequence]:
+                    metadata: Optional[msa.MetadataCSV]) -> \
+        Dict[msa.SequenceID, graph.Sequence]:
     metadata_sequences_ids = metadata.get_all_sequences_ids() if metadata else []
     initial_sequences = {seq_id: graph.Sequence(seqid=seq_id,
-                                          paths=[],
-                                          seqmetadata=metadata.get_sequence_metadata(seq_id)
-                                          if metadata else {})
+                                                paths=[],
+                                                seqmetadata=metadata.get_sequence_metadata(seq_id)
+                                                if metadata else {})
                          for seq_id in set(sequences_in_dagmaf + metadata_sequences_ids)}
 
     return initial_sequences
 
 
-def _init_free_edges(maf_sequences_ids: List[msa.SequenceID]) -> Dict[msa.SequenceID, List[Edge]]:
+def _init_free_edges(maf_sequences_ids: List[msa.SequenceID]) -> \
+        Dict[msa.SequenceID, List[Edge]]:
     return {seq_id: [] for seq_id in maf_sequences_ids}
 
 
-def _get_seqs_info(dagmaf: DAGMaf.DAGMaf, sequences_in_dagmaf: List[msa.SequenceID]) -> Dict[msa.SequenceID, List[SequenceInfo]]:
+def _get_seqs_info(dagmaf: DAGMaf.DAGMaf,
+                   sequences_in_dagmaf: List[msa.SequenceID]) -> \
+        Dict[msa.SequenceID, List[SequenceInfo]]:
     seqs_info = {seq_id: [] for seq_id in sequences_in_dagmaf}
 
     for n in dagmaf.dagmaf_nodes:
         for seq in n.alignment:
             seqs_info[msa.SequenceID(seq.id)].append(SequenceInfo(block_id=graph.BlockID(n.id),
-                                                              start=start_position(seq),
-                                                              strand=seq.annotations["strand"],
-                                                              size=seq.annotations["size"],
-                                                              srcSize=seq.annotations["srcSize"],
-                                                              orient=n.orient))
+                                                                  start=start_position(seq),
+                                                                  strand=seq.annotations["strand"],
+                                                                  size=seq.annotations["size"],
+                                                                  srcSize=seq.annotations["srcSize"],
+                                                                  orient=n.orient))
     absents_sequences: List[msa.SequenceID] = []
     for seq_id, seq_info_list in seqs_info.items():
         if seq_info_list:
@@ -131,12 +138,15 @@ def _complement_starting_nodes(build_state: _BuildState) -> None:
     for seq_id, seq_info_list in build_state.seqs_info.items():
         first_block_sinfo = seq_info_list[0]
         if first_block_sinfo.start != 0:
-            _complement_sequence_starting_nodes(build_state, seq_id, first_block_sinfo)
+            _complement_sequence_starting_nodes(build_state,
+                                                seq_id,
+                                                first_block_sinfo)
 
 
 def _complement_sequence_starting_nodes(build_state: _BuildState,
                                         seq_id: msa.SequenceID,
-                                        first_block_sinfo: SequenceInfo) -> None:
+                                        first_block_sinfo: SequenceInfo) -> \
+        None:
     current_node_id: graph.NodeID = _get_max_node_id(build_state.nodes)
     column_id = -first_block_sinfo.start
     join_with = None
@@ -144,9 +154,12 @@ def _complement_sequence_starting_nodes(build_state: _BuildState,
         current_node_id += 1
         missing_nucleotide = _get_missing_nucleotide(build_state.fasta_provider, seq_id, i)
         build_state.nodes += [graph.Node(node_id=current_node_id,
-                                   base=missing_nucleotide,
-                                   column_id=column_id)]
-        _add_node_to_sequence(build_state, seq_id=seq_id, join_with=join_with, node_id=current_node_id)
+                                         base=missing_nucleotide,
+                                         column_id=column_id)]
+        _add_node_to_sequence(build_state,
+                              seq_id=seq_id,
+                              join_with=join_with,
+                              node_id=current_node_id)
         join_with = current_node_id
         column_id += 1
     build_state.free_edges[seq_id] += [Edge(seq_id=seq_id,
@@ -167,7 +180,6 @@ def _add_node_to_sequence(build_state: _BuildState,
                           seq_id: msa.SequenceID,
                           join_with: graph.NodeID,
                           node_id: graph.NodeID) -> None:
-    q = build_state.sequences[seq_id].paths
     if len(build_state.sequences[seq_id].paths) == 0 or join_with is None:
         build_state.sequences[seq_id].paths.append(graph.SeqPath([node_id]))
     else:
@@ -176,11 +188,11 @@ def _add_node_to_sequence(build_state: _BuildState,
                 path.append(node_id)
                 return
 
-        raise PoagraphBuildException("Cannot find path with specified last node id_.")
+        raise PoagraphBuildException("No path with specified last node id.")
 
 
 def _process_block(build_state: _BuildState, block: DAGMaf.DAGMafNode):
-    # global_logger.info(f"Processing block {block.id_}...")
+    global_logger.info(f"Processing block {block.id_}...")
     current_node_id = _get_max_node_id(build_state.nodes)
     block_width = len(block.alignment[0].seq)
     paths_join_info = _get_paths_join_info(block, build_state.free_edges)
@@ -188,17 +200,18 @@ def _process_block(build_state: _BuildState, block: DAGMaf.DAGMafNode):
     build_state.column_id = _get_max_column_id(build_state.nodes)
     for col in range(block_width):
         build_state.column_id += 1
-        sequence_name_to_nucleotide = {MafSequenceID(seq.id): seq[col] for seq in block.alignment}
+        sequence_name_to_nucleotide = {MafSequenceID(seq.id): seq[col] 
+                                       for seq in block.alignment}
         nodes_codes = _get_column_nucleotides_sorted_codes(sequence_name_to_nucleotide)
         column_nodes_ids = [current_node_id + i + 1 for i, _ in enumerate(nodes_codes)]
         for i, nucl in enumerate(nodes_codes):
             current_node_id += 1
             maf_seqs_id = [seq_id for seq_id, n in sequence_name_to_nucleotide.items() if n == nucl]
             build_state.nodes += [graph.Node(node_id=current_node_id,
-                                       base=graph.Base(nucl),
-                                       aligned_to=_get_next_aligned_node_id(i, column_nodes_ids),
-                                       column_id=build_state.column_id,
-                                       block_id=block.id)]
+                                             base=graph.Base(nucl),
+                                             aligned_to=_get_next_aligned_node_id(i, column_nodes_ids),
+                                             column_id=build_state.column_id,
+                                             block_id=block.id)]
 
             for maf_seq_id in maf_seqs_id:
                 seq_id = msa.SequenceID(maf_seq_id)
@@ -210,7 +223,8 @@ def _process_block(build_state: _BuildState, block: DAGMaf.DAGMafNode):
 
 
 def _get_paths_join_info(block: Block,
-                         free_edges: Dict[msa.SequenceID, List[Edge]]) -> Dict[msa.SequenceID, Optional[graph.NodeID]]:
+                         free_edges: Dict[msa.SequenceID, List[Edge]]) -> \
+        Dict[msa.SequenceID, Optional[graph.NodeID]]:
     paths_join_info: Dict[msa.SequenceID, Optional[graph.NodeID]] = dict()
     for seq in block.alignment:
         seq_id = msa.SequenceID(seq.id)
@@ -223,10 +237,12 @@ def _get_paths_join_info(block: Block,
 
 def _get_max_column_id(nodes: List[graph.Node]) -> graph.ColumnID:
     current_columns_ids = [node.column_id for node in nodes]
-    return max(current_columns_ids) if current_columns_ids else graph.ColumnID(-1)
+    return max(current_columns_ids) if current_columns_ids \
+        else graph.ColumnID(-1)
 
 
-def _get_column_nucleotides_sorted_codes(seq_to_nucl: Dict[msa.SequenceID, str]) -> List[str]:
+def _get_column_nucleotides_sorted_codes(seq_to_nucl: Dict[msa.SequenceID, str]) -> \
+        List[str]:
     return sorted(
         set(
             [nucleotide
@@ -235,7 +251,8 @@ def _get_column_nucleotides_sorted_codes(seq_to_nucl: Dict[msa.SequenceID, str])
              if nucleotide is not '-']))
 
 
-def _get_next_aligned_node_id(current_column_i, column_nodes_ids) -> Optional[graph.NodeID]:
+def _get_next_aligned_node_id(current_column_i, column_nodes_ids) -> \
+        Optional[graph.NodeID]:
     if len(column_nodes_ids) > 1:
         return column_nodes_ids[(current_column_i + 1) % len(column_nodes_ids)]
     return None
@@ -295,11 +312,14 @@ def _complement_sequence_middles_if_needed(build_state: _BuildState,
             current_node_id += 1
             missing_nucleotide = _get_missing_nucleotide(build_state.fasta_provider, seq_id, i)
             build_state.nodes += [graph.Node(node_id=current_node_id,
-                                       base=missing_nucleotide,
-                                       aligned_to=None,
-                                       column_id=column_id,
-                                       block_id=None)]
-            _add_node_to_sequence(build_state, seq_id=seq_id, join_with=join_with, node_id=current_node_id)
+                                             base=missing_nucleotide,
+                                             aligned_to=None,
+                                             column_id=column_id,
+                                             block_id=None)]
+            _add_node_to_sequence(build_state,
+                                  seq_id=seq_id,
+                                  join_with=join_with,
+                                  node_id=current_node_id)
             join_with = current_node_id
 
         if _should_join_with_next_node(edge.edge_type):
@@ -311,7 +331,8 @@ def _complement_sequence_middles_if_needed(build_state: _BuildState,
 def _get_edge_sinfos(seqs_info: Dict[msa.SequenceID, List[SequenceInfo]],
                      from_block_id: graph.BlockID,
                      edge: Arc,
-                     seq_id: msa.SequenceID) -> Tuple[SequenceInfo, SequenceInfo]:
+                     seq_id: msa.SequenceID) -> \
+        Tuple[SequenceInfo, SequenceInfo]:
     left_seq_info, right_seq_info = None, None
     for sinfo in seqs_info[seq_id]:
         if sinfo.block_id == from_block_id:
@@ -319,13 +340,16 @@ def _get_edge_sinfos(seqs_info: Dict[msa.SequenceID, List[SequenceInfo]],
         if sinfo.block_id == edge.to:
             right_seq_info = sinfo
     if left_seq_info is None or right_seq_info is None:
-        raise PoagraphBuildException(f"SequenceInfos for edge cannot be None. "
-                                     f"Left block is {left_seq_info}, right block is {right_seq_info}.")
+        raise PoagraphBuildException(f"""SequenceInfos for edge cannot be None.
+                                     Left block is {left_seq_info},
+                                     right block is {right_seq_info}.""")
     return left_seq_info, right_seq_info
 
 
-def _complementation_not_needed(left: SequenceInfo, right: SequenceInfo) -> bool:
-    return left.start + left.size == right.start or right.start + right.size == left.start
+def _complementation_not_needed(left: SequenceInfo, right: SequenceInfo) -> \
+        bool:
+    return left.start + left.size == right.start or \
+           right.start + right.size == left.start
 
 
 def _should_join_with_last_node(edge_type: Tuple[int, int]) -> bool:
@@ -334,8 +358,9 @@ def _should_join_with_last_node(edge_type: Tuple[int, int]) -> bool:
     elif edge_type == (-1, 1) or edge_type == (-1, -1):
         return False
     else:
-        raise PoagraphBuildException("Incorrect edge type."
-                                     "Cannot decide if sequence should be joined with complemented nucleotides.")
+        raise PoagraphBuildException("""Incorrect edge type.
+                                     Cannot decide if sequence should be joined
+                                     with complemented nucleotides.""")
 
 
 def _should_join_with_next_node(edge_type: Tuple[int, int]) -> bool:
@@ -344,11 +369,14 @@ def _should_join_with_next_node(edge_type: Tuple[int, int]) -> bool:
     elif edge_type == (1, 1):
         return False
     else:
-        raise PoagraphBuildException("Incorrect edge type."
-                                     "Cannot decide if complemented nucleotides must be joined with next block.")
+        raise PoagraphBuildException("""Incorrect edge type. Cannot decide if
+                                        complemented nucleotides must be joined
+                                        with next block.""")
 
 
-def _manage_endings(build_state: _BuildState, block: Block, join_info: Dict[msa.SequenceID, graph.NodeID]):
+def _manage_endings(build_state: _BuildState,
+                    block: Block,
+                    join_info: Dict[msa.SequenceID, graph.NodeID]):
     sequences_ending_in_this_block = _get_ending_sequences(build_state.seqs_info, block)
     for seq_id in sequences_ending_in_this_block:
         block_sinfo: SequenceInfo = _get_sinfo(build_state.seqs_info[seq_id], block.id)
@@ -395,7 +423,8 @@ def _complement_sequence_middle_nodes(build_state: _BuildState,
                                       seq_id: msa.SequenceID,
                                       last_pos,
                                       next_pos,
-                                      last_node_id: graph.NodeID) -> graph.NodeID:
+                                      last_node_id: graph.NodeID) -> \
+        graph.NodeID:
     current_node_id = _get_max_node_id(build_state.nodes)
     column_id = build_state.column_id
     join_with = last_node_id
@@ -404,11 +433,14 @@ def _complement_sequence_middle_nodes(build_state: _BuildState,
         current_node_id += 1
         missing_nucleotide = _get_missing_nucleotide(build_state.fasta_provider, seq_id, i)
         build_state.nodes += [graph.Node(node_id=current_node_id,
-                                   base=missing_nucleotide,
-                                   aligned_to=None,
-                                   column_id=column_id,
-                                   block_id=None)
+                                         base=missing_nucleotide,
+                                         aligned_to=None,
+                                         column_id=column_id,
+                                         block_id=None)
                               ]
-        _add_node_to_sequence(build_state, seq_id=seq_id, join_with=join_with, node_id=current_node_id)
+        _add_node_to_sequence(build_state,
+                              seq_id=seq_id,
+                              join_with=join_with,
+                              node_id=current_node_id)
         join_with = current_node_id
     return current_node_id

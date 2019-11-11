@@ -2,14 +2,18 @@ from typing import Optional, Tuple
 
 from pangtreebuild.pangenome.parameters import msa
 from pangtreebuild.pangenome import graph
-from pangtreebuild.pangenome.builders import maf2poagraph, maf2dagmaf, dagmaf2poagraph, po2poagraph
+from pangtreebuild.pangenome.builders import maf2poagraph,\
+                                             maf2dagmaf,\
+                                             dagmaf2poagraph,\
+                                             po2poagraph
 from pangtreebuild.pangenome.parameters import missings
 from pangtreebuild.pangenome import DAGMaf
 
 
 def build_from_maf(maf: msa.Maf,
                    metadata: Optional[msa.MetadataCSV] = None,
-                   datatype: Optional[graph.DataType] = graph.DataType.Nucleotides) -> graph.Poagraph:
+                   datatype: Optional[graph.DataType] = graph.DataType.Nucleotides) -> \
+        graph.Poagraph:
     """Builds poagraph from MAF file.
 
     Args:
@@ -33,7 +37,8 @@ def build_from_dagmaf(maf: msa.Maf,
                       fasta_provider: Optional[missings.FastaProvider] = missings.ConstBaseProvider(
                           missings.MissingBase()),
                       metadata: Optional[msa.MetadataCSV] = None,
-                      datatype: Optional[graph.DataType] = graph.DataType.Nucleotides) -> Tuple[graph.Poagraph, DAGMaf.DAGMaf]:
+                      datatype: Optional[graph.DataType] = graph.DataType.Nucleotides) -> \
+        Tuple[graph.Poagraph, DAGMaf.DAGMaf]:
     """Converts MAF to DagMaf and builds poagraph from MAF file.
 
     Args:
@@ -43,11 +48,14 @@ def build_from_dagmaf(maf: msa.Maf,
         datatype: Type of the processed data (nucleotides/proteins).
 
     Returns:
-        Tuple: poagraph based on given input data and dagmaf created from input MAF.
+        Tuple: poagraph based on given input data and dagmaf created
+            from input MAF.
     """
 
     dagmaf = maf2dagmaf.get_dagmaf(maf)
-    nodes, sequences = dagmaf2poagraph.get_poagraph(dagmaf, fasta_provider, metadata)
+    nodes, sequences = dagmaf2poagraph.get_poagraph(dagmaf,
+                                                    fasta_provider,
+                                                    metadata)
     p = graph.Poagraph(nodes, sequences)
     if metadata:
         graph.Poagraph.complement_metadata_for_sequences_absent_in_metadata_provided(p, metadata)
