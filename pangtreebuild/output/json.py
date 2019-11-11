@@ -8,7 +8,7 @@ from pangtreebuild.pangenome.DAGMaf import DAGMaf
 
 
 class TaskParameters:
-    """Describes all parameters provided for single execution of the PangtreeBuild program."""
+    """Parameters provided for single execution of the PangtreeBuild."""
 
     def __init__(self,
                  running_time: str = None,
@@ -64,7 +64,12 @@ class TaskParameters:
 class Node:
     """Describes node of Poagraph data structure."""
 
-    def __init__(self, node_id: int, base: str, column_id: int, block_id: int, aligned_to: int):
+    def __init__(self,
+                 node_id: int,
+                 base: str,
+                 column_id: int,
+                 block_id: int,
+                 aligned_to: int):
         self.id: int = node_id
         self.base: str = base
         self.column_id: int = column_id
@@ -88,7 +93,9 @@ class Sequence:
 
 class AffinityNode:
     """Describes node present in Affinity Tree.
-    It is connected with specific Poagraph structure as Poagraph nodes ids are listed here."""
+
+    It is connected with specific Poagraph structure as Poagraph nodes ids
+    are listed here."""
 
     def __init__(self,
                  affinity_node_id: int,
@@ -172,13 +179,16 @@ def to_PangenomeJSON(task_parameters: TaskParameters = None,
                            for node in poagraph.nodes]
 
         sorted_sequences_ids = sorted(poagraph.sequences.keys())
-        paths_seq_id_to_int_id = {seq_id: i for i, seq_id in enumerate(sorted_sequences_ids)}
+        paths_seq_id_to_int_id = {seq_id: i
+                                  for i, seq_id in enumerate(sorted_sequences_ids)}
         pangenome_sequences = [Sequence(sequence_int_id=paths_seq_id_to_int_id[seq_id],
                                         sequence_str_id=str(seq_id),
                                         metadata=poagraph.sequences[seq_id].seqmetadata,
                                         # nodes_ids=[]
-                                        nodes_ids=[path for path in poagraph.sequences[seq_id].paths
-                                                     ] if task_parameters.output_with_nodes else []
+                                        nodes_ids=[path
+                                                   for path in poagraph.sequences[seq_id].paths]
+                                                  if task_parameters.output_with_nodes
+                                                  else []
                                         )
                                for seq_id in sorted_sequences_ids]
 
@@ -247,8 +257,8 @@ def str_to_PangenomeJSON(s: str) -> PangenomeJSON:
         dagmaf_nodes = [MafNode(node_id=dagmaf_node['id_'],
                                 orient=dagmaf_node['orient'],
                                 out_edges=[MafEdge(edge_type=edge['edge_type'],
-                                                       sequences=edge['_sequences'],
-                                                       to_block=edge['to_block']) for edge in dagmaf_node['out_edges']])
+                                                   sequences=edge['sequences'],
+                                                   to_block=edge['to_block']) for edge in dagmaf_node['out_edges']])
                         for dagmaf_node in pangenome_dict['dagmaf_nodes']]
 
     if "nodes" in pangenome_dict:
@@ -276,8 +286,7 @@ def str_to_PangenomeJSON(s: str) -> PangenomeJSON:
                                           sequences_int_ids=consensus_node['sequences_int_ids'],
                                           poagraph_nodes_ids=consensus_node['nodes_ids'],
                                           mincomp=consensus_node['mincomp'])
-                             for consensus_node in pangenome_dict['affinitytree']]
-
+                              for consensus_node in pangenome_dict['affinitytree']]
 
     return PangenomeJSON(task_parameters,
                          pangenome_sequences,

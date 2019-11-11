@@ -25,23 +25,28 @@ class AffinityTreeBuildException(Exception):
     pass
 
 
-def build_poa_affinity_tree(poagraph: graph.Poagraph,
+def build_poa_affinity_tree(p: graph.Poagraph,
                             blosum: parameters.Blosum,
                             output_dir: Path,
                             hbmin: parameters.Hbmin,
                             verbose: bool) -> tree.AffinityTree:
     """Builds Affinity Tree coherent with poa software.
 
-    This method builds a simple version of Affinity Tree as it uses a single call to poa software.
-    Poa provides division of _sequences in Poagraph into consistent groups with a consensus path assigned to every group.
-    These groups are converted in this method to Affinity Tree nodes and connected with a dummy root node so the result
-    is coherent with pangtree definition of Affinity Tree.
+    This method builds a simple version of Affinity Tree
+    as it uses a single call to poa software. Poa provides
+    division of sequences in Poagraph into consistent groups
+    with a consensus path assigned to each group. These groups
+    are converted in this method to Affinity Tree nodes and
+    connected with a dummy root node so the result is coherent
+    with pangtree definition of Affinity Tree.
 
     Args:
-        poagraph: Poagraph containing _sequences to be divided into groups (Affinity Tree nodes).
+        p: Poagraph containing sequences to be divided into
+            groups (Affinity Tree nodes).
         blosum: BLOSUM matrix.
         output_dir: Path to a directory that can be used by poa software.
-        hbmin: Parameter required by poa software. The minimum value of sequence compatibility to generated consensus.
+        hbmin: Parameter required by poa software. The minimum value of
+            sequence compatibility to generated consensus.
         verbose: Switch to control logging intensity.
 
     Raises:
@@ -52,44 +57,50 @@ def build_poa_affinity_tree(poagraph: graph.Poagraph,
         assigned_sequences = []
         for c_id, c_info in consensus_paths.items():
             assigned_sequences += c_info.assigned_sequences_ids
-            compatibilities = poagraph.get_compatibilities(poagraph.get_sequences_ids(), c_info.path)
+            all_seq = p.get_sequences_ids()
+            compatibilities = p.get_compatibilities(all_seq, c_info.path)
             if len(c_info.assigned_sequences_ids):
-                mincomp = min([c for seq_id, c in compatibilities.items() if seq_id in c_info.assigned_sequences_ids])
+                assigned_seq_comp = [c
+                                     for seq_id, c in compatibilities.items()
+                                     if seq_id in c_info.assigned_sequences_ids]
+                mincomp = min(assigned_seq_comp)
             else:
                 mincomp = 0
-            at_nodes.append(tree.AffinityNode(id_=tree.AffinityNodeID(c_id + 1),
+            new_node = tree.AffinityNode(id_=tree.AffinityNodeID(c_id + 1),
                                          parent=tree.AffinityNodeID(0),
                                          sequences=c_info.assigned_sequences_ids,
                                          mincomp=mincomp,
                                          compatibilities=compatibilities,
                                          consensus=c_info.path,
-                                         children=[]))
+                                         children=[])
+            at_nodes.append(new_node)
 
         node_for_unassigned_sequences = tree.AffinityNode(parent=tree.AffinityNodeID(0),
-                                                     sequences=[seq_id
-                                                                for seq_id in poagraph.get_sequences_ids()
-                                                                if seq_id not in assigned_sequences],
-                                                     id_=tree.AffinityNodeID(len(at_nodes) + 1),
-                                                     mincomp=poagraph.Compatibility(0),
-                                                     children=[])
+                                                          sequences=[seq_id
+                                                                     for seq_id in p.get_sequences_ids()
+                                                                     if seq_id not in assigned_sequences],
+                                                          id_=tree.AffinityNodeID(len(at_nodes) + 1),
+                                                          mincomp=p.Compatibility(0),
+                                                          children=[])
         at_nodes.append(node_for_unassigned_sequences)
         return at_nodes
 
     global_logger.info("POA defined affinity tree generation started.")
-    _raise_error_if_invalid_poagraph(poagraph)
+    _raise_error_if_invalid_poagraph(p)
     try:
-        consensus_paths = poa.get_consensuses(poagraph,
-                                              poagraph.get_sequences_ids(),
+        consensus_paths = poa.get_consensuses(p,
+                                              p.get_sequences_ids(),
                                               output_dir,
                                               "poa_tree",
                                               blosum.filepath,
                                               hbmin)
     except poa.NoConsensusError:
-        raise AffinityTreeBuildException("Cannot find consensus in given Affinity Tree.")
+        raise AffinityTreeBuildException("No consensus in the Affinity Tree.")
 
     consensus_nodes = _convert_consensus_paths_to_affinity_tree_nodes()
     root_node = tree.AffinityNode(id_=tree.AffinityNodeID(0),
-                             children=[consensus_node.id_ for consensus_node in consensus_nodes])
+                                  children=[c_node.id_
+                                            for c_node in consensus_nodes])
     affinity_tree = tree.AffinityTree([root_node] + consensus_nodes)
     global_logger.info("POA defined affinity tree generation started.")
     return affinity_tree
@@ -101,17 +112,22 @@ def build_affinity_tree(poagraph: graph.Poagraph,
                         stop: parameters.Stop,
                         p: parameters.P,
                         verbose: bool) -> tree.AffinityTree:
-    """Builds Affinity Tree as defined in paper 'Getting insight into the pan-genome structure with Pangtree'.
+    """Builds Affinity Tree.
 
-    This method builds an Affinity Tree by iterative calls to poa software. Full algorithm and idea are described in
-    the above-mentioned paper.
+    Affinity Tree is defined in paper 'Getting insight into the
+    pan-genome structure with Pangtree'. This method builds
+    an Affinity Tree by iterative calls to poa software.
+    Full algorithm and idea are described in the above-mentioned paper.
 
     Args:
-        poagraph: Poagraph containing _sequences to be divided into groups (Affinity Tree nodes).
+        poagraph: Poagraph containing _sequences to be divided into groups
+            (Affinity Tree nodes).
         blosum: BLOSUM matrix.
         output_dir: Path to a directory that can be used by poa software.
-        stop: Value of mincomp above which the affinity tree node is no more split.
-        p: Value changing the linear meaning of compatibility when searching for cutoff.
+        stop: Value of mincomp above which an affinity tree node is no more
+            split.
+        p: Value changing the linear meaning of compatibility when searching
+            for cutoff.
         verbose: Switch to control logging intensity.
 
     Raises:
@@ -123,7 +139,10 @@ def build_affinity_tree(poagraph: graph.Poagraph,
 
     global_logger.info("Affinity Tree generation started.")
     if verbose:
-        logprocess.add_file_handler_to_logger(output_dir, "tresholdsCSV", "tresholds.csv", "%(message)s", False)
+        logprocess.add_file_handler_to_logger(output_dir,
+                                              "tresholdsCSV",
+                                              "tresholds.csv",
+                                              "%(message)s", False)
     _raise_error_if_invalid_poagraph(poagraph)
 
     root_node = _get_root_node(poagraph, blosum.filepath, output_dir, p)
@@ -134,16 +153,17 @@ def build_affinity_tree(poagraph: graph.Poagraph,
         node = nodes_to_process.pop()
 
         children_nodes = _get_children_nodes_looping(node,
-                                            poagraph,
-                                            output_dir,
-                                            blosum.filepath,
-                                            p,
-                                            affinity_tree.get_max_node_id())
+                                                     poagraph,
+                                                     output_dir,
+                                                     blosum.filepath,
+                                                     p,
+                                                     affinity_tree.get_max_node_id())
         if len(children_nodes) == 1:
             continue
 
         for child in children_nodes:
-            child.compatibilities = poagraph.get_compatibilities(sequences_ids=[*poagraph.sequences.keys()],
+            all_sequences = [*poagraph.sequences.keys()]
+            child.compatibilities = poagraph.get_compatibilities(sequences_ids=all_sequences,
                                                                  consensus_path=child.consensus,
                                                                  p=p)
             node.children.append(child.id_)
@@ -158,22 +178,26 @@ def _raise_error_if_invalid_poagraph(poagraph: graph.Poagraph) -> None:
     """Checks if any sequence is present in the input poagraph.
 
     Args:
-        poagraph: Poagraph which is input to the Affinity Tree generation algorithm.
+        poagraph: Affinity Tree generation algorithm input poagraph.
     Raises:
-        AffinityTreeGenerationException: If no sequence is present in the poagraph.
+        AffinityTreeGenerationException: If no sequence is present
+            in the poagraph.
     """
 
     if len(poagraph.sequences) == 0:
-        raise AffinityTreeBuildException("Invalid poagraph."
-                                              "No paths in poagraph."
-                                              "Affinity Tree generation is impossible.")
+        raise AffinityTreeBuildException("""Invalid poagraph. No paths in
+                                            poagraph. Impossible Affinity
+                                            Tree generation.""")
 
 
 def _get_root_node(poagraph: graph.Poagraph,
                    blosum_path: Path,
                    output_dir: Path,
                    p: parameters.P) -> tree.AffinityNode:
-    """Creates root node of the Affinity Tree with assigned consensus path and all _sequences."""
+    """Creates root node of the Affinity Tree.
+
+    The node has assigned a consensus path and
+    all sequences present in poagraph."""
 
     detailed_logger.info("Getting the root affinity node...")
     all_poagraph_sequences_ids = poagraph.get_sequences_ids()
@@ -191,10 +215,10 @@ def _get_root_node(poagraph: graph.Poagraph,
                                                    consensus_paths[0].path,
                                                    p=p)
     affinity_node = tree.AffinityNode(id_=tree.AffinityNodeID(0),
-                                 sequences=[*poagraph.sequences.keys()],
-                                 mincomp=_get_min_comp(all_poagraph_sequences_ids, compatibilities),
-                                 compatibilities=compatibilities,
-                                 consensus=consensus_paths[0].path)
+                                      sequences=[*poagraph.sequences.keys()],
+                                      mincomp=_get_min_comp(all_poagraph_sequences_ids, compatibilities),
+                                      compatibilities=compatibilities,
+                                      consensus=consensus_paths[0].path)
     detailed_logger.info(f"New affinity node created: {str(affinity_node)}")
     return affinity_node
 
@@ -209,7 +233,8 @@ def _get_children_nodes_looping(node: tree.AffinityNode,
 
     children_nodes: List[tree.AffinityNode] = []
     not_assigned_sequences_ids: List[msa.SequenceID] = node.sequences
-    detailed_logger.info(f"Getting children nodes for affinity node {node.id_}...")
+    detailed_logger.info(f"""Getting children nodes for
+                             affinity node {node.id_}...""")
 
     affinity_node_id = 0
     so_far_cutoffs: List[poagraph.Compatibility] = []
@@ -261,18 +286,21 @@ def _get_children_nodes_looping(node: tree.AffinityNode,
 
 
 def _get_min_comp(node_sequences_ids: List[msa.SequenceID],
-                  comps_to_consensus: Dict[msa.SequenceID, graph.Compatibility]) -> graph.Compatibility:
+                  comps_to_consensus: Dict[msa.SequenceID,
+                                           graph.Compatibility]) -> graph.Compatibility:
     """Find minimum compatibility from the compatibilities of given _sequences.
 
     Args:
-        node_sequences_ids: List of _sequences IDs that the search is limited to.
+        node_sequences_ids: List of sequences IDs that the search
+            is limited to.
         comps_to_consensus: Source of compatibilities values.
 
     Returns:
         The minimum compatibility.
 
     Raises:
-        AffinityTreeBuildException: If sequence IDs from the list can be found in the compatibilities dictionary.
+        AffinityTreeBuildException: If sequence IDs from the list can be found
+            in the compatibilities dictionary.
     """
 
     compatibilities_of_node_sequences = [comp
@@ -280,15 +308,17 @@ def _get_min_comp(node_sequences_ids: List[msa.SequenceID],
                                          in comps_to_consensus.items()
                                          if seq_id in node_sequences_ids]
     if not compatibilities_of_node_sequences:
-        raise AffinityTreeBuildException("Cannot provide mincomp."
-                                         "No _sequences assigned to this affinity node.")
+        raise AffinityTreeBuildException("""No mincomp because no sequences are
+                                            assigned to this affinity node.""")
     return min(compatibilities_of_node_sequences)
 
 
 def _get_qualified_sequences_ids_and_cutoff(compatibilities_to_max_c: Dict[msa.SequenceID, graph.Compatibility],
                                             so_far_cutoffs: List[graph.Compatibility], splitted_node_id) \
         -> Tuple[List[msa.SequenceID], graph.Compatibility]:
-    """Choose _sequences qualified to be enclosed in single node based on their compatibilities values."""
+    """Choose sequences qualified to be enclosed in single node.
+
+    The choice is based on their compatibilities values."""
 
     node_cutoff = _find_node_cutoff(compatibilities=[*compatibilities_to_max_c.values()],
                                     so_far_cutoffs=so_far_cutoffs)
@@ -301,7 +331,9 @@ def _get_qualified_sequences_ids_and_cutoff(compatibilities_to_max_c: Dict[msa.S
 
 
 def _node_is_ready(node: tree.AffinityNode, stop: parameters.Stop) -> bool:
-    """Checks if the node should be further split based on Stop parameter and count of _sequences assigned.
+    """Checks if the node should be further split.
+
+    The decision is based on Stop parameter and count of sequences assigned.
 
     Args:
         node: Node to be checked.
@@ -312,7 +344,8 @@ def _node_is_ready(node: tree.AffinityNode, stop: parameters.Stop) -> bool:
     """
 
     if len(node.sequences) == 1 or node.mincomp.base_value() >= stop:
-        detailed_logger.info(f"Node {node.id_} satisfied requirements and won't be split!")
+        detailed_logger.info(f"""Node {node.id_} satisfied requirements
+                                 and won't be split!""")
         return True
     return False
 
@@ -339,7 +372,8 @@ def _find_node_cutoff(compatibilities: List[graph.Compatibility],
 
     Args:
         compatibilities: List of compatibilities to be searched.
-        so_far_cutoffs: Cutoffs from previous children from node being currently split.
+        so_far_cutoffs: Cutoffs from previous children from node
+            being currently split.
 
     Returns:
          The cutoff and the explanationo as _FindCutoffResult.
@@ -368,10 +402,12 @@ def _find_max_distance(compatibilities: List[graph.Compatibility]) -> graph.Comp
     """Sorts compatibilities and searches for the largest gap.
 
     Args:
-        compatibilities: List of compatibilities to be searched for the distance.
+        compatibilities: List of compatibilities to be searched
+            for the distance.
 
     Returns:
-        The first compatibility value after the largest gap in sorted compatibilities.
+        The first compatibility value after the largest gap
+            in sorted compatibilities.
 
     Raises:
         ValueError: If provided compatibilities list is empty.
@@ -393,13 +429,18 @@ def _find_max_distance(compatibilities: List[graph.Compatibility]) -> graph.Comp
 
 def _get_sequences_ids_above_cutoff(compatibilities: Dict[msa.SequenceID, graph.Compatibility],
                                     cutoff: graph.Compatibility) -> List[msa.SequenceID]:
-    """Filters the Seuqences IDs to find the ones with compatibility above required treshold.
+    """Returns Seuqences IDs with compatibility above required treshold.
 
     Args:
-        compatibilities: Dictionary of _sequences IDs and corresponding compatibilities.
-        cutoff: Required minimum compatibility value of the qualified _sequences.
+        compatibilities: Dictionary of _sequences IDs and corresponding
+            compatibilities.
+        cutoff: Required minimum compatibility value of the qualified
+            sequences.
 
     Returns:
-        List of Sequences IDs that have greater compatibility than required cutoff value.
+        List of Sequences IDs that have greater compatibility than required
+            cutoff value.
     """
-    return [seq_id for seq_id, comp in compatibilities.items() if comp >= cutoff and seq_id != msa.SequenceID("parent")]
+    return [seq_id
+            for seq_id, comp in compatibilities.items()
+            if comp >= cutoff and seq_id != msa.SequenceID("parent")]
