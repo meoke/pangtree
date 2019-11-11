@@ -4,7 +4,7 @@ from pathlib import Path
 
 from ddt import ddt
 
-from tests.context import missings, graph, multialignment
+from tests.context import missings, graph, msa
 from tests.context import pathtools
 
 
@@ -15,7 +15,7 @@ class FromNCBI_FastaDiskCache_Tests(unittest.TestCase):
 
     @unittest.skip('Internet connection required -> long execution')
     def test_1_download_sequence_and_save_to_cache(self):
-        fasta_provider = missings.FromNCBI(use_cache=True)
+        _ = missings.FromNCBI(use_cache=True)
         cache_dir_path = pathtools.get_child_path(Path.cwd(), ".fastacache")
         if cache_dir_path.exists():
             shutil.rmtree(cache_dir_path)

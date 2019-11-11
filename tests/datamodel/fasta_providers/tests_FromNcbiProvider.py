@@ -3,7 +3,7 @@ from pathlib import Path
 
 from ddt import unpack, data, ddt
 
-from tests.context import missings, graph, multialignment
+from tests.context import missings, msa
 
 
 @ddt
@@ -33,7 +33,7 @@ class FromNCBITests(unittest.TestCase):
         fasta_provider = missings.FromNCBI(use_cache=False)
         sequence_id = ""
         with self.assertRaises(Exception) as err:
-            _ = fasta_provider._download_from_ncbi(SequenceID(sequence_id))
+            _ = fasta_provider._download_from_ncbi(msa.SequenceID(sequence_id))
             self.assertEqual(str(err), f"Cannot download from Entrez sequence of ID: {sequence_id}")
 
     @data((msa.SequenceID("plain", False), "plain"),
@@ -41,7 +41,9 @@ class FromNCBITests(unittest.TestCase):
           (msa.SequenceID("with.two.dots", False), "with.two.dots"),
           (msa.SequenceID("withv1", False), "with.1"))
     @unpack
-    def test_3_guess_entrez_id(self, sequenceID: msa.SequenceID, expected_guessed_entrez_id: str):
+    def test_3_guess_entrez_id(self,
+                               sequenceID: msa.SequenceID,
+                               expected_guessed_entrez_id: str):
         fasta_provider = missings.FromNCBI(use_cache=False)
         actual_guessed_entrez_id = fasta_provider._guess_ncbi_sequence_id(sequenceID)
 

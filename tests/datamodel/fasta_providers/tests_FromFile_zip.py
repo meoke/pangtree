@@ -2,7 +2,7 @@ import unittest
 from pathlib import Path
 
 
-from tests.context import missings, graph, multialignment
+from tests.context import missings, graph, msa
 
 
 class FromFileFastaProviderFastaTests(unittest.TestCase):

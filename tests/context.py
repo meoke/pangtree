@@ -1,12 +1,14 @@
 import os
 import sys
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../pangtreebuild')))
-
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                                '../pangtreebuild')))
 
 from pangtreebuild.pangenome import graph
 from pangtreebuild.pangenome import builder
 from pangtreebuild.pangenome.parameters import msa
-from pangtreebuild.pangenome.builders import maf2poagraph, dagmaf2poagraph, po2poagraph
+from pangtreebuild.pangenome.builders import maf2poagraph
+from pangtreebuild.pangenome.builders import dagmaf2poagraph
+from pangtreebuild.pangenome.builders import po2poagraph
 import pangtreebuild.tools.pathtools as pathtools
 from pangtreebuild.pangenome.parameters import missings
 

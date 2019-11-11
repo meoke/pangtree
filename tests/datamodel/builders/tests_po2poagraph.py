@@ -1,7 +1,7 @@
 import unittest
 from pathlib import Path
 
-from tests.context import multialignment, graph, pathtools, po2poagraph
+from tests.context import msa, graph, pathtools, po2poagraph
 
 
 def nid(x): return graph.NodeID(x)
@@ -43,20 +43,20 @@ class Po2poagraphTests(unittest.TestCase):
         expected_sequences = {
             msa.SequenceID('seq0'):
                 graph.Sequence(msa.SequenceID('seq0'),
-                              [graph.SeqPath([*map(nid, [0, 2, 4, 6, 7, 8, 12, 14, 16])])],
-                              graph.SequenceMetadata({'group': '1'})),
+                               [graph.SeqPath([*map(nid, [0, 2, 4, 6, 7, 8, 12, 14, 16])])],
+                               graph.SequenceMetadata({'group': '1'})),
             msa.SequenceID('seq1'):
                 graph.Sequence(msa.SequenceID('seq1'),
-                              [graph.SeqPath([*map(nid, [1, 2, 5, 6, 7, 9])])],
-                              graph.SequenceMetadata({'group': '1'})),
+                               [graph.SeqPath([*map(nid, [1, 2, 5, 6, 7, 9])])],
+                               graph.SequenceMetadata({'group': '1'})),
             msa.SequenceID('seq2'):
                 graph.Sequence(msa.SequenceID('seq2'),
-                              [graph.SeqPath([*map(nid, [3, 4, 6, 7, 10, 12, 14, 17])])],
-                              graph.SequenceMetadata({'group': '2'})),
+                               [graph.SeqPath([*map(nid, [3, 4, 6, 7, 10, 12, 14, 17])])],
+                               graph.SequenceMetadata({'group': '2'})),
             msa.SequenceID('seq3'):
                 graph.Sequence(msa.SequenceID('seq3'),
-                              [graph.SeqPath([*map(nid, [11, 13, 14, 15])])],
-                              graph.SequenceMetadata({'group': '2'}))
+                               [graph.SeqPath([*map(nid, [11, 13, 14, 15])])],
+                               graph.SequenceMetadata({'group': '2'}))
         }
 
         expected_poagraph = graph.Poagraph(expected_nodes, expected_sequences)
@@ -82,28 +82,28 @@ class Po2poagraphTests(unittest.TestCase):
         expected_sequences = {
             msa.SequenceID('seq0'):
                 graph.Sequence(msa.SequenceID('seq0'),
-                              [graph.SeqPath([*map(nid, [0, 3, 4, 5, 6, 8])])],
-                              graph.SequenceMetadata({'group': '1'})),
+                               [graph.SeqPath([*map(nid, [0, 3, 4, 5, 6, 8])])],
+                               graph.SequenceMetadata({'group': '1'})),
             msa.SequenceID('seq1'):
                 graph.Sequence(msa.SequenceID('seq1'),
-                              [graph.SeqPath([*map(nid, [1, 2, 4, 5, 7, 8])])],
-                              graph.SequenceMetadata({'group': '1'})),
+                               [graph.SeqPath([*map(nid, [1, 2, 4, 5, 7, 8])])],
+                               graph.SequenceMetadata({'group': '1'})),
             msa.SequenceID('seq2'):
                 graph.Sequence(msa.SequenceID('seq2'),
-                              [],
-                              graph.SequenceMetadata({'group': '2'})),
+                               [],
+                               graph.SequenceMetadata({'group': '2'})),
             msa.SequenceID('seq3'):
                 graph.Sequence(msa.SequenceID('seq3'),
-                              [],
-                              graph.SequenceMetadata({'group': '2'})),
+                               [],
+                               graph.SequenceMetadata({'group': '2'})),
             msa.SequenceID('CONSENS0'):
                 graph.Sequence(msa.SequenceID('CONSENS0'),
-                              [graph.SeqPath([*map(nid, [0, 3, 4, 5, 7, 8])])],
-                              graph.SequenceMetadata({})),
+                               [graph.SeqPath([*map(nid, [0, 3, 4, 5, 7, 8])])],
+                               graph.SequenceMetadata({})),
             msa.SequenceID('CONSENS1'):
                 graph.Sequence(msa.SequenceID('CONSENS1'),
-                              [graph.SeqPath([*map(nid, [1, 2, 4, 5, 6, 8])])],
-                              graph.SequenceMetadata({}))
+                               [graph.SeqPath([*map(nid, [1, 2, 4, 5, 6, 8])])],
+                               graph.SequenceMetadata({}))
         }
 
         expected_poagraph = graph.Poagraph(expected_nodes, expected_sequences)

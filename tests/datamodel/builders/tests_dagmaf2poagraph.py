@@ -1,7 +1,7 @@
 import unittest
 from pathlib import Path
 
-from ...context import graph, missings, multialignment, builder
+from ...context import graph, missings, msa, builder
 from ...context import pathtools
 
 
@@ -38,20 +38,20 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
         expected_sequences = {
             msa.SequenceID('seq0'):
                 graph.Sequence(msa.SequenceID('seq0'),
-                              [graph.SeqPath([*map(nid, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])])],
-                              graph.SequenceMetadata({'group': '1'})),
+                               [graph.SeqPath([*map(nid, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])])],
+                               graph.SequenceMetadata({'group': '1'})),
             msa.SequenceID('seq1'):
                 graph.Sequence(msa.SequenceID('seq1'),
-                              [graph.SeqPath([*map(nid, [0, 1, 2, 3, 4, 5, 6, 7, 8])])],
-                              graph.SequenceMetadata({'group': '1'})),
+                               [graph.SeqPath([*map(nid, [0, 1, 2, 3, 4, 5, 6, 7, 8])])],
+                               graph.SequenceMetadata({'group': '1'})),
             msa.SequenceID('seq2'):
                 graph.Sequence(msa.SequenceID('seq2'),
-                              [],
-                              graph.SequenceMetadata({'group': '2'})),
+                               [],
+                               graph.SequenceMetadata({'group': '2'})),
             msa.SequenceID('seq3'):
                 graph.Sequence(msa.SequenceID('seq3'),
-                              [],
-                              graph.SequenceMetadata({'group': '2'})),
+                               [],
+                               graph.SequenceMetadata({'group': '2'})),
         }
         expected_poagraph = graph.Poagraph(expected_nodes, expected_sequences)
         actual_poagraph, _ = builder.build_from_dagmaf(
@@ -79,21 +79,21 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
         expected_sequences = {
             msa.SequenceID('seq0'):
                 graph.Sequence(msa.SequenceID('seq0'),
-                              [graph.SeqPath([*map(nid, [0, 2, 4, 7, 8])])],
-                              graph.SequenceMetadata({'group': '1'})),
+                               [graph.SeqPath([*map(nid, [0, 2, 4, 7, 8])])],
+                               graph.SequenceMetadata({'group': '1'})),
             msa.SequenceID('seq1'):
                 graph.Sequence(msa.SequenceID('seq1'),
-                              [graph.SeqPath([*map(nid, [1, 3])]),
-                               graph.SeqPath([*map(nid, [5, 6])])],
-                              graph.SequenceMetadata({'group': '1'})),
+                               [graph.SeqPath([*map(nid, [1, 3])]),
+                                graph.SeqPath([*map(nid, [5, 6])])],
+                               graph.SequenceMetadata({'group': '1'})),
             msa.SequenceID('seq2'):
                 graph.Sequence(msa.SequenceID('seq2'),
-                              [],
-                              graph.SequenceMetadata({'group': '2'})),
+                               [],
+                               graph.SequenceMetadata({'group': '2'})),
             msa.SequenceID('seq3'):
                 graph.Sequence(msa.SequenceID('seq3'),
-                              [],
-                              graph.SequenceMetadata({'group': '2'})),
+                               [],
+                               graph.SequenceMetadata({'group': '2'})),
         }
         expected_poagraph = graph.Poagraph(expected_nodes, expected_sequences)
         actual_poagraph, _ = builder.build_from_dagmaf(
@@ -104,7 +104,8 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
         self.assertEqual(expected_poagraph, actual_poagraph)
 
     def test_02_seq_starts_in_second_block(self):
-        maf_path = Path(self.maf_files_dir + "test_2_seq_starts_in_second_block.maf")
+        maf_path = Path(self.maf_files_dir +
+                        "test_2_seq_starts_in_second_block.maf")
 
         expected_nodes = [
             graph.Node(node_id=nid(0), base=graph.Base('C'), aligned_to=None, block_id=bid(0)),
@@ -124,20 +125,20 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
         expected_sequences = {
             msa.SequenceID('seq0'):
                 graph.Sequence(msa.SequenceID('seq0'),
-                              [graph.SeqPath([*map(nid, [1, 2, 3])])],
-                              graph.SequenceMetadata({'group': '1'})),
+                               [graph.SeqPath([*map(nid, [1, 2, 3])])],
+                               graph.SequenceMetadata({'group': '1'})),
             msa.SequenceID('seq1'):
                 graph.Sequence(msa.SequenceID('seq1'),
-                              [graph.SeqPath([*map(nid, [0, 5, 7])])],
-                              graph.SequenceMetadata({'group': '1'})),
+                               [graph.SeqPath([*map(nid, [0, 5, 7])])],
+                               graph.SequenceMetadata({'group': '1'})),
             msa.SequenceID('seq2'):
                 graph.Sequence(msa.SequenceID('seq2'),
-                              [graph.SeqPath([*map(nid, [3, 4, 6, 8])])],
-                              graph.SequenceMetadata({'group': '2'})),
+                               [graph.SeqPath([*map(nid, [3, 4, 6, 8])])],
+                               graph.SequenceMetadata({'group': '2'})),
             msa.SequenceID('seq3'):
                 graph.Sequence(msa.SequenceID('seq3'),
-                              [],
-                              graph.SequenceMetadata({'group': '2'}))
+                               [],
+                               graph.SequenceMetadata({'group': '2'}))
         }
         expected_poagraph = graph.Poagraph(expected_nodes, expected_sequences)
         actual_poagraph, _ = builder.build_from_dagmaf(
@@ -164,20 +165,20 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
         expected_sequences = {
             msa.SequenceID('seq0'):
                 graph.Sequence(msa.SequenceID('seq0'),
-                              [],
-                              graph.SequenceMetadata({'group': '1'})),
+                               [],
+                               graph.SequenceMetadata({'group': '1'})),
             msa.SequenceID('seq1'):
                 graph.Sequence(msa.SequenceID('seq1'),
-                              [graph.SeqPath([*map(nid, [0, 1, 3, 4, 6, 7])])],
-                              graph.SequenceMetadata({'group': '1'})),
+                               [graph.SeqPath([*map(nid, [0, 1, 3, 4, 6, 7])])],
+                               graph.SequenceMetadata({'group': '1'})),
             msa.SequenceID('seq2'):
                 graph.Sequence(msa.SequenceID('seq2'),
-                              [graph.SeqPath([*map(nid, [0, 1, 2, 3, 5])])],
-                              graph.SequenceMetadata({'group': '2'})),
+                               [graph.SeqPath([*map(nid, [0, 1, 2, 3, 5])])],
+                               graph.SequenceMetadata({'group': '2'})),
             msa.SequenceID('seq3'):
                 graph.Sequence(msa.SequenceID('seq3'),
-                              [],
-                              graph.SequenceMetadata({'group': '2'}))
+                               [],
+                               graph.SequenceMetadata({'group': '2'}))
         }
         expected_poagraph = graph.Poagraph(expected_nodes, expected_sequences)
         actual_poagraph, _ = builder.build_from_dagmaf(
@@ -188,27 +189,28 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
         self.assertEqual(expected_poagraph, actual_poagraph)
 
     def test_04_single_block_no_nucleotides(self):
-        maf_path = Path(self.maf_files_dir + "test_4_single_block_no_nucleotides.maf")
+        maf_path = Path(self.maf_files_dir +
+                        "test_4_single_block_no_nucleotides.maf")
 
         expected_nodes = []
 
         expected_sequences = {
             msa.SequenceID('seq0'):
                 graph.Sequence(msa.SequenceID('seq0'),
-                              [],
-                              graph.SequenceMetadata({'group': '1'})),
+                               [],
+                               graph.SequenceMetadata({'group': '1'})),
             msa.SequenceID('seq1'):
                 graph.Sequence(msa.SequenceID('seq1'),
-                              [],
-                              graph.SequenceMetadata({'group': '1'})),
+                               [],
+                               graph.SequenceMetadata({'group': '1'})),
             msa.SequenceID('seq2'):
                 graph.Sequence(msa.SequenceID('seq2'),
-                              [],
-                              graph.SequenceMetadata({'group': '2'})),
+                               [],
+                               graph.SequenceMetadata({'group': '2'})),
             msa.SequenceID('seq3'):
                 graph.Sequence(msa.SequenceID('seq3'),
-                              [],
-                              graph.SequenceMetadata({'group': '2'}))
+                               [],
+                               graph.SequenceMetadata({'group': '2'}))
         }
         expected_poagraph = graph.Poagraph(expected_nodes, expected_sequences)
         actual_poagraph, _ = builder.build_from_dagmaf(
@@ -219,7 +221,8 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
         self.assertEqual(expected_poagraph, actual_poagraph)
 
     def test_05_single_block_single_nucletodide(self):
-        maf_path = Path(self.maf_files_dir + "test_5_single_block_single_nucletodide.maf")
+        maf_path = Path(self.maf_files_dir +
+                        "test_5_single_block_single_nucletodide.maf")
 
         expected_nodes = [
             graph.Node(node_id=nid(0), base=graph.Base('A'), aligned_to=None, block_id=bid(0))
@@ -228,20 +231,20 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
         expected_sequences = {
             msa.SequenceID('seq0'):
                 graph.Sequence(msa.SequenceID('seq0'),
-                              [graph.SeqPath([*map(nid, [0])])],
-                              graph.SequenceMetadata({'group': '1'})),
+                               [graph.SeqPath([*map(nid, [0])])],
+                               graph.SequenceMetadata({'group': '1'})),
             msa.SequenceID('seq1'):
                 graph.Sequence(msa.SequenceID('seq1'),
-                              [graph.SeqPath([*map(nid, [0])])],
-                              graph.SequenceMetadata({'group': '1'})),
+                               [graph.SeqPath([*map(nid, [0])])],
+                               graph.SequenceMetadata({'group': '1'})),
             msa.SequenceID('seq2'):
                 graph.Sequence(msa.SequenceID('seq2'),
-                              [graph.SeqPath([*map(nid, [0])])],
-                              graph.SequenceMetadata({'group': '2'})),
+                               [graph.SeqPath([*map(nid, [0])])],
+                               graph.SequenceMetadata({'group': '2'})),
             msa.SequenceID('seq3'):
                 graph.Sequence(msa.SequenceID('seq3'),
-                              [graph.SeqPath([*map(nid, [0])])],
-                              graph.SequenceMetadata({'group': '2'}))
+                               [graph.SeqPath([*map(nid, [0])])],
+                               graph.SequenceMetadata({'group': '2'}))
         }
         expected_poagraph = graph.Poagraph(expected_nodes, expected_sequences)
         actual_poagraph, _ = builder.build_from_dagmaf(
@@ -269,26 +272,25 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
             graph.Node(node_id=nid(8), base=graph.Base('C'), aligned_to=nid(9)),
             graph.Node(node_id=nid(9), base=graph.Base('G'), aligned_to=nid(10)),
             graph.Node(node_id=nid(10), base=graph.Base('T'), aligned_to=nid(8)),
-
         ]
 
         expected_sequences = {
             msa.SequenceID('seq0'):
                 graph.Sequence(msa.SequenceID('seq0'),
-                              [graph.SeqPath([*map(nid, [0, 3, 4, 8])])],
-                              graph.SequenceMetadata({'group': '1'})),
+                               [graph.SeqPath([*map(nid, [0, 3, 4, 8])])],
+                               graph.SequenceMetadata({'group': '1'})),
             msa.SequenceID('seq1'):
                 graph.Sequence(msa.SequenceID('seq1'),
-                              [graph.SeqPath([*map(nid, [1, 3, 5, 6, 7, 9])])],
-                              graph.SequenceMetadata({'group': '1'})),
+                               [graph.SeqPath([*map(nid, [1, 3, 5, 6, 7, 9])])],
+                               graph.SequenceMetadata({'group': '1'})),
             msa.SequenceID('seq2'):
                 graph.Sequence(msa.SequenceID('seq2'),
-                              [graph.SeqPath([*map(nid, [2, 3, 5, 10])])],
-                              graph.SequenceMetadata({'group': '2'})),
+                               [graph.SeqPath([*map(nid, [2, 3, 5, 10])])],
+                               graph.SequenceMetadata({'group': '2'})),
             msa.SequenceID('seq3'):
                 graph.Sequence(msa.SequenceID('seq3'),
-                              [],
-                              graph.SequenceMetadata({'group': '2'}))
+                               [],
+                               graph.SequenceMetadata({'group': '2'}))
         }
         expected_poagraph = graph.Poagraph(expected_nodes, expected_sequences)
         actual_poagraph, _ = builder.build_from_dagmaf(
@@ -323,24 +325,24 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
         expected_sequences = {
             msa.SequenceID('seq0'):
                 graph.Sequence(msa.SequenceID('seq0'),
-                              [],
-                              graph.SequenceMetadata({'group': '1'})),
+                               [],
+                               graph.SequenceMetadata({'group': '1'})),
             msa.SequenceID('seq1'):
                 graph.Sequence(msa.SequenceID('seq1'),
-                              [graph.SeqPath([*map(nid, [0, 1, 2, 4, 6, 8, 9, 10, 11, 12, 14])])],
-                              graph.SequenceMetadata({'group': '1'})),
+                               [graph.SeqPath([*map(nid, [0, 1, 2, 4, 6, 8, 9, 10, 11, 12, 14])])],
+                               graph.SequenceMetadata({'group': '1'})),
             msa.SequenceID('seq2'):
                 graph.Sequence(msa.SequenceID('seq2'),
-                              [graph.SeqPath([*map(nid, [0, 1, 2])]),
-                               graph.SeqPath([*map(nid, [3, 5])]),
-                               graph.SeqPath([*map(nid, [6, 7, 8, 9, 10, 11, 13, 15])])],
-                              graph.SequenceMetadata({'group': '2'})),
+                               [graph.SeqPath([*map(nid, [0, 1, 2])]),
+                                graph.SeqPath([*map(nid, [3, 5])]),
+                                graph.SeqPath([*map(nid, [6, 7, 8, 9, 10, 11, 13, 15])])],
+                               graph.SequenceMetadata({'group': '2'})),
             msa.SequenceID('seq3'):
                 graph.Sequence(msa.SequenceID('seq3'),
-                              [graph.SeqPath([*map(nid, [0, 2])]),
-                               graph.SeqPath([*map(nid, [3, 5])]),
-                               graph.SeqPath([*map(nid, [6, 7, 8, 9, 11, 12, 15])])],
-                              graph.SequenceMetadata({'group': '2'})),
+                               [graph.SeqPath([*map(nid, [0, 2])]),
+                                graph.SeqPath([*map(nid, [3, 5])]),
+                                graph.SeqPath([*map(nid, [6, 7, 8, 9, 11, 12, 15])])],
+                               graph.SequenceMetadata({'group': '2'})),
         }
         expected_poagraph = graph.Poagraph(expected_nodes, expected_sequences)
         actual_poagraph, _ = builder.build_from_dagmaf(
@@ -370,20 +372,20 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
         expected_sequences = {
             msa.SequenceID('seq0'):
                 graph.Sequence(msa.SequenceID('seq0'),
-                              [],
-                              graph.SequenceMetadata({'group': '1'})),
+                               [],
+                               graph.SequenceMetadata({'group': '1'})),
             msa.SequenceID('seq1'):
                 graph.Sequence(msa.SequenceID('seq1'),
-                              [graph.SeqPath([*map(nid, [0, 1, 3, 4, 5, 7, 8, 9])])],
-                              graph.SequenceMetadata({'group': '1'})),
+                               [graph.SeqPath([*map(nid, [0, 1, 3, 4, 5, 7, 8, 9])])],
+                               graph.SequenceMetadata({'group': '1'})),
             msa.SequenceID('seq2'):
                 graph.Sequence(msa.SequenceID('seq2'),
-                              [graph.SeqPath([*map(nid, [0, 1, 2, 3, 4, 6, 7, 8, 9])])],
-                              graph.SequenceMetadata({'group': '2'})),
+                               [graph.SeqPath([*map(nid, [0, 1, 2, 3, 4, 6, 7, 8, 9])])],
+                               graph.SequenceMetadata({'group': '2'})),
             msa.SequenceID('seq3'):
                 graph.Sequence(msa.SequenceID('seq3'),
-                              [graph.SeqPath([*map(nid, [0, 1, 2, 3, 4, 6, 7, 9])])],
-                              graph.SequenceMetadata({'group': '2'})),
+                               [graph.SeqPath([*map(nid, [0, 1, 2, 3, 4, 6, 7, 9])])],
+                               graph.SequenceMetadata({'group': '2'})),
         }
         expected_poagraph = graph.Poagraph(expected_nodes, expected_sequences)
         actual_poagraph, _ = builder.build_from_dagmaf(
@@ -425,22 +427,22 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
         expected_sequences = {
             msa.SequenceID('seq0'):
                 graph.Sequence(msa.SequenceID('seq0'),
-                              [],
-                              graph.SequenceMetadata({'group': '1'})),
+                               [],
+                               graph.SequenceMetadata({'group': '1'})),
             msa.SequenceID('seq1'):
                 graph.Sequence(msa.SequenceID('seq1'),
-                              [graph.SeqPath([*map(nid, [0, 1, 2, 3, 4, 10, 11, 12, 13, 14])]),
-                               graph.SeqPath([*map(nid, [5, 6, 7, 8, 9, 15, 16, 17, 18, 19])])],
-                              graph.SequenceMetadata({'group': '1'})),
+                               [graph.SeqPath([*map(nid, [0, 1, 2, 3, 4, 10, 11, 12, 13, 14])]),
+                                graph.SeqPath([*map(nid, [5, 6, 7, 8, 9, 15, 16, 17, 18, 19])])],
+                               graph.SequenceMetadata({'group': '1'})),
             msa.SequenceID('seq2'):
                 graph.Sequence(msa.SequenceID('seq2'),
-                              [graph.SeqPath([*map(nid, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
-                                                     13, 14, 15, 16, 17, 18, 19])])],
-                              graph.SequenceMetadata({'group': '2'})),
+                               [graph.SeqPath([*map(nid, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+                                                          13, 14, 15, 16, 17, 18, 19])])],
+                               graph.SequenceMetadata({'group': '2'})),
             msa.SequenceID('seq3'):
                 graph.Sequence(msa.SequenceID('seq3'),
-                              [],
-                              graph.SequenceMetadata({'group': '2'})),
+                               [],
+                               graph.SequenceMetadata({'group': '2'})),
         }
         expected_poagraph = graph.Poagraph(expected_nodes, expected_sequences)
         actual_poagraph, _ = builder.build_from_dagmaf(
@@ -484,20 +486,20 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
         expected_sequences = {
             msa.SequenceID('seq0'):
                 graph.Sequence(msa.SequenceID('seq0'),
-                              [graph.SeqPath([*map(nid, [7, 8, 9, 10, 11, 12, 15, 18, 19, 21])])],
-                              graph.SequenceMetadata({'group': '1'})),
+                               [graph.SeqPath([*map(nid, [7, 8, 9, 10, 11, 12, 15, 18, 19, 21])])],
+                               graph.SequenceMetadata({'group': '1'})),
             msa.SequenceID('seq1'):
                 graph.Sequence(msa.SequenceID('seq1'),
-                              [graph.SeqPath([*map(nid, [7, 8, 9, 10, 11, 12, 15, 18, 19, 21])])],
-                              graph.SequenceMetadata({'group': '1'})),
+                               [graph.SeqPath([*map(nid, [7, 8, 9, 10, 11, 12, 15, 18, 19, 21])])],
+                               graph.SequenceMetadata({'group': '1'})),
             msa.SequenceID('seq2'):
                 graph.Sequence(msa.SequenceID('seq2'),
-                              [graph.SeqPath([*map(nid, [0, 2, 3, 4, 6, 13, 16, 17, 20, 21])])],
-                              graph.SequenceMetadata({'group': '2'})),
+                               [graph.SeqPath([*map(nid, [0, 2, 3, 4, 6, 13, 16, 17, 20, 21])])],
+                               graph.SequenceMetadata({'group': '2'})),
             msa.SequenceID('seq3'):
                 graph.Sequence(msa.SequenceID('seq3'),
-                              [graph.SeqPath([*map(nid, [1, 2, 3, 5, 6, 13, 14, 17, 20, 22])])],
-                              graph.SequenceMetadata({'group': '2'})),
+                               [graph.SeqPath([*map(nid, [1, 2, 3, 5, 6, 13, 14, 17, 20, 22])])],
+                               graph.SequenceMetadata({'group': '2'})),
         }
         expected_poagraph = graph.Poagraph(expected_nodes, expected_sequences)
         actual_poagraph, _ = builder.build_from_dagmaf(

@@ -3,7 +3,7 @@ from pathlib import Path
 
 from ddt import unpack, data, ddt
 
-from ...context import multialignment, pathtools, missings, graph, builder
+from ...context import msa, pathtools, missings, graph, builder
 
 
 def sid(x): return msa.SequenceID(x)
@@ -153,7 +153,12 @@ class MetadataCSVTests(unittest.TestCase):
             sid('ss2'): sm({'group': None, 'name': None})})
           )
     @unpack
-    def test_10_metadata_feed_to_alignment_from_csv(self, test_name, maf_name, csv_name, po_name, expected_metadata):
+    def test_10_metadata_feed_to_alignment_from_csv(self,
+                                                    test_name,
+                                                    maf_name,
+                                                    csv_name,
+                                                    po_name,
+                                                    expected_metadata):
         maf_path = Path(self.alignment_files_dir + maf_name)
         csv_path = Path(self.csv_files_dir + csv_name)
         po_path = Path(self.alignment_files_dir + po_name)
