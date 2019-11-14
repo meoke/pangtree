@@ -192,8 +192,7 @@ class FromFile(FastaProvider):
                     for record in SeqIO.parse(StringIO(fasta), "fasta"):
                         self._add_record_to_dict(record, fastas_dict)
         if len(fastas_dict) == 0:
-            raise FastaProviderException("""No sequences in zipped fastas
-                                            or incorrect zipped files.""")
+            raise FastaProviderException("No sequences in zipped fastas or incorrect zipped files.")
         return fastas_dict
 
     def _read_fasta(self, fasta_path: Path) -> Dict[msa.SequenceID, str]:
@@ -214,8 +213,7 @@ class FromFile(FastaProvider):
             for record in SeqIO.parse(fasta_handle, "fasta"):
                 self._add_record_to_dict(record, fastas_dict)
         if len(fastas_dict) == 0:
-            raise FastaProviderException("""No sequences in zipped fastas
-                                            or incorrect zipped files.""")
+            raise FastaProviderException("No sequences in zipped fastas or incorrect zipped files.")
         return fastas_dict
 
     def _add_record_to_dict(self,
@@ -231,12 +229,9 @@ class FromFile(FastaProvider):
                                     its ID is already present in the dict.
         """
         if len(record.seq) == 0:
-            raise FastaProviderException("""Empty sequence in FASTA.
-                                         Provide the sequence or
-                                         remove its header.""")
+            raise FastaProviderException("Empty sequence in FASTA. Provide the sequence or remove its header.")
         if msa.SequenceID(str(record.id)) in fastas_dict.keys():
-            raise FastaProviderException("""Incorrect fasta provided:
-                                         Sequences ids are not unique.""")
+            raise FastaProviderException("Incorrect fasta provided: sequences IDs are not unique.")
         fastas_dict[msa.SequenceID(str(record.id))] = record.seq
 
 

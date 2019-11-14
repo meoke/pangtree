@@ -79,8 +79,6 @@ def get_poagraph(dagmaf: DAGMaf.DAGMaf,
     _complement_starting_nodes(build_state)
 
     for i, mafnode in enumerate(dagmaf.dagmaf_nodes):
-        # p = i/len(dagmaf.dagmaf_nodes) * 100
-        # global_logger.info(f"{p}%")
         _process_block(build_state, mafnode)
 
     return build_state.nodes, build_state.sequences
@@ -192,7 +190,6 @@ def _add_node_to_sequence(build_state: _BuildState,
 
 
 def _process_block(build_state: _BuildState, block: DAGMaf.DAGMafNode):
-    global_logger.info(f"Processing block {block.id_}...")
     current_node_id = _get_max_node_id(build_state.nodes)
     block_width = len(block.alignment[0].seq)
     paths_join_info = _get_paths_join_info(block, build_state.free_edges)

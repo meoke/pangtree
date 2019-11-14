@@ -61,8 +61,7 @@ class FromFileFastaProviderFastaTests(unittest.TestCase):
         with self.assertRaises(Exception) as exp:
             _ = missings.FromFile(Path(fasta_path))
 
-        expected_message = """No sequences in fasta provided as
-                              fasta source or incorrect fasta."""
+        expected_message = ("No sequences in zipped fastas or incorrect zipped files.")
         actual_message = str(exp.exception)
         self.assertEqual(expected_message, actual_message)
 
@@ -72,8 +71,7 @@ class FromFileFastaProviderFastaTests(unittest.TestCase):
         with self.assertRaises(Exception) as exp:
             _ = missings.FromFile(Path(fasta_path))
 
-        expected_message = """Empty sequence in fasta source file.
-                              Provide the sequence or remove its identifier."""
+        expected_message = "Empty sequence in FASTA. Provide the sequence or remove its header."
         actual_message = str(exp.exception)
         self.assertEqual(expected_message, actual_message)
 
@@ -83,8 +81,7 @@ class FromFileFastaProviderFastaTests(unittest.TestCase):
         with self.assertRaises(Exception) as exp:
             _ = missings.FromFile(Path(fasta_path))
 
-        expected_message = """No sequences in fasta provided as
-                              fasta source or incorrect fasta."""
+        expected_message = "No sequences in zipped fastas or incorrect zipped files."
         actual_message = str(exp.exception)
         self.assertEqual(expected_message, actual_message)
 
@@ -94,8 +91,7 @@ class FromFileFastaProviderFastaTests(unittest.TestCase):
         with self.assertRaises(Exception) as exp:
             _ = missings.FromFile(Path(fasta_path))
 
-        expected_message = """Incorrect fasta provided as fasta source.
-                              Sequences ids are not unique."""
+        expected_message = "Incorrect fasta provided: sequences IDs are not unique."
         actual_message = str(exp.exception)
         self.assertEqual(expected_message, actual_message)
 

@@ -2,4 +2,5 @@ newick
 biopython
 numpy
 jsonpickle
+networkx
 ddt

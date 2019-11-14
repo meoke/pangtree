@@ -3,7 +3,7 @@ import sys
 import datetime
 
 
-# sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../pangtreebuild')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../pangtreebuild')))
 from pangtreebuild.affinity_tree import builders as at_builders
 from pangtreebuild.output import fasta
 from pangtreebuild.output import json

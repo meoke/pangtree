@@ -1,8 +1,8 @@
 import unittest
 from pathlib import Path
 
-from ...context import graph, missings, msa, builder
-from ...context import pathtools
+from tests.context import graph, missings, msa, builder
+from tests.context import pathtools
 
 
 def nid(x): return graph.NodeID(x)
