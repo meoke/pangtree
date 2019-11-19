@@ -138,12 +138,10 @@ class MetadataCSV:
         for row in rd:
             seqid = SequenceID(row['seqid'], skip_part_before_dot=False)
             if seqid in d:
-                raise ValueError("""Repeated values in seqid column
-                                in metadata file. Make them unique.""")
+                raise ValueError("""Repeated values in seqid column in metadata file. Make them unique.""")
             d[seqid] = dict(row)
             if None in d[seqid].keys():
-                raise ValueError("""CSV metadata error. Different number
-                                 of columns in line 0 than in header line.""")
+                raise ValueError("""CSV metadata error. Different number of columns in line 0 than in header line.""")
             del d[seqid]['seqid']
         return d
 
@@ -157,8 +155,7 @@ class MetadataCSV:
             raise ValueError('No \'seqid\' column in metadata csv.')
 
         if headers.count('seqid') > 1:
-            raise ValueError("""Only one \'seqid\' column
-                            in metadata csv is allowed.""")
+            raise ValueError("""Only one \'seqid\' column in metadata csv is allowed.""")
 
     def get_all_sequences_ids(self) -> List[SequenceID]:
         return [*self.metadata.keys()]

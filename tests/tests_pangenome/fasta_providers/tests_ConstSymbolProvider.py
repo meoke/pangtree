@@ -1,6 +1,6 @@
 import unittest
 
-from ...context import missings, graph, msa
+from tests.context import missings, graph, msa
 
 
 class ConstSymbolProviderTests(unittest.TestCase):

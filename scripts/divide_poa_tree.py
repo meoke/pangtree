@@ -6,7 +6,7 @@ from pangtreebuild.affinity_tree.ConsensusTree import AffinityTree, AffinityNode
 from pangtreebuild.pangenome.Node import NodeID, Base
 from pangtreebuild.pangenome.Poagraph import Poagraph
 from pangtreebuild.pangenome.Sequence import SequenceID, Sequence
-from pangtreebuild.output.PangenomeJSON import str_to_PangenomeJSON
+from pangtreebuild.serialization.PangenomeJSON import str_to_PangenomeJSON
 from pangtreebuild.tools import pathtools
 
 

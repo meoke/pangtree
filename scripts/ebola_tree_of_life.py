@@ -21,7 +21,7 @@ from pangtreebuild.pangenome.Poagraph import Poagraph
 from pangtreebuild.pangenome.Node import NodeID, ColumnID
 import pangtreebuild.affinity_tree.tree_generator as tree_generator
 import pangtreebuild.affinity_tree.input_types as cinp
-from pangtreebuild.output.PangenomeJSON import TaskParameters
+from pangtreebuild.serialization.PangenomeJSON import TaskParameters
 from pangtreebuild.affinity_tree.cutoffs import MAX2, NODE3
 from pangtreebuild.affinity_tree.ConsensusTree import AffinityTree, AffinityNode, Compatibility
 

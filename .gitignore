@@ -110,7 +110,3 @@ ENV/
 /output/
 
 /.fastacache/*
-
-*.fasta
-
-/full_example_data/*

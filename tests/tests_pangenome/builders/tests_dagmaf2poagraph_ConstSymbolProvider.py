@@ -13,9 +13,9 @@ def bid(x): return graph.BlockID(x)
 
 class DAGMaf2PoagraphConstSymbolProviderTests(unittest.TestCase):
     def setUp(self):
-        metadata_path = Path("tests/datamodel/seq_metadata.csv")
+        metadata_path = Path("tests/tests_pangenome/seq_metadata.csv")
         self.metadatacsv = msa.MetadataCSV(pathtools.get_file_content_stringio(metadata_path), metadata_path)
-        self.maf_files_dir = 'tests/datamodel/builders/maf_files_with_gaps/'
+        self.maf_files_dir = 'tests/tests_pangenome/builders/maf_files_with_gaps/'
         self.missing_n = missings.MissingBase()
 
     def test_1_missing_sequence_start(self):

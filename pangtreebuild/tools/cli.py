@@ -5,7 +5,7 @@ from io import StringIO
 from pathlib import Path
 from typing import TypeVar, Callable, Optional, Union
 
-from pangtreebuild.output.json import TaskParameters
+from pangtreebuild.serialization.json import TaskParameters
 from pangtreebuild.affinity_tree import parameters as at_params
 from pangtreebuild.pangenome import graph
 from pangtreebuild.pangenome.parameters import msa

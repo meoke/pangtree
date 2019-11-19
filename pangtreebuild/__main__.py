@@ -5,9 +5,9 @@ import datetime
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../pangtreebuild')))
 from pangtreebuild.affinity_tree import builders as at_builders
-from pangtreebuild.output import fasta
-from pangtreebuild.output import json
-from pangtreebuild.output import po
+from pangtreebuild.serialization import fasta
+from pangtreebuild.serialization import json
+from pangtreebuild.serialization import po
 from pangtreebuild.pangenome import builder
 from pangtreebuild.pangenome.parameters import missings
 from pangtreebuild.pangenome.parameters import msa

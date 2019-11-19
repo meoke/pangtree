@@ -1,8 +1,8 @@
 import unittest
 from pathlib import Path
 
-from ...context import graph, msa
-from ...context import maf2poagraph, pathtools
+from tests.context import graph, msa
+from tests.context import maf2poagraph, pathtools
 
 
 def nid(x): return graph.NodeID(x)
@@ -14,9 +14,9 @@ def bid(x): return graph.BlockID(x)
 class Maf2poagraphTests(unittest.TestCase):
 
     def setUp(self):
-        metadata_path = Path("tests/datamodel/seq_metadata.csv")
+        metadata_path = Path("tests/tests_pangenome/seq_metadata.csv")
         self.metadatacsv = msa.MetadataCSV(pathtools.get_file_content_stringio(metadata_path), metadata_path)
-        self.maf_files_dir = 'tests/datamodel/builders/maf_files/'
+        self.maf_files_dir = 'tests/tests_pangenome/builders/maf_files/'
 
     def test_1_messy_sequences(self):
         maf_path = Path(self.maf_files_dir + "test_1_messy_sequences.maf")

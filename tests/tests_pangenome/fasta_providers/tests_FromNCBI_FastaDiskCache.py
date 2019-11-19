@@ -13,14 +13,16 @@ class FromNCBI_FastaDiskCache_Tests(unittest.TestCase):
     def setUp(self) -> None:
         self.fasta_provider = missings.FromNCBI(use_cache=False)
 
-    @unittest.skip('Internet connection required -> long execution')
+    # @unittest.skip('Internet connection required -> long execution')
     def test_1_download_sequence_and_save_to_cache(self):
-        _ = missings.FromNCBI(use_cache=True)
         cache_dir_path = pathtools.get_child_path(Path.cwd(), ".fastacache")
         if cache_dir_path.exists():
             shutil.rmtree(cache_dir_path)
 
+        ncbi_fasta_provider = missings.FromNCBI(use_cache=True)
         sequence_id = msa.SequenceID("AB050936.1", skip_part_before_dot=False)
+
+        _ = ncbi_fasta_provider.get_base(sequence_id, 0)
 
         # cache directory creation
         cache_directory_created = cache_dir_path.exists()
@@ -33,7 +35,7 @@ class FromNCBI_FastaDiskCache_Tests(unittest.TestCase):
         self.assertTrue(file_created_in_cache)
 
         # file content
-        control_fasta_path = Path('tests/data/missings/fasta_ncbi/AB050936.1.fasta')
+        control_fasta_path = Path('tests/tests_pangenome/fasta_providers/fasta_ncbi/AB050936.1.fasta')
 
         with open(control_fasta_path) as fasta_file_hanlder:
             expected_content = fasta_file_hanlder.read()

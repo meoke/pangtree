@@ -9,7 +9,7 @@ from typing import List, Dict, Union, Optional
 from pangtreebuild.affinity_tree import parameters
 from pangtreebuild.pangenome import graph
 from pangtreebuild.pangenome.parameters import msa
-from pangtreebuild.output import po
+from pangtreebuild.serialization import po
 from pangtreebuild.tools import pathtools
 from pangtreebuild.tools import logprocess
 

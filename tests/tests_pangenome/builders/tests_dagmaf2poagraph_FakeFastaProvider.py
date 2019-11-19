@@ -1,8 +1,8 @@
 import unittest
 from pathlib import Path
 
-from ...context import graph, missings, msa, builder
-from ...context import pathtools
+from tests.context import graph, missings, msa, builder
+from tests.context import pathtools
 
 
 def nid(x): return graph.NodeID(x)
@@ -29,9 +29,9 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
                 raise Exception("No record found with given id_!")
 
     def setUp(self):
-        metadata_path = Path("tests/datamodel/seq_metadata.csv")
+        metadata_path = Path("tests/tests_pangenome/seq_metadata.csv")
         self.metadatacsv = msa.MetadataCSV(pathtools.get_file_content_stringio(metadata_path), metadata_path)
-        self.maf_files_dir = 'tests/datamodel/builders/maf_files_with_gaps/'
+        self.maf_files_dir = 'tests/tests_pangenome/builders/maf_files_with_gaps/'
         self.fasta_provider = DAGMaf2PoagraphFakeFastaProviderTests.FakeFastaProvider()
 
     def test_1_missing_sequence_start(self):

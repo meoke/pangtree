@@ -3,7 +3,7 @@ from pathlib import Path
 
 from ddt import unpack, data, ddt
 
-from tests.context import missings, msa
+from tests.context import missings, msa, graph
 
 
 @ddt
@@ -11,24 +11,24 @@ class FromNCBITests(unittest.TestCase):
     def setUp(self) -> None:
         self.fasta_provider = missings.FromNCBI(use_cache=False)
 
-    @unittest.skip("slow test - internet connection required")
+    # @unittest.skip("slow test - internet connection required")
     def test_0_get_10th_symbol_of_AB050936v1(self):
         sequence_id = msa.SequenceID("AB050936.1", skip_part_before_dot=False)
         actual_base = self.fasta_provider.get_base(sequence_id, 10)
-        path = Path('tests/data/fasta_providers/fasta_files/AB050936.1.fasta')
-        expected_base = self.read_sequence(path)[10]
+        path = Path('tests/tests_pangenome/fasta_providers/fasta_ncbi/AB050936.1.fasta')
+        expected_base = graph.Base(self.read_sequence(path)[10])
         self.assertEqual(expected_base, actual_base)
 
-    @unittest.skip("slow test - internet connection required")
+    # @unittest.skip("slow test - internet connection required")
     def test_1_download_AB050936v1(self):
         fasta_provider = missings.FromNCBI(use_cache=False)
         sequence_id = msa.SequenceID("AB050936.1", skip_part_before_dot=False)
         actual_sequence = fasta_provider._download_from_ncbi(sequence_id)
-        p = Path('tests/data/fasta_providers/fasta_files/AB050936.1.fasta')
+        p = Path('tests/tests_pangenome/fasta_providers/fasta_ncbi/AB050936.1.fasta')
         expected_sequence = self.read_sequence(p)
         self.assertEqual(expected_sequence, actual_sequence)
 
-    @unittest.skip("slow test - internet connection required")
+    # @unittest.skip("slow test - internet connection required")
     def test_2_failed_download(self):
         fasta_provider = missings.FromNCBI(use_cache=False)
         sequence_id = ""

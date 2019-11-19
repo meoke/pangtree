@@ -12,9 +12,8 @@ from pangtreebuild.pangenome.builders import po2poagraph
 import pangtreebuild.tools.pathtools as pathtools
 from pangtreebuild.pangenome.parameters import missings
 
-from pangtreebuild.output import po
-
-from pangtreebuild.output import fasta
+from pangtreebuild.serialization import po
+from pangtreebuild.serialization import fasta
 from pangtreebuild.affinity_tree import tree
 from pangtreebuild.affinity_tree import parameters as at_params
 from pangtreebuild.affinity_tree import poa

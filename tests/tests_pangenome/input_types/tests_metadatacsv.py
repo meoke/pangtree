@@ -3,7 +3,7 @@ from pathlib import Path
 
 from ddt import unpack, data, ddt
 
-from ...context import msa, pathtools, missings, graph, builder
+from tests.context import msa, pathtools, missings, graph, builder
 
 
 def sid(x): return msa.SequenceID(x)
@@ -16,8 +16,8 @@ def sm(x): return graph.SequenceMetadata(x)
 class MetadataCSVTests(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.csv_files_dir = 'tests/datamodel/input_types/csv_files/'
-        self.alignment_files_dir = 'tests/datamodel/input_types/alignment_files/'
+        self.csv_files_dir = 'tests/tests_pangenome/input_types/csv_files/'
+        self.alignment_files_dir = 'tests/tests_pangenome/input_types/alignment_files/'
         self.fasta_provider = missings.ConstBaseProvider(missings.MissingBase())
 
     def test_1_correct(self):
@@ -75,7 +75,7 @@ class MetadataCSVTests(unittest.TestCase):
         csv_content = pathtools.get_file_content_stringio(csv_path)
         with self.assertRaises(Exception) as err:
             _ = msa.MetadataCSV(csv_content, csv_path)
-        self.assertEqual("CSV metadata error. Different fields number in line 0 than in header line.",
+        self.assertEqual("CSV metadata error. Different number of columns in line 0 than in header line.",
                          str(err.exception))
 
     def test_7_not_unique_seqids(self):
@@ -84,8 +84,7 @@ class MetadataCSVTests(unittest.TestCase):
         csv_content = pathtools.get_file_content_stringio(csv_path)
         with self.assertRaises(Exception) as err:
             _ = msa.MetadataCSV(csv_content, csv_path)
-        self.assertEqual("Not unique values seqid column in metadata file. "
-                         "Make them unique.", str(err.exception))
+        self.assertEqual("Repeated values in seqid column in metadata file. Make them unique.", str(err.exception))
 
     def test_8_correct_with_dots(self):
         metadata_path = Path(self.csv_files_dir + "test_8_seqids_with_dots.csv")

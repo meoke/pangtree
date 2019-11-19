@@ -14,9 +14,9 @@ def bid(x): return graph.BlockID(x)
 class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
 
     def setUp(self):
-        metadata_path = Path("tests/datamodel/seq_metadata.csv")
+        metadata_path = Path("tests/tests_pangenome/seq_metadata.csv")
         self.metadatacsv = msa.MetadataCSV(pathtools.get_file_content_stringio(metadata_path), metadata_path)
-        self.maf_files_dir = 'tests/datamodel/builders/maf_files_with_cycles_or_reversion/'
+        self.maf_files_dir = 'tests/tests_pangenome/builders/maf_files_with_cycles_or_reversion/'
         self.fasta_provider = missings.ConstBaseProvider(missings.MissingBase())
 
     def test_00_simple(self):

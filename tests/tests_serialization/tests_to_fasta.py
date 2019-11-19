@@ -13,7 +13,7 @@ def bid(x): return graph.Base(x)
 class ToFASTATests(unittest.TestCase):
 
     def setUp(self):
-        self.fasta_dir = 'tests/output/fasta_files/'
+        self.fasta_dir = 'tests/tests_serialization/fasta_files/'
 
         poagraph_nodes = [graph.Node(node_id=nid(0), base=bid('A'), aligned_to=nid(1)),
                           graph.Node(node_id=nid(1), base=bid('G'), aligned_to=nid(0)),

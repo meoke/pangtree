@@ -7,7 +7,7 @@ from tests.context import missings, graph, msa
 
 class FromFileFastaProviderFastaTests(unittest.TestCase):
     def setUp(self) -> None:
-        self.fasta_dir = "tests/datamodel/fasta_providers/files_fasta/"
+        self.fasta_dir = "tests/tests_pangenome/fasta_providers/files_fasta/"
 
     @staticmethod
     def read_sequence(path: Path):

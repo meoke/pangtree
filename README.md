@@ -11,6 +11,7 @@ Running:
 * [BioPython](https://biopython.org/)
 * [numpy](http://www.numpy.org/)
 * [jsonpickle](http://jsonpickle.github.io/)
+* [networkx] (https://networkx.github.io/)
 
 Testing:
 * [DDT](https://github.com/txels/ddt)
@@ -27,7 +28,7 @@ python3 setup.py install
 
 This line builds a pan-genome model for an example alignment of 160 Ebola virus sequences and saves it to a JSON file.
 
-```python3 -m pangtreebuild --multialignment data/Ebola/input/multialignment.maf```
+```python3 -m pangtreebuild --multialignment example_data/Ebola/multialignment.maf```
 
 
 
