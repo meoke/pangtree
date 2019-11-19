@@ -1,4 +1,4 @@
-# PangtreeeBuild
+# PangtreeBuild
 
 This repository contains tool for multiple sequence alignment analysis. It implements the idea of pan-genome ([Ref. 1](https://doi.org/10.1093/bib/bbw089)) by representing the multialignment as a PO-MSA structure (Partial Order Alignment Graph - [Ref. 2](https://doi.org/10.1093/bioinformatics/btg109)). The main purpose of this software is to construct a *Consensus Tree* - a phylogenetic-like tree, with an agreed sequence (*consensus sequence*) assigned for each node.
 
@@ -11,6 +11,7 @@ Running:
 * [BioPython](https://biopython.org/)
 * [numpy](http://www.numpy.org/)
 * [jsonpickle](http://jsonpickle.github.io/)
+* [networkx] (https://networkx.github.io/)
 
 Testing:
 * [DDT](https://github.com/txels/ddt)
@@ -27,7 +28,7 @@ python3 setup.py install
 
 This line builds a pan-genome model for an example alignment of 160 Ebola virus sequences and saves it to a JSON file.
 
-```python3 -m pangtreebuild --multialignment data/Ebola/input/multialignment.maf```
+```python3 -m pangtreebuild --multialignment example_data/Ebola/multialignment.maf```
 
 
 
@@ -47,7 +48,7 @@ python3 -m pangtreebuild [args]
 | MULTIALIGNMENT  | --multialignment  | Yes | Path to the mulitalignment file (.maf or .po)
 | METADATA | --metadata | No | Optional information about sequences in csv format. The only required column: \'seqid\' and its value must match multialignment files identifiers as described in *Sequence Naming Convention* (below). Example: data/Ebola/input/metadata.csv
 | RAW_MAF | --raw_maf | No, default=False | Build PO-MSA without transforming multialignment (MAF file) to DAG. PO-MSA built in this way does not reflect real life sequences.
-| FASTA_PROVIDER | --fasta_provider | No | Nucleotides source if any residues are missed in the multialignment. Possible values: 'ncbi', 'file'. If not specified: MISSING_NUCLEOTIDE is used.
+| FASTA_PROVIDER | --fasta_provider | No | Nucleotides source if any residues are missed in the multialignment file. Possible values: 'ncbi', 'file'. If not specified: MISSING_NUCLEOTIDE is used.
 | MISSING_SYMBOL | --missing_symbol | No, default='?' | Symbol for missing nucleotides used if no FASTA_PROVIDER is given.
 | CACHE | --cache | No, default='Yes' | If True, sequences downloaded from NCBI are stored on local disc and reused between program calls, used if FASTA_PROVIDER is 'ncbi'
 | FASTA_FILE | -fasta_source_file | Yes if FASTA_PROVIDER='FILE' | Path to fasta file or zipped fasta files with whole sequences present in multialignment, used if FASTA_PROVIDER is 'FILE'.

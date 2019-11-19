@@ -2,12 +2,12 @@ import unittest
 from pathlib import Path
 
 
-from tests.context import missings, graph, multialignment
+from tests.context import missings, graph, msa
 
 
 class FromFileFastaProviderFastaTests(unittest.TestCase):
     def setUp(self) -> None:
-        self.fasta_dir = "tests/datamodel/fasta_providers/files_fasta/"
+        self.fasta_dir = "tests/tests_pangenome/fasta_providers/files_fasta/"
 
     @staticmethod
     def read_sequence(path: Path):
@@ -16,36 +16,44 @@ class FromFileFastaProviderFastaTests(unittest.TestCase):
             return fasta_file_hanlder.read().upper().replace("\n", "")
 
     def raise_error_if_unequal(self,
-                               sequence_id: multialignment.SequenceID,
+                               sequence_id: msa.SequenceID,
                                expected_sequence: str,
                                fasta_provider: missings.FromFile) -> None:
         for i, expected_symbol in enumerate(expected_sequence):
             expected_base = graph.Base(expected_symbol)
             actual_base = fasta_provider.get_base(sequence_id, i)
-            self.assertEqual(graph.Base(expected_symbol), actual_base)
+            self.assertEqual(expected_base, actual_base)
 
     def test_1_one_sequence(self):
         fasta_path = self.fasta_dir + "test_1_one_sequence.fasta"
         fasta_provider = missings.FromFile(Path(fasta_path))
 
-        sequence_id = multialignment.SequenceID("seq1")
+        sequence_id = msa.SequenceID("seq1")
         expected_sequence = self.read_sequence(fasta_path)
 
-        self.raise_error_if_unequal(sequence_id, expected_sequence, fasta_provider)
+        self.raise_error_if_unequal(sequence_id,
+                                    expected_sequence,
+                                    fasta_provider)
 
     def test_2_three_sequences(self):
         fasta_path = self.fasta_dir + "test_2_three_sequences.fasta"
 
         fasta_provider = missings.FromFile(Path(fasta_path))
 
-        sequence_id_1 = multialignment.SequenceID("seq1")
-        self.raise_error_if_unequal(sequence_id_1, "ACTGGGTGGGA", fasta_provider)
+        sequence_id_1 = msa.SequenceID("seq1")
+        self.raise_error_if_unequal(sequence_id_1,
+                                    "ACTGGGTGGGA",
+                                    fasta_provider)
 
-        sequence_id_2 = multialignment.SequenceID("seq2")
-        self.raise_error_if_unequal(sequence_id_2, "AA", fasta_provider)
+        sequence_id_2 = msa.SequenceID("seq2")
+        self.raise_error_if_unequal(sequence_id_2,
+                                    "AA",
+                                    fasta_provider)
 
-        sequence_id_3 = multialignment.SequenceID("seq3")
-        self.raise_error_if_unequal(sequence_id_3, "GT", fasta_provider)
+        sequence_id_3 = msa.SequenceID("seq3")
+        self.raise_error_if_unequal(sequence_id_3,
+                                    "GT",
+                                    fasta_provider)
 
     def test_3_empty_sequence_name(self):
         fasta_path = self.fasta_dir + "test_3_empty_sequence_name.fasta"
@@ -53,7 +61,7 @@ class FromFileFastaProviderFastaTests(unittest.TestCase):
         with self.assertRaises(Exception) as exp:
             _ = missings.FromFile(Path(fasta_path))
 
-        expected_message = "No _sequences in fasta provided as fasta source or incorrect fasta."
+        expected_message = ("No sequences in zipped fastas or incorrect zipped files.")
         actual_message = str(exp.exception)
         self.assertEqual(expected_message, actual_message)
 
@@ -63,8 +71,7 @@ class FromFileFastaProviderFastaTests(unittest.TestCase):
         with self.assertRaises(Exception) as exp:
             _ = missings.FromFile(Path(fasta_path))
 
-        expected_message = "Empty sequence in fasta source file. " \
-                           "Provide the sequence or remove its identifier."
+        expected_message = "Empty sequence in FASTA. Provide the sequence or remove its header."
         actual_message = str(exp.exception)
         self.assertEqual(expected_message, actual_message)
 
@@ -74,7 +81,7 @@ class FromFileFastaProviderFastaTests(unittest.TestCase):
         with self.assertRaises(Exception) as exp:
             _ = missings.FromFile(Path(fasta_path))
 
-        expected_message = "No _sequences in fasta provided as fasta source or incorrect fasta."
+        expected_message = "No sequences in zipped fastas or incorrect zipped files."
         actual_message = str(exp.exception)
         self.assertEqual(expected_message, actual_message)
 
@@ -84,7 +91,7 @@ class FromFileFastaProviderFastaTests(unittest.TestCase):
         with self.assertRaises(Exception) as exp:
             _ = missings.FromFile(Path(fasta_path))
 
-        expected_message = "Incorrect fasta provided as fasta source. Sequences ids are not unique."
+        expected_message = "Incorrect fasta provided: sequences IDs are not unique."
         actual_message = str(exp.exception)
         self.assertEqual(expected_message, actual_message)
 

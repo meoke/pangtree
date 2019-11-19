@@ -5,7 +5,7 @@ import numpy as np
 from typing import Any, Dict, List, NewType, Optional, Union
 
 from pangtreebuild.affinity_tree import parameters as at_params
-from pangtreebuild.pangenome.parameters import multialignment
+from pangtreebuild.pangenome.parameters import msa
 
 
 class DataType(Enum):
@@ -120,13 +120,13 @@ class Sequence(object):
         seqmetadata: Metadata connected with this sequence.
 
     Attributes:
-        seqid (multialignment.SequenceID): Sequence ID.
+        seqid (msa.SequenceID): Sequence ID.
         paths (List[SeqPath]): List of SeqPaths as the sequence can be splitted into several paths.
         seqmetadata (SequenceMetadata): Dictionary of metadata connected with this sequence.
     """
 
-    def __init__(self, seqid: multialignment.SequenceID, paths: List[SeqPath], seqmetadata: SequenceMetadata):
-        self.seqid: multialignment.SequenceID = seqid
+    def __init__(self, seqid: msa.SequenceID, paths: List[SeqPath], seqmetadata: SequenceMetadata):
+        self.seqid: msa.SequenceID = seqid
         self.paths: List[SeqPath] = paths
         self.seqmetadata: SequenceMetadata = seqmetadata
 
@@ -221,10 +221,10 @@ class Poagraph(object):
     """
     def __init__(self,
                  nodes: List[Node],
-                 sequences: Dict[multialignment.SequenceID, Sequence],
+                 sequences: Dict[msa.SequenceID, Sequence],
                  datatype: Optional[DataType] = DataType.Nucleotides):
         self.nodes: List[Node] = nodes
-        self.sequences: Dict[multialignment.SequenceID, Sequence] = sequences
+        self.sequences: Dict[msa.SequenceID, Sequence] = sequences
         self.datatype: DataType = datatype
 
     def __eq__(self, other: 'Poagraph') -> bool:
@@ -233,9 +233,9 @@ class Poagraph(object):
             self.datatype == other.datatype
 
     def get_compatibilities(self,
-                            sequences_ids: List[multialignment.SequenceID],
+                            sequences_ids: List[msa.SequenceID],
                             consensus_path: SeqPath,
-                            p: Optional[at_params.P] = at_params.P(1)) -> Dict[multialignment.SequenceID, Compatibility]:
+                            p: Optional[at_params.P] = at_params.P(1)) -> Dict[msa.SequenceID, Compatibility]:
         """Calculate compatibilities of sequences listed in sequences_ids to given consensus_path. Use P.
 
         Args:
@@ -264,8 +264,8 @@ class Poagraph(object):
                                                     len(sequence_path), p)
         return compatibilities
 
-    def get_sequences_weights(self, sequences_ids: List[multialignment.SequenceID]) -> \
-            Dict[multialignment.SequenceID, int]:
+    def get_sequences_weights(self, sequences_ids: List[msa.SequenceID]) -> \
+            Dict[msa.SequenceID, int]:
         """Calculates and normalizes sequences weights inside given group of sequences.
 
         Args:
@@ -299,7 +299,7 @@ class Poagraph(object):
         # return {path_key: 100 for path_key in unweighted_sources_weights.keys()}
         return normalized_sources_weights_dict
 
-    def get_sequence_nodes_count(self, seq_id: multialignment.SequenceID) -> int:
+    def get_sequence_nodes_count(self, seq_id: msa.SequenceID) -> int:
         """Returns length of indicated sequence (sum of lengths of all sequence paths).
 
         Args:
@@ -313,7 +313,7 @@ class Poagraph(object):
             raise Exception("No sequence with given ID in poagraph.")
         return sum([len(path) for path in self.sequences[seq_id].paths])
 
-    def get_sequences_ids(self) -> List[multialignment.SequenceID]:
+    def get_sequences_ids(self) -> List[msa.SequenceID]:
         """Returns _sequences of all genome _sequences in Poagraph.
 
         Returns:
@@ -324,7 +324,7 @@ class Poagraph(object):
 
     @staticmethod
     def complement_metadata_for_sequences_absent_in_metadata_provided(poagraph: 'Poagraph',
-                                                                      metadata: multialignment.MetadataCSV) -> None:
+                                                                      metadata: msa.MetadataCSV) -> None:
         """Complements metadata in given poagraph using provided metadata.
 
         Args:
@@ -337,4 +337,3 @@ class Poagraph(object):
             for h in headers:
                 if h not in seq.seqmetadata:
                     seq.seqmetadata[h] = None
-

@@ -1,14 +1,13 @@
-"""AffinityTree and related objects definitions: AffinityNode, AffinityNodeID, Compatibility."""
+"""AffinityTree and related objects definitions."""
 
 import math
 from typing import List, NewType, Dict, Optional
 
 import newick
 from pangtreebuild.pangenome import graph
-from pangtreebuild.pangenome.parameters import multialignment
+from pangtreebuild.pangenome.parameters import msa
 
 AffinityNodeID = NewType('AffinityNodeID', int)
-
 
 
 class AffinityNode(object):
@@ -19,34 +18,39 @@ class AffinityNode(object):
         parent: ID of the parent node.
         children: IDs of the children nodes.
         sequences: IDs of the _sequences assigned to this node.
-        mincomp: Minimum from the compatibilities of this consensus to the assigned _sequences
-        compatibilities: Dictionary of compatibilities SequenceID:Compatibility to any _sequences.
-        consensus: Path of the consensus defined as path in corresponding Poagraph.
+        mincomp: Minimum from the compatibilities of this consensus to the
+            assigned sequences
+        compatibilities: Dictionary of compatibilities to all sequences.
+        consensus: Path of the consensus defined as path in Poagraph.
 
     Attributes:
         id_ (AffinityNodeID): ID of this node
         parent (AffinityNodeID): ID of the parent node
         children(List[AffinityNodeID]): IDs of the children nodes.
-        sequences(List[SequenceID]): IDs of the _sequences assigned to this node.
-        mincomp(Compatibility): Minimum from the compatibilities of this consensus to the assigned _sequences
-        compatibilities(Dict[SequenceID, Compatibility]): Dictionary of compatibilities to any _sequences.
-        consensus(SeqPath): Path of the consensus defined as path in corresponding Poagraph.
+        sequences(List[SequenceID]): IDs of the sequences assigned to the node.
+        mincomp(Compatibility): Minimum from the compatibilities of this
+            consensus to the assigned sequences
+        compatibilities(Dict[SequenceID, Compatibility]): Dictionary of
+            compatibilities to any _sequences.
+        consensus(SeqPath): Path of the consensus defined as path in Poagraph.
     """
 
     def __init__(self,
                  id_: AffinityNodeID,
                  parent: Optional[AffinityNodeID] = None,
                  children: Optional[List[AffinityNodeID]] = None,
-                 sequences: Optional[List[multialignment.SequenceID]] = None,
+                 sequences: Optional[List[msa.SequenceID]] = None,
                  mincomp: Optional[graph.Compatibility] = None,
-                 compatibilities: Optional[Dict[multialignment.SequenceID, graph.Compatibility]] = None,
+                 compatibilities: Optional[Dict[msa.SequenceID,
+                                                graph.Compatibility]] = None,
                  consensus: Optional[graph.SeqPath] = None):
         self.id_: AffinityNodeID = id_
         self.parent: AffinityNodeID = parent
         self.children: List[AffinityNodeID] = children if children else []
-        self.sequences: List[multialignment.SequenceID] = sequences if sequences else []
+        self.sequences: List[msa.SequenceID] = sequences if sequences else []
         self.mincomp: graph.Compatibility = mincomp if mincomp else graph.Compatibility(0)
-        self.compatibilities: Dict[multialignment.SequenceID, graph.Compatibility] = compatibilities if compatibilities else {}
+        self.compatibilities: Dict[msa.SequenceID,
+                                   graph.Compatibility] = compatibilities if compatibilities else {}
         self.consensus: graph.SeqPath = consensus
 
     def __str__(self):
@@ -76,7 +80,8 @@ class AffinityTree(object):
         nodes: Nodes of the tree.
 
     Attributes:
-        nodes (List[AffinityNode]): All nodes of the tree. Relations between nodes are described by their attributes.
+        nodes (List[AffinityNode]): All nodes of the tree. Relations between
+            nodes are described by their attributes.
     """
 
     def __init__(self, nodes: Optional[List[AffinityNode]] = None):
@@ -104,25 +109,32 @@ class AffinityTree(object):
         """Returns the largest number used as the tree node ID.
 
         Returns:
-            The largest AffinityNodeID used in this Affinity Tree. Returns AffinityNodeID(-1) if the tree has no nodes.
+            The largest AffinityNodeID used in this Affinity Tree. Returns
+                AffinityNodeID(-1) if the tree has no nodes.
         """
 
         if len(self.nodes) == 0:
             return AffinityNodeID(-1)
         return max([node.id_ for node in self.nodes])
 
-    def as_newick(self, seq_id_to_metadata: Dict[multialignment.SequenceID, graph.SequenceMetadata] = None, separate_leaves=False) -> str:
+    def as_newick(self,
+                  seq_id_to_metadata: Dict[msa.SequenceID,
+                                           graph.SequenceMetadata] = None,
+                  separate_leaves=False) -> str:
         """Returns Affinity Tree in Newick format.
 
         Args:
-            seq_id_to_metadata: Dictionary of _sequences IDs to the desired name used in newick file. For example:
+            seq_id_to_metadata: Dictionary of _sequences IDs to the desired
+                name used in newick file. For example:
                                 {SequenceID('KM0123'): 'cat',
                                 SequenceID('ZX124'): 'dog'}
-            separate_leaves: A switch to control if tree leaves having assigned multiple _sequences should have appended
-                             children singleton leaves single sequence assigned.
+            separate_leaves: A switch to control if tree leaves having
+                assigned multiple _sequences should have appended
+                children singleton leaves single sequence assigned.
 
         Returns:
-            A string with the Affinity Tree converted to newick format. https://en.wikipedia.org/wiki/Newick_format
+            A string with the Affinity Tree converted to newick format.
+            https://en.wikipedia.org/wiki/Newick_format
             If the tree has no nodes, an empty string is returned.
         """
 
@@ -156,9 +168,10 @@ class AffinityTree(object):
                             metadata = f"[&&NHX:name={name}:mincomp={mincomp}]"
                 try:
                     node_label += ':' + newick_node._length + metadata
-                except:
+                except Exception:
                     print("metadata")
-            descendants = ','.join([_newick_nhx(n) for n in newick_node.descendants])
+            descendants = ','.join([_newick_nhx(n)
+                                    for n in newick_node.descendants])
             if descendants:
                 descendants = '(' + descendants + ')'
             return descendants + node_label

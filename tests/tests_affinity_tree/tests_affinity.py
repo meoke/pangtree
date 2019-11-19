@@ -3,10 +3,10 @@ from typing import List
 
 from ddt import unpack, data, ddt
 
-from tests.context import graph, tree, at_builders, at_params, multialignment
+from tests.context import graph, at_builders, at_params, msa
 
 
-def sid(x): return multialignment.SequenceID(x)
+def sid(x): return msa.SequenceID(x)
 
 
 def nid(x): return graph.NodeID(x)
@@ -22,7 +22,9 @@ class AffinityTreeGenerationTests(unittest.TestCase):
           (at_params.P(1), graph.Compatibility(0.7)),
           (at_params.P(4), graph.Compatibility(0.6561)))
     @unpack
-    def test_1_p_parameter_influence(self, p: at_params.P, expected_cutoff: graph.Compatibility):
+    def test_1_p_parameter_influence(self,
+                                     p: at_params.P,
+                                     expected_cutoff: graph.Compatibility):
         nodes = [graph.Node(node_id=nid(0), base=b('T'), aligned_to=None),
                  graph.Node(node_id=nid(1), base=b('A'), aligned_to=None),
                  graph.Node(node_id=nid(2), base=b('G'), aligned_to=None),
@@ -36,32 +38,34 @@ class AffinityTreeGenerationTests(unittest.TestCase):
                  ]
 
         sequences = {
-            multialignment.SequenceID('seq0'):
-                graph.Sequence(multialignment.SequenceID('seq0'),
-                              [graph.SeqPath([*map(nid, [10, 11, 12, 13, 14, 15, 16, 17, 18, 9])])],
-                              graph.SequenceMetadata({})),
-            multialignment.SequenceID('seq1'):
-                graph.Sequence(multialignment.SequenceID('seq1'),
-                              [graph.SeqPath([*map(nid, [10, 11, 12, 13, 14, 15, 16, 17, 8, 9])])],
-                              graph.SequenceMetadata({})),
-            multialignment.SequenceID('seq2'):
-                graph.Sequence(multialignment.SequenceID('seq2'),
-                              [graph.SeqPath([*map(nid, [10, 11, 12, 13, 14, 15, 16, 7, 8, 9])])],
-                              graph.SequenceMetadata({})),
-            multialignment.SequenceID('seq3'):
-                graph.Sequence(multialignment.SequenceID('seq3'),
-                              [graph.SeqPath([*map(nid, [10, 11, 12, 3, 4, 5, 6, 7, 8, 9])])],
-                              graph.SequenceMetadata({})),
-            multialignment.SequenceID('seq4'):
-                graph.Sequence(multialignment.SequenceID('seq3'),
-                              [graph.SeqPath([*map(nid, [10, 11, 2, 3, 4, 5, 6, 7, 8, 9])])],
-                              graph.SequenceMetadata({}))
+            msa.SequenceID('seq0'):
+                graph.Sequence(msa.SequenceID('seq0'),
+                               [graph.SeqPath([*map(nid, [10, 11, 12, 13, 14, 15, 16, 17, 18, 9])])],
+                               graph.SequenceMetadata({})),
+            msa.SequenceID('seq1'):
+                graph.Sequence(msa.SequenceID('seq1'),
+                               [graph.SeqPath([*map(nid, [10, 11, 12, 13, 14, 15, 16, 17, 8, 9])])],
+                               graph.SequenceMetadata({})),
+            msa.SequenceID('seq2'):
+                graph.Sequence(msa.SequenceID('seq2'),
+                               [graph.SeqPath([*map(nid, [10, 11, 12, 13, 14, 15, 16, 7, 8, 9])])],
+                               graph.SequenceMetadata({})),
+            msa.SequenceID('seq3'):
+                graph.Sequence(msa.SequenceID('seq3'),
+                               [graph.SeqPath([*map(nid, [10, 11, 12, 3, 4, 5, 6, 7, 8, 9])])],
+                               graph.SequenceMetadata({})),
+            msa.SequenceID('seq4'):
+                graph.Sequence(msa.SequenceID('seq3'),
+                               [graph.SeqPath([*map(nid, [10, 11, 2, 3, 4, 5, 6, 7, 8, 9])])],
+                               graph.SequenceMetadata({}))
         }
 
         poagraph = graph.Poagraph(nodes, sequences)
 
         consensus_path = graph.SeqPath([*map(nid, [10, 11, 12, 13, 14, 15, 16, 17, 18, 19])])
-        compatibilities = poagraph.get_compatibilities(poagraph.get_sequences_ids(), consensus_path, p)
+        compatibilities = poagraph.get_compatibilities(poagraph.get_sequences_ids(),
+                                                       consensus_path,
+                                                       p)
 
         actual_cutoff = at_builders._find_node_cutoff([c for c in compatibilities.values()], []).cutoff
         self.assertAlmostEqual(expected_cutoff.value, actual_cutoff.value)
@@ -97,15 +101,17 @@ class AffinityTreeGenerationTests(unittest.TestCase):
         (.1, [*map(graph.Compatibility, [.1, .1, .1])])
     )
     @unpack
-    def test_2_find_cutoff_no_so_far_values(self, expected_cutoff: float, compatibilities: List[graph.Compatibility]):
+    def test_2_find_cutoff_no_so_far_values(self,
+                                            expected_cutoff: float,
+                                            compatibilities: List[graph.Compatibility]):
         actual_cutoff = at_builders._find_node_cutoff(compatibilities, []).cutoff
         self.assertEqual(expected_cutoff, actual_cutoff.value)
 
     def test_3_find_cutoff_no_compatibilities(self):
         with self.assertRaises(ValueError) as err:
             _ = at_builders._find_node_cutoff([], []).cutoff
-            self.assertEqual(str(err.exception), f"Empty compatibilities list. Cannot find cutoff.")
-
+            self.assertEqual(str(err.exception), """Empty compatibilities list.
+                                                    Cannot find cutoff.""")
 
     @data(
         # guard <= all compatibilities
@@ -114,8 +120,8 @@ class AffinityTreeGenerationTests(unittest.TestCase):
         (0.8, [0.7, 0.7, 0.85, 0.8], [0.85, 0.91, 1.0]),
 
         # guard > all compatibilities
-        (0.6, [0.3, 0.6, 0.61, 0.61], [0.99]),  # gap to guard bigger than winning gap
-        (0.9, [0.2, 0.97, 0.98, 0.9], [0.99]),  # gap to guard smaller than winning gap
+        (0.6, [0.3, 0.6, 0.61, 0.61], [0.99]),  # big distance to guard
+        (0.9, [0.2, 0.97, 0.98, 0.9], [0.99]),  # small distance to guard
 
         # guard between compatibilities
         (0.5, [0.2, 0.57, 0.58, 0.5], [0.55]),  # take smaller than guard
@@ -123,7 +129,10 @@ class AffinityTreeGenerationTests(unittest.TestCase):
         (0.55, [0.2, 0.58, 0.27, 0.55], [0.55])  # take equal to guard
     )
     @unpack
-    def test_4_find_cutoff_with_so_far_values(self, expected_cutoff, compatibilities, so_far_cutoffs):
+    def test_4_find_cutoff_with_so_far_values(self,
+                                              expected_cutoff,
+                                              compatibilities,
+                                              so_far_cutoffs):
         compatibilities = [graph.Compatibility(c) for c in compatibilities]
         so_far_cutoffs = [graph.Compatibility(c) for c in so_far_cutoffs]
         actual_cutoff = at_builders._find_node_cutoff(compatibilities, so_far_cutoffs).cutoff

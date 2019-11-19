@@ -37,31 +37,37 @@ def poagraph_to_PangenomePO(poagraph: graph.Poagraph) -> str:
     """Converts poagraph to .po file."""
 
     po_nodes, po_sequences = _convert_to_po_input_data(poagraph)
-    return poagraph_elements_to_PangenomePO(po_nodes, po_sequences, poagraph.datatype)
+    return poagraph_elements_to_PangenomePO(po_nodes,
+                                            po_sequences,
+                                            poagraph.datatype)
 
 
-def poagraph_elements_to_PangenomePO(po_nodes: List[NodePO], po_sequences: List[SequencePO], datatype: graph.DataType) -> str:
+def poagraph_elements_to_PangenomePO(po_nodes: List[NodePO],
+                                     po_sequences: List[SequencePO],
+                                     datatype: graph.DataType) -> str:
     """Converts po specific elements to po file."""
 
-    introduction_lines = "\n".join(_get_introduction_lines(len(po_nodes), len(po_sequences)))
+    introduction_lines = "\n".join(_get_introduction_lines(len(po_nodes),
+                                                           len(po_sequences)))
     sequences_lines = "\n".join(_get_sequences_lines(po_sequences))
     nodes_lines = "\n".join(_get_nodes_lines(po_nodes, datatype))
     return "\n".join([introduction_lines, sequences_lines, nodes_lines])
 
 
-def _convert_to_po_input_data(poagraph: graph.Poagraph) -> Tuple[List[NodePO], List[SequencePO]]:
+def _convert_to_po_input_data(p: graph.Poagraph) -> \
+        Tuple[List[NodePO], List[SequencePO]]:
     po_nodes = []
     po_sequences = []
-    sequences_weights = poagraph.get_sequences_weights(poagraph.get_sequences_ids())
+    sequences_weights = p.get_sequences_weights(p.get_sequences_ids())
 
-    for node in poagraph.nodes:
+    for node in p.nodes:
         po_nodes.append(NodePO(base=node._base.value,
                                aligned_to=node.aligned_to,
                                in_nodes=set(),
                                sequences_ids=[]))
 
     seq_int_id = -1
-    for seq_id, sequence in poagraph.sequences.items():
+    for seq_id, sequence in p.sequences.items():
         nodes_count = sum([len(path) for path in sequence.paths])
         if nodes_count == 0:
             continue
@@ -85,7 +91,8 @@ def _convert_to_po_input_data(poagraph: graph.Poagraph) -> Tuple[List[NodePO], L
     return po_nodes, po_sequences
 
 
-def _get_introduction_lines(nodes_count: int, sequences_count: int) -> List[str]:
+def _get_introduction_lines(nodes_count: int, sequences_count: int) -> \
+        List[str]:
     introduction_lines = ["VERSION=pangenome",
                           "NAME=pangenome",
                           "TITLE=pangenome",
@@ -111,7 +118,8 @@ def _get_sequences_lines(po_sequences: List[SequencePO]) -> List[str]:
     return po_sequences_lines
 
 
-def _get_nodes_lines(po_nodes: List[NodePO], datatype: graph.DataType) -> List[str]:
+def _get_nodes_lines(po_nodes: List[NodePO], datatype: graph.DataType) -> \
+        List[str]:
     if not po_nodes:
         raise Exception("No nodes info to write in PO file.")
     i = 0
@@ -140,7 +148,8 @@ def _get_aligned_to_info(aligned_to: graph.NodeID) -> str:
     return f"A{aligned_to}" if aligned_to is not None else ""
 
 
-def _get_node_code_conversion_function(datatype: graph.DataType) -> Callable[[bytes], str]:
+def _get_node_code_conversion_function(datatype: graph.DataType) -> \
+        Callable[[bytes], str]:
     if datatype.value == graph.DataType.Proteins.value:
         return _get_protein_node_code
     elif datatype.value == graph.DataType.Nucleotides.value:
@@ -155,6 +164,3 @@ def _get_protein_node_code(base: bytes) -> str:
 
 def _get_nucleotides_node_code(base: bytes) -> str:
     return base.decode("ASCII").lower()
-
-
-

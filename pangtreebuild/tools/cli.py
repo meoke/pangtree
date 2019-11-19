@@ -5,10 +5,10 @@ from io import StringIO
 from pathlib import Path
 from typing import TypeVar, Callable, Optional, Union
 
-from pangtreebuild.output.json import TaskParameters
+from pangtreebuild.serialization.json import TaskParameters
 from pangtreebuild.affinity_tree import parameters as at_params
 from pangtreebuild.pangenome import graph
-from pangtreebuild.pangenome.parameters import multialignment
+from pangtreebuild.pangenome.parameters import msa
 from pangtreebuild.pangenome.parameters import missings
 from pangtreebuild.tools import pathtools
 
@@ -18,7 +18,7 @@ class InvalidPath(Exception):
 
 
 def _get_file_extension(arg: str) -> str:
-    """Returns file extension if it is included in arg, else throws InvalidPath."""
+    """Returns file extension if present in arg else throws InvalidPath."""
 
     file_path_suffix = Path(arg).suffix
     try:
@@ -35,7 +35,8 @@ def _data_type(data_type: str) -> graph.DataType:
     elif data_type == "n":
         data_type_full_name = "Nucleotides"
     else:
-        raise argparse.ArgumentError("Unknown data type. \'p\' for proteins or \'n\' for nucleotides available.")
+        raise argparse.ArgumentError("""Unknown data type. \'p\' for proteins
+                                        or \'n\' for nucleotides available.""")
     try:
         dt = graph.DataType[data_type_full_name]
         return dt
@@ -64,11 +65,14 @@ def _cli_dir_arg(path: str) -> Path:
 T = TypeVar('T')
 
 
-def _cli_file_arg(arg: str, constructor: Callable[[StringIO, Optional[Path]], T]) -> T:
+def _cli_file_arg(arg: str,
+                  constructor: Callable[[StringIO, Optional[Path]], T]) -> \
+        T:
     try:
         filepath = _path_if_valid(arg)
     except InvalidPath:
-        raise argparse.ArgumentTypeError(f"File {arg} does not exist or is not a file.")
+        raise argparse.ArgumentTypeError(f"""File {arg} does not exist
+                                             or is not a file.""")
     with open(arg) as infile:
         file_content = StringIO(infile.read())
         try:
@@ -77,18 +81,19 @@ def _cli_file_arg(arg: str, constructor: Callable[[StringIO, Optional[Path]], T]
             raise argparse.ArgumentError("Incorrect file content") from p
 
 
-def _mulitalignment_file(x: str) -> Union[multialignment.Maf, multialignment.Po]:
+def _mulitalignment_file(x: str) -> Union[msa.Maf, msa.Po]:
     file_type = _get_file_extension(x)
     if file_type == 'maf':
-        return _cli_file_arg(x, multialignment.Maf)
+        return _cli_file_arg(x, msa.Maf)
     elif file_type == 'po':
-        return _cli_file_arg(x, multialignment.Po)
+        return _cli_file_arg(x, msa.Po)
     else:
-        raise InvalidPath("Only multialignment files with .maf or .po can be processed.")
+        raise InvalidPath("""Only msa files with
+                            .maf or .po can be processed.""")
 
 
-def _metadata_file(x: str) -> multialignment.MetadataCSV:
-    return _cli_file_arg(x, multialignment.MetadataCSV)
+def _metadata_file(x: str) -> msa.MetadataCSV:
+    return _cli_file_arg(x, msa.MetadataCSV)
 
 
 def _blosum_file(x: str) -> at_params.Blosum:
@@ -108,8 +113,10 @@ def get_parser() -> argparse.ArgumentParser:
     """Create ArgumentParser for pang module."""
 
     p = argparse.ArgumentParser(prog='pangtreebuild',
-                                description='This software builds poagraph and generates affinitytree.',
-                                epilog='For more information check github.com/meoke/pang')
+                                description="""This software builds poagraph
+                                                and generates affinitytree.""",
+                                epilog="""For more information check
+                                          github.com/meoke/pangtree""")
     p.add_argument('--output_dir',
                    type=_cli_dir_arg,
                    default=get_default_output_dir(),
@@ -122,43 +129,56 @@ def get_parser() -> argparse.ArgumentParser:
     p.add_argument('--datatype',
                    type=_data_type,
                    default=graph.DataType.Nucleotides,
-                   help='\'n\' for nucleotides, \'p\' for proteins. ' + inspect.getdoc(graph.DataType))
+                   help='\'n\' for nucleotides, \'p\' for proteins. ' +
+                        inspect.getdoc(graph.DataType))
     p.add_argument('--metadata',
                    metavar='METADATA_PATH',
                    type=_metadata_file,
-                   help='Path to the csv file with metadata. ' + inspect.getdoc(multialignment.MetadataCSV))
+                   help='Path to the csv file with metadata. ' +
+                        inspect.getdoc(msa.MetadataCSV))
     p.add_argument('--raw_maf',
                    action='store_true',
                    default=False,
-                   help='Poagraph building from maf file parameter.'
-                        'Set if the maf content must not be transformed to DAG before building graph. '
-                        'Poagraph that was build in this way provides affinitytree tree but the affinitytree do not '
-                        'reflect the real life _sequences.')
+                   help="""Poagraph building from maf file parameter. Set if
+                           the maf content must not be transformed to DAG
+                           before building graph. Poagraph that was build
+                           in this way provides affinitytree tree but the
+                           affinitytree do not reflect the real life
+                           sequences.""")
     p.add_argument('--fasta_provider',
                    metavar="FASTA_PROVIDER",
                    choices=['ncbi', 'file'],
-                   help='Maf file may not include full _sequences. '
-                        'In such case an additional data source is needed. '
-                        'Use \'ncbi\' for NCBI (then CACHE option is available) or \'file\' for file (then provide also FASTA_PATH). MISSING_SYMBOL is used if this argument is omitted. ')
+                   help="""'Maf file may not include full _sequences.
+                            In such case an additional data source is needed.
+                            Use \'ncbi\' for NCBI (activates CACHE option)
+                            or \'file\' for file (then provide also
+                            FASTA_PATH). MISSING_SYMBOL is used if this
+                            argument is omitted.""")
     p.add_argument('--missing_symbol',
                    metavar='MISSING_SYMBOL',
                    type=_cli_arg(missings.MissingBase),
                    help=inspect.getdoc(missings.MissingBase))
     p.add_argument('--cache',
                    action='store_true',
-                   help="""Set if fastas downloaded from NCBI should be cached locally in .fastacache folder. Used if Fasta Provider is NCBI.
-                           Sequences downloaded from NCBI are stored and reused between uses of this program.""")
+                   help="""Set if fastas downloaded from NCBI should be cached
+                           locally in .fastacache folder. Used if Fasta
+                           Provider is NCBI. Sequences downloaded from NCBI
+                           are stored and reused by this program.""")
     p.add_argument('--fasta_path',
                    metavar="FASTA_PATH",
                    type=_path_if_valid,
-                   help='ZIP archive with fasta files or fasta file used as FASTA_PROVIDER.')
+                   help="""ZIP archive with fasta files or fasta file used
+                        as FASTA_PROVIDER.""")
     p.add_argument('--consensus',
                    choices=['poa', 'tree'],
-                   help='Generate consensus tree. Use \'poa\' for direct result of poa software, \'tree\' for Consensus Tree algorithm.')
+                   help="""Generate consensus tree. Use \'poa\' for direct
+                           result of poa software, \'tree\' for Affinity
+                           Tree algorithm.""")
     p.add_argument('--blosum',
                    type=_blosum_file,
                    metavar='BLOSUM_PATH',
-                   help='Path to the blosum file. ' + inspect.getdoc(at_params.Blosum))
+                   help='Path to the blosum file. ' +
+                        inspect.getdoc(at_params.Blosum))
     p.add_argument('--hbmin',
                    type=_cli_arg(at_params.Hbmin),
                    default=at_params.Hbmin(),
@@ -167,14 +187,17 @@ def get_parser() -> argparse.ArgumentParser:
     p.add_argument('--stop',
                    type=_cli_arg(at_params.Stop),
                    default=at_params.Stop(),
-                   help='Tree POA algorithm parameter.' + inspect.getdoc(at_params.Stop))
+                   help='Tree POA algorithm parameter.' +
+                        inspect.getdoc(at_params.Stop))
     p.add_argument('--p',
                    type=_cli_arg(at_params.P),
                    default=at_params.P(),
-                   help='Tree consensus algorithm parameter.' + inspect.getdoc(at_params.P))
+                   help='Tree consensus algorithm parameter.' +
+                        inspect.getdoc(at_params.P))
     p.add_argument('--output_fasta',
                    action='store_true',
-                   help='Set if fasta files for _sequences and affinitytree must be produced.')
+                   help="""Set if fasta files for _sequences and
+                            affinitytree must be produced.""")
     p.add_argument('--output_po',
                    action='store_true',
                    default=False,
@@ -190,7 +213,8 @@ def get_parser() -> argparse.ArgumentParser:
     return p
 
 
-def resolve_fasta_provider(args: argparse.Namespace) -> missings.FastaProvider:
+def resolve_fasta_provider(args: argparse.Namespace) -> \
+        missings.FastaProvider:
     """Returns fasta provider based on parsed arguments."""
 
     if args.fasta_provider is None:
@@ -203,12 +227,14 @@ def resolve_fasta_provider(args: argparse.Namespace) -> missings.FastaProvider:
         return missings.FromNCBI(use_cache)
     elif args.fasta_provider == 'file':
         if args.fasta_path is None:
-            raise Exception("Fasta file source must be specified. It must be provided when fasta source is \'local\'.")
+            raise Exception("""Fasta file source must be specified.
+                               It must be provided when fasta source
+                               is \'local\'.""")
         return missings.FromFile(args.fasta_path)
     else:
-        raise Exception("Not known fasta provider."
-                        "Should be \'ncbi\' or \'file\' or None."
-                        "Cannot build graph.")
+        raise Exception("""Not known fasta provider.
+                           Should be \'ncbi\' or \'file\' or None.
+                           Cannot build graph.""")
 
 
 def get_default_output_dir():
@@ -219,7 +245,8 @@ def get_default_output_dir():
     pathtools.create_dir(output_dir)
     current_time = pathtools.get_current_time()
     output_dir_name = "_".join(["output", current_time])
-    output_dir_path = pathtools.get_child_path(output_dir, output_dir_name)
+    output_dir_path = pathtools.get_child_path(output_dir,
+                                               output_dir_name)
     pathtools.create_dir(output_dir_path)
     return output_dir_path
 
@@ -228,16 +255,18 @@ def get_default_blosum():
     """Returns default blosum file: Blosum80.mat"""
 
     parent_dir = Path(os.path.dirname(os.path.abspath(__file__)) + '/')
-    default_blosum_path = pathtools.get_child_path(parent_dir, "../../bin/blosum80.mat")
+    default_blosum_path = pathtools.get_child_path(parent_dir,
+                                                   "../../bin/blosum80.mat")
     blosum_content = pathtools.get_file_content_stringio(default_blosum_path)
     return at_params.Blosum(blosum_content, default_blosum_path)
 
 
-def get_task_parameters(args: argparse.Namespace, running_time) -> TaskParameters:
+def get_task_parameters(args: argparse.Namespace, running_time) -> \
+        TaskParameters:
     """Returns TaskParameters object based on parsed arguments."""
 
     return TaskParameters(running_time=running_time,
-                          multialignment_file_path=args.multialignment.filename,
+                          multialignment_file_path=args.msa.filename,
                           multialignment_format=str(type(args.multialignment).__name__),
                           datatype=args.datatype.name,
                           metadata_file_path=args.metadata.filename if args.metadata else None,

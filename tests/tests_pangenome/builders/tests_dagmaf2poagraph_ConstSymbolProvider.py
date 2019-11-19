@@ -1,8 +1,8 @@
 import unittest
 from pathlib import Path
 
-from ...context import graph, missings, multialignment, builder
-from ...context import pathtools
+from tests.context import graph, missings, msa, builder
+from tests.context import pathtools
 
 
 def nid(x): return graph.NodeID(x)
@@ -13,9 +13,9 @@ def bid(x): return graph.BlockID(x)
 
 class DAGMaf2PoagraphConstSymbolProviderTests(unittest.TestCase):
     def setUp(self):
-        metadata_path = Path("tests/datamodel/seq_metadata.csv")
-        self.metadatacsv = multialignment.MetadataCSV(pathtools.get_file_content_stringio(metadata_path), metadata_path)
-        self.maf_files_dir = 'tests/datamodel/builders/maf_files_with_gaps/'
+        metadata_path = Path("tests/tests_pangenome/seq_metadata.csv")
+        self.metadatacsv = msa.MetadataCSV(pathtools.get_file_content_stringio(metadata_path), metadata_path)
+        self.maf_files_dir = 'tests/tests_pangenome/builders/maf_files_with_gaps/'
         self.missing_n = missings.MissingBase()
 
     def test_1_missing_sequence_start(self):
@@ -36,26 +36,26 @@ class DAGMaf2PoagraphConstSymbolProviderTests(unittest.TestCase):
         ]
 
         expected_sequences = {
-            multialignment.SequenceID('seq0'):
-                graph.Sequence(multialignment.SequenceID('seq0'),
-                              [],
-                              graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq1'):
-                graph.Sequence(multialignment.SequenceID('seq1'),
-                              [graph.SeqPath([*map(nid, [0, 1, 2, 3, 5, 6, 11])])],
-                              graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq2'):
-                graph.Sequence(multialignment.SequenceID('seq2'),
-                              [graph.SeqPath([*map(nid, [4, 5, 7, 8, 9, 10, 11])])],
-                              graph.SequenceMetadata({'group': '2'})),
-            multialignment.SequenceID('seq3'):
-                graph.Sequence(multialignment.SequenceID('seq3'),
-                              [],
-                              graph.SequenceMetadata({'group': '2'}))
+            msa.SequenceID('seq0'):
+                graph.Sequence(msa.SequenceID('seq0'),
+                               [],
+                               graph.SequenceMetadata({'group': '1'})),
+            msa.SequenceID('seq1'):
+                graph.Sequence(msa.SequenceID('seq1'),
+                               [graph.SeqPath([*map(nid, [0, 1, 2, 3, 5, 6, 11])])],
+                               graph.SequenceMetadata({'group': '1'})),
+            msa.SequenceID('seq2'):
+                graph.Sequence(msa.SequenceID('seq2'),
+                               [graph.SeqPath([*map(nid, [4, 5, 7, 8, 9, 10, 11])])],
+                               graph.SequenceMetadata({'group': '2'})),
+            msa.SequenceID('seq3'):
+                graph.Sequence(msa.SequenceID('seq3'),
+                               [],
+                               graph.SequenceMetadata({'group': '2'}))
         }
         expected_poagraph = graph.Poagraph(expected_nodes, expected_sequences)
         actual_poagraph, _ = builder.build_from_dagmaf(
-            multialignment.Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
+            msa.Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
             missings.ConstBaseProvider(self.missing_n),
             self.metadatacsv)
 
@@ -83,26 +83,26 @@ class DAGMaf2PoagraphConstSymbolProviderTests(unittest.TestCase):
         ]
 
         expected_sequences = {
-            multialignment.SequenceID('seq0'):
-                graph.Sequence(multialignment.SequenceID('seq0'),
-                              [],
-                              graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq1'):
-                graph.Sequence(multialignment.SequenceID('seq1'),
-                              [graph.SeqPath([*map(nid, [0, 2, 4, 5, 8, 9, 10])])],
-                              graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq2'):
-                graph.Sequence(multialignment.SequenceID('seq2'),
-                              [graph.SeqPath([*map(nid, [1, 3, 4, 6, 7, 11, 12])])],
-                              graph.SequenceMetadata({'group': '2'})),
-            multialignment.SequenceID('seq3'):
-                graph.Sequence(multialignment.SequenceID('seq3'),
-                              [],
-                              graph.SequenceMetadata({'group': '2'}))
+            msa.SequenceID('seq0'):
+                graph.Sequence(msa.SequenceID('seq0'),
+                               [],
+                               graph.SequenceMetadata({'group': '1'})),
+            msa.SequenceID('seq1'):
+                graph.Sequence(msa.SequenceID('seq1'),
+                               [graph.SeqPath([*map(nid, [0, 2, 4, 5, 8, 9, 10])])],
+                               graph.SequenceMetadata({'group': '1'})),
+            msa.SequenceID('seq2'):
+                graph.Sequence(msa.SequenceID('seq2'),
+                               [graph.SeqPath([*map(nid, [1, 3, 4, 6, 7, 11, 12])])],
+                               graph.SequenceMetadata({'group': '2'})),
+            msa.SequenceID('seq3'):
+                graph.Sequence(msa.SequenceID('seq3'),
+                               [],
+                               graph.SequenceMetadata({'group': '2'}))
         }
         expected_poagraph = graph.Poagraph(expected_nodes, expected_sequences)
         actual_poagraph, _ = builder.build_from_dagmaf(
-            multialignment.Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
+            msa.Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
             missings.ConstBaseProvider(self.missing_n),
             self.metadatacsv)
 
@@ -134,26 +134,26 @@ class DAGMaf2PoagraphConstSymbolProviderTests(unittest.TestCase):
         ]
 
         expected_sequences = {
-            multialignment.SequenceID('seq0'):
-                graph.Sequence(multialignment.SequenceID('seq0'),
-                              [],
-                              graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq1'):
-                graph.Sequence(multialignment.SequenceID('seq1'),
-                              [graph.SeqPath([*map(nid, [0, 2, 3, 4, 8, 10, 11])])],
-                              graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq2'):
-                graph.Sequence(multialignment.SequenceID('seq2'),
-                              [graph.SeqPath([*map(nid, [1, 5, 6, 7, 9, 10, 11])])],
-                              graph.SequenceMetadata({'group': '2'})),
-            multialignment.SequenceID('seq3'):
-                graph.Sequence(multialignment.SequenceID('seq3'),
-                              [],
-                              graph.SequenceMetadata({'group': '2'}))
+            msa.SequenceID('seq0'):
+                graph.Sequence(msa.SequenceID('seq0'),
+                               [],
+                               graph.SequenceMetadata({'group': '1'})),
+            msa.SequenceID('seq1'):
+                graph.Sequence(msa.SequenceID('seq1'),
+                               [graph.SeqPath([*map(nid, [0, 2, 3, 4, 8, 10, 11])])],
+                               graph.SequenceMetadata({'group': '1'})),
+            msa.SequenceID('seq2'):
+                graph.Sequence(msa.SequenceID('seq2'),
+                               [graph.SeqPath([*map(nid, [1, 5, 6, 7, 9, 10, 11])])],
+                               graph.SequenceMetadata({'group': '2'})),
+            msa.SequenceID('seq3'):
+                graph.Sequence(msa.SequenceID('seq3'),
+                               [],
+                               graph.SequenceMetadata({'group': '2'}))
         }
         expected_poagraph = graph.Poagraph(expected_nodes, expected_sequences)
         actual_poagraph, _ = builder.build_from_dagmaf(
-            multialignment.Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
+            msa.Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
             missings.ConstBaseProvider(self.missing_n),
             self.metadatacsv)
 
@@ -183,26 +183,26 @@ class DAGMaf2PoagraphConstSymbolProviderTests(unittest.TestCase):
         ]
 
         expected_sequences = {
-            multialignment.SequenceID('seq0'):
-                graph.Sequence(multialignment.SequenceID('seq0'),
-                              [],
-                              graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq1'):
-                graph.Sequence(multialignment.SequenceID('seq1'),
-                              [graph.SeqPath([*map(nid, [0, 2, 3, 4, 9, 10, 11])])],
-                              graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq2'):
-                graph.Sequence(multialignment.SequenceID('seq2'),
-                              [graph.SeqPath([*map(nid, [1, 5, 6, 7, 8, 10, 11])])],
-                              graph.SequenceMetadata({'group': '2'})),
-            multialignment.SequenceID('seq3'):
-                graph.Sequence(multialignment.SequenceID('seq3'),
-                              [],
-                              graph.SequenceMetadata({'group': '2'}))
+            msa.SequenceID('seq0'):
+                graph.Sequence(msa.SequenceID('seq0'),
+                               [],
+                               graph.SequenceMetadata({'group': '1'})),
+            msa.SequenceID('seq1'):
+                graph.Sequence(msa.SequenceID('seq1'),
+                               [graph.SeqPath([*map(nid, [0, 2, 3, 4, 9, 10, 11])])],
+                               graph.SequenceMetadata({'group': '1'})),
+            msa.SequenceID('seq2'):
+                graph.Sequence(msa.SequenceID('seq2'),
+                               [graph.SeqPath([*map(nid, [1, 5, 6, 7, 8, 10, 11])])],
+                               graph.SequenceMetadata({'group': '2'})),
+            msa.SequenceID('seq3'):
+                graph.Sequence(msa.SequenceID('seq3'),
+                               [],
+                               graph.SequenceMetadata({'group': '2'}))
         }
         expected_poagraph = graph.Poagraph(expected_nodes, expected_sequences)
         actual_poagraph, _ = builder.build_from_dagmaf(
-            multialignment.Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
+            msa.Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
             missings.ConstBaseProvider(self.missing_n),
             self.metadatacsv)
 
@@ -232,27 +232,27 @@ class DAGMaf2PoagraphConstSymbolProviderTests(unittest.TestCase):
         ]
 
         expected_sequences = {
-            multialignment.SequenceID('seq0'):
-                graph.Sequence(multialignment.SequenceID('seq0'),
-                              [],
-                              graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq1'):
-                graph.Sequence(multialignment.SequenceID('seq1'),
-                              [graph.SeqPath([*map(nid, [0, 2, 3, 4, 9, 10, 11])])],
-                              graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq2'):
-                graph.Sequence(multialignment.SequenceID('seq2'),
-                              [graph.SeqPath([*map(nid, [1, 5, 6, 7])]),
-                               graph.SeqPath([*map(nid, [8, 10, 11])])],
-                              graph.SequenceMetadata({'group': '2'})),
-            multialignment.SequenceID('seq3'):
-                graph.Sequence(multialignment.SequenceID('seq3'),
-                              [],
-                              graph.SequenceMetadata({'group': '2'}))
+            msa.SequenceID('seq0'):
+                graph.Sequence(msa.SequenceID('seq0'),
+                               [],
+                               graph.SequenceMetadata({'group': '1'})),
+            msa.SequenceID('seq1'):
+                graph.Sequence(msa.SequenceID('seq1'),
+                               [graph.SeqPath([*map(nid, [0, 2, 3, 4, 9, 10, 11])])],
+                               graph.SequenceMetadata({'group': '1'})),
+            msa.SequenceID('seq2'):
+                graph.Sequence(msa.SequenceID('seq2'),
+                               [graph.SeqPath([*map(nid, [1, 5, 6, 7])]),
+                                graph.SeqPath([*map(nid, [8, 10, 11])])],
+                               graph.SequenceMetadata({'group': '2'})),
+            msa.SequenceID('seq3'):
+                graph.Sequence(msa.SequenceID('seq3'),
+                               [],
+                               graph.SequenceMetadata({'group': '2'}))
         }
         expected_poagraph = graph.Poagraph(expected_nodes, expected_sequences)
         actual_poagraph, _ = builder.build_from_dagmaf(
-            multialignment.Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
+            msa.Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
             missings.ConstBaseProvider(self.missing_n),
             self.metadatacsv)
 
@@ -282,27 +282,27 @@ class DAGMaf2PoagraphConstSymbolProviderTests(unittest.TestCase):
         ]
 
         expected_sequences = {
-            multialignment.SequenceID('seq0'):
-                graph.Sequence(multialignment.SequenceID('seq0'),
-                              [],
-                              graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq1'):
-                graph.Sequence(multialignment.SequenceID('seq1'),
-                              [graph.SeqPath([*map(nid, [0, 1, 2])]),
-                               graph.SeqPath([*map(nid, [6, 8, 9, 10])])],
-                              graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq2'):
-                graph.Sequence(multialignment.SequenceID('seq2'),
-                              [graph.SeqPath([*map(nid, [0, 1, 3, 4, 5, 7, 11])])],
-                              graph.SequenceMetadata({'group': '2'})),
-            multialignment.SequenceID('seq3'):
-                graph.Sequence(multialignment.SequenceID('seq3'),
-                              [],
-                              graph.SequenceMetadata({'group': '2'}))
+            msa.SequenceID('seq0'):
+                graph.Sequence(msa.SequenceID('seq0'),
+                               [],
+                               graph.SequenceMetadata({'group': '1'})),
+            msa.SequenceID('seq1'):
+                graph.Sequence(msa.SequenceID('seq1'),
+                               [graph.SeqPath([*map(nid, [0, 1, 2])]),
+                                graph.SeqPath([*map(nid, [6, 8, 9, 10])])],
+                               graph.SequenceMetadata({'group': '1'})),
+            msa.SequenceID('seq2'):
+                graph.Sequence(msa.SequenceID('seq2'),
+                               [graph.SeqPath([*map(nid, [0, 1, 3, 4, 5, 7, 11])])],
+                               graph.SequenceMetadata({'group': '2'})),
+            msa.SequenceID('seq3'):
+                graph.Sequence(msa.SequenceID('seq3'),
+                               [],
+                               graph.SequenceMetadata({'group': '2'}))
         }
         expected_poagraph = graph.Poagraph(expected_nodes, expected_sequences)
         actual_poagraph, _ = builder.build_from_dagmaf(
-            multialignment.Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
+            msa.Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
             missings.ConstBaseProvider(self.missing_n),
             self.metadatacsv)
 
@@ -332,26 +332,26 @@ class DAGMaf2PoagraphConstSymbolProviderTests(unittest.TestCase):
         ]
 
         expected_sequences = {
-            multialignment.SequenceID('seq0'):
-                graph.Sequence(multialignment.SequenceID('seq0'),
-                              [],
-                              graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq1'):
-                graph.Sequence(multialignment.SequenceID('seq1'),
-                              [graph.SeqPath([*map(nid, [0, 1, 2, 3, 7, 9, 11])])],
-                              graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq2'):
-                graph.Sequence(multialignment.SequenceID('seq2'),
-                              [graph.SeqPath([*map(nid, [0, 1, 4, 5, 6, 8, 10])])],
-                              graph.SequenceMetadata({'group': '2'})),
-            multialignment.SequenceID('seq3'):
-                graph.Sequence(multialignment.SequenceID('seq3'),
-                              [],
-                              graph.SequenceMetadata({'group': '2'}))
+            msa.SequenceID('seq0'):
+                graph.Sequence(msa.SequenceID('seq0'),
+                               [],
+                               graph.SequenceMetadata({'group': '1'})),
+            msa.SequenceID('seq1'):
+                graph.Sequence(msa.SequenceID('seq1'),
+                               [graph.SeqPath([*map(nid, [0, 1, 2, 3, 7, 9, 11])])],
+                               graph.SequenceMetadata({'group': '1'})),
+            msa.SequenceID('seq2'):
+                graph.Sequence(msa.SequenceID('seq2'),
+                               [graph.SeqPath([*map(nid, [0, 1, 4, 5, 6, 8, 10])])],
+                               graph.SequenceMetadata({'group': '2'})),
+            msa.SequenceID('seq3'):
+                graph.Sequence(msa.SequenceID('seq3'),
+                               [],
+                               graph.SequenceMetadata({'group': '2'}))
         }
         expected_poagraph = graph.Poagraph(expected_nodes, expected_sequences)
         actual_poagraph, _ = builder.build_from_dagmaf(
-            multialignment.Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
+            msa.Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
             missings.ConstBaseProvider(self.missing_n),
             self.metadatacsv)
 

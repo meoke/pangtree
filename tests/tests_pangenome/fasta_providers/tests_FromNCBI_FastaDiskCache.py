@@ -4,7 +4,7 @@ from pathlib import Path
 
 from ddt import ddt
 
-from tests.context import missings, graph, multialignment
+from tests.context import missings, graph, msa
 from tests.context import pathtools
 
 
@@ -13,14 +13,16 @@ class FromNCBI_FastaDiskCache_Tests(unittest.TestCase):
     def setUp(self) -> None:
         self.fasta_provider = missings.FromNCBI(use_cache=False)
 
-    @unittest.skip('Internet connection required -> long execution')
+    # @unittest.skip('Internet connection required -> long execution')
     def test_1_download_sequence_and_save_to_cache(self):
-        fasta_provider = missings.FromNCBI(use_cache=True)
         cache_dir_path = pathtools.get_child_path(Path.cwd(), ".fastacache")
         if cache_dir_path.exists():
             shutil.rmtree(cache_dir_path)
 
-        sequence_id = multialignment.SequenceID("AB050936.1", skip_part_before_dot=False)
+        ncbi_fasta_provider = missings.FromNCBI(use_cache=True)
+        sequence_id = msa.SequenceID("AB050936.1", skip_part_before_dot=False)
+
+        _ = ncbi_fasta_provider.get_base(sequence_id, 0)
 
         # cache directory creation
         cache_directory_created = cache_dir_path.exists()
@@ -33,7 +35,7 @@ class FromNCBI_FastaDiskCache_Tests(unittest.TestCase):
         self.assertTrue(file_created_in_cache)
 
         # file content
-        control_fasta_path = Path('tests/data/missings/fasta_ncbi/AB050936.1.fasta')
+        control_fasta_path = Path('tests/tests_pangenome/fasta_providers/fasta_ncbi/AB050936.1.fasta')
 
         with open(control_fasta_path) as fasta_file_hanlder:
             expected_content = fasta_file_hanlder.read()
@@ -48,7 +50,7 @@ class FromNCBI_FastaDiskCache_Tests(unittest.TestCase):
             shutil.rmtree(cache_dir_path)
 
         cache_dir_path.mkdir()
-        sequence_id = multialignment.SequenceID("seq1")
+        sequence_id = msa.SequenceID("seq1")
         fake_sequence = "foo"
         expected_base = graph.Base("o")
         fake_fasta_path = pathtools.get_child_path(cache_dir_path, f"{sequence_id}.fasta")

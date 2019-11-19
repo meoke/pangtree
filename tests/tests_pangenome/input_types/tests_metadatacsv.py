@@ -3,10 +3,10 @@ from pathlib import Path
 
 from ddt import unpack, data, ddt
 
-from ...context import multialignment, pathtools, missings, graph, builder
+from tests.context import msa, pathtools, missings, graph, builder
 
 
-def sid(x): return multialignment.SequenceID(x)
+def sid(x): return msa.SequenceID(x)
 
 
 def sm(x): return graph.SequenceMetadata(x)
@@ -16,19 +16,19 @@ def sm(x): return graph.SequenceMetadata(x)
 class MetadataCSVTests(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.csv_files_dir = 'tests/datamodel/input_types/csv_files/'
-        self.alignment_files_dir = 'tests/datamodel/input_types/alignment_files/'
+        self.csv_files_dir = 'tests/tests_pangenome/input_types/csv_files/'
+        self.alignment_files_dir = 'tests/tests_pangenome/input_types/alignment_files/'
         self.fasta_provider = missings.ConstBaseProvider(missings.MissingBase())
 
     def test_1_correct(self):
         metadata_path = Path(self.csv_files_dir + "test_1_correct.csv")
         csv_content = pathtools.get_file_content_stringio(metadata_path)
 
-        expected_metadata = {multialignment.SequenceID('s1'): {'name': 'sequence1', 'group': 'A'},
-                             multialignment.SequenceID('s2'): {'name': 'sequence2', 'group': 'B'},
-                             multialignment.SequenceID('s3'): {'name': 'sequence3', 'group': 'B'}
+        expected_metadata = {msa.SequenceID('s1'): {'name': 'sequence1', 'group': 'A'},
+                             msa.SequenceID('s2'): {'name': 'sequence2', 'group': 'B'},
+                             msa.SequenceID('s3'): {'name': 'sequence3', 'group': 'B'}
                              }
-        m = multialignment.MetadataCSV(csv_content, metadata_path)
+        m = msa.MetadataCSV(csv_content, metadata_path)
         actual_metadata = m.metadata
 
         self.assertEqual(expected_metadata, actual_metadata)
@@ -37,7 +37,7 @@ class MetadataCSVTests(unittest.TestCase):
         csv_path = self.csv_files_dir + "test_2_no_seqid.csv"
         csv_content = pathtools.get_file_content_stringio(csv_path)
         with self.assertRaises(Exception) as err:
-            _ = multialignment.MetadataCSV(csv_content, csv_path)
+            _ = msa.MetadataCSV(csv_content, csv_path)
         self.assertEqual(f"No \'seqid\' column in metadata csv.", str(err.exception))
 
     def test_3_empty_file(self):
@@ -45,18 +45,18 @@ class MetadataCSVTests(unittest.TestCase):
 
         csv_content = pathtools.get_file_content_stringio(csv_path)
         with self.assertRaises(Exception) as err:
-            _ = multialignment.MetadataCSV(csv_content, csv_path)
+            _ = msa.MetadataCSV(csv_content, csv_path)
         self.assertEqual(f"Empty csv file.", str(err.exception))
 
     def test_4_seqid_is_last(self):
         metadata_path = Path(self.csv_files_dir + "test_4_seqid_is_last.csv")
         csv_content = pathtools.get_file_content_stringio(metadata_path)
 
-        expected_metadata = {multialignment.SequenceID('s1'): {'name': 'sequence1', 'group': 'A'},
-                             multialignment.SequenceID('s2'): {'name': 'sequence2', 'group': 'B'},
-                             multialignment.SequenceID('s3'): {'name': 'sequence3', 'group': 'B'}
+        expected_metadata = {msa.SequenceID('s1'): {'name': 'sequence1', 'group': 'A'},
+                             msa.SequenceID('s2'): {'name': 'sequence2', 'group': 'B'},
+                             msa.SequenceID('s3'): {'name': 'sequence3', 'group': 'B'}
                              }
-        m = multialignment.MetadataCSV(csv_content, metadata_path)
+        m = msa.MetadataCSV(csv_content, metadata_path)
         actual_metadata = m.metadata
 
         self.assertEqual(expected_metadata, actual_metadata)
@@ -66,7 +66,7 @@ class MetadataCSVTests(unittest.TestCase):
 
         csv_content = pathtools.get_file_content_stringio(csv_path)
         with self.assertRaises(Exception) as err:
-            _ = multialignment.MetadataCSV(csv_content, csv_path)
+            _ = msa.MetadataCSV(csv_content, csv_path)
         self.assertEqual("Only one \'seqid\' column in metadata csv is allowed.", str(err.exception))
 
     def test_6_incorrect_commas_number(self):
@@ -74,8 +74,8 @@ class MetadataCSVTests(unittest.TestCase):
 
         csv_content = pathtools.get_file_content_stringio(csv_path)
         with self.assertRaises(Exception) as err:
-            _ = multialignment.MetadataCSV(csv_content, csv_path)
-        self.assertEqual("CSV metadata error. Different fields number in line 0 than in header line.",
+            _ = msa.MetadataCSV(csv_content, csv_path)
+        self.assertEqual("CSV metadata error. Different number of columns in line 0 than in header line.",
                          str(err.exception))
 
     def test_7_not_unique_seqids(self):
@@ -83,19 +83,18 @@ class MetadataCSVTests(unittest.TestCase):
 
         csv_content = pathtools.get_file_content_stringio(csv_path)
         with self.assertRaises(Exception) as err:
-            _ = multialignment.MetadataCSV(csv_content, csv_path)
-        self.assertEqual("Not unique values seqid column in metadata file. "
-                         "Make them unique.", str(err.exception))
+            _ = msa.MetadataCSV(csv_content, csv_path)
+        self.assertEqual("Repeated values in seqid column in metadata file. Make them unique.", str(err.exception))
 
     def test_8_correct_with_dots(self):
         metadata_path = Path(self.csv_files_dir + "test_8_seqids_with_dots.csv")
         csv_content = pathtools.get_file_content_stringio(metadata_path)
 
-        expected_metadata = {multialignment.SequenceID('s1.1', skip_part_before_dot=False): {'name': 'sequence1', 'group': 'A'},
-                             multialignment.SequenceID('s2.1', skip_part_before_dot=False): {'name': 'sequence2', 'group': 'B'},
-                             multialignment.SequenceID('s3.10', skip_part_before_dot=False): {'name': 'sequence3', 'group': 'B'}
+        expected_metadata = {msa.SequenceID('s1.1', skip_part_before_dot=False): {'name': 'sequence1', 'group': 'A'},
+                             msa.SequenceID('s2.1', skip_part_before_dot=False): {'name': 'sequence2', 'group': 'B'},
+                             msa.SequenceID('s3.10', skip_part_before_dot=False): {'name': 'sequence3', 'group': 'B'}
                              }
-        m = multialignment.MetadataCSV(csv_content, metadata_path)
+        m = msa.MetadataCSV(csv_content, metadata_path)
         actual_metadata = m.metadata
 
         self.assertEqual(expected_metadata, actual_metadata)
@@ -104,11 +103,11 @@ class MetadataCSVTests(unittest.TestCase):
         metadata_path = Path(self.csv_files_dir + "test_1_correct.csv")
         csv_content = pathtools.get_file_content_stringio(metadata_path)
 
-        expected_seqids = [multialignment.SequenceID('s1'),
-                           multialignment.SequenceID('s2'),
-                           multialignment.SequenceID('s3')]
+        expected_seqids = [msa.SequenceID('s1'),
+                           msa.SequenceID('s2'),
+                           msa.SequenceID('s3')]
 
-        m = multialignment.MetadataCSV(csv_content, metadata_path)
+        m = msa.MetadataCSV(csv_content, metadata_path)
         actual_seqids = m.get_all_sequences_ids()
 
         self.assertEqual(expected_seqids, actual_seqids)
@@ -153,29 +152,34 @@ class MetadataCSVTests(unittest.TestCase):
             sid('ss2'): sm({'group': None, 'name': None})})
           )
     @unpack
-    def test_10_metadata_feed_to_alignment_from_csv(self, test_name, maf_name, csv_name, po_name, expected_metadata):
+    def test_10_metadata_feed_to_alignment_from_csv(self,
+                                                    test_name,
+                                                    maf_name,
+                                                    csv_name,
+                                                    po_name,
+                                                    expected_metadata):
         maf_path = Path(self.alignment_files_dir + maf_name)
         csv_path = Path(self.csv_files_dir + csv_name)
         po_path = Path(self.alignment_files_dir + po_name)
 
         poagraph, _ = builder.build_from_dagmaf(
-            multialignment.Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
+            msa.Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
             self.fasta_provider,
-            multialignment.MetadataCSV(pathtools.get_file_content_stringio(csv_path), csv_path))
+            msa.MetadataCSV(pathtools.get_file_content_stringio(csv_path), csv_path))
         actual_metadata = {seq_id: seq.seqmetadata
                            for seq_id, seq in poagraph.sequences.items()}
         self.assertEqual(expected_metadata, actual_metadata)
 
         poagraph = builder.build_from_maf(
-            multialignment.Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
-            multialignment.MetadataCSV(pathtools.get_file_content_stringio(csv_path), csv_path))
+            msa.Maf(pathtools.get_file_content_stringio(maf_path), maf_path),
+            msa.MetadataCSV(pathtools.get_file_content_stringio(csv_path), csv_path))
         actual_metadata = {seq_id: seq.seqmetadata
                            for seq_id, seq in poagraph.sequences.items()}
         self.assertEqual(expected_metadata, actual_metadata)
 
         poagraph = builder.build_from_po(
-            multialignment.Po(pathtools.get_file_content_stringio(po_path), maf_path),
-            multialignment.MetadataCSV(pathtools.get_file_content_stringio(csv_path), csv_path))
+            msa.Po(pathtools.get_file_content_stringio(po_path), maf_path),
+            msa.MetadataCSV(pathtools.get_file_content_stringio(csv_path), csv_path))
         actual_metadata = {seq_id: seq.seqmetadata
                            for seq_id, seq in poagraph.sequences.items()}
         self.assertEqual(expected_metadata, actual_metadata)

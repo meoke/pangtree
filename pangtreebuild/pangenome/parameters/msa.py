@@ -1,4 +1,4 @@
-"""Objects to store multialignment input files content: MAF, PO."""
+"""Objects to store multiple sequence alignment files content: MAF, PO."""
 
 import csv
 from io import StringIO
@@ -7,7 +7,7 @@ from typing import Optional, Any, Dict, List
 
 
 class Maf:
-    """Multialignment in MAF format. https://genome.ucsc.edu/FAQ/FAQformat.html#format5
+    """MSA in MAF format. https://genome.ucsc.edu/FAQ/FAQformat.html#format5
 
     Args:
         file_name: MAF file name, no requirement to have full path.
@@ -18,7 +18,7 @@ class Maf:
 
     Attributes:
         file_name (Path): File name.
-        filecontent (str): File content. Multialignment content as stream. Accepted formats: maf and po."""
+        filecontent (str): MSA (MAF or PO) content content as stream."""
 
     def __init__(self, file_content: StringIO, file_name: Optional[Path]):
         self.filename = file_name
@@ -45,7 +45,7 @@ class Po:
 
     Attributes:
         file_name (Path): File name.
-        file_content (str): File content. Multialignment content as stream. Accepted formats: maf and po."""
+        file_content (str): MSA (MAF or PO) content content as stream."""
 
     def __init__(self, file_content: StringIO, file_name: Optional[Path]):
         self.filename = file_name
@@ -63,7 +63,8 @@ class SequenceID(object):
 
     Args:
         sequence_id: value of the sequence ID as str
-        skip_part_before_dot: TODO remove this hack so that always part before dot is taken as sequence ID
+        skip_part_before_dot: TODO remove this hack so that
+                            always part before dot is taken as sequence ID
 
     Attributes:
         value (str): sequence ID
@@ -110,7 +111,7 @@ class SequenceID(object):
 
 
 class MetadataCSV:
-    """Metadata provides additional information about sequences present in poagraph.
+    """Metadata provides additional information about sequences.
     See example metadata file: data\\Ebola\\ebola_metadata.csv
 
     Args:
@@ -125,7 +126,8 @@ class MetadataCSV:
     def __init__(self, filecontent: StringIO, filename: Optional[Path]):
         filecontent = filecontent.read()
         self.filename: Path = filename
-        self.metadata: Dict[SequenceID, Dict[str, Any]] = self.csv_to_dict(filecontent)
+        self.metadata: Dict[SequenceID, Dict[str, Any]]
+        self.metadata = self.csv_to_dict(filecontent)
 
     @classmethod
     def csv_to_dict(cls, filecontent: str):
@@ -136,11 +138,10 @@ class MetadataCSV:
         for row in rd:
             seqid = SequenceID(row['seqid'], skip_part_before_dot=False)
             if seqid in d:
-                raise ValueError("Not unique values seqid column in metadata file. Make them unique.")
+                raise ValueError("""Repeated values in seqid column in metadata file. Make them unique.""")
             d[seqid] = dict(row)
             if None in d[seqid].keys():
-                raise ValueError("CSV metadata error. "
-                                 "Different fields number in line 0 than in header line.")
+                raise ValueError("""CSV metadata error. Different number of columns in line 0 than in header line.""")
             del d[seqid]['seqid']
         return d
 
@@ -154,7 +155,7 @@ class MetadataCSV:
             raise ValueError('No \'seqid\' column in metadata csv.')
 
         if headers.count('seqid') > 1:
-            raise ValueError('Only one \'seqid\' column in metadata csv is allowed.')
+            raise ValueError("""Only one \'seqid\' column in metadata csv is allowed.""")
 
     def get_all_sequences_ids(self) -> List[SequenceID]:
         return [*self.metadata.keys()]

@@ -56,7 +56,10 @@ def get_current_time() -> str:
     return datetime.now().strftime('%m_%d__%H_%M_%S')
 
 
-def save_to_file(filecontent: str, filename: Path, mode: Optional[str] = 'w') -> None:
+def save_to_file(filecontent: str,
+                 filename: Path,
+                 mode: Optional[str] = 'w') -> \
+        None:
     """Saves string to file."""
 
     with open(filename, mode) as output:
@@ -64,7 +67,7 @@ def save_to_file(filecontent: str, filename: Path, mode: Optional[str] = 'w') ->
 
 
 def get_child_dir(parent_path: Path, child_dir_name: str):
-    """Creates of not exists and returns path to the child_dir_name placed in parent_path."""
+    """Creates dir if not exists and returns its path."""
 
     child_dir_path = parent_path.joinpath(child_dir_name)
     if not child_dir_path.is_dir():

@@ -18,7 +18,7 @@ import pangtreebuild.tools.pathtools as pathtools
 from pangtreebuild.pangenome.Poagraph import Poagraph
 from pangtreebuild.pangenome.Node import Node, NodeID, Base
 from pangtreebuild.affinity_tree.ConsensusTree import AffinityTree, AffinityNode, Compatibility, ConsensusNodeID
-from pangtreebuild.output.PangenomeJSON import str_to_PangenomeJSON, PangenomeJSON
+from pangtreebuild.serialization.PangenomeJSON import str_to_PangenomeJSON, PangenomeJSON
 
 
 def convert_jsonpangenome(path: Path) -> Tuple[Poagraph, AffinityTree]:

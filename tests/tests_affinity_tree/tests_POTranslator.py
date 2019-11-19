@@ -1,6 +1,6 @@
 import unittest
 from ddt import ddt
-from tests.context import poa, graph, multialignment
+from tests.context import poa, graph, msa
 
 
 def nid(x): return graph.NodeID(x)
@@ -31,28 +31,29 @@ class PoagraphPOTranslator_read_top_consensus_Test(unittest.TestCase):
                  ]
 
         sequences = {
-            multialignment.SequenceID('seq0'):
-                graph.Sequence(multialignment.SequenceID('seq0'),
-                              [graph.SeqPath([*map(nid, [0, 1, 3, 5, 9, 10, 13])])],
-                              graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq1'):
-                graph.Sequence(multialignment.SequenceID('seq1'),
-                              [graph.SeqPath([*map(nid, [1, 3, 6, 9, 11])])],
-                              graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq2'):
-                graph.Sequence(multialignment.SequenceID('seq2'),
-                              [graph.SeqPath([*map(nid, [2, 4, 7, 9, 11, 12])])],
-                              graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq3'):
-                graph.Sequence(multialignment.SequenceID('seq3'),
-                              [graph.SeqPath([*map(nid, [2, 4, 8, 9, 11, 12, 14])])],
-                              graph.SequenceMetadata({'group': '1'})),
+            msa.SequenceID('seq0'):
+                graph.Sequence(msa.SequenceID('seq0'),
+                               [graph.SeqPath([*map(nid, [0, 1, 3, 5, 9, 10, 13])])],
+                               graph.SequenceMetadata({'group': '1'})),
+            msa.SequenceID('seq1'):
+                graph.Sequence(msa.SequenceID('seq1'),
+                               [graph.SeqPath([*map(nid, [1, 3, 6, 9, 11])])],
+                               graph.SequenceMetadata({'group': '1'})),
+            msa.SequenceID('seq2'):
+                graph.Sequence(msa.SequenceID('seq2'),
+                               [graph.SeqPath([*map(nid, [2, 4, 7, 9, 11, 12])])],
+                               graph.SequenceMetadata({'group': '1'})),
+            msa.SequenceID('seq3'):
+                graph.Sequence(msa.SequenceID('seq3'),
+                               [graph.SeqPath([*map(nid, [2, 4, 8, 9, 11, 12, 14])])],
+                               graph.SequenceMetadata({'group': '1'})),
         }
 
         self.poagraph = graph.Poagraph(nodes, sequences)
 
     def test_read_consensus_path_seq1_only_in_input(self):
-        translator = poa._PoagraphPOTranslator(self.poagraph, [multialignment.SequenceID('seq1')])
+        translator = poa._PoagraphPOTranslator(self.poagraph,
+                                               [msa.SequenceID('seq1')])
         _ = translator.get_input_po_content()
 
         poa_lines = ["VERSION=pangenome\n",
@@ -74,7 +75,9 @@ class PoagraphPOTranslator_read_top_consensus_Test(unittest.TestCase):
         self.assertEqual(expected_consensus_path, actual_consensus_path[0].path)
 
     def test_subpoagraph_construction_from_poagraph_keep_seq_0_1(self):
-        translator = poa._PoagraphPOTranslator(self.poagraph, [multialignment.SequenceID('seq0'), multialignment.SequenceID('seq1')])
+        translator = poa._PoagraphPOTranslator(self.poagraph,
+                                               [msa.SequenceID('seq0'),
+                                                msa.SequenceID('seq1')])
         actual_po_content = translator.get_input_po_content()
         expected_po_content = "VERSION=pangenome\n"\
                               "NAME=pangenome\n"\
@@ -97,7 +100,8 @@ class PoagraphPOTranslator_read_top_consensus_Test(unittest.TestCase):
         self.assertEqual(expected_po_content, actual_po_content)
 
     def test_subpoagraph_construction_from_poagraph_keep_seq3(self):
-        translator = poa._PoagraphPOTranslator(self.poagraph, [multialignment.SequenceID('seq3')])
+        translator = poa._PoagraphPOTranslator(self.poagraph,
+                                               [msa.SequenceID('seq3')])
         actual_po_content = translator.get_input_po_content()
         expected_po_content = "VERSION=pangenome\n" \
                               "NAME=pangenome\n" \
@@ -124,13 +128,13 @@ class PoagraphPOTranslator_read_top_consensus_Test(unittest.TestCase):
                  ]
 
         sequences = {
-            multialignment.SequenceID('seq0'):
-                graph.Sequence(multialignment.SequenceID('seq0'),
-                              [graph.SeqPath([*map(nid, [0, 1, 2, 3, 4])])],
-                              graph.SequenceMetadata({'group': '1'}))
+            msa.SequenceID('seq0'):
+                graph.Sequence(msa.SequenceID('seq0'),
+                               [graph.SeqPath([*map(nid, [0, 1, 2, 3, 4])])],
+                               graph.SequenceMetadata({'group': '1'}))
         }
         poagraph = graph.Poagraph(nodes, sequences)
-        translator = poa._PoagraphPOTranslator(poagraph, [multialignment.SequenceID('seq0')])
+        translator = poa._PoagraphPOTranslator(poagraph, [msa.SequenceID('seq0')])
         actual_po_content = translator.get_input_po_content()
         expected_po_content = "VERSION=pangenome\n" \
                               "NAME=pangenome\n" \
@@ -152,18 +156,18 @@ class PoagraphPOTranslator_read_top_consensus_Test(unittest.TestCase):
                  graph.Node(node_id=nid(2), base=b('C'), aligned_to=None)]
 
         sequences = {
-            multialignment.SequenceID('seq1'):
-                graph.Sequence(multialignment.SequenceID('seq1'),
-                              [graph.SeqPath([*map(nid, [0, 2])])],
-                              graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq2'):
-                graph.Sequence(multialignment.SequenceID('seq2'),
-                              [graph.SeqPath([*map(nid, [0, 1, 2])])],
-                              graph.SequenceMetadata({'group': '1'}))
+            msa.SequenceID('seq1'):
+                graph.Sequence(msa.SequenceID('seq1'),
+                               [graph.SeqPath([*map(nid, [0, 2])])],
+                               graph.SequenceMetadata({'group': '1'})),
+            msa.SequenceID('seq2'):
+                graph.Sequence(msa.SequenceID('seq2'),
+                               [graph.SeqPath([*map(nid, [0, 1, 2])])],
+                               graph.SequenceMetadata({'group': '1'}))
         }
         poagraph = graph.Poagraph(nodes, sequences)
 
-        translator = poa._PoagraphPOTranslator(poagraph, [multialignment.SequenceID('seq2')])
+        translator = poa._PoagraphPOTranslator(poagraph, [msa.SequenceID('seq2')])
         actual_po_content = translator.get_input_po_content()
         expected_po_content = "VERSION=pangenome\n" \
                               "NAME=pangenome\n" \
@@ -177,25 +181,24 @@ class PoagraphPOTranslator_read_top_consensus_Test(unittest.TestCase):
                               "c:L1S0"
         self.assertEqual(expected_po_content, actual_po_content)
 
-
     def test_subpoagraph_should_omit_edges_2(self):
         nodes = [graph.Node(node_id=nid(0), base=b('A'), aligned_to=None),
-                          graph.Node(node_id=nid(1), base=b('C'), aligned_to=None),
-                          graph.Node(node_id=nid(2), base=b('C'), aligned_to=None)]
+                 graph.Node(node_id=nid(1), base=b('C'), aligned_to=None),
+                 graph.Node(node_id=nid(2), base=b('C'), aligned_to=None)]
 
         sequences = {
-            multialignment.SequenceID('seq1'):
-                graph.Sequence(multialignment.SequenceID('seq1'),
-                              [graph.SeqPath([*map(nid, [0, 2])])],
-                              graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq2'):
-                graph.Sequence(multialignment.SequenceID('seq2'),
-                              [graph.SeqPath([*map(nid, [0, 1, 2])])],
-                              graph.SequenceMetadata({'group': '1'}))
+            msa.SequenceID('seq1'):
+                graph.Sequence(msa.SequenceID('seq1'),
+                               [graph.SeqPath([*map(nid, [0, 2])])],
+                               graph.SequenceMetadata({'group': '1'})),
+            msa.SequenceID('seq2'):
+                graph.Sequence(msa.SequenceID('seq2'),
+                               [graph.SeqPath([*map(nid, [0, 1, 2])])],
+                               graph.SequenceMetadata({'group': '1'}))
         }
         poagraph = graph.Poagraph(nodes, sequences)
 
-        translator = poa._PoagraphPOTranslator(poagraph, [multialignment.SequenceID('seq1')])
+        translator = poa._PoagraphPOTranslator(poagraph, [msa.SequenceID('seq1')])
         actual_po_content = translator.get_input_po_content()
         expected_po_content = "VERSION=pangenome\n" \
                               "NAME=pangenome\n" \
@@ -210,25 +213,25 @@ class PoagraphPOTranslator_read_top_consensus_Test(unittest.TestCase):
         self.assertEqual(expected_po_content, actual_po_content)
 
     def test_subpoagraph_should_omit_in_nodes_and_aligned_nodes(self):
-        #original poagraph
+        # original poagraph
         nodes = [graph.Node(node_id=nid(0), base=b('A'), aligned_to=None),
                  graph.Node(node_id=nid(1), base=b('C'), aligned_to=nid(2)),
                  graph.Node(node_id=nid(2), base=b('T'), aligned_to=nid(1)),
                  graph.Node(node_id=nid(3), base=b('G'), aligned_to=None)]
 
         sequences = {
-            multialignment.SequenceID('seq1'):
-                graph.Sequence(multialignment.SequenceID('seq1'),
-                              [graph.SeqPath([*map(nid, [0, 1, 3])])],
-                              graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq2'):
-                graph.Sequence(multialignment.SequenceID('seq2'),
-                              [graph.SeqPath([*map(nid, [0, 2, 3])])],
-                              graph.SequenceMetadata({'group': '1'}))
+            msa.SequenceID('seq1'):
+                graph.Sequence(msa.SequenceID('seq1'),
+                               [graph.SeqPath([*map(nid, [0, 1, 3])])],
+                               graph.SequenceMetadata({'group': '1'})),
+            msa.SequenceID('seq2'):
+                graph.Sequence(msa.SequenceID('seq2'),
+                               [graph.SeqPath([*map(nid, [0, 2, 3])])],
+                               graph.SequenceMetadata({'group': '1'}))
         }
         poagraph = graph.Poagraph(nodes, sequences)
 
-        translator = poa._PoagraphPOTranslator(poagraph, [multialignment.SequenceID('seq2')])
+        translator = poa._PoagraphPOTranslator(poagraph, [msa.SequenceID('seq2')])
         actual_po_content = translator.get_input_po_content()
         expected_po_content = "VERSION=pangenome\n" \
                               "NAME=pangenome\n" \
@@ -256,19 +259,19 @@ class PoagraphPOTranslator_read_top_consensus_Test(unittest.TestCase):
                  graph.Node(node_id=nid(5), base=b('T'), aligned_to=None)]
 
         sequences = {
-            multialignment.SequenceID('seq1'):
-                graph.Sequence(multialignment.SequenceID('seq1'),
-                              [graph.SeqPath([*map(nid, [0, 2, 3, 4, 7, 8])])],
-                              graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq2'):
-                graph.Sequence(multialignment.SequenceID('seq2'),
-                              [graph.SeqPath([*map(nid, [1, 2, 5, 6, 7, 8])])],
-                              graph.SequenceMetadata({'group': '1'}))
+            msa.SequenceID('seq1'):
+                graph.Sequence(msa.SequenceID('seq1'),
+                               [graph.SeqPath([*map(nid, [0, 2, 3, 4, 7, 8])])],
+                               graph.SequenceMetadata({'group': '1'})),
+            msa.SequenceID('seq2'):
+                graph.Sequence(msa.SequenceID('seq2'),
+                               [graph.SeqPath([*map(nid, [1, 2, 5, 6, 7, 8])])],
+                               graph.SequenceMetadata({'group': '1'}))
         }
         poagraph = graph.Poagraph(nodes, sequences)
 
-        translator = poa._PoagraphPOTranslator(poagraph, [multialignment.SequenceID('seq1'),
-                                                          multialignment.SequenceID('seq2')])
+        translator = poa._PoagraphPOTranslator(poagraph, [msa.SequenceID('seq1'),
+                                                          msa.SequenceID('seq2')])
         actual_po_content = translator.get_input_po_content()
         expected_po_content = "VERSION=pangenome\n" \
                               "NAME=pangenome\n" \

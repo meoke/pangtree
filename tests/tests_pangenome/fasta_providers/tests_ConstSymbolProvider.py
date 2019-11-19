@@ -1,6 +1,6 @@
 import unittest
 
-from ...context import missings, graph, multialignment
+from tests.context import missings, graph, msa
 
 
 class ConstSymbolProviderTests(unittest.TestCase):
@@ -10,14 +10,14 @@ class ConstSymbolProviderTests(unittest.TestCase):
         const_symbol_provider = missings.ConstBaseProvider(missing_symbol)
 
         expected_symbol = graph.Base('?')
-        actual_symbol = const_symbol_provider.get_base(multialignment.SequenceID('s'), 0)
+        actual_symbol = const_symbol_provider.get_base(msa.SequenceID('s'), 0)
         self.assertEqual(expected_symbol, actual_symbol)
 
     def test_2_symbol_provided(self):
         const_symbol_provider = missings.ConstBaseProvider(missings.MissingBase('*'))
 
         expected_symbol = graph.Base('*')
-        actual_symbol = const_symbol_provider.get_base(multialignment.SequenceID('s'), 0)
+        actual_symbol = const_symbol_provider.get_base(msa.SequenceID('s'), 0)
         self.assertEqual(expected_symbol, actual_symbol)
 
     def test_3_incorrect_missing_symbol(self):

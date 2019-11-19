@@ -8,19 +8,21 @@ from typing import Union
 class Blosum(object):
     """BLOSUM matrix file content and its full path.
 
-    This file is used by the poa software to determine consensuses paths in poagraph.
-    The matrix in this file must contain symbol used by pangtreebuild for missing nucleotides/proteins.
-    Lower-case is interpreted as nucleotides and upper-case as proteins.
+    This file is used by the poa software to determine consensuses paths
+    in poagraph. The matrix in this file must contain symbol used by
+    pangtreebuild for missing nucleotides/proteins. Lower-case is interpreted
+    as nucleotides and upper-case as proteins.
 
     Args:
         file_content: Blosum file content required to validate its content.
         filepath: Path to the Blosum file, required by the poa software.
 
     Raises:
-        ValueError: If Blosum file is empty or the BLOSUM matrix cannot be identified.
+        ValueError: If file is empty or the BLOSUM matrix cannot be found.
 
     Attributes:
-        filepath (Path): Full path to the blosum file. Required by poa software.
+        filepath (Path): Full path to the blosum file.
+            Required by poa software.
     """
 
     def __init__(self, file_content: StringIO, filepath: Path):
@@ -33,11 +35,12 @@ class Blosum(object):
         """Blosum file validation.
 
         Raises:
-            ValueError: If Blosum file is empty or the BLOSUM matrix cannot be identified.
+            ValueError: If file is empty or the BLOSUM matrix cannot be found.
         """
 
         if not self._blosum_lines:
-            raise ValueError("Empty blosum file. Provide a valid blosum file or use te default one.")
+            raise ValueError("""Empty blosum file. Provide a valid blosum file
+                                or use te default one.""")
 
         blosum_symbols_line = None
         for blosum_line in self._blosum_lines:
@@ -45,8 +48,9 @@ class Blosum(object):
                 blosum_symbols_line = blosum_line
                 break
         if not blosum_symbols_line:
-            raise ValueError("Cannot find the horizontal line of symbols in blosum file. "
-                             "It should be the first line beginning with a whitespace.")
+            raise ValueError("""Cannot find the horizontal line of symbols
+                                in blosum file. It should be the first line
+                                beginning with a whitespace.""")
         self._blosum_symbols_line = blosum_symbols_line
 
     def check_if_symbol_is_present(self, missing_symbol: str) -> bool:
@@ -56,23 +60,27 @@ class Blosum(object):
             missing_symbol: The symbol to be searched for in the BLOSUM matrix.
 
         Returns:
-            bool: True if the symbol is included in the BLOSUM matrix. Otherwise an exception is raised.
+            bool: True if the symbol is included in the BLOSUM matrix.
+                Otherwise an exception is raised.
 
         Raises:
-            ValueError: If missing_base has length other than 1 or the symbol is not included in the BLOSUM matrix.
+            ValueError: If missing_base has length other than 1 or the symbol
+                is not included in the BLOSUM matrix.
         """
 
         blosum_symbols = str.strip(self._blosum_symbols_line).split(" ")
         if len(missing_symbol) != 1:
-            raise ValueError(f"The missing symbol must be single character. Got{len(missing_symbol)} instead.")
+            raise ValueError(f"""The missing symbol must be single character.
+                                 Got{len(missing_symbol)} instead.""")
         if missing_symbol in blosum_symbols:
             return True
         else:
-            raise ValueError("Cannot find symbol used as missing base in blosum file.")
+            raise ValueError("""Cannot find symbol used as missing base
+                                in blosum file.""")
 
 
 class Hbmin(object):
-    """Poa algorithm parameter - the minimum value of sequence compatibility to generated consensus.
+    """(Poa parameter) Minimum value of sequence compatibility to consensus.
 
     Args:
         value: Hbmin value. Must be in range [0,1].
@@ -108,7 +116,7 @@ class Hbmin(object):
 
 
 class Stop(object):
-    """Value of AffinityTree nodes mincomp above which the node is no more split.
+    """Minimum value of AffinityTree leaves mincomp.
 
     Args:
         value: Stop value.
@@ -119,7 +127,7 @@ class Stop(object):
     Attributes:
         value (float): The stop value.
     """
-    
+
     def __init__(self, value: Union[str, float] = None):
         self.value: float = float(value) if value is not None else 0.99
         self._raise_exception_if_incorrect(self.value)
@@ -132,7 +140,7 @@ class Stop(object):
 
 
 class P(object):
-    """Value that changes compatiblity linear meaning to compatibility**P. Any floatable value is allowed.
+    """Parameter that changes compatiblity linear meaning to compatibility**P.
 
     Args:
         value: P value.
@@ -143,5 +151,3 @@ class P(object):
 
     def __init__(self, value: Union[str, float] = None):
         self.value: float = float(value) if value is not None else 1
-
-

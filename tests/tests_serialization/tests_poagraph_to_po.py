@@ -3,7 +3,7 @@ from pathlib import Path
 
 from ddt import unpack, data, ddt
 
-from tests.context import pathtools,graph, po, multialignment
+from tests.context import pathtools, graph, po, msa
 
 
 def nid(x): return graph.NodeID(x)
@@ -16,7 +16,7 @@ def bid(x): return graph.Base(x)
 class PoagraphToPOTests(unittest.TestCase):
 
     def setUp(self):
-        self.po_files_dir = 'tests/output/po_files/'
+        self.po_files_dir = 'tests/tests_serialization/po_files/'
 
     def test_1_typical_poagraph(self):
         expected_po_content_path = Path(self.po_files_dir + "test_1.po")
@@ -42,22 +42,22 @@ class PoagraphToPOTests(unittest.TestCase):
                           ]
 
         poagraph_sequences = {
-            multialignment.SequenceID('seq0'):
-                graph.Sequence(multialignment.SequenceID('seq0'),
-                              [graph.SeqPath([*map(nid, [0, 2, 4, 6, 7, 8, 12, 14, 16])])],
-                              graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq1'):
-                graph.Sequence(multialignment.SequenceID('seq1'),
-                              [graph.SeqPath([*map(nid, [1, 2, 5, 6, 7, 9])])],
-                              graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq2'):
-                graph.Sequence(multialignment.SequenceID('seq2'),
-                              [graph.SeqPath([*map(nid, [3, 4, 6, 7, 10, 12, 14, 17])])],
-                              graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq3'):
-                graph.Sequence(multialignment.SequenceID('seq3'),
-                              [graph.SeqPath([*map(nid, [11, 13, 14, 15])])],
-                              graph.SequenceMetadata({'group': '1'})),
+            msa.SequenceID('seq0'):
+                graph.Sequence(msa.SequenceID('seq0'),
+                               [graph.SeqPath([*map(nid, [0, 2, 4, 6, 7, 8, 12, 14, 16])])],
+                               graph.SequenceMetadata({'group': '1'})),
+            msa.SequenceID('seq1'):
+                graph.Sequence(msa.SequenceID('seq1'),
+                               [graph.SeqPath([*map(nid, [1, 2, 5, 6, 7, 9])])],
+                               graph.SequenceMetadata({'group': '1'})),
+            msa.SequenceID('seq2'):
+                graph.Sequence(msa.SequenceID('seq2'),
+                               [graph.SeqPath([*map(nid, [3, 4, 6, 7, 10, 12, 14, 17])])],
+                               graph.SequenceMetadata({'group': '1'})),
+            msa.SequenceID('seq3'):
+                graph.Sequence(msa.SequenceID('seq3'),
+                               [graph.SeqPath([*map(nid, [11, 13, 14, 15])])],
+                               graph.SequenceMetadata({'group': '1'})),
         }
 
         poagraph = graph.Poagraph(poagraph_nodes, poagraph_sequences)
@@ -81,30 +81,30 @@ class PoagraphToPOTests(unittest.TestCase):
                           ]
 
         poagraph_sequences = {
-            multialignment.SequenceID('seq0'):
-                graph.Sequence(multialignment.SequenceID('seq0'),
-                              [graph.SeqPath([*map(nid, [0, 3, 4, 5, 6, 8])])],
-                              graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq1'):
-                graph.Sequence(multialignment.SequenceID('seq1'),
-                              [graph.SeqPath([*map(nid, [1, 2, 4, 5, 7, 8])])],
-                              graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq2'):
-                graph.Sequence(multialignment.SequenceID('seq2'),
-                              [],
-                              graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('seq3'):
-                graph.Sequence(multialignment.SequenceID('seq3'),
-                              [],
-                              graph.SequenceMetadata({'group': '1'})),
-            multialignment.SequenceID('CONSENS0'):
-                graph.Sequence(multialignment.SequenceID('CONSENS0'),
-                              [graph.SeqPath([*map(nid, [0, 3, 4, 5, 7, 8])])],
-                              None),
-            multialignment.SequenceID('CONSENS1'):
-                graph.Sequence(multialignment.SequenceID('CONSENS1'),
-                              [graph.SeqPath([*map(nid, [1, 2, 4, 5, 6, 8])])],
-                              None),
+            msa.SequenceID('seq0'):
+                graph.Sequence(msa.SequenceID('seq0'),
+                               [graph.SeqPath([*map(nid, [0, 3, 4, 5, 6, 8])])],
+                               graph.SequenceMetadata({'group': '1'})),
+            msa.SequenceID('seq1'):
+                graph.Sequence(msa.SequenceID('seq1'),
+                               [graph.SeqPath([*map(nid, [1, 2, 4, 5, 7, 8])])],
+                               graph.SequenceMetadata({'group': '1'})),
+            msa.SequenceID('seq2'):
+                graph.Sequence(msa.SequenceID('seq2'),
+                               [],
+                               graph.SequenceMetadata({'group': '1'})),
+            msa.SequenceID('seq3'):
+                graph.Sequence(msa.SequenceID('seq3'),
+                               [],
+                               graph.SequenceMetadata({'group': '1'})),
+            msa.SequenceID('CONSENS0'):
+                graph.Sequence(msa.SequenceID('CONSENS0'),
+                               [graph.SeqPath([*map(nid, [0, 3, 4, 5, 7, 8])])],
+                               None),
+            msa.SequenceID('CONSENS1'):
+                graph.Sequence(msa.SequenceID('CONSENS1'),
+                               [graph.SeqPath([*map(nid, [1, 2, 4, 5, 6, 8])])],
+                               None),
         }
 
         poagraph = graph.Poagraph(poagraph_nodes, poagraph_sequences)
