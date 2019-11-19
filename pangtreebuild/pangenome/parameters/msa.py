@@ -72,18 +72,13 @@ class SequenceID(object):
 
     value: str
 
-    def __init__(self, sequence_id: str, skip_part_before_dot=True):
-        if not skip_part_before_dot:
-            self.value = sequence_id
+    def __init__(self, sequence_id: str):
+        if len(sequence_id) == 0:
+            raise ValueError("Sequence ID cannot be empty.")
+        if sequence_id == "eboVir3.KM034562v1":  # Ebola data hack
+            self.value = "KM034562v1"
         else:
-            splitted = sequence_id.split('.')
-            if len(splitted) > 1:
-                # self.value = splitted[0] #simulated
-                self.value = ".".join(splitted[1:])  # ebola
-            elif len(splitted) == 1:
-                self.value = str(splitted[0])
-            else:
-                raise ValueError("Sequence ID cannot be empty.")
+            self.value = sequence_id.split('.')[0]
 
     def __str__(self):
         return f"{self.value}"
@@ -136,7 +131,7 @@ class MetadataCSV:
 
         d = {}
         for row in rd:
-            seqid = SequenceID(row['seqid'], skip_part_before_dot=False)
+            seqid = SequenceID(row['seqid'])
             if seqid in d:
                 raise ValueError("""Repeated values in seqid column in metadata file. Make them unique.""")
             d[seqid] = dict(row)

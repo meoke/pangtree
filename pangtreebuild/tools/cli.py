@@ -169,9 +169,9 @@ def get_parser() -> argparse.ArgumentParser:
                    type=_path_if_valid,
                    help="""ZIP archive with fasta files or fasta file used
                         as FASTA_PROVIDER.""")
-    p.add_argument('--consensus',
+    p.add_argument('--affinity',
                    choices=['poa', 'tree'],
-                   help="""Generate consensus tree. Use \'poa\' for direct
+                   help="""Generate affinity tree. Use \'poa\' for direct
                            result of poa software, \'tree\' for Affinity
                            Tree algorithm.""")
     p.add_argument('--blosum',
@@ -266,7 +266,7 @@ def get_task_parameters(args: argparse.Namespace, running_time) -> \
     """Returns TaskParameters object based on parsed arguments."""
 
     return TaskParameters(running_time=running_time,
-                          multialignment_file_path=args.msa.filename,
+                          multialignment_file_path=args.multialignment.filename,
                           multialignment_format=str(type(args.multialignment).__name__),
                           datatype=args.datatype.name,
                           metadata_file_path=args.metadata.filename if args.metadata else None,
@@ -281,7 +281,7 @@ def get_task_parameters(args: argparse.Namespace, running_time) -> \
                           cache=bool(args.cache),
                           missing_base_symbol=args.missing_symbol.value if args.missing_symbol else missings.MissingBase().value,
                           fasta_source_file=args.fasta_path,
-                          consensus_type=args.consensus,
+                          consensus_type=args.affinity,
                           hbmin=args.hbmin.value if args.hbmin else None,
                           stop=args.stop.value if args.stop else None,
                           p=args.p.value if args.p else None)

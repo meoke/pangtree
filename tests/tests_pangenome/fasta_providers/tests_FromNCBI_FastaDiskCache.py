@@ -20,7 +20,7 @@ class FromNCBI_FastaDiskCache_Tests(unittest.TestCase):
             shutil.rmtree(cache_dir_path)
 
         ncbi_fasta_provider = missings.FromNCBI(use_cache=True)
-        sequence_id = msa.SequenceID("AB050936.1", skip_part_before_dot=False)
+        sequence_id = msa.SequenceID("AB050936v1")
 
         _ = ncbi_fasta_provider.get_base(sequence_id, 0)
 

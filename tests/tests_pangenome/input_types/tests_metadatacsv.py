@@ -90,9 +90,9 @@ class MetadataCSVTests(unittest.TestCase):
         metadata_path = Path(self.csv_files_dir + "test_8_seqids_with_dots.csv")
         csv_content = pathtools.get_file_content_stringio(metadata_path)
 
-        expected_metadata = {msa.SequenceID('s1.1', skip_part_before_dot=False): {'name': 'sequence1', 'group': 'A'},
-                             msa.SequenceID('s2.1', skip_part_before_dot=False): {'name': 'sequence2', 'group': 'B'},
-                             msa.SequenceID('s3.10', skip_part_before_dot=False): {'name': 'sequence3', 'group': 'B'}
+        expected_metadata = {msa.SequenceID('s1'): {'name': 'sequence1', 'group': 'A'},
+                             msa.SequenceID('s2'): {'name': 'sequence2', 'group': 'B'},
+                             msa.SequenceID('s3'): {'name': 'sequence3', 'group': 'B'}
                              }
         m = msa.MetadataCSV(csv_content, metadata_path)
         actual_metadata = m.metadata
@@ -126,9 +126,9 @@ class MetadataCSVTests(unittest.TestCase):
 
           ("test_3_seqid_in_maf_as_in_csv_1_but_with_double_dots",
            "test_10_3.maf", "test_8_seqids_with_dots.csv", "test_10_3.po",
-           {sid('foo.s1.1'): sm({'group': 'A', 'name': 'sequence1'}),
-            sid('foo.s2.1'): sm({'group': 'B', 'name': 'sequence2'}),
-            sid('foo.s3.10'): sm({'group': 'B', 'name': 'sequence3'})}),
+           {sid('s1'): sm({'group': 'A', 'name': 'sequence1'}),
+            sid('s2'): sm({'group': 'B', 'name': 'sequence2'}),
+            sid('s3'): sm({'group': 'B', 'name': 'sequence3'})}),
 
           ("test_4_more_seqids_in_maf_than_in_csv",
            "test_10_4.maf", "test_1_correct.csv", "test_10_4.po",

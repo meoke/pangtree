@@ -13,7 +13,7 @@ class FromNCBITests(unittest.TestCase):
 
     # @unittest.skip("slow test - internet connection required")
     def test_0_get_10th_symbol_of_AB050936v1(self):
-        sequence_id = msa.SequenceID("AB050936.1", skip_part_before_dot=False)
+        sequence_id = msa.SequenceID("AB050936.1")
         actual_base = self.fasta_provider.get_base(sequence_id, 10)
         path = Path('tests/tests_pangenome/fasta_providers/fasta_ncbi/AB050936.1.fasta')
         expected_base = graph.Base(self.read_sequence(path)[10])
@@ -22,7 +22,7 @@ class FromNCBITests(unittest.TestCase):
     # @unittest.skip("slow test - internet connection required")
     def test_1_download_AB050936v1(self):
         fasta_provider = missings.FromNCBI(use_cache=False)
-        sequence_id = msa.SequenceID("AB050936.1", skip_part_before_dot=False)
+        sequence_id = msa.SequenceID("AB050936.1")
         actual_sequence = fasta_provider._download_from_ncbi(sequence_id)
         p = Path('tests/tests_pangenome/fasta_providers/fasta_ncbi/AB050936.1.fasta')
         expected_sequence = self.read_sequence(p)
@@ -37,8 +37,6 @@ class FromNCBITests(unittest.TestCase):
             self.assertEqual(str(err), f"Cannot download from Entrez sequence of ID: {sequence_id}")
 
     @data((msa.SequenceID("plain", False), "plain"),
-          (msa.SequenceID("with.dot", False), "with.dot"),
-          (msa.SequenceID("with.two.dots", False), "with.two.dots"),
           (msa.SequenceID("withv1", False), "with.1"))
     @unpack
     def test_3_guess_entrez_id(self,
