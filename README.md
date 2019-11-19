@@ -1,4 +1,6 @@
-# PangtreeBuild
+[![Build Status](https://travis-ci.org/meoke/pangtree.svg?branch=master)](https://travis-ci.org/meoke/pangtree)
+
+# PangtreeeBuild
 
 This repository contains tool for multiple sequence alignment analysis. It implements the idea of pan-genome ([Ref. 1](https://doi.org/10.1093/bib/bbw089)) by representing the multialignment as a PO-MSA structure (Partial Order Alignment Graph - [Ref. 2](https://doi.org/10.1093/bioinformatics/btg109)). The main purpose of this software is to construct a *Consensus Tree* - a phylogenetic-like tree, with an agreed sequence (*consensus sequence*) assigned for each node.
 
