@@ -197,7 +197,7 @@ def _process_block(build_state: _BuildState, block: DAGMaf.DAGMafNode):
     build_state.column_id = _get_max_column_id(build_state.nodes)
     for col in range(block_width):
         build_state.column_id += 1
-        sequence_name_to_nucleotide = {MafSequenceID(seq.id): seq[col] 
+        sequence_name_to_nucleotide = {MafSequenceID(seq.id): seq[col]
                                        for seq in block.alignment}
         nodes_codes = _get_column_nucleotides_sorted_codes(sequence_name_to_nucleotide)
         column_nodes_ids = [current_node_id + i + 1 for i, _ in enumerate(nodes_codes)]
@@ -245,7 +245,7 @@ def _get_column_nucleotides_sorted_codes(seq_to_nucl: Dict[msa.SequenceID, str])
             [nucleotide
              for nucleotide
              in seq_to_nucl.values()
-             if nucleotide is not '-']))
+             if nucleotide != '-']))
 
 
 def _get_next_aligned_node_id(current_column_i, column_nodes_ids) -> \
