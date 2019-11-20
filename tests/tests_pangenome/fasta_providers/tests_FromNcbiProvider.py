@@ -36,8 +36,8 @@ class FromNCBITests(unittest.TestCase):
             _ = fasta_provider._download_from_ncbi(msa.SequenceID(sequence_id))
             self.assertEqual(str(err), f"Cannot download from Entrez sequence of ID: {sequence_id}")
 
-    @data((msa.SequenceID("plain", False), "plain"),
-          (msa.SequenceID("withv1", False), "with.1"))
+    @data((msa.SequenceID("plain"), "plain"),
+          (msa.SequenceID("withv1"), "with.1"))
     @unpack
     def test_3_guess_entrez_id(self,
                                sequenceID: msa.SequenceID,

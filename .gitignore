@@ -106,7 +106,7 @@ ENV/
 *.xml
 *.iml
 
-
+/.vscode/tags
 /output/
 
 /.fastacache/*
