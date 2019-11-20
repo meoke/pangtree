@@ -13,7 +13,7 @@ Running:
 * [BioPython](https://biopython.org/)
 * [numpy](http://www.numpy.org/)
 * [jsonpickle](http://jsonpickle.github.io/)
-* [networkx] (https://networkx.github.io/)
+* [networkx](https://networkx.github.io/)
 
 Testing:
 * [DDT](https://github.com/txels/ddt)
@@ -48,14 +48,14 @@ python3 -m pangtreebuild [args]
 | ------------- | ------------- | ------- | ----------
 | Arguments affecting PO-MSA construction: |
 | MULTIALIGNMENT  | --multialignment  | Yes | Path to the mulitalignment file (.maf or .po)
-| METADATA | --metadata | No | Optional information about sequences in csv format. The only required column: \'seqid\' and its value must match multialignment files identifiers as described in *Sequence Naming Convention* (below). Example: data/Ebola/input/metadata.csv
+| METADATA | --metadata | No | Optional information about sequences in csv format. The only required column: \'seqid\' and its value must match multialignment files identifiers as described in *Sequence Naming Convention* (below). Example: example_data/Ebola/metadata.csv
 | RAW_MAF | --raw_maf | No, default=False | Build PO-MSA without transforming multialignment (MAF file) to DAG. PO-MSA built in this way does not reflect real life sequences.
 | FASTA_PROVIDER | --fasta_provider | No | Nucleotides source if any residues are missed in the multialignment file. Possible values: 'ncbi', 'file'. If not specified: MISSING_NUCLEOTIDE is used.
 | MISSING_SYMBOL | --missing_symbol | No, default='?' | Symbol for missing nucleotides used if no FASTA_PROVIDER is given.
-| CACHE | --cache | No, default='Yes' | If True, sequences downloaded from NCBI are stored on local disc and reused between program calls, used if FASTA_PROVIDER is 'ncbi'
+| CACHE | --cache | No | If set, sequences downloaded from NCBI are stored on local disc and reused between program calls, used if FASTA_PROVIDER is 'ncbi'
 | FASTA_FILE | -fasta_source_file | Yes if FASTA_PROVIDER='FILE' | Path to fasta file or zipped fasta files with whole sequences present in multialignment, used if FASTA_PROVIDER is 'FILE'.
-| Arguments affecting Consensuses Tree construction: |
-| CONSENSUS | -consensus | No | Possible values: 'TREE' (default algorithm, descibed in Documentation.md), 'POA' (simplified version, based solely on Ref. 2)
+| Arguments affecting Affinity Tree construction: |
+| AFFINITY | -affinity | No | Possible values: 'TREE' (default algorithm, descibed in Documentation.md), 'POA' (simplified version, based solely on Ref. 2)
 | BLOSUM | --blosum | No, default=bin\blosum80.mat |  Path to the blosum filem. Blosum file must include MISSING_NUCLEOTIDE. |
 | HBMIN | --hbmin | No, default=0.9 | 'POA' parameter. The minimum value of sequence compatibility to generated consensus.
 | STOP | --stop | No, default=0.99 | 'TREE' parameter. Minimum value of compatibility in tree leaves.
@@ -69,12 +69,12 @@ python3 -m pangtreebuild [args]
 
 #### Sequence Naming Convention
 
-[anything before first dot is ignored].[everything after first dot (also other dots) is interpreted as seqid]
+[seqid].[anything after first dot is ignored]
 
 ### Example use cases
 1. Build PO-MSA using default settings (transform to DAG, download missing nucleotides from NCBI) and save to .po file :
 ```
-python -m pangtreebuild --multialignment data/Ebola/input/multialignment.maf -po
+python -m pangtreebuild --multialignment example_data/Ebola/multialignment.maf -po
 
 ```
 will produce:
@@ -82,15 +82,15 @@ will produce:
 - pangenome.json
 - poagraph.po
 
-2. Generate Consensuses Tree, use metadata, detailed logging and default algorithm settings.
+2. Generate Affinity Tree, use metadata, detailed logging and default algorithm settings.
 ```
-python3 -m pangtreebuild --multialignemnt data/Ebola/input/multialignment.maf -metadata data/Ebola/input/metadata.csv -consensus tree -v
+python3 -m pangtreebuild --multialignemnt example_data/Ebola/multialignment.maf -metadata example_data/Ebola/metadata.csv -affinity tree -v
 ```
 will produce:
 
 - pangenome.json
 - details.log
-- consensus/
+- affinitytree/
     - tresholds.csv
     - *.po files from internal calls to poa software*
 

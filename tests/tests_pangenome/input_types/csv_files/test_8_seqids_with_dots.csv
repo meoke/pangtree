@@ -1,4 +1,4 @@
 seqid,name,group
-s1.1,sequence1,A
-s2.1,sequence2,B
-s3.10,sequence3,B
+s1,sequence1,A
+s2,sequence2,B
+s3,sequence3,B

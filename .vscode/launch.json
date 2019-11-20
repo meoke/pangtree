@@ -5,6 +5,20 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Python: Ebola",
+            "type": "python",
+            "request": "launch",
+            "module": "pangtreebuild",
+            "args": ["--multialignment", "example_data/Ebola/multialignment.maf"]
+        },
+        {
+            "name": "Python: Ebola NCBI cache",
+            "type": "python",
+            "request": "launch",
+            "module": "pangtreebuild",
+            "args": ["--multialignment", "example_data/Ebola/multialignment.maf", "--fasta_provider", "ncbi", "--cache"]
+        },
+        {
             "name": "Python: Current File (Integrated Terminal)",
             "type": "python",
             "request": "launch",

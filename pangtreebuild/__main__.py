@@ -36,12 +36,12 @@ def main():
         poagraph = builder.build_from_po(args.multialignment, args.metadata)
 
     affinity_tree = None
-    if args.consensus is not None:
+    if args.affinity is not None:
         blosum = args.blosum if args.blosum else cli.get_default_blosum()
         if fasta_provider is not None and isinstance(fasta_provider, missings.ConstBaseProvider):
             blosum.check_if_symbol_is_present(fasta_provider.missing_base.as_str())
 
-        consensus_output_dir = pathtools.get_child_dir(args.output_dir, "consensus")
+        consensus_output_dir = pathtools.get_child_dir(args.output_dir, "affinitytree")
 
         if args.consensus == 'poa':
             affinity_tree = at_builders.build_poa_affinity_tree(poagraph,
