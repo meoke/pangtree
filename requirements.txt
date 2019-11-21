@@ -4,3 +4,4 @@ numpy
 jsonpickle
 networkx
 ddt
+six
