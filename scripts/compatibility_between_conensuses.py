@@ -1,7 +1,7 @@
-"""This script is prepared for detaild Ebola virus analysis. Steps:
-- build Poagraph based on Ebola multialignment (data/Ebola/genome_whole/input/multialignment.maf)
-- run Consensus Tree algorithm (P=0.25, STOP=0.99)
-- for specific groups of generated affinitytree (Group 1: 1, 2, 3; Group 2: 4, 5, 6, 7, 8; Group 3: sons of 4) calculate compatibility for each group in this group
+"""This script is prepared for detailed Ebola virus analysis. Steps:
+- build Poagraph based on Ebola MSA (example_data/Ebola/input/multialignment.maf)
+- run Affinity Tree algorithm (P=0.25, STOP=0.99)
+- for specific groups of generated affinitytree (Group 1: 1, 2, 3; Group 2: 4, 5, 6, 7, 8; Group 3: sons of 4) calculate compatibility 'each with each'
 
 """
 
@@ -15,19 +15,17 @@ import matplotlib
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../pangtreebuild')))
 import pangtreebuild.tools.pathtools as pathtools
-import pangtreebuild.pangenome.fasta_providers.FromNCBI as fp_ncbi
-import pangtreebuild.pangenome.fasta_providers.FromFile as fp_file
-import pangtreebuild.pangenome.input_types as inp
-from pangtreebuild.pangenome.Poagraph import Poagraph
-from pangtreebuild.pangenome.Node import NodeID, ColumnID
-import pangtreebuild.affinity_tree.tree_generator as tree_generator
-import pangtreebuild.affinity_tree.input_types as cinp
-from pangtreebuild.serialization.PangenomeJSON import TaskParameters
-from pangtreebuild.affinity_tree.cutoffs import MAX2, NODE3
-from pangtreebuild.affinity_tree.ConsensusTree import AffinityTree
+from pangtreebuild.pangenome.parameters.missings import FromNCBI as fp_ncbi
+from pangtreebuild.pangenome.parameters.missings import FromFile as fp_file
+from pangtreebuild.pangenome.parameters.msa import Maf, MetadataCSV
+from pangtreebuild.pangenome.graph import Poagraph, NodeID, ColumnID
+from pangtreebuild.affinity_tree import builders as atree_builders
+from pangtreebuild.affinity_tree.parameters import Stop, P, Blosum
+from pangtreebuild.serialization.json import TaskParameters
+from pangtreebuild.affinity_tree.tree import AffinityTree
 
 
-def get_ebola_consensus_tree(p: float, stop: float, output_dir_name: str) -> Tuple[Poagraph, AffinityTree]:
+def get_ebola_affinity_tree(p: float, stop: float, output_dir_name: str) -> Tuple[Poagraph, AffinityTree]:
     current_path = Path(os.path.abspath(__file__)).resolve()
     output_dir_path = pathtools.get_child_dir(current_path.parent, output_dir_name)
     consensus_output_dir = pathtools.get_child_dir(output_dir_path, "consensus")
@@ -53,43 +51,37 @@ def get_ebola_consensus_tree(p: float, stop: float, output_dir_name: str) -> Tup
                         fasta_source_file=None,
                         consensus_type="",
                         hbmin=0.8,
-                        max_cutoff_option="MAX2",
-                        search_range=None,
-                        node_cutoff_option="NODE3",
-                        multiplier=None,
                         stop=stop,
                         p=p)
 
     fasta_provider = fp_ncbi.FromNCBI(use_cache=True)
 
     multialignment_content = pathtools.get_file_content_stringio(multialignment_path)
-    multialignment = inp.Maf(file_content=multialignment_content, filename=multialignment_path)
+    multialignment = Maf(file_content=multialignment_content, filename=multialignment_path)
 
     metadata_content = pathtools.get_file_content_stringio(metadata_path)
-    metadata = inp.MetadataCSV(filecontent=metadata_content, filename=metadata_path)
+    metadata = MetadataCSV(filecontent=metadata_content, filename=metadata_path)
 
     poagraph, dagmaf = Poagraph.build_from_dagmaf(multialignment, fasta_provider, metadata)
 
     blosum_content = pathtools.get_file_content_stringio(path=blosum_path)
-    blosum = cinp.Blosum(blosum_content, blosum_path)
+    blosum = Blosum(blosum_content, blosum_path)
 
-    return poagraph, tree_generator.get_affinity_tree(poagraph,
+    return poagraph, atree_builders.get_affinity_tree(poagraph,
                                                       blosum,
                                                       consensus_output_dir,
-                                                      cinp.Stop(stop),
-                                                      cinp.P(p),
-                                                      MAX2(),
-                                                      NODE3(),
+                                                      Stop(stop),
+                                                      P(p),
                                                       False)
 
 
-def global_compatibilities_analysis(consensus_tree: AffinityTree, groups: List[List[int]]) -> None:
+def global_compatibilities_analysis(affinity_tree: AffinityTree, groups: List[List[int]]) -> None:
     def calc_comp(consensuses_group: List[int]):
         pairwise_compatibilities = {}
         for i in consensuses_group:
-            i_nodes = set(consensus_tree.nodes[i].consensus)
+            i_nodes = set(affinity.nodes[i].consensus)
             for j in consensuses_group:
-                j_nodes = set(consensus_tree.nodes[j].consensus)
+                j_nodes = set(affinity.nodes[j].consensus)
                 pairwise_compatibilities[f"comp_{i}_{j}"] = len(i_nodes.intersection(j_nodes)) / len(i_nodes)
 
         for k, v in pairwise_compatibilities.items():
@@ -99,7 +91,7 @@ def global_compatibilities_analysis(consensus_tree: AffinityTree, groups: List[L
         calc_comp(g)
 
 
-def local_compatibilities_analysis_consensus_coordinates(poagraph: Poagraph, consensus_tree: AffinityTree, groups: List[List[int]]) -> None:
+def local_compatibilities_analysis_consensus_coordinates(poagraph: Poagraph, affinity_tree: AffinityTree, groups: List[List[int]]) -> None:
     def produce_chart(x, ys, labels, chart_path):
         fig, ax = plt.subplots()
         for i, y in enumerate(ys):
@@ -257,8 +249,8 @@ sim = [1, 2, 6]
 os.environ["PATH"] += os.pathsep + '/usr/local/texlive/2019/bin/x86_64-linux'
 
 
-ebola_poagraph, ebola_consensus_tree = get_ebola_consensus_tree(p=0.25, stop=0.99, output_dir_name="output_ebola")
-local_compatibilities_analysis_consensus_coordinates(ebola_poagraph, ebola_consensus_tree, [ebola_a, ebola_b])
+ebola_poagraph, ebola_affinity_tree = get_ebola_affinity_tree(p=0.25, stop=0.99, output_dir_name="output_ebola")
+local_compatibilities_analysis_consensus_coordinates(ebola_poagraph, ebola_affinity_tree, [ebola_a, ebola_b])
 
 
 
