@@ -1,4 +1,3 @@
 include tests/*.py
 include bin/*
-include docs/*
 include pangtreebuild/logging.conf

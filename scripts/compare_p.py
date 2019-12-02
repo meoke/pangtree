@@ -68,7 +68,8 @@ def run_pangtree(maf_path: Path,
                                           fasta_source_file=fasta_path,
                                           consensus_type="tree",
                                           stop=str(stop),
-                                          p=str(p))
+                                          p=str(p),
+                                          output_with_nodes=True)
         pangenomejson = json.to_PangenomeJSON(task_parameters=task_params,
                                               poagraph=poagraph,
                                               dagmaf=dagmaf,
@@ -103,8 +104,8 @@ if __name__ == "__main__":
         maf_path = get_relative_path("../example_data/Sim/small/f.maf")
         fasta_path = get_relative_path("../example_data/Sim/small/sequence.fasta")
         
-        maf_path = get_relative_path("../example_data/Sim/simresults_root100_yeast0_nocycles_chr20ao_tc_df_p_leafs.maf")
-        fasta_path = get_relative_path("../example_data/Sim/simresults_root100_yeast0_nocycles_leafs.fasta")
+        # maf_path = get_relative_path("../example_data/Sim/simresults_root100_yeast0_nocycles_chr20ao_tc_df_p_leafs.maf")
+        # fasta_path = get_relative_path("../example_data/Sim/simresults_root100_yeast0_nocycles_leafs.fasta")
         
         output_path = get_relative_path("../output")
 
