@@ -3,10 +3,10 @@ import setuptools
 
 setuptools.setup(
     name='pangtreebuild',
-    version='0.3dev',
-    author="Paulina Dziakdiewicz",
+    version='1.0',
+    author="Paulina Dziadkiewicz",
     author_email="pedziadkiewicz@gmail.com",
-    description="Multiple sequence alignment analysis with Consensus Tree generation",
+    description="Multiple sequence alignment analysis with Affinity Tree generation",
     url="https://github.com/meoke/pangtree",
     packages=setuptools.find_packages(exclude=("tests",)),
     classifiers=[

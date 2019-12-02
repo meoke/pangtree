@@ -9,14 +9,23 @@
             "type": "python",
             "request": "launch",
             "module": "pangtreebuild",
-            "args": ["--multialignment", "example_data/Ebola/multialignment.maf"]
+            "args": [
+                "--multialignment",
+                "example_data/Ebola/multialignment.maf"
+            ]
         },
         {
             "name": "Python: Ebola NCBI cache",
             "type": "python",
             "request": "launch",
             "module": "pangtreebuild",
-            "args": ["--multialignment", "example_data/Ebola/multialignment.maf", "--fasta_provider", "ncbi", "--cache"]
+            "args": [
+                "--multialignment",
+                "example_data/Ebola/multialignment.maf",
+                "--fasta_provider",
+                "ncbi",
+                "--cache"
+            ]
         },
         {
             "name": "Python: Current File (Integrated Terminal)",
