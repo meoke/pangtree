@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Ebola",
+            "name": "Pangtree: Ebola",
             "type": "python",
             "request": "launch",
             "module": "pangtreebuild",
@@ -15,7 +15,25 @@
             ]
         },
         {
-            "name": "Python: Ebola NCBI cache",
+            "name": "Pangtree: Toy Example",
+            "type": "python",
+            "request": "launch",
+            "module": "pangtreebuild",
+            "args": [
+                "--multialignment",
+                "example_data/Simulated/toy_example/f.maf",
+                "--metadata",
+                "example_data/Simulated/toy_example/metadata.csv",
+                "--fasta_provider",
+                "file",
+                "--fasta_path",
+                "example_data/Simulated/toy_example/sequence.fasta",
+                "--affinity",
+                "tree"
+            ]
+        },
+        {
+            "name": "Pangtree: Ebola NCBI cache",
             "type": "python",
             "request": "launch",
             "module": "pangtreebuild",
