@@ -53,7 +53,7 @@ python3 -m pangtreebuild [args]
 | FASTA_PROVIDER | --fasta_provider | No | Nucleotides source if any residues are missed in the multialignment file. Possible values: 'ncbi', 'file'. If not specified: MISSING_NUCLEOTIDE is used.
 | MISSING_SYMBOL | --missing_symbol | No, default='?' | Symbol for missing nucleotides used if no FASTA_PROVIDER is given.
 | CACHE | --cache | No | If set, sequences downloaded from NCBI are stored on local disc and reused between program calls, used if FASTA_PROVIDER is 'ncbi'
-| FASTA_FILE | -fasta_source_file | Yes if FASTA_PROVIDER='FILE' | Path to fasta file or zipped fasta files with whole sequences present in multialignment, used if FASTA_PROVIDER is 'FILE'.
+| FASTA_PATH | -fasta_path | Yes if FASTA_PROVIDER='FILE' | Path to fasta file or zipped fasta files with whole sequences present in multialignment, used if FASTA_PROVIDER is 'FILE'.
 | Arguments affecting Affinity Tree construction: |
 | AFFINITY | -affinity | No | Possible values: 'TREE' (default algorithm, descibed in Documentation.md), 'POA' (simplified version, based solely on Ref. 2)
 | BLOSUM | --blosum | No, default=bin\blosum80.mat |  Path to the blosum filem. Blosum file must include MISSING_NUCLEOTIDE. |

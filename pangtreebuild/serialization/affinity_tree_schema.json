@@ -1,0 +1,280 @@
+{
+    "definitions": {},
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "http://example.com/root.json",
+    "type": "object",
+    "description": "PangtreeBuild results serialized as JSON.",
+    "properties": {
+      "affinitytree": {
+        "$id": "#/properties/affinitytree",
+        "type": "array",
+        "description": "Affinity Tree attributes.",
+        "items": {
+          "$id": "#/properties/affinitytree/items",
+          "type": "object",
+          "description": "List of affinity tree nodes.",
+          "properties": {
+            "affinity_node_id": {
+              "$id": "#/properties/affinitytree/items/properties/affinity_node_id",
+              "type": "integer",
+              "description": "Affinity Tree node id."
+            },
+            "children": {
+              "$id": "#/properties/affinitytree/items/properties/children",
+              "type": "array",
+              "description": "List of children nodes IDs.",
+              "items": {
+                "$id": "#/properties/affinitytree/items/properties/children/items",
+                "type": "integer",
+                "description": "IDs."
+              }
+            },
+            "comp_to_all_sequences": {
+              "$id": "#/properties/affinitytree/items/properties/comp_to_all_sequences",
+              "type": "object",
+              "description": "Dictionary of sequences IDs present in the pangenome and corresponding compatibility values of this affinity node to the sequence.",
+            },
+            "mincomp": {
+              "$id": "#/properties/affinitytree/items/properties/mincomp",
+              "type": "number",
+              "description": "Minimum compatibility value among sequences assigned to this node."
+            },
+            "name": {
+              "$id": "#/properties/affinitytree/items/properties/name",
+              "type": "string",
+              "description": "Node name.",
+              "pattern": "^(.*)$"
+            },
+            "nodes_ids": {
+              "$id": "#/properties/affinitytree/items/properties/nodes_ids",
+              "type": "array",
+              "description": "List of pangenome nodes IDs that define this consensus sequence.",
+              "items": {
+                "$id": "#/properties/affinitytree/items/properties/nodes_ids/items",
+                "type": "integer",
+                "description": "Pangenome nodes IDs."
+              }
+            },
+            "parent": {
+              "$id": "#/properties/affinitytree/items/properties/parent",
+              "type": "integer",
+              "description": "ID of the purent node."
+            },
+            "sequences_int_ids": {
+              "$id": "#/properties/affinitytree/items/properties/sequences_int_ids",
+              "type": "array",
+              "description": "List of integer IDs of the sequences assigned to this node.",
+              "items": {
+                "$id": "#/properties/affinitytree/items/properties/sequences_int_ids/items",
+                "type": "integer"
+              }
+            }
+          }
+        }
+      },
+      "dagmaf_nodes": {
+        "$id": "#/properties/dagmaf_nodes",
+        "type": "array",
+        "description": "Definition of DAG being the base model of this pangenome."
+      },
+      "nodes": {
+        "$id": "#/properties/nodes",
+        "type": "array",
+        "description": "List of nodes present in this pangenome.",
+        "items": {
+          "$id": "#/properties/nodes/items",
+          "type": "object",
+          "description": "Single node properties.",
+          "properties": {
+            "aligned_to": {
+              "$id": "#/properties/nodes/items/properties/aligned_to",
+              "type": "integer",
+              "description": "ID of node that the node is aligned to."
+            },
+            "base": {
+              "$id": "#/properties/nodes/items/properties/base",
+              "type": "string",
+              "description": "Nucleotide base of the node.",
+              "pattern": "^(.*)$"
+            },
+            "block_id": {
+              "$id": "#/properties/nodes/items/properties/block_id",
+              "type": "integer",
+              "description": "The ID of the MAF block this node belongs to."
+            },
+            "column_id": {
+              "$id": "#/properties/nodes/items/properties/column_id",
+              "type": "integer",
+              "description": "The ID of the pangenome column the node belongs to."
+            },
+            "id": {
+              "$id": "#/properties/nodes/items/properties/id",
+              "type": "integer",
+              "description": "Node ID."
+            }
+          }
+        }
+      },
+      "sequences": {
+        "$id": "#/properties/sequences",
+        "type": "array",
+        "description": "List of genome sequences present in this pangenome.",
+        "items": {
+          "$id": "#/properties/sequences/items",
+          "type": "object",
+          "description": "Single sequence attributes.",
+          "properties": {
+            "metadata": {
+              "$id": "#/properties/sequences/items/properties/metadata",
+              "type": "object",
+              "description": "Metadata provided for this pangenome as dicitonary of key-value pairs."
+            },
+            "nodes_ids": {
+              "$id": "#/properties/sequences/items/properties/nodes_ids",
+              "type": "array",
+              "description": "List of nodes IDs present in this sequence (order matters).",
+              "items": {
+                "$id": "#/properties/sequences/items/properties/nodes_ids/items",
+                "type": "array",
+                "items": {
+                  "$id": "#/properties/sequences/items/properties/nodes_ids/items/items",
+                  "type": "integer",
+                  "description": "Node ID."
+                }
+              }
+            },
+            "sequence_int_id": {
+              "$id": "#/properties/sequences/items/properties/sequence_int_id",
+              "type": "integer",
+              "description": "Integer ID of this sequence."
+            },
+            "sequence_str_id": {
+              "$id": "#/properties/sequences/items/properties/sequence_str_id",
+              "type": "string",
+              "description": "String ID of this sequence.",
+              "pattern": "^(.*)$"
+            }
+          }
+        }
+      },
+      "task_parameters": {
+        "$id": "#/properties/task_parameters",
+        "type": "object",
+        "description": "All parameters used in the PangtreeBuild execution.",
+        "properties": {
+          "blosum_file_path": {
+            "$id": "#/properties/task_parameters/properties/blosum_file_path",
+            "type": "string",
+            "description": "Path to the BLOSUM file used in Affinity Tree generation procedure.",
+            "pattern": "^(.*)$"
+          },
+          "cache": {
+            "$id": "#/properties/task_parameters/properties/cache",
+            "type": "boolean",
+            "description": "Information whether sequences downloaded from NCBI where cached locally."
+          },
+          "consensus_type": {
+            "$id": "#/properties/task_parameters/properties/consensus_type",
+            "type": "string",
+            "description": "Affinity Tree generation algorithm.",
+            "pattern": "^(.*)$"
+          },
+          "datatype": {
+            "$id": "#/properties/task_parameters/properties/datatype",
+            "type": "string",
+            "description": "Pangenome nodes are based on amino acids or nucleotide bases.",
+            "pattern": "^(.*)$"
+          },
+          "fasta_complementation_option": {
+            "$id": "#/properties/task_parameters/properties/fasta_complementation_option",
+            "type": "string",
+            "description": "The type of source of missing bases in MSA file: fasta file, ncbi database or.",
+            "pattern": "^(.*)$"
+          },
+          "fasta_source_file": {
+            "$id": "#/properties/task_parameters/properties/fasta_source_file",
+            "type": "string",
+            "description": "Path to the fasta file being source of missing nucleotides in MSA.",
+            "pattern": "^(.*)$"
+          },
+          "generate_fasta": {
+            "$id": "#/properties/task_parameters/properties/generate_fasta",
+            "type": "boolean",
+            "description": "Information whether FASTA files with the pangenome sequences and affinity tree consensuses were produced."
+          },
+          "hbmin": {
+            "$id": "#/properties/task_parameters/properties/hbmin",
+            "type": "number",
+            "description": "HBMIN (Affinity Tree generation parameter) value."
+          },
+          "metadata_file_path": {
+            "$id": "#/properties/task_parameters/properties/metadata_file_path",
+            "type": "string",
+            "description": "Path to the metadata file provided for this pangenome.",
+            "pattern": "^(.*)$"
+          },
+          "missing_base_symbol": {
+            "$id": "#/properties/task_parameters/properties/missing_base_symbol",
+            "type": "string",
+            "description": "Base symbol used as constant base for missing values in MSA.",
+            "pattern": "^(.*)$"
+          },
+          "multialignment_file_path": {
+            "$id": "#/properties/task_parameters/properties/multialignment_file_path",
+            "type": "string",
+            "description": "Path to the MSA file.",
+            "pattern": "^(.*)$"
+          },
+          "multialignment_format": {
+            "$id": "#/properties/task_parameters/properties/multialignment_format",
+            "type": "string",
+            "description": "Format of the MSA file.",
+            "pattern": "^(.*)$"
+          },
+          "output_path": {
+            "$id": "#/properties/task_parameters/properties/output_path",
+            "type": "string",
+            "description": "Outout directory path.",
+            "pattern": "^(.*)$"
+          },
+          "output_po": {
+            "$id": "#/properties/task_parameters/properties/output_po",
+            "type": "boolean",
+            "description": "Information whether PO file with pangenome was produced."
+          },
+          "output_with_nodes": {
+            "$id": "#/properties/task_parameters/properties/output_with_nodes",
+            "type": "boolean",
+            "description": "Information whether the file includes list of al pangenome nodes."
+          },
+          "p": {
+            "$id": "#/properties/task_parameters/properties/p",
+            "type": "integer",
+            "description": "Affinity tree generation algorithm parameter."
+          },
+          "raw_maf": {
+            "$id": "#/properties/task_parameters/properties/raw_maf",
+            "type": "boolean",
+            "description": "Information whether the input MAF was converted to DAG or used as raw file."
+          },
+          "running_time": {
+            "$id": "#/properties/task_parameters/properties/running_time",
+            "type": "string",
+            "description": "Execution time with the specified parameters.",
+            "pattern": "^(.*)$"
+          },
+          "stop": {
+            "$id": "#/properties/task_parameters/properties/stop",
+            "type": "number",
+            "description": "Affinity tree generation algorithm parameter."
+          },
+          "verbose": {
+            "$id": "#/properties/task_parameters/properties/verbose",
+            "type": "boolean",
+            "description": "Information about running mode."
+          }
+        }
+      }
+    }
+  }
+  
