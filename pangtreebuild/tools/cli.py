@@ -280,7 +280,7 @@ def get_task_parameters(args: argparse.Namespace, running_time) -> \
                           fasta_provider=args.fasta_provider if args.fasta_provider else 'ConstSymbol',
                           cache=bool(args.cache),
                           missing_base_symbol=args.missing_symbol.value if args.missing_symbol else missings.MissingBase().value,
-                          fasta_source_file=args.fasta_path,
+                          fasta_source_file=str(args.fasta_path),
                           consensus_type=args.affinity,
                           hbmin=args.hbmin.value if args.hbmin else None,
                           stop=args.stop.value if args.stop else None,

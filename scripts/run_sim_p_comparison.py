@@ -100,8 +100,8 @@ if __name__ == "__main__":
     if cmd_line_args:
         maf_path, fasta_path, output_path = read_cmd_args()
     else:
-        maf_path = get_relative_path("../example_data/Sim/small/f.maf")
-        fasta_path = get_relative_path("../example_data/Sim/small/sequence.fasta")
+        maf_path = get_relative_path("../example_data/Simulated/toy_example/f.maf")
+        fasta_path = get_relative_path("../example_data/Simulated/toy_example/sequence.fasta")
         output_path = get_relative_path("../output")
 
     po_output = True

@@ -138,6 +138,15 @@ class AffinityTree(object):
             If the tree has no nodes, an empty string is returned.
         """
 
+        def _get_sequence_attr_if_exists(seq_metadata: graph.SequenceMetadata,
+                                         attr: str) -> str:
+            """Returns dictionary value if they key attr exists."""
+
+            if attr in seq_metadata:
+                return str(seq_metadata[attr])
+            else:
+                return ""
+
         def _newick_nhx(newick_node: newick.Node) -> str:
             """Converts newick tree to newick string"""
 
@@ -147,8 +156,10 @@ class AffinityTree(object):
                     if str(cn.id_) == newick_node.name:
                         if seq_id_to_metadata:
                             if len(cn.sequences) == 1:
-                                name = seq_id_to_metadata[cn.sequences[0]]["name"]
-                                group = seq_id_to_metadata[cn.sequences[0]]["group"]
+                                name = _get_sequence_attr_if_exists(seq_id_to_metadata[cn.sequences[0]], "name")
+                                if name == "":
+                                    name = cn.sequences[0]
+                                group = _get_sequence_attr_if_exists(seq_id_to_metadata[cn.sequences[0]], "group")
                                 seqid = cn.sequences[0]
                                 metadata = f"[&&NHX:name={name}:group={group}:seqid={seqid}:mincomp={cn.mincomp}]"
                             elif len(cn.sequences) == 0:

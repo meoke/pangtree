@@ -43,13 +43,13 @@ def main():
 
         consensus_output_dir = pathtools.get_child_dir(args.output_dir, "affinitytree")
 
-        if args.consensus == 'poa':
+        if args.affinity == 'poa':
             affinity_tree = at_builders.build_poa_affinity_tree(poagraph,
                                                                 blosum,
                                                                 consensus_output_dir,
                                                                 args.hbmin,
                                                                 args.verbose)
-        elif args.consensus == 'tree':
+        elif args.affinity == 'tree':
             affinity_tree = at_builders.build_affinity_tree(poagraph,
                                                             blosum,
                                                             consensus_output_dir,
@@ -66,7 +66,7 @@ def main():
                                                        separate_leaves=True)
 
         pathtools.save_to_file(affinity_tree_newick,
-                               pathtools.get_child_path(args.output_dir, "affinity_tree.newick"))
+                               pathtools.get_child_path(consensus_output_dir, "affinity_tree.newick"))
 
     if args.output_po:
         pangenome_po = po.poagraph_to_PangenomePO(poagraph)
