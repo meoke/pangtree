@@ -9,7 +9,7 @@ This repository contains tool for multiple sequence alignment analysis. It imple
 ### Prerequisites
 
 Running:
-* [Python 3.6](http://python.org)
+* [Python 3.8](http://python.org)
 * [BioPython](https://biopython.org/)
 * [numpy](http://www.numpy.org/)
 * [jsonpickle](http://jsonpickle.github.io/)
