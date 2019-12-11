@@ -4,8 +4,9 @@ from pathlib import Path
 
 from ddt import ddt
 
-from tests.context import missings, graph, msa
-from tests.context import pathtools
+from pangtreebuild.pangenome import graph
+from pangtreebuild.pangenome.parameters import missings, msa
+from pangtreebuild.tools import pathtools
 
 
 @ddt
@@ -35,7 +36,7 @@ class FromNCBI_FastaDiskCache_Tests(unittest.TestCase):
         self.assertTrue(file_created_in_cache)
 
         # file content
-        control_fasta_path = Path('tests/tests_pangenome/fasta_providers/fasta_ncbi/AB050936.1.fasta')
+        control_fasta_path = Path(__file__).parent.joinpath('fasta_ncbi/AB050936.1.fasta').resolve()
 
         with open(control_fasta_path) as fasta_file_hanlder:
             expected_content = fasta_file_hanlder.read()

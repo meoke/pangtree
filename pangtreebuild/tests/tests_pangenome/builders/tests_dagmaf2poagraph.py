@@ -1,8 +1,11 @@
 import unittest
 from pathlib import Path
 
-from tests.context import graph, missings, msa, builder
-from tests.context import pathtools
+from pangtreebuild.pangenome import graph
+from pangtreebuild.pangenome.parameters import msa
+from pangtreebuild.pangenome import builder
+from pangtreebuild.pangenome.parameters import missings
+from pangtreebuild.tools import pathtools
 
 
 def nid(x): return graph.NodeID(x)
@@ -14,13 +17,13 @@ def bid(x): return graph.BlockID(x)
 class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
 
     def setUp(self):
-        metadata_path = Path("tests/tests_pangenome/seq_metadata.csv")
+        metadata_path = Path(__file__).parent.joinpath("../seq_metadata.csv").resolve()
         self.metadatacsv = msa.MetadataCSV(pathtools.get_file_content_stringio(metadata_path), metadata_path)
-        self.maf_files_dir = 'tests/tests_pangenome/builders/maf_files_with_cycles_or_reversion/'
+        self.maf_files_dir = Path(__file__).parent.joinpath("maf_files_with_cycles_or_reversion").resolve()
         self.fasta_provider = missings.ConstBaseProvider(missings.MissingBase())
 
     def test_00_simple(self):
-        maf_path = Path(self.maf_files_dir + "test_0_simple.maf")
+        maf_path = self.maf_files_dir.joinpath("test_0_simple.maf")
         expected_nodes = [
             graph.Node(node_id=nid(0), base=graph.Base('A'), aligned_to=None, block_id=bid(0)),
             graph.Node(node_id=nid(1), base=graph.Base('C'), aligned_to=None, block_id=bid(0)),
@@ -62,7 +65,7 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
         self.assertEqual(expected_poagraph, actual_poagraph)
 
     def test_01_reversed_seq_in_one_block(self):
-        maf_path = Path(self.maf_files_dir + "test_1_reversed_seq_in_one_block.maf")
+        maf_path = self.maf_files_dir.joinpath("test_1_reversed_seq_in_one_block.maf")
         expected_nodes = [
             graph.Node(node_id=nid(0), base=graph.Base('A'), aligned_to=nid(1), block_id=bid(0)),
             graph.Node(node_id=nid(1), base=graph.Base('G'), aligned_to=nid(0), block_id=bid(0)),
@@ -104,7 +107,7 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
         self.assertEqual(expected_poagraph, actual_poagraph)
 
     def test_02_seq_starts_in_second_block(self):
-        maf_path = Path(self.maf_files_dir +
+        maf_path = self.maf_files_dir.joinpath(
                         "test_2_seq_starts_in_second_block.maf")
 
         expected_nodes = [
@@ -149,7 +152,7 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
         self.assertEqual(expected_poagraph, actual_poagraph)
 
     def test_03_edge_not_from_last_node_in_block(self):
-        maf_path = Path(self.maf_files_dir + "test_3_edge_not_from_last_node_in_block.maf")
+        maf_path = self.maf_files_dir.joinpath("test_3_edge_not_from_last_node_in_block.maf")
 
         expected_nodes = [
             graph.Node(node_id=nid(0), base=graph.Base('A'), aligned_to=None),
@@ -189,7 +192,7 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
         self.assertEqual(expected_poagraph, actual_poagraph)
 
     def test_04_single_block_no_nucleotides(self):
-        maf_path = Path(self.maf_files_dir +
+        maf_path = self.maf_files_dir.joinpath(
                         "test_4_single_block_no_nucleotides.maf")
 
         expected_nodes = []
@@ -221,7 +224,7 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
         self.assertEqual(expected_poagraph, actual_poagraph)
 
     def test_05_single_block_single_nucletodide(self):
-        maf_path = Path(self.maf_files_dir +
+        maf_path = self.maf_files_dir.joinpath(
                         "test_5_single_block_single_nucletodide.maf")
 
         expected_nodes = [
@@ -255,7 +258,7 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
         self.assertEqual(expected_poagraph, actual_poagraph)
 
     def test_06_1st_block_separates_into_2_branches_which_connect_in_3rd_block(self):
-        maf_path = Path(self.maf_files_dir +
+        maf_path = self.maf_files_dir.joinpath(
                         "test_6_1st_block_separates_into_2_branches_which_connect_in_3rd_block.maf")
 
         expected_nodes = [
@@ -301,7 +304,7 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
         self.assertEqual(expected_poagraph, actual_poagraph)
 
     def test_07_inactive_edges_due_to_reversed_seqs(self):
-        maf_path = Path(self.maf_files_dir + "test_7_inactive_edges_due_to_reversed_seqs.maf")
+        maf_path = self.maf_files_dir.joinpath("test_7_inactive_edges_due_to_reversed_seqs.maf")
 
         expected_nodes = [
             graph.Node(node_id=nid(0), base=graph.Base('A'), aligned_to=None),
@@ -353,7 +356,7 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
         self.assertEqual(expected_poagraph, actual_poagraph)
 
     def test_08_reversed_block(self):
-        maf_path = Path(self.maf_files_dir + "test_8_reversed_block.maf")
+        maf_path = self.maf_files_dir.joinpath("test_8_reversed_block.maf")
 
         expected_nodes = [
             graph.Node(node_id=nid(0), base=graph.Base('C'), aligned_to=None),
@@ -396,7 +399,7 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
         self.assertEqual(expected_poagraph, actual_poagraph)
 
     def test_09_inactive_edges_but_all_strands_plus(self):
-        maf_path = Path(self.maf_files_dir + "test_9_inactive_edges_but_all_strands_plus.maf")
+        maf_path = self.maf_files_dir.joinpath("test_9_inactive_edges_but_all_strands_plus.maf")
 
         expected_nodes = [
             graph.Node(node_id=nid(0), base=graph.Base('A'), aligned_to=None),
@@ -453,7 +456,7 @@ class DAGMaf2PoagraphFakeFastaProviderTests(unittest.TestCase):
         self.assertEqual(expected_poagraph, actual_poagraph)
 
     def test_10_parallel_blocks_1st_and_2nd_merge_into_3rd(self):
-        maf_path = Path(self.maf_files_dir + "test_10_parallel_blocks_1st_and_2nd_merge_into_3rd.maf")
+        maf_path = self.maf_files_dir.joinpath("test_10_parallel_blocks_1st_and_2nd_merge_into_3rd.maf")
 
         expected_nodes = [
             graph.Node(node_id=nid(0), base=graph.Base('G'), aligned_to=nid(1)),

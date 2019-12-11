@@ -3,7 +3,7 @@ import setuptools
 
 setuptools.setup(
     name='pangtreebuild',
-    version='1.0',
+    version='1.0.2',
     author="Paulina Dziadkiewicz",
     author_email="pedziadkiewicz@gmail.com",
     description="Multiple sequence alignment analysis with Affinity Tree generation",
@@ -19,6 +19,6 @@ setuptools.setup(
     license='MIT Licence',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
-
-    include_package_data=True
+    include_package_data=True,
+    scripts=['bin/poa']
 )

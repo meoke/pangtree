@@ -1,7 +1,12 @@
 import unittest
 from pathlib import Path
 
-from tests.context import msa, graph, pathtools, po2poagraph
+from ddt import unpack, data, ddt
+
+from pangtreebuild.pangenome import graph
+from pangtreebuild.serialization import po
+from pangtreebuild.pangenome.parameters import msa
+from pangtreebuild.tools import pathtools
 
 
 def nid(x): return graph.NodeID(x)
@@ -10,17 +15,16 @@ def nid(x): return graph.NodeID(x)
 def bid(x): return graph.Base(x)
 
 
-class Po2poagraphTests(unittest.TestCase):
+@ddt
+class PoagraphToPOTests(unittest.TestCase):
 
     def setUp(self):
-        metadata_path = Path("tests/tests_pangenome/seq_metadata.csv")
-        self.metadatacsv = msa.MetadataCSV(pathtools.get_file_content_stringio(metadata_path), metadata_path)
-        self.po_files_dir = 'tests/tests_pangenome/builders/po_files/'
+        self.po_files_dir = Path(__file__).parent.joinpath('po_files')
 
     def test_1_typical_poagraph(self):
-        po_path = self.po_files_dir + "test_1.po"
+        expected_po_content_path = self.po_files_dir.joinpath("test_1.po")
 
-        expected_nodes = [graph.Node(node_id=nid(0), base=bid('A'), aligned_to=nid(1)),
+        poagraph_nodes = [graph.Node(node_id=nid(0), base=bid('A'), aligned_to=nid(1)),
                           graph.Node(node_id=nid(1), base=bid('G'), aligned_to=nid(0)),
                           graph.Node(node_id=nid(2), base=bid('C'), aligned_to=nid(3)),
                           graph.Node(node_id=nid(3), base=bid('G'), aligned_to=nid(2)),
@@ -40,7 +44,7 @@ class Po2poagraphTests(unittest.TestCase):
                           graph.Node(node_id=nid(17), base=bid('G'), aligned_to=nid(15))
                           ]
 
-        expected_sequences = {
+        poagraph_sequences = {
             msa.SequenceID('seq0'):
                 graph.Sequence(msa.SequenceID('seq0'),
                                [graph.SeqPath([*map(nid, [0, 2, 4, 6, 7, 8, 12, 14, 16])])],
@@ -52,23 +56,23 @@ class Po2poagraphTests(unittest.TestCase):
             msa.SequenceID('seq2'):
                 graph.Sequence(msa.SequenceID('seq2'),
                                [graph.SeqPath([*map(nid, [3, 4, 6, 7, 10, 12, 14, 17])])],
-                               graph.SequenceMetadata({'group': '2'})),
+                               graph.SequenceMetadata({'group': '1'})),
             msa.SequenceID('seq3'):
                 graph.Sequence(msa.SequenceID('seq3'),
                                [graph.SeqPath([*map(nid, [11, 13, 14, 15])])],
-                               graph.SequenceMetadata({'group': '2'}))
+                               graph.SequenceMetadata({'group': '1'})),
         }
 
-        expected_poagraph = graph.Poagraph(expected_nodes, expected_sequences)
-        nodes, sequences = po2poagraph.get_poagraph(msa.Po(pathtools.get_file_content_stringio(po_path), po_path),
-                                                    self.metadatacsv)
-        actual_poagraph = graph.Poagraph(nodes, sequences)
-        self.assertEqual(expected_poagraph, actual_poagraph)
+        poagraph = graph.Poagraph(poagraph_nodes, poagraph_sequences)
+
+        actual_po_content = po.poagraph_to_PangenomePO(poagraph)
+        expected_po_content = pathtools.get_file_content(expected_po_content_path)
+        self.assertEqual(expected_po_content, actual_po_content)
 
     def test_2_consensuses_and_empty_sequences(self):
-        po_path = self.po_files_dir + "test_2.po"
+        expected_po_content_path = self.po_files_dir.joinpath("test_2.po")
 
-        expected_nodes = [graph.Node(node_id=nid(0), base=bid('C'), aligned_to=nid(1)),
+        poagraph_nodes = [graph.Node(node_id=nid(0), base=bid('C'), aligned_to=nid(1)),
                           graph.Node(node_id=nid(1), base=bid('T'), aligned_to=nid(0)),
                           graph.Node(node_id=nid(2), base=bid('A'), aligned_to=nid(3)),
                           graph.Node(node_id=nid(3), base=bid('G'), aligned_to=nid(2)),
@@ -79,7 +83,7 @@ class Po2poagraphTests(unittest.TestCase):
                           graph.Node(node_id=nid(8), base=bid('G'), aligned_to=None)
                           ]
 
-        expected_sequences = {
+        poagraph_sequences = {
             msa.SequenceID('seq0'):
                 graph.Sequence(msa.SequenceID('seq0'),
                                [graph.SeqPath([*map(nid, [0, 3, 4, 5, 6, 8])])],
@@ -91,26 +95,48 @@ class Po2poagraphTests(unittest.TestCase):
             msa.SequenceID('seq2'):
                 graph.Sequence(msa.SequenceID('seq2'),
                                [],
-                               graph.SequenceMetadata({'group': '2'})),
+                               graph.SequenceMetadata({'group': '1'})),
             msa.SequenceID('seq3'):
                 graph.Sequence(msa.SequenceID('seq3'),
                                [],
-                               graph.SequenceMetadata({'group': '2'})),
+                               graph.SequenceMetadata({'group': '1'})),
             msa.SequenceID('CONSENS0'):
                 graph.Sequence(msa.SequenceID('CONSENS0'),
                                [graph.SeqPath([*map(nid, [0, 3, 4, 5, 7, 8])])],
-                               graph.SequenceMetadata({})),
+                               None),
             msa.SequenceID('CONSENS1'):
                 graph.Sequence(msa.SequenceID('CONSENS1'),
                                [graph.SeqPath([*map(nid, [1, 2, 4, 5, 6, 8])])],
-                               graph.SequenceMetadata({}))
+                               None),
         }
 
-        expected_poagraph = graph.Poagraph(expected_nodes, expected_sequences)
-        nodes, sequences = po2poagraph.get_poagraph(msa.Po(pathtools.get_file_content_stringio(po_path), po_path),
-                                                    self.metadatacsv)
-        actual_poagraph = graph.Poagraph(nodes, sequences)
-        self.assertEqual(expected_poagraph, actual_poagraph)
+        poagraph = graph.Poagraph(poagraph_nodes, poagraph_sequences)
+
+        actual_po_content = po.poagraph_to_PangenomePO(poagraph)
+        expected_po_content = pathtools.get_file_content(expected_po_content_path)
+        self.assertEqual(expected_po_content, actual_po_content)
+
+    @data(([], ""),
+          ([nid(0), nid(1)], "L0L1"))
+    @unpack
+    def test_3_get_in_nodes_info(self, in_nodes, expected_in_nodes):
+        actual_in_nodes = po._get_in_nodes_info(in_nodes)
+        self.assertEqual(expected_in_nodes, actual_in_nodes)
+
+    @data(([], ""),
+          ([0, 1], "S0S1"),
+          ([1, 3], "S1S3"))
+    @unpack
+    def test_get_sources_info(self, sources_ids, expected_info):
+        actual_sources_ids = po._get_sources_info(sources_ids)
+        self.assertEqual(expected_info, actual_sources_ids)
+
+    @data((None, ""),
+          (0, "A0"))
+    @unpack
+    def test_get_aligned_to_info(self, aligned_to, expected_aligned_to):
+        actual_aligned_to = po._get_aligned_to_info(aligned_to)
+        self.assertEqual(expected_aligned_to, actual_aligned_to)
 
 
 if __name__ == '__main__':

@@ -12,11 +12,9 @@
     "python.testing.unittestArgs": [
         "-v",
         "-s",
-        "tests",
+        "./pangtreebuild/tests",
         "-p",
-        "tests_*.py",
-        "-t",
-        "."
+        "tests_*.py"
     ],
     "python.testing.pytestEnabled": false,
     "python.testing.nosetestsEnabled": false

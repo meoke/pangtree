@@ -3,7 +3,11 @@ from typing import List
 
 from ddt import unpack, data, ddt
 
-from tests.context import graph, at_builders, at_params, msa
+
+from pangtreebuild.affinity_tree import builders as at_builders
+from pangtreebuild.affinity_tree import parameters as at_params
+from pangtreebuild.pangenome import graph
+from pangtreebuild.pangenome.parameters import msa
 
 
 def sid(x): return msa.SequenceID(x)
