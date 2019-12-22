@@ -97,9 +97,13 @@ will produce:
 
 ## Tests
 ```
-python3 -m unittest discover -s tests -t . -p tests_*
+python3 -m unittest discover -s pangtreebuild -p tests_*
 ```
+or
 
+```
+nosetests pangtreebuild
+```
 ## Authors
 This software is developed with support of [OPUS 11 scientific project of National Science Centre:  Incorporating genomic variation information 
 into DNA sequencing data analysis](https://www.mimuw.edu.pl/~dojer/rmg/)

@@ -12,7 +12,6 @@ def get_relative_path(path_suffix: str) -> Path:
                 path_suffix)))
 
 
-sys.path.insert(0, str(get_relative_path('../../pangtree')))
 from pangtreebuild.pangenome import builder
 from pangtreebuild.pangenome.parameters import missings, msa
 from pangtreebuild.affinity_tree import parameters as at_params
@@ -21,30 +20,26 @@ from pangtreebuild.tools import pathtools
 from pangtreebuild.serialization import json, po
 
 
-p_values = [1]
+p_values = [1, 2]
 
 
 def run_pangtree(maf_path: Path,
                  fasta_path: Path,
                  output_dir: Path,
-                 blosum_path: Path,
                  po_output: bool) -> None:
     output_dir = pathtools.get_child_dir(output_dir,
                                          pathtools.get_current_time())
     print(f"Runing pangtree for maf: {maf_path} and fasta: {fasta_path} "
-          f"Blosum path: {blosum_path}."
           f"Output in: {output_dir}, include po file: {po_output}.")
 
     fasta_provider = missings.FromFile(fasta_path)
     maf = msa.Maf(pathtools.get_file_content_stringio(maf_path), maf_path)
     poagraph, dagmaf = builder.build_from_dagmaf(maf, fasta_provider)
-    blosum = at_params.Blosum(pathtools.get_file_content_stringio(blosum_path),
-                              blosum_path)
     for p in p_values:
         current_output_dir = pathtools.get_child_dir(output_dir, str(p).replace(".", "_"))
         stop = at_params.Stop(0.99)
         at = at_builders.build_affinity_tree(poagraph,
-                                             blosum,
+                                             None,
                                              current_output_dir,
                                              stop,
                                              at_params.P(p),
@@ -63,7 +58,7 @@ def run_pangtree(maf_path: Path,
         task_params = json.TaskParameters(multialignment_file_path=str(maf_path),
                                           multialignment_format="maf",
                                           datatype="nucleotides",
-                                          blosum_file_path=blosum_path,
+                                          blosum_file_path="",
                                           output_path=current_output_dir,
                                           fasta_provider=fasta_provider,
                                           fasta_source_file=fasta_path,
@@ -95,8 +90,7 @@ def read_cmd_args() -> Tuple[Path, Path, Path]:
 
 
 if __name__ == "__main__":
-    blosum_path = get_relative_path("../bin/blosum80.mat")
-    cmd_line_args = False
+    cmd_line_args = sys.argv
     if cmd_line_args:
         maf_path, fasta_path, output_path = read_cmd_args()
     else:
@@ -105,4 +99,4 @@ if __name__ == "__main__":
         output_path = get_relative_path("../output")
 
     po_output = True
-    run_pangtree(maf_path, fasta_path, output_path, blosum_path, po_output)
+    run_pangtree(maf_path, fasta_path, output_path, po_output)

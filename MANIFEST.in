@@ -1,3 +1,3 @@
-include tests/*.py
-include bin/*
 include pangtreebuild/logging.conf
+include pangtreebuild/affinity_tree/bin/*
+recursive-include pangtreebuild/tests *

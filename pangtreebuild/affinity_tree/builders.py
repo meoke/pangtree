@@ -3,9 +3,10 @@
 from collections import deque
 import numpy as np
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Optional
 
 from pangtreebuild.tools import logprocess
+from pangtreebuild.tools.cli import get_default_blosum
 from pangtreebuild.affinity_tree import parameters
 from pangtreebuild.affinity_tree import poa
 from pangtreebuild.affinity_tree import tree
@@ -26,7 +27,7 @@ class AffinityTreeBuildException(Exception):
 
 
 def build_poa_affinity_tree(p: graph.Poagraph,
-                            blosum: parameters.Blosum,
+                            blosum: Optional[parameters.Blosum],
                             output_dir: Path,
                             hbmin: parameters.Hbmin,
                             verbose: bool) -> tree.AffinityTree:
@@ -43,7 +44,7 @@ def build_poa_affinity_tree(p: graph.Poagraph,
     Args:
         p: Poagraph containing sequences to be divided into
             groups (Affinity Tree nodes).
-        blosum: BLOSUM matrix.
+        optional blosum: BLOSUM matrix. If not provided, default Blosum80.mat is used.
         output_dir: Path to a directory that can be used by poa software.
         hbmin: Parameter required by poa software. The minimum value of
             sequence compatibility to generated consensus.
@@ -86,6 +87,8 @@ def build_poa_affinity_tree(p: graph.Poagraph,
         return at_nodes
 
     global_logger.info("POA defined affinity tree generation started.")
+    if blosum is None:
+        blosum = get_default_blosum()
     _raise_error_if_invalid_poagraph(p)
     try:
         consensus_paths = poa.get_consensuses(p,
@@ -107,7 +110,7 @@ def build_poa_affinity_tree(p: graph.Poagraph,
 
 
 def build_affinity_tree(poagraph: graph.Poagraph,
-                        blosum: parameters.Blosum,
+                        blosum: Optional[parameters.Blosum],
                         output_dir: Path,
                         stop: parameters.Stop,
                         p: parameters.P,
@@ -122,7 +125,7 @@ def build_affinity_tree(poagraph: graph.Poagraph,
     Args:
         poagraph: Poagraph containing _sequences to be divided into groups
             (Affinity Tree nodes).
-        blosum: BLOSUM matrix.
+        optional blosum: BLOSUM matrix. If not provided, default Blosum80.mat is used.
         output_dir: Path to a directory that can be used by poa software.
         stop: Value of mincomp above which an affinity tree node is no more
             split.
@@ -138,6 +141,8 @@ def build_affinity_tree(poagraph: graph.Poagraph,
     """
 
     global_logger.info("Affinity Tree generation started.")
+    if blosum is None:
+        blosum = get_default_blosum()
     if verbose:
         logprocess.add_file_handler_to_logger(output_dir,
                                               "tresholdsCSV",
