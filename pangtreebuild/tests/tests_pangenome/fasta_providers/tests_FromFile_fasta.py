@@ -1,13 +1,13 @@
 import unittest
 from pathlib import Path
 
-
-from tests.context import missings, graph, msa
+from pangtreebuild.pangenome import graph
+from pangtreebuild.pangenome.parameters import missings, msa
 
 
 class FromFileFastaProviderFastaTests(unittest.TestCase):
     def setUp(self) -> None:
-        self.fasta_dir = "tests/tests_pangenome/fasta_providers/files_fasta/"
+        self.fasta_dir = Path(__file__).parent.joinpath("files_fasta/").resolve()
 
     @staticmethod
     def read_sequence(path: Path):
@@ -25,7 +25,7 @@ class FromFileFastaProviderFastaTests(unittest.TestCase):
             self.assertEqual(expected_base, actual_base)
 
     def test_1_one_sequence(self):
-        fasta_path = self.fasta_dir + "test_1_one_sequence.fasta"
+        fasta_path = self.fasta_dir.joinpath("test_1_one_sequence.fasta")
         fasta_provider = missings.FromFile(Path(fasta_path))
 
         sequence_id = msa.SequenceID("seq1")
@@ -36,7 +36,7 @@ class FromFileFastaProviderFastaTests(unittest.TestCase):
                                     fasta_provider)
 
     def test_2_three_sequences(self):
-        fasta_path = self.fasta_dir + "test_2_three_sequences.fasta"
+        fasta_path = self.fasta_dir.joinpath("test_2_three_sequences.fasta")
 
         fasta_provider = missings.FromFile(Path(fasta_path))
 
@@ -56,7 +56,7 @@ class FromFileFastaProviderFastaTests(unittest.TestCase):
                                     fasta_provider)
 
     def test_3_empty_sequence_name(self):
-        fasta_path = self.fasta_dir + "test_3_empty_sequence_name.fasta"
+        fasta_path = self.fasta_dir.joinpath("test_3_empty_sequence_name.fasta")
 
         with self.assertRaises(Exception) as exp:
             _ = missings.FromFile(Path(fasta_path))
@@ -66,7 +66,7 @@ class FromFileFastaProviderFastaTests(unittest.TestCase):
         self.assertEqual(expected_message, actual_message)
 
     def test_4_empty_sequence(self):
-        fasta_path = self.fasta_dir + "test_4_empty_sequence.fasta"
+        fasta_path = self.fasta_dir.joinpath("test_4_empty_sequence.fasta")
 
         with self.assertRaises(Exception) as exp:
             _ = missings.FromFile(Path(fasta_path))
@@ -76,7 +76,7 @@ class FromFileFastaProviderFastaTests(unittest.TestCase):
         self.assertEqual(expected_message, actual_message)
 
     def test_5_empty_fasta(self):
-        fasta_path = self.fasta_dir + "test_5_empty_fasta.fasta"
+        fasta_path = self.fasta_dir.joinpath("test_5_empty_fasta.fasta")
 
         with self.assertRaises(Exception) as exp:
             _ = missings.FromFile(Path(fasta_path))
@@ -86,7 +86,7 @@ class FromFileFastaProviderFastaTests(unittest.TestCase):
         self.assertEqual(expected_message, actual_message)
 
     def test_6_repeated_sequences(self):
-        fasta_path = self.fasta_dir + "test_6_repeated_sequences.fasta"
+        fasta_path = self.fasta_dir.joinpath("test_6_repeated_sequences.fasta")
 
         with self.assertRaises(Exception) as exp:
             _ = missings.FromFile(Path(fasta_path))

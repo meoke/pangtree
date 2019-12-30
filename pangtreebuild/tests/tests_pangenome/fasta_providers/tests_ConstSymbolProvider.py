@@ -1,6 +1,7 @@
 import unittest
 
-from tests.context import missings, graph, msa
+from pangtreebuild.pangenome import graph
+from pangtreebuild.pangenome.parameters import missings, msa
 
 
 class ConstSymbolProviderTests(unittest.TestCase):

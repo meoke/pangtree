@@ -3,8 +3,9 @@ from pathlib import Path
 
 from ddt import unpack, data, ddt
 
-from tests.context import msa, pathtools, missings, graph, builder
-
+from pangtreebuild.pangenome import graph, builder
+from pangtreebuild.pangenome.parameters import missings, msa
+from pangtreebuild.tools import pathtools
 
 def sid(x): return msa.SequenceID(x)
 
@@ -16,12 +17,12 @@ def sm(x): return graph.SequenceMetadata(x)
 class MetadataCSVTests(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.csv_files_dir = 'tests/tests_pangenome/input_types/csv_files/'
-        self.alignment_files_dir = 'tests/tests_pangenome/input_types/alignment_files/'
+        self.csv_files_dir = Path(__file__).parent.joinpath("csv_files").resolve()
+        self.alignment_files_dir = Path(__file__).parent.joinpath("alignment_files").resolve()
         self.fasta_provider = missings.ConstBaseProvider(missings.MissingBase())
 
     def test_1_correct(self):
-        metadata_path = Path(self.csv_files_dir + "test_1_correct.csv")
+        metadata_path = self.csv_files_dir.joinpath("test_1_correct.csv")
         csv_content = pathtools.get_file_content_stringio(metadata_path)
 
         expected_metadata = {msa.SequenceID('s1'): {'name': 'sequence1', 'group': 'A'},
@@ -34,14 +35,14 @@ class MetadataCSVTests(unittest.TestCase):
         self.assertEqual(expected_metadata, actual_metadata)
 
     def test_2_no_seqid(self):
-        csv_path = self.csv_files_dir + "test_2_no_seqid.csv"
+        csv_path = self.csv_files_dir.joinpath("test_2_no_seqid.csv")
         csv_content = pathtools.get_file_content_stringio(csv_path)
         with self.assertRaises(Exception) as err:
             _ = msa.MetadataCSV(csv_content, csv_path)
         self.assertEqual(f"No \'seqid\' column in metadata csv.", str(err.exception))
 
     def test_3_empty_file(self):
-        csv_path = Path(self.csv_files_dir + "test_3_empty_file.csv")
+        csv_path = self.csv_files_dir.joinpath("test_3_empty_file.csv")
 
         csv_content = pathtools.get_file_content_stringio(csv_path)
         with self.assertRaises(Exception) as err:
@@ -49,7 +50,7 @@ class MetadataCSVTests(unittest.TestCase):
         self.assertEqual(f"Empty csv file.", str(err.exception))
 
     def test_4_seqid_is_last(self):
-        metadata_path = Path(self.csv_files_dir + "test_4_seqid_is_last.csv")
+        metadata_path = self.csv_files_dir.joinpath("test_4_seqid_is_last.csv")
         csv_content = pathtools.get_file_content_stringio(metadata_path)
 
         expected_metadata = {msa.SequenceID('s1'): {'name': 'sequence1', 'group': 'A'},
@@ -62,7 +63,7 @@ class MetadataCSVTests(unittest.TestCase):
         self.assertEqual(expected_metadata, actual_metadata)
 
     def test_5_double_seqid(self):
-        csv_path = Path(self.csv_files_dir + "test_5_double_seqid.csv")
+        csv_path = self.csv_files_dir.joinpath("test_5_double_seqid.csv")
 
         csv_content = pathtools.get_file_content_stringio(csv_path)
         with self.assertRaises(Exception) as err:
@@ -70,7 +71,7 @@ class MetadataCSVTests(unittest.TestCase):
         self.assertEqual("Only one \'seqid\' column in metadata csv is allowed.", str(err.exception))
 
     def test_6_incorrect_commas_number(self):
-        csv_path = Path(self.csv_files_dir + "test_6_incorrect_commas_number.csv")
+        csv_path = self.csv_files_dir.joinpath("test_6_incorrect_commas_number.csv")
 
         csv_content = pathtools.get_file_content_stringio(csv_path)
         with self.assertRaises(Exception) as err:
@@ -79,7 +80,7 @@ class MetadataCSVTests(unittest.TestCase):
                          str(err.exception))
 
     def test_7_not_unique_seqids(self):
-        csv_path = Path(self.csv_files_dir + "test_7_not_unique_seqids.csv")
+        csv_path = self.csv_files_dir.joinpath("test_7_not_unique_seqids.csv")
 
         csv_content = pathtools.get_file_content_stringio(csv_path)
         with self.assertRaises(Exception) as err:
@@ -87,7 +88,7 @@ class MetadataCSVTests(unittest.TestCase):
         self.assertEqual("Repeated values in seqid column in metadata file. Make them unique.", str(err.exception))
 
     def test_8_correct_with_dots(self):
-        metadata_path = Path(self.csv_files_dir + "test_8_seqids_with_dots.csv")
+        metadata_path = self.csv_files_dir.joinpath("test_8_seqids_with_dots.csv")
         csv_content = pathtools.get_file_content_stringio(metadata_path)
 
         expected_metadata = {msa.SequenceID('s1'): {'name': 'sequence1', 'group': 'A'},
@@ -100,7 +101,7 @@ class MetadataCSVTests(unittest.TestCase):
         self.assertEqual(expected_metadata, actual_metadata)
 
     def test_9_get_seqids(self):
-        metadata_path = Path(self.csv_files_dir + "test_1_correct.csv")
+        metadata_path = self.csv_files_dir.joinpath("test_1_correct.csv")
         csv_content = pathtools.get_file_content_stringio(metadata_path)
 
         expected_seqids = [msa.SequenceID('s1'),
@@ -158,9 +159,9 @@ class MetadataCSVTests(unittest.TestCase):
                                                     csv_name,
                                                     po_name,
                                                     expected_metadata):
-        maf_path = Path(self.alignment_files_dir + maf_name)
-        csv_path = Path(self.csv_files_dir + csv_name)
-        po_path = Path(self.alignment_files_dir + po_name)
+        maf_path = self.alignment_files_dir.joinpath(maf_name)
+        csv_path = self.csv_files_dir.joinpath(csv_name)
+        po_path = self.alignment_files_dir.joinpath(po_name)
 
         poagraph, _ = builder.build_from_dagmaf(
             msa.Maf(pathtools.get_file_content_stringio(maf_path), maf_path),

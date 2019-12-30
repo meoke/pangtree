@@ -1,6 +1,9 @@
 import unittest
 from ddt import ddt
-from tests.context import poa, graph, msa
+
+from pangtreebuild.affinity_tree import poa
+from pangtreebuild.pangenome import graph
+from pangtreebuild.pangenome.parameters import msa
 
 
 def nid(x): return graph.NodeID(x)

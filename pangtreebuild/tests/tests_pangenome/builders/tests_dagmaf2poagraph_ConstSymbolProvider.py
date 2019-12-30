@@ -1,8 +1,11 @@
 import unittest
 from pathlib import Path
 
-from tests.context import graph, missings, msa, builder
-from tests.context import pathtools
+from pangtreebuild.pangenome import graph
+from pangtreebuild.pangenome.parameters import msa
+from pangtreebuild.pangenome import builder
+from pangtreebuild.pangenome.parameters import missings
+from pangtreebuild.tools import pathtools
 
 
 def nid(x): return graph.NodeID(x)
@@ -13,13 +16,13 @@ def bid(x): return graph.BlockID(x)
 
 class DAGMaf2PoagraphConstSymbolProviderTests(unittest.TestCase):
     def setUp(self):
-        metadata_path = Path("tests/tests_pangenome/seq_metadata.csv")
+        metadata_path = Path(__file__).parent.joinpath("../seq_metadata.csv").resolve()
         self.metadatacsv = msa.MetadataCSV(pathtools.get_file_content_stringio(metadata_path), metadata_path)
-        self.maf_files_dir = 'tests/tests_pangenome/builders/maf_files_with_gaps/'
+        self.maf_files_dir = Path(__file__).parent.joinpath("maf_files_with_gaps").resolve()
         self.missing_n = missings.MissingBase()
 
     def test_1_missing_sequence_start(self):
-        maf_path = Path(self.maf_files_dir + "test_1_missing_sequence_start.maf")
+        maf_path = self.maf_files_dir.joinpath("test_1_missing_sequence_start.maf")
         expected_nodes = [
             graph.Node(node_id=nid(0), base=graph.Base(self.missing_n.value), aligned_to=None, block_id=bid(0)),
             graph.Node(node_id=nid(1), base=graph.Base(self.missing_n.value), aligned_to=None, block_id=bid(0)),
@@ -62,7 +65,7 @@ class DAGMaf2PoagraphConstSymbolProviderTests(unittest.TestCase):
         self.assertEqual(expected_poagraph, actual_poagraph)
 
     def test_2_missing_sequence_end(self):
-        maf_path = Path(self.maf_files_dir + "test_2_missing_sequence_end.maf")
+        maf_path = self.maf_files_dir.joinpath("test_2_missing_sequence_end.maf")
 
         expected_nodes = [
             graph.Node(node_id=nid(0), base=graph.Base('A'), aligned_to=nid(1)),
@@ -109,7 +112,7 @@ class DAGMaf2PoagraphConstSymbolProviderTests(unittest.TestCase):
         self.assertEqual(expected_poagraph, actual_poagraph)
 
     def test_3_missing_two_sequences_middle(self):
-        maf_path = Path(self.maf_files_dir + "test_3_missing_two_sequences_middle.maf")
+        maf_path = self.maf_files_dir.joinpath("test_3_missing_two_sequences_middle.maf")
 
         expected_nodes = [
             # block 0
@@ -160,7 +163,7 @@ class DAGMaf2PoagraphConstSymbolProviderTests(unittest.TestCase):
         self.assertEqual(expected_poagraph, actual_poagraph)
 
     def test_4_missing_one_sequence_middle(self):
-        maf_path = Path(self.maf_files_dir + "test_4_missing_one_sequence_middle.maf")
+        maf_path = self.maf_files_dir.joinpath("test_4_missing_one_sequence_middle.maf")
 
         expected_nodes = [
             # block 0
@@ -209,7 +212,7 @@ class DAGMaf2PoagraphConstSymbolProviderTests(unittest.TestCase):
         self.assertEqual(expected_poagraph, actual_poagraph)
 
     def test_5_missing_one_reverted_sequence_middle_1_1(self):
-        maf_path = Path(self.maf_files_dir + "test_5_missing_one_reverted_sequence_middle_1_1.maf")
+        maf_path = self.maf_files_dir.joinpath("test_5_missing_one_reverted_sequence_middle_1_1.maf")
 
         expected_nodes = [
             # block 0
@@ -259,7 +262,7 @@ class DAGMaf2PoagraphConstSymbolProviderTests(unittest.TestCase):
         self.assertEqual(expected_poagraph, actual_poagraph)
 
     def test_6_missing_one_reverted_sequence_middle_minus1_1(self):
-        maf_path = Path(self.maf_files_dir + "test_6_missing_one_reverted_sequence_middle_minus1_1.maf")
+        maf_path = self.maf_files_dir.joinpath("test_6_missing_one_reverted_sequence_middle_minus1_1.maf")
 
         expected_nodes = [
             # block 1 because it is first in DAG and reverted
@@ -309,7 +312,7 @@ class DAGMaf2PoagraphConstSymbolProviderTests(unittest.TestCase):
         self.assertEqual(expected_poagraph, actual_poagraph)
 
     def test_7_missing_one_reverted_sequence_middle_minus1_minus1(self):
-        maf_path = Path(self.maf_files_dir + "test_7_missing_one_reverted_sequence_middle_minus1_minus1.maf")
+        maf_path = self.maf_files_dir.joinpath("test_7_missing_one_reverted_sequence_middle_minus1_minus1.maf")
 
         expected_nodes = [
             # block 0

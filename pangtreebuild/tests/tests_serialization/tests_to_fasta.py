@@ -1,8 +1,13 @@
 import unittest
 from pathlib import Path
 
-from tests.context import graph, fasta, tree, pathtools, msa, at_params
 
+from pangtreebuild.pangenome import graph
+from pangtreebuild.pangenome.parameters import missings, msa
+from pangtreebuild.tools import pathtools
+from pangtreebuild.serialization import fasta
+from pangtreebuild.affinity_tree import tree
+from pangtreebuild.affinity_tree import parameters as at_params
 
 def nid(x): return graph.NodeID(x)
 
@@ -13,7 +18,7 @@ def bid(x): return graph.Base(x)
 class ToFASTATests(unittest.TestCase):
 
     def setUp(self):
-        self.fasta_dir = 'tests/tests_serialization/fasta_files/'
+        self.fasta_dir = Path(__file__).parent.joinpath('fasta_files/')
 
         poagraph_nodes = [graph.Node(node_id=nid(0), base=bid('A'), aligned_to=nid(1)),
                           graph.Node(node_id=nid(1), base=bid('G'), aligned_to=nid(0)),
@@ -58,14 +63,14 @@ class ToFASTATests(unittest.TestCase):
         self.poagraph = graph.Poagraph(poagraph_nodes, poagraph_sequences)
 
     def test_1_sequences_fasta(self):
-        expected_sequences_fasta_path = Path(self.fasta_dir + "sequences.fasta")
+        expected_sequences_fasta_path = self.fasta_dir.joinpath("sequences.fasta")
 
         actual_sequences_fasta_content = fasta.poagraph_to_fasta(self.poagraph)
         expected_sequences_fasta_content = pathtools.get_file_content(expected_sequences_fasta_path)
         self.assertEqual(expected_sequences_fasta_content, actual_sequences_fasta_content)
 
     def test_2_consensuses_tree_fasta(self):
-        expected_consensuses_fasta_path = Path(self.fasta_dir + "consensuses.fasta")
+        expected_consensuses_fasta_path = self.fasta_dir.joinpath("consensuses.fasta")
 
         affinity_tree = tree.AffinityTree()
         affinity_tree.nodes = [

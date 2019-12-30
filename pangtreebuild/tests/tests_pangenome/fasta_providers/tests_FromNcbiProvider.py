@@ -2,20 +2,20 @@ import unittest
 from pathlib import Path
 
 from ddt import unpack, data, ddt
-
-from tests.context import missings, msa, graph
-
+from pangtreebuild.pangenome import graph
+from pangtreebuild.pangenome.parameters import missings, msa
 
 @ddt
 class FromNCBITests(unittest.TestCase):
     def setUp(self) -> None:
+        self.fasta_dir = Path(__file__).parent.joinpath("fasta_ncbi/").resolve()
         self.fasta_provider = missings.FromNCBI(use_cache=False)
 
     # @unittest.skip("slow test - internet connection required")
     def test_0_get_10th_symbol_of_AB050936v1(self):
         sequence_id = msa.SequenceID("AB050936.1")
         actual_base = self.fasta_provider.get_base(sequence_id, 10)
-        path = Path('tests/tests_pangenome/fasta_providers/fasta_ncbi/AB050936.1.fasta')
+        path = self.fasta_dir.joinpath("AB050936.1.fasta")
         expected_base = graph.Base(self.read_sequence(path)[10])
         self.assertEqual(expected_base, actual_base)
 
@@ -24,7 +24,7 @@ class FromNCBITests(unittest.TestCase):
         fasta_provider = missings.FromNCBI(use_cache=False)
         sequence_id = msa.SequenceID("AB050936.1")
         actual_sequence = fasta_provider._download_from_ncbi(sequence_id)
-        p = Path('tests/tests_pangenome/fasta_providers/fasta_ncbi/AB050936.1.fasta')
+        p = self.fasta_dir.joinpath('AB050936.1.fasta')
         expected_sequence = self.read_sequence(p)
         self.assertEqual(expected_sequence, actual_sequence)
 

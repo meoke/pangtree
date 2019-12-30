@@ -1,8 +1,10 @@
 import unittest
 from pathlib import Path
 
-from tests.context import graph, msa
-from tests.context import maf2poagraph, pathtools
+from pangtreebuild.pangenome import graph
+from pangtreebuild.pangenome.builders import maf2poagraph
+from pangtreebuild.pangenome.parameters import msa
+from pangtreebuild.tools import pathtools
 
 
 def nid(x): return graph.NodeID(x)
@@ -14,12 +16,12 @@ def bid(x): return graph.BlockID(x)
 class Maf2poagraphTests(unittest.TestCase):
 
     def setUp(self):
-        metadata_path = Path("tests/tests_pangenome/seq_metadata.csv")
+        metadata_path = Path(__file__).parent.joinpath("../seq_metadata.csv").resolve()
         self.metadatacsv = msa.MetadataCSV(pathtools.get_file_content_stringio(metadata_path), metadata_path)
-        self.maf_files_dir = 'tests/tests_pangenome/builders/maf_files/'
+        self.maf_files_dir = Path(__file__).parent.joinpath("maf_files").resolve()
 
     def test_1_messy_sequences(self):
-        maf_path = Path(self.maf_files_dir + "test_1_messy_sequences.maf")
+        maf_path = self.maf_files_dir.joinpath("test_1_messy_sequences.maf")
         expected_nodes = [
             graph.Node(node_id=nid(0), base=graph.Base('A'), aligned_to=None, block_id=bid(0)),
             graph.Node(node_id=nid(1), base=graph.Base('A'), aligned_to=nid(2), block_id=bid(0)),
