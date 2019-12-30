@@ -11,6 +11,9 @@ def get_relative_path(path_suffix: str) -> Path:
     return Path(os.path.abspath(os.path.join(os.path.dirname(__file__),
                 path_suffix)))
 
+def create_dir_if_not_exists(dir_path: Path) -> None:
+    if not dir_path.exists():
+        dir_path.mkdir()
 
 from pangtreebuild.pangenome import builder
 from pangtreebuild.pangenome.parameters import missings, msa
@@ -91,12 +94,13 @@ def read_cmd_args() -> Tuple[Path, Path, Path]:
 
 if __name__ == "__main__":
     cmd_line_args = sys.argv
-    if cmd_line_args:
+    if len(cmd_line_args) > 1:
         maf_path, fasta_path, output_path = read_cmd_args()
     else:
         maf_path = get_relative_path("../example_data/Simulated/toy_example/f.maf")
         fasta_path = get_relative_path("../example_data/Simulated/toy_example/sequence.fasta")
         output_path = get_relative_path("../output")
 
+    create_dir_if_not_exists(output_path)
     po_output = True
     run_pangtree(maf_path, fasta_path, output_path, po_output)
