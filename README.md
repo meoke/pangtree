@@ -65,6 +65,7 @@ python3 -m pangtreebuild [args]
 | P | -p | No, default=1 | 'TREE' parameter. It changes the linear meaning of compatiblities during cutoff finding because the compatibilities are raised to the power o P. For P from range [0,1] it decreases distances between small compatibilities and increases distances between the bigger ones. For p > 1 it increases distances between small compatibilities and decreases distances between the bigger ones.
 | Arguments affecting output generation: |
 | OUTPUT_DIR | --output_dir, -o | No, default=timestamped folder in current working directory | Output directory path.
+| OUTPUT_FULL | --output_full | No, default=False | Set, if list of pangenome nodes for sequences and consensuses should be included in pangenome.json.
 | VERBOSE | --verbose, -v | No, default=False | Set if detailed log files must be produced.
 | QUIET | --quiet, -q | No, default=False | Set to turn off console logging.
 | FASTA | --output_fasta | No, default=False | Set to create fasta files with consensuses.

@@ -201,7 +201,12 @@ def get_parser() -> argparse.ArgumentParser:
     p.add_argument('--output_po',
                    action='store_true',
                    default=False,
-                   help='Set if po file for poagraph must be produced.')
+                   help='Set if po file for poagraph must be produced.'),
+    p.add_argument('--output_full',
+                   action='store_true',
+                   default=False,
+                   help='Set if the result pangenome.json should contain '
+                        'list of nodes ids for sequences and consensuses'),
     p.add_argument('-v', '--verbose',
                    action='store_true',
                    default=False,
@@ -273,7 +278,7 @@ def get_task_parameters(args: argparse.Namespace, running_time) -> \
                           output_path=args.output_dir,
                           output_po=bool(args.output_po),
                           output_fasta=bool(args.output_fasta),
-                          output_with_nodes=True,
+                          output_with_nodes=bool(args.output_full),
                           verbose=bool(args.verbose),
                           raw_maf=bool(args.raw_maf),
                           fasta_provider=args.fasta_provider if args.fasta_provider else 'ConstSymbol',
