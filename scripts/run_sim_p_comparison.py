@@ -68,7 +68,7 @@ def run_pangtree(maf_path: Path,
                                           consensus_type="tree",
                                           stop=str(stop),
                                           p=str(p),
-                                          output_with_nodes=True)
+                                          output_with_nodes=False)
         pangenomejson = json.to_PangenomeJSON(task_parameters=task_params,
                                               poagraph=poagraph,
                                               dagmaf=dagmaf,
