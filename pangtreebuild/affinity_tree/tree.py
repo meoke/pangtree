@@ -191,7 +191,7 @@ class AffinityTree(object):
             return ""
 
         sorted_nodes = sorted(self.nodes, key=lambda x: x.id_)
-
+        remove_children = []
         if separate_leaves:
             new_leaves_count = 0
             for node in self.nodes:
@@ -199,6 +199,7 @@ class AffinityTree(object):
                     for seq_id in node.sequences:
                         affinity_node_id = len(self.nodes) + new_leaves_count
                         node.children.append(affinity_node_id)
+                        remove_children.append(node.id_)
                         sorted_nodes.append(AffinityNode(id_=AffinityNodeID(affinity_node_id),
                                                          parent=node.id_,
                                                          children=[],
@@ -231,4 +232,8 @@ class AffinityTree(object):
 
             for child in node.children:
                 nodes_to_process.append((label, sorted_nodes[child]))
+        for node in self.nodes:
+            if node.id_ in remove_children:
+                node.children = []
+
         return "(" + _newick_nhx(newick_tree) + ")"
