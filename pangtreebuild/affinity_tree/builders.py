@@ -81,7 +81,7 @@ def build_poa_affinity_tree(p: graph.Poagraph,
                                                                      for seq_id in p.get_sequences_ids()
                                                                      if seq_id not in assigned_sequences],
                                                           id_=tree.AffinityNodeID(len(at_nodes) + 1),
-                                                          mincomp=p.Compatibility(0),
+                                                          mincomp=graph.Compatibility(0),
                                                           children=[])
         at_nodes.append(node_for_unassigned_sequences)
         return at_nodes
@@ -105,7 +105,7 @@ def build_poa_affinity_tree(p: graph.Poagraph,
                                   children=[c_node.id_
                                             for c_node in consensus_nodes])
     affinity_tree = tree.AffinityTree([root_node] + consensus_nodes)
-    global_logger.info("POA defined affinity tree generation started.")
+    global_logger.info("POA defined affinity tree generation finished.")
     return affinity_tree
 
 
